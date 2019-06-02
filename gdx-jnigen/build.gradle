@@ -1,0 +1,9 @@
+apply plugin: 'java'
+
+group = 'com.badlogicgames.gdx'
+
+dependencies {
+    implementation "com.github.javaparser:javaparser-core:2.3.0"
+
+    testImplementation "junit:junit:4.12"
+}
