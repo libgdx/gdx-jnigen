@@ -50,7 +50,8 @@ public class AndroidNdkScriptGenerator {
 			excludes[idx++] = config.jniDir + "/" + exclude;
 		for (String exclude : target.cppExcludes)
 			excludes[idx++] = config.jniDir + "/" + exclude;
-		excludes[idx] = "**/target/*";
+		//Include jniDir since ** does not match absolute files that start with /
+		excludes[idx] = config.jniDir + "/**/target/*";
 
 		gatherSourceFiles(config.jniDir, includes, excludes, files);
 

@@ -60,7 +60,9 @@ public class BuildTarget {
 	public String osFileName;
 	/** The name used for the library file. This is a full file name, including file extension. Default is platform specific.
 	 *  E.g. "lib{sharedLibName}64.so" **/
-	public String libName; 
+	public String libName;
+	/** If we require a macos host OS to build this target */ 
+	public boolean requireMacOSToBuild = false;
 
 	/** Creates a new build target. See members of this class for a description of the parameters. */
 	public BuildTarget (BuildTarget.TargetOs targetType, boolean is64Bit, String[] cIncludes, String[] cExcludes,
@@ -130,6 +132,7 @@ public class BuildTarget {
 				"-c -Wall -O2 -arch i386 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.9",
 				"-c -Wall -O2 -arch i386 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.9",
 				"-shared -arch i386 -mmacosx-version-min=10.9 -stdlib=libc++");
+			mac.requireMacOSToBuild = true;
 			return mac;
 		}
 		
@@ -140,6 +143,7 @@ public class BuildTarget {
 				"-c -Wall -O2 -arch x86_64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.9",
 				"-c -Wall -O2 -arch x86_64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.9",
 				"-shared -arch x86_64 -mmacosx-version-min=10.9 -stdlib=libc++");
+			mac.requireMacOSToBuild = true;
 			return mac;
 		}
 
@@ -157,6 +161,7 @@ public class BuildTarget {
 				"-c -Wall -O2",
 				"-c -Wall -O2",
 				"rcs");
+			ios.requireMacOSToBuild = true;
 			return ios;
 		}
 
