@@ -47,6 +47,12 @@ public class JnigenExtension {
 	String temporaryDir = "target";
 	String libsDir = "libs";
 	String jniDir = "jni";
+	
+	/**
+	 * If we should build with release flag set.<br/>
+	 * This strips debug symbols.
+	 */
+	boolean release = true;
 
 	NativeCodeGeneratorConfig nativeCodeGeneratorConfig;
 	ArrayList<BuildTarget> targets = new ArrayList<BuildTarget>();

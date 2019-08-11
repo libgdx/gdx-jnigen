@@ -86,7 +86,7 @@ public class JnigenTask extends DefaultTask {
 			if (target.buildFileName != null)
 				buildFileName = target.buildFileName;
 			BuildExecutor.executeAnt(new File(ext.subProjectDir + ext.jniDir, buildFileName).getPath(),
-					"-Drelease=true", "clean", "postcompile");
+					"-Drelease=" + ext.release, "clean", "postcompile");
 		}
 	}
 }
