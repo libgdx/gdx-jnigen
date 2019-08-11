@@ -72,6 +72,10 @@ public class JnigenExtension {
 	public void all(Action<BuildTarget> container) {
 		this.all = container;
 	}
+	
+	public void add(TargetOs type) {
+		add(type, false, false, null);
+	}
 
 	public void add(TargetOs type, boolean is64Bit) {
 		add(type, is64Bit, false, null);
@@ -79,6 +83,10 @@ public class JnigenExtension {
 
 	public void add(TargetOs type, boolean is64Bit, boolean isARM) {
 		add(type, is64Bit, isARM, null);
+	}
+
+	public void add(TargetOs type, Action<BuildTarget> container) {
+		add(type, false, false, container);
 	}
 
 	public void add(TargetOs type, boolean is64Bit, Action<BuildTarget> container) {
