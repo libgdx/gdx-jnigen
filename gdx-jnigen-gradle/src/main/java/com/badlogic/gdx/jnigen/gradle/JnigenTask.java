@@ -6,6 +6,8 @@ import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.badlogic.gdx.jnigen.AntScriptGenerator;
 import com.badlogic.gdx.jnigen.BuildConfig;
@@ -17,7 +19,8 @@ import com.badlogic.gdx.jnigen.NativeCodeGenerator;
  * @author Desu
  */
 public class JnigenTask extends DefaultTask {
-
+	private static final Logger log = LoggerFactory.getLogger(JnigenTask.class);
+	
 	JnigenExtension ext;
 
 	@Inject
@@ -30,14 +33,16 @@ public class JnigenTask extends DefaultTask {
 		if (ext.sharedLibName == null)
 			throw new RuntimeException("sharedLibName must be defined");
 
-		if (ext.debug) {
-			System.out.println("subProjectDir " + ext.subProjectDir);
-			System.out.println("sharedLibName " + ext.sharedLibName);
-			System.out.println("nativeCodeGeneratorConfig " + ext.nativeCodeGeneratorConfig);
-		}
+		log.debug("subProjectDir " + ext.subProjectDir);
+		log.debug("sharedLibName " + ext.sharedLibName);
+		log.debug("nativeCodeGeneratorConfig " + ext.nativeCodeGeneratorConfig);
 
 		try {
-			new NativeCodeGenerator().generate(ext.subProjectDir + ext.nativeCodeGeneratorConfig.sourceDir,
+			String absoluteSourceDir = ext.nativeCodeGeneratorConfig.sourceDir;
+			if(!absoluteSourceDir.startsWith(ext.subProjectDir))
+				absoluteSourceDir = ext.subProjectDir + ext.nativeCodeGeneratorConfig.sourceDir;
+			
+			new NativeCodeGenerator().generate(absoluteSourceDir,
 					ext.nativeCodeGeneratorConfig.classpath, ext.subProjectDir + ext.nativeCodeGeneratorConfig.jniDir,
 					ext.nativeCodeGeneratorConfig.includes, ext.nativeCodeGeneratorConfig.excludes);
 		} catch (Exception e) {

@@ -3,6 +3,7 @@ package com.badlogic.gdx.jnigen.gradle;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -12,6 +13,8 @@ import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.badlogic.gdx.jnigen.BuildTarget;
 import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
@@ -30,9 +33,9 @@ public class JnigenExtension {
 	public static final TargetOs Android = TargetOs.Android;
 	public static final TargetOs IOS = TargetOs.IOS;
 	
+	private static final Logger log = LoggerFactory.getLogger(JnigenExtension.class);
+	
 	private Project project;
-
-	boolean debug = false;
 
 	/**
 	 * Gradle Tasks are executed in the main project working directory. Supply
@@ -52,8 +55,8 @@ public class JnigenExtension {
 	@Inject
 	public JnigenExtension(Project project) {
 		this.project = project;
-		this.nativeCodeGeneratorConfig = new NativeCodeGeneratorConfig(project);
 		this.subProjectDir = project.getProjectDir().getAbsolutePath() + File.separator;
+		this.nativeCodeGeneratorConfig = new NativeCodeGeneratorConfig(project, subProjectDir);
 	}
 
 	public void nativeCodeGenerator(Action<NativeCodeGeneratorConfig> container) {
@@ -98,17 +101,25 @@ public class JnigenExtension {
 	}
 
 	class NativeCodeGeneratorConfig {
-		String sourceDir = "src/main/java";
+		String sourceDir;
 		String classpath;
 		String jniDir = "jni";
 		String[] includes = null;
 		String[] excludes = null;
 
-		public NativeCodeGeneratorConfig(Project project) {
+		public NativeCodeGeneratorConfig(Project project, String subProjectDir) {
 			JavaPluginConvention javaPlugin = project.getConvention().getPlugin(JavaPluginConvention.class);
 			SourceSetContainer sourceSets = javaPlugin.getSourceSets();
 			SourceSet main = sourceSets.findByName("main");
 			classpath = main.getRuntimeClasspath().getAsPath();
+
+			Set<File> javaSrcDirs = main.getJava().getSrcDirs();
+			for (File f : javaSrcDirs) {
+				sourceDir = f.getPath();
+			}
+
+			if (javaSrcDirs.size() > 1)
+				log.warn("Multiple java SrcDirs detected. Please manually specify sourceDir. We arbitrarily chose " + sourceDir);
 		}
 
 		@Override
