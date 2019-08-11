@@ -13,8 +13,6 @@ import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.badlogic.gdx.jnigen.BuildTarget;
 import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
@@ -32,8 +30,6 @@ public class JnigenExtension {
 	public static final TargetOs MacOsX = TargetOs.MacOsX;
 	public static final TargetOs Android = TargetOs.Android;
 	public static final TargetOs IOS = TargetOs.IOS;
-	
-	private static final Logger log = LoggerFactory.getLogger(JnigenExtension.class);
 	
 	private Project project;
 
@@ -102,10 +98,13 @@ public class JnigenExtension {
 			container.execute(target);
 
 		targets.add(target);
+		
+		if(isARM)
+			throw new RuntimeException("ARM not supported yet.");
 
 		Task jnigenTask = project.getTasks().getByName("jnigen");
 		Task jnigenBuildTask = project.getTasks().getByName("jnigenBuild");
-		Task builtTargetTask = project.getTasks().create("jnigenBuild" + type + (is64Bit ? "64" : ""),
+		Task builtTargetTask = project.getTasks().create("jnigenBuild" + type + (is64Bit ? "64" : "") + (isARM ? "ARM" : ""),
 				JnigenBuildTargetTask.class, this, target);
 		builtTargetTask.dependsOn(jnigenTask);
 
@@ -120,6 +119,11 @@ public class JnigenExtension {
 		String jniDir = "jni";
 		String[] includes = null;
 		String[] excludes = null;
+		
+		/**
+		 * If we detected multiple source dirs and should ask the user to manually define sourceDir.
+		 */
+		boolean multipleSourceSetDirs = false;
 
 		public NativeCodeGeneratorConfig(Project project, String subProjectDir) {
 			JavaPluginConvention javaPlugin = project.getConvention().getPlugin(JavaPluginConvention.class);
@@ -128,12 +132,13 @@ public class JnigenExtension {
 			classpath = main.getRuntimeClasspath().getAsPath();
 
 			Set<File> javaSrcDirs = main.getJava().getSrcDirs();
-			for (File f : javaSrcDirs) {
-				sourceDir = f.getPath();
+			if (javaSrcDirs.size() == 1) {
+				for (File srcDir : javaSrcDirs) {
+					sourceDir = srcDir.getPath();
+				}
+			} else {
+				multipleSourceSetDirs = true;
 			}
-
-			if (javaSrcDirs.size() > 1)
-				log.warn("Multiple java SrcDirs detected. Please manually specify sourceDir. We arbitrarily chose " + sourceDir);
 		}
 
 		@Override

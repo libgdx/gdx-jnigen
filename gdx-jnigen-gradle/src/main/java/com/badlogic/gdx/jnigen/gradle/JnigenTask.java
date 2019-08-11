@@ -30,14 +30,21 @@ public class JnigenTask extends DefaultTask {
 
 	@TaskAction
 	public void run() {
-		if (ext.sharedLibName == null)
+		if (ext.sharedLibName == null) {
+			log.error("sharedLibName must be defined");
 			throw new RuntimeException("sharedLibName must be defined");
+		}
 
 		log.debug("subProjectDir " + ext.subProjectDir);
 		log.debug("sharedLibName " + ext.sharedLibName);
 		log.debug("nativeCodeGeneratorConfig " + ext.nativeCodeGeneratorConfig);
 
 		try {
+			if (ext.nativeCodeGeneratorConfig.multipleSourceSetDirs && ext.nativeCodeGeneratorConfig.sourceDir == null) {
+				log.error("Multiple java SrcDirs detected. Please manually specify nativeCodeGenerator { sourceDir = \"\"}");
+				throw new RuntimeException( "Multiple java SrcDirs detected. Please manually specify nativeCodeGenerator { sourceDir = \"\"}");
+			}
+			
 			String absoluteSourceDir = ext.nativeCodeGeneratorConfig.sourceDir;
 			if(!absoluteSourceDir.startsWith(ext.subProjectDir))
 				absoluteSourceDir = ext.subProjectDir + ext.nativeCodeGeneratorConfig.sourceDir;
