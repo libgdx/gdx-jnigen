@@ -22,8 +22,8 @@ subprojects
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
-    group "com.badlogicgames.gdx.gdx-jnigen"
-    version "1.9.11"
+    group "com.badlogicgames.gdx"
+    version "2.0.0"
 
     publishing {
         repositories {

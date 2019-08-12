@@ -11,8 +11,7 @@ task sourcesJar(type: Jar) {
 publishing {
     publications {
         maven(MavenPublication) {
-            group "com.badlogicgames.gdx.gdx-jnigen"
-            artifactId = "com.badlogicgames.gdx.gdx-jnigen.gradle.plugin"
+            artifactId = "gdx-jnigen-gradle"
             from components.java
             artifact sourcesJar
         }
