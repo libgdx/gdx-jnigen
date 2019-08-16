@@ -63,6 +63,10 @@ public class BuildTarget {
 	public String libName;
 	/** If we require a macos host OS to build this target */ 
 	public boolean requireMacOSToBuild = false;
+	
+	/** List of ABIs we wish to build for Android. Defaults to all available in current NDK.
+	 * {@link "https://developer.android.com/ndk/guides/application_mk#app_abi"} **/
+	public String[] androidABIs = {"all"};
 
 	/** Creates a new build target. See members of this class for a description of the parameters. */
 	public BuildTarget (BuildTarget.TargetOs targetType, boolean is64Bit, String[] cIncludes, String[] cExcludes,
