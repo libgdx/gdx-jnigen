@@ -1,7 +1,5 @@
 package com.badlogic.gdx.jnigen.gradle;
 
-import java.io.File;
-
 import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
@@ -11,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import com.badlogic.gdx.jnigen.AntScriptGenerator;
 import com.badlogic.gdx.jnigen.BuildConfig;
-import com.badlogic.gdx.jnigen.BuildExecutor;
 import com.badlogic.gdx.jnigen.BuildTarget;
 import com.badlogic.gdx.jnigen.NativeCodeGenerator;
 
@@ -26,6 +23,9 @@ public class JnigenTask extends DefaultTask {
 	@Inject
 	public JnigenTask(JnigenExtension ext) {
 		this.ext = ext;
+
+		setGroup("jnigen");
+		setDescription("Generates jnigen native code files and build scripts.");
 	}
 
 	@TaskAction
@@ -59,36 +59,5 @@ public class JnigenTask extends DefaultTask {
 		BuildConfig buildConfig = new BuildConfig(ext.sharedLibName, ext.temporaryDir, ext.libsDir,
 				ext.subProjectDir + ext.jniDir);
 		new AntScriptGenerator().generate(buildConfig, ext.targets.toArray(new BuildTarget[0]));
-	}
-
-	static class JnigenBuildTask extends DefaultTask {
-		JnigenExtension ext;
-
-		@Inject
-		public JnigenBuildTask(JnigenExtension ext) {
-			this.ext = ext;
-		}
-
-		@TaskAction
-		public void run() {
-			BuildExecutor.executeAnt(new File(ext.subProjectDir + ext.jniDir, "build.xml").getPath(), "pack-natives");
-		}
-	}
-
-	static class JnigenBuildTargetTask extends DefaultTask {
-		JnigenExtension ext;
-		BuildTarget target;
-
-		@Inject
-		public JnigenBuildTargetTask(JnigenExtension ext, BuildTarget target) {
-			this.ext = ext;
-			this.target = target;
-		}
-
-		@TaskAction
-		public void run() {
-			BuildExecutor.executeAnt(new File(ext.subProjectDir + ext.jniDir, target.getBuildFilename()).getPath(),
-					"-Drelease=" + ext.release, "clean", "postcompile");
-		}
 	}
 }

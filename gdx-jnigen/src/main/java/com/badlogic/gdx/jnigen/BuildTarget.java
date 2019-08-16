@@ -141,6 +141,14 @@ public class BuildTarget {
 		return libPrefix + sharedLibName + libSuffix;
 	}
 
+	public String getTargetFolder () {
+		// Use specified osFileName if it is user provided
+		if (osFileName != null && !osFileName.isEmpty())
+			return osFileName;
+
+		return os.toString().toLowerCase() + (isARM ? "arm" : "") + (is64Bit ? "64" : "32");
+	}
+
 	/** Creates a new default BuildTarget for the given OS, using common default values. */
 	public static BuildTarget newDefaultTarget (BuildTarget.TargetOs type, boolean is64Bit) {
 		return newDefaultTarget(type, is64Bit, false);

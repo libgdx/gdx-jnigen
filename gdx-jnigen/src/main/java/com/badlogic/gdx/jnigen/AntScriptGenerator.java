@@ -160,10 +160,8 @@ public class AntScriptGenerator {
 		return "";
 	}
 
-	private String getLibsDirectory (BuildConfig config, BuildTarget target) {
-		String targetName = target.osFileName;
-		if (targetName == null) targetName = target.os.toString().toLowerCase() + (target.isARM ? "arm" : "") + (target.is64Bit ? "64" : "32");
-		return config.libsDir.child(targetName).path().replace('\\', '/');
+	public static String getLibsDirectory (BuildConfig config, BuildTarget target) {
+		return config.libsDir.child(target.getTargetFolder()).path().replace('\\', '/');
 	}
 
 	private String generateBuildTargetTemplate (BuildConfig config, BuildTarget target) {
@@ -217,12 +215,9 @@ public class AntScriptGenerator {
 			headerDirs.append("\t\t\t<arg value=\"-I" + headerDir + "\"/>\n");
 		}
 
-		String targetFolder = target.osFileName;
-		if (targetFolder == null) targetFolder = target.os.toString().toLowerCase() + (target.isARM ? "arm" : "") + (target.is64Bit ? "64" : "32");
-
 		// replace template vars with proper values
 		template = template.replace("%projectName%", config.sharedLibName + "-" + target.os + "-" + (target.isARM ? "arm" : "") + (target.is64Bit ? "64" : "32"));
-		template = template.replace("%buildDir%", config.buildDir.child(targetFolder).path().replace('\\', '/'));
+		template = template.replace("%buildDir%", config.buildDir.child(target.getTargetFolder()).path().replace('\\', '/'));
 		template = template.replace("%libsDir%", "../" + getLibsDirectory(config, target));
 		template = template.replace("%libName%", libName);
 		template = template.replace("%jniPlatform%", jniPlatform);

@@ -3,6 +3,7 @@ package com.badlogic.gdx.jnigen.gradle;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -16,7 +17,6 @@ import org.gradle.api.tasks.SourceSetContainer;
 
 import com.badlogic.gdx.jnigen.BuildTarget;
 import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
-import com.badlogic.gdx.jnigen.gradle.JnigenTask.JnigenBuildTargetTask;
 
 /**
  * @author Desu
@@ -53,6 +53,11 @@ public class JnigenExtension {
 	NativeCodeGeneratorConfig nativeCodeGeneratorConfig;
 	ArrayList<BuildTarget> targets = new ArrayList<BuildTarget>();
 	Action<BuildTarget> all = null;
+	
+	JnigenJarTask jarDesktopNatives = null;
+	Task jarAndroidNatives = null;
+	JnigenJarTask[] jarAndroidNativesABIs = null;
+	JnigenJarTask jarIOSNatives = null;
 
 	@Inject
 	public JnigenExtension(Project project) {
@@ -108,6 +113,46 @@ public class JnigenExtension {
 		if (!target.excludeFromMasterBuildFile
 				&& (!target.requireMacOSToBuild || System.getProperty("os.name").contains("Mac")))
 			jnigenBuildTask.dependsOn(builtTargetTask);
+		
+		
+		if(type == Android) {
+			if(jarAndroidNatives == null)
+			{
+				jarAndroidNatives = project.getTasks().create("jnigenJarNativesAndroid");
+				jarAndroidNatives.setGroup("jnigen");
+				jarAndroidNatives.setDescription("Assembles all jar archives containing the native libraries for Android.");
+			}
+			
+			String[] abis = target.androidABIs;
+			
+			// If we have an "all" abi, add tasks for all known abis.
+			if(Arrays.asList(abis).contains("all")) {
+				List<String> tmp = new ArrayList<>(Arrays.asList(abis));
+				tmp.remove("all");
+				tmp.add("armeabi");
+				tmp.add("armeabi-v7a");
+				tmp.add("x86");
+				tmp.add("x86_64");
+				tmp.add("arm64-v8a");
+				abis = tmp.toArray(new String[tmp.size()]);
+			}
+			
+			jarAndroidNativesABIs = new JnigenJarTask[abis.length];
+			for(int i = 0; i < abis.length; i++) {
+				jarAndroidNativesABIs[i] = project.getTasks().create("jnigenJarNativesAndroid"+abis[i], JnigenJarTask.class, type);
+				jarAndroidNativesABIs[i].add(target, this, abis[i]);
+				
+				jarAndroidNatives.dependsOn(jarAndroidNativesABIs[i]);
+			}
+		} else if(type == IOS) {
+			
+		}
+		else {
+			if(jarDesktopNatives == null)
+				jarDesktopNatives = project.getTasks().create("jnigenJarNativesDesktop", JnigenJarTask.class, type);
+			
+			jarDesktopNatives.add(target, this);
+		}
 	}
 
 	class NativeCodeGeneratorConfig {

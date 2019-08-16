@@ -3,8 +3,6 @@ package com.badlogic.gdx.jnigen.gradle;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
-import com.badlogic.gdx.jnigen.gradle.JnigenTask.JnigenBuildTask;
-
 /**
  * @author Desu
  */
