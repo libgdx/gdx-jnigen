@@ -91,8 +91,7 @@ public class AntScriptGenerator {
 				if (!libsDir.mkdirs()) throw new RuntimeException("Couldn't create libs directory '" + libsDir + "'");
 			}
 
-			String buildFileName = "build-" + target.os.toString().toLowerCase() + (target.is64Bit ? "64" : "32") + ".xml";
-			if (target.buildFileName != null) buildFileName = target.buildFileName;
+			String buildFileName = target.getBuildFilename();
 			config.jniDir.child(buildFileName).writeString(buildFile, false);
 			System.out.println("Wrote target '" + target.os + (target.is64Bit ? "64" : "") + "' build script '"
 				+ config.jniDir.child(buildFileName) + "'");
@@ -102,9 +101,7 @@ public class AntScriptGenerator {
 					buildFiles.add(buildFileName);
 				}
 
-				String sharedLibFilename = target.libName;
-				if (sharedLibFilename == null)
-					sharedLibFilename = getSharedLibFilename(target.os, target.is64Bit, config.sharedLibName);
+				String sharedLibFilename = target.getSharedLibFilename(config.sharedLibName);
 				
 				if (target.os != TargetOs.Android && target.os != TargetOs.IOS) {
 					sharedLibFiles.add(sharedLibFilename);
@@ -156,28 +153,6 @@ public class AntScriptGenerator {
 		}
 	}
 
-	private String getSharedLibFilename (TargetOs os, boolean is64Bit, String sharedLibName) {
-		// generate shared lib prefix and suffix, determine jni platform headers directory
-		String libPrefix = "";
-		String libSuffix = "";
-		if (os == TargetOs.Windows) {
-			libSuffix = (is64Bit ? "64" : "") + ".dll";
-		}
-		if (os == TargetOs.Linux || os == TargetOs.Android) {
-			libPrefix = "lib";
-			libSuffix = (is64Bit ? "64" : "") + ".so";
-		}
-		if (os == TargetOs.MacOsX) {
-			libPrefix = "lib";
-			libSuffix = (is64Bit ? "64" : "") + ".dylib";
-		}
-		if (os == TargetOs.IOS) {
-			libPrefix = "lib";
-			libSuffix = ".a";
-		}
-		return libPrefix + sharedLibName + libSuffix;
-	}
-
 	private String getJniPlatform (TargetOs os) {
 		if (os == TargetOs.Windows) return "win32";
 		if (os == TargetOs.Linux) return "linux";
@@ -213,8 +188,7 @@ public class AntScriptGenerator {
 		}
 
 		// generate shared lib filename and jni platform headers directory name
-		String libName = target.libName;
-		if (libName == null) libName = getSharedLibFilename(target.os, target.is64Bit, config.sharedLibName);
+		String libName = target.getSharedLibFilename(config.sharedLibName);
 		String jniPlatform = getJniPlatform(target.os);
 
 		// generate include and exclude fileset Ant description for C/C++

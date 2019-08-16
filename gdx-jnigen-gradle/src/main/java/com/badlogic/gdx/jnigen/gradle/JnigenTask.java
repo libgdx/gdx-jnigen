@@ -87,12 +87,7 @@ public class JnigenTask extends DefaultTask {
 
 		@TaskAction
 		public void run() {
-			// TODO: Deduplicate the buildFileName defaults
-			String buildFileName = "build-" + target.os.toString().toLowerCase() + (target.is64Bit ? "64" : "32")
-					+ ".xml";
-			if (target.buildFileName != null)
-				buildFileName = target.buildFileName;
-			BuildExecutor.executeAnt(new File(ext.subProjectDir + ext.jniDir, buildFileName).getPath(),
+			BuildExecutor.executeAnt(new File(ext.subProjectDir + ext.jniDir, target.getBuildFilename()).getPath(),
 					"-Drelease=" + ext.release, "clean", "postcompile");
 		}
 	}

@@ -101,6 +101,40 @@ public class BuildTarget {
 		this.libraries = "";
 	}
 
+	public String getBuildFilename () {
+		// Use specified buildFileName if it is user provided
+		if (buildFileName != null && !buildFileName.isEmpty())
+			return buildFileName;
+
+		return "build-" + os.toString().toLowerCase() + (is64Bit ? "64" : "32") + ".xml";
+	}
+
+	public String getSharedLibFilename (String sharedLibName) {
+		// Use specified libName if it is user provided
+		if (libName != null && !libName.isEmpty())
+			return libName;
+
+		// generate shared lib prefix and suffix, determine jni platform headers directory
+		String libPrefix = "";
+		String libSuffix = "";
+		if (os == TargetOs.Windows) {
+			libSuffix = (is64Bit ? "64" : "") + ".dll";
+		}
+		if (os == TargetOs.Linux || os == TargetOs.Android) {
+			libPrefix = "lib";
+			libSuffix = (is64Bit ? "64" : "") + ".so";
+		}
+		if (os == TargetOs.MacOsX) {
+			libPrefix = "lib";
+			libSuffix = (is64Bit ? "64" : "") + ".dylib";
+		}
+		if (os == TargetOs.IOS) {
+			libPrefix = "lib";
+			libSuffix = ".a";
+		}
+		return libPrefix + sharedLibName + libSuffix;
+	}
+
 	/** Creates a new default BuildTarget for the given OS, using common default values. */
 	public static BuildTarget newDefaultTarget (BuildTarget.TargetOs type, boolean is64Bit) {
 		if (type == TargetOs.Windows && !is64Bit) {
