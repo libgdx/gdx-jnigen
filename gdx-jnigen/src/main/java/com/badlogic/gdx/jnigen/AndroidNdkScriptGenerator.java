@@ -60,6 +60,8 @@ public class AndroidNdkScriptGenerator {
 			FileType.Classpath).readString();
 
 		template = template.replace("%androidABIs%", String.join(" ", target.androidABIs));
+		for(String extra : target.androidApplicationMk)
+			template += "\n" + extra;
 
 		config.jniDir.child("Application.mk").writeString(template, false);
 
@@ -89,6 +91,8 @@ public class AndroidNdkScriptGenerator {
 		template = template.replace("%cppFlags%", target.cppFlags);
 		template = template.replace("%linkerFlags%", target.linkerFlags);
 		template = template.replace("%srcFiles%", srcFiles);
+		for(String extra : target.androidAndroidMk)
+			template += "\n" + extra;
 
 		config.jniDir.child("Android.mk").writeString(template, false);
 	}

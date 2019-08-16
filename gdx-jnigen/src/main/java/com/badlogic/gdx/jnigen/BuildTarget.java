@@ -67,6 +67,10 @@ public class BuildTarget {
 	/** List of ABIs we wish to build for Android. Defaults to all available in current NDK.
 	 * {@link "https://developer.android.com/ndk/guides/application_mk#app_abi"} **/
 	public String[] androidABIs = {"all"};
+	/** Extra lines which will be added to Android's Android.mk */
+	public String[] androidAndroidMk = {};
+	/** Extra lines which will be added to Android's Application.mk */
+	public String[] androidApplicationMk = {};
 
 	/** Creates a new build target. See members of this class for a description of the parameters. */
 	public BuildTarget (BuildTarget.TargetOs targetType, boolean is64Bit, String[] cIncludes, String[] cExcludes,
