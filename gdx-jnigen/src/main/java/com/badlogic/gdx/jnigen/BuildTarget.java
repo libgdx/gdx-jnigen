@@ -28,6 +28,8 @@ public class BuildTarget {
 	public BuildTarget.TargetOs os;
 	/** whether this is a 64-bit build, not used for Android **/
 	public boolean is64Bit;
+	/** whether this is an ARM build, not used for Android **/
+	public boolean isARM;
 	/** the C files and directories to be included in the build, accepts Ant path format, must not be null **/
 	public String[] cIncludes;
 	/** the C files and directories to be excluded from the build, accepts Ant path format, must not be null **/
@@ -110,7 +112,7 @@ public class BuildTarget {
 		if (buildFileName != null && !buildFileName.isEmpty())
 			return buildFileName;
 
-		return "build-" + os.toString().toLowerCase() + (is64Bit ? "64" : "32") + ".xml";
+		return "build-" + os.toString().toLowerCase() + (isARM ? "arm" : "") + (is64Bit ? "64" : "32") + ".xml";
 	}
 
 	public String getSharedLibFilename (String sharedLibName) {
@@ -126,7 +128,7 @@ public class BuildTarget {
 		}
 		if (os == TargetOs.Linux || os == TargetOs.Android) {
 			libPrefix = "lib";
-			libSuffix = (is64Bit ? "64" : "") + ".so";
+			libSuffix = (isARM ? "arm" : "") + (is64Bit ? "64" : "") + ".so";
 		}
 		if (os == TargetOs.MacOsX) {
 			libPrefix = "lib";
@@ -141,6 +143,11 @@ public class BuildTarget {
 
 	/** Creates a new default BuildTarget for the given OS, using common default values. */
 	public static BuildTarget newDefaultTarget (BuildTarget.TargetOs type, boolean is64Bit) {
+		return newDefaultTarget(type, is64Bit, false);
+	}
+
+	/** Creates a new default BuildTarget for the given OS, using common default values. */
+	public static BuildTarget newDefaultTarget (BuildTarget.TargetOs type, boolean is64Bit, boolean isARM) {
 		if (type == TargetOs.Windows && !is64Bit) {
 			// Windows 32-Bit
 			return new BuildTarget(TargetOs.Windows, false, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
@@ -155,6 +162,24 @@ public class BuildTarget {
 				new String[0], new String[0], "x86_64-w64-mingw32-", "-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m64",
 				"-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m64",
 				"-Wl,--kill-at -shared -static -static-libgcc -static-libstdc++ -m64");
+		}
+		
+		if (type == TargetOs.Linux && isARM && !is64Bit) {
+			// Linux ARM 32-Bit hardfloat
+			BuildTarget target = new BuildTarget(TargetOs.Linux, false, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
+				new String[0], new String[0], "arm-linux-gnueabihf-", "-c -Wall -O2 -fmessage-length=0 -fPIC",
+				"-c -Wall -O2 -fmessage-length=0 -fPIC", "-shared");
+			target.isARM = true;
+			return target;
+		}
+
+		if (type == TargetOs.Linux && isARM && is64Bit) {
+			// Linux ARM 64-Bit
+			BuildTarget target = new BuildTarget(TargetOs.Linux, true, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
+				new String[0], new String[0], "aarch64-linux-gnu-", "-c -Wall -O2 -fmessage-length=0 -fPIC",
+				"-c -Wall -O2 -fmessage-length=0 -fPIC", "-shared");
+			target.isARM = true;
+			return target;
 		}
 
 		if (type == TargetOs.Linux && !is64Bit) {

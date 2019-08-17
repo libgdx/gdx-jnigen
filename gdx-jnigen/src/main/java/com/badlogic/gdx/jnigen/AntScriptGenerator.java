@@ -42,7 +42,7 @@ import com.badlogic.gdx.jnigen.FileDescriptor.FileType;
  * BuildConfig config = new BuildConfig("mysharedlibrary");
  * 
  * new AntScriptGenerator().generate(config, win32, win64, linux32, linux64, mac, android);
- * BuildExecutor.executeAnt("jni/build.xml", "clean all -v");
+ * BuildExecutor.executeAnt("jni/build.xml", "clean", "all", "-v");
  * 
  * // assuming the natives jar is on the classpath of the application 
  * new SharedLibraryLoader().load("mysharedlibrary)
@@ -93,7 +93,7 @@ public class AntScriptGenerator {
 
 			String buildFileName = target.getBuildFilename();
 			config.jniDir.child(buildFileName).writeString(buildFile, false);
-			System.out.println("Wrote target '" + target.os + (target.is64Bit ? "64" : "") + "' build script '"
+			System.out.println("Wrote target '" + target.os + (target.isARM ? "arm" : "") + (target.is64Bit ? "64" : "") + "' build script '"
 				+ config.jniDir.child(buildFileName) + "'");
 
 			if (!target.excludeFromMasterBuildFile) {
@@ -162,7 +162,7 @@ public class AntScriptGenerator {
 
 	private String getLibsDirectory (BuildConfig config, BuildTarget target) {
 		String targetName = target.osFileName;
-		if (targetName == null) targetName = target.os.toString().toLowerCase() + (target.is64Bit ? "64" : "32");
+		if (targetName == null) targetName = target.os.toString().toLowerCase() + (target.isARM ? "arm" : "") + (target.is64Bit ? "64" : "32");
 		return config.libsDir.child(targetName).path().replace('\\', '/');
 	}
 
@@ -218,10 +218,10 @@ public class AntScriptGenerator {
 		}
 
 		String targetFolder = target.osFileName;
-		if (targetFolder == null) targetFolder = target.os.toString().toLowerCase() + (target.is64Bit ? "64" : "32");
+		if (targetFolder == null) targetFolder = target.os.toString().toLowerCase() + (target.isARM ? "arm" : "") + (target.is64Bit ? "64" : "32");
 
 		// replace template vars with proper values
-		template = template.replace("%projectName%", config.sharedLibName + "-" + target.os + "-" + (target.is64Bit ? "64" : "32"));
+		template = template.replace("%projectName%", config.sharedLibName + "-" + target.os + "-" + (target.isARM ? "arm" : "") + (target.is64Bit ? "64" : "32"));
 		template = template.replace("%buildDir%", config.buildDir.child(targetFolder).path().replace('\\', '/'));
 		template = template.replace("%libsDir%", "../" + getLibsDirectory(config, target));
 		template = template.replace("%libName%", libName);

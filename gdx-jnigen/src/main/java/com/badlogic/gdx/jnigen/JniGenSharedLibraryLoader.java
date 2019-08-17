@@ -162,8 +162,8 @@ public class JniGenSharedLibraryLoader {
 		boolean isLinux = System.getProperty("os.name").contains("Linux");
 		boolean isMac = System.getProperty("os.name").contains("Mac");
 		boolean isAndroid = false;
-		boolean is64Bit = System.getProperty("os.arch").equals("amd64") || System.getProperty("os.arch").equals("x86_64");
-		boolean isArm = System.getProperty("os.arch").equals("arm");
+		boolean is64Bit = System.getProperty("os.arch").contains("64") || System.getProperty("os.arch").startsWith("armv8");
+		boolean isARM = System.getProperty("os.arch").equals("arm") || System.getProperty("os.arch").startsWith("aarch64");
 
 		String vm = System.getProperty("java.vm.name");
 		if (vm != null && vm.contains("Dalvik")) {
@@ -185,15 +185,15 @@ public class JniGenSharedLibraryLoader {
 		}
 		if (isLinux) {
 			if (libraryFinder != null)
-				loaded = loadLibrary(libraryFinder.getSharedLibraryNameLinux(sharedLibName, is64Bit, isArm, nativesZip));
+				loaded = loadLibrary(libraryFinder.getSharedLibraryNameLinux(sharedLibName, is64Bit, isARM, nativesZip));
 			else if (!is64Bit) {
-				if (isArm)
-					loaded = loadLibrary("lib" + sharedLibName + "Arm.so");
+				if (isARM)
+					loaded = loadLibrary("lib" + sharedLibName + "arm.so");
 				else
 					loaded = loadLibrary("lib" + sharedLibName + ".so");
 			} else {
-				if (isArm)
-					loaded = loadLibrary("lib" + sharedLibName + "Arm64.so");
+				if (isARM)
+					loaded = loadLibrary("lib" + sharedLibName + "arm64.so");
 				else
 					loaded = loadLibrary("lib" + sharedLibName + "64.so");
 			}

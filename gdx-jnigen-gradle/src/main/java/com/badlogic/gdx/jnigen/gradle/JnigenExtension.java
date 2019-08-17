@@ -90,7 +90,7 @@ public class JnigenExtension {
 	}
 
 	public void add(TargetOs type, boolean is64Bit, boolean isARM, Action<BuildTarget> container) {
-		BuildTarget target = BuildTarget.newDefaultTarget(type, is64Bit);
+		BuildTarget target = BuildTarget.newDefaultTarget(type, is64Bit, isARM);
 
 		if (all != null)
 			all.execute(target);
@@ -98,13 +98,10 @@ public class JnigenExtension {
 			container.execute(target);
 
 		targets.add(target);
-		
-		if(isARM)
-			throw new RuntimeException("ARM not supported yet.");
 
 		Task jnigenTask = project.getTasks().getByName("jnigen");
 		Task jnigenBuildTask = project.getTasks().getByName("jnigenBuild");
-		Task builtTargetTask = project.getTasks().create("jnigenBuild" + type + (is64Bit ? "64" : "") + (isARM ? "ARM" : ""),
+		Task builtTargetTask = project.getTasks().create("jnigenBuild" + type + (isARM ? "ARM" : "") + (is64Bit ? "64" : ""),
 				JnigenBuildTargetTask.class, this, target);
 		builtTargetTask.dependsOn(jnigenTask);
 
