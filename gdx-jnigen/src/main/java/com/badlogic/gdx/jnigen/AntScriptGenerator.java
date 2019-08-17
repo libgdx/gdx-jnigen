@@ -27,7 +27,7 @@ import com.badlogic.gdx.jnigen.FileDescriptor.FileType;
  * platform. A master build script is generated that will execute the build scripts for each platform and bundles their shared
  * libraries into a Jar file containing all shared libraries for all desktop platform targets, and armeabi/ and armeabi-v7a/
  * folders containing the shard libraries for Android. The scripts can be executed from the command line or via the
- * {@link BuildExecutor}. The resulting shared libraries can be loaded with the {@link JniGenSharedLibraryLoader} which will load
+ * {@link BuildExecutor}. The resulting shared libraries can be loaded with the SharedLibraryLoader which will load
  * the correct shared library from the natives jar/arm folders based on the platform the application is running on</p>
  * 
  * A common use case looks like this:
