@@ -29,6 +29,6 @@ public class JnigenBuildTargetTask extends DefaultTask {
 	@TaskAction
 	public void run() {
 		BuildExecutor.executeAnt(new File(ext.subProjectDir + ext.jniDir, target.getBuildFilename()).getPath(),
-				"-Drelease=" + ext.release, "clean", "postcompile");
+				"-Drelease=" + ext.release, "clean", "postcompile", "-v");
 	}
 }

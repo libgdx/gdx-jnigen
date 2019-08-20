@@ -205,7 +205,7 @@ public class BuildTarget {
 		}
 
 		if (type == TargetOs.MacOsX && !is64Bit) {
-			throw new RuntimeException("MacOsX i386 has is deprecated.");
+			throw new RuntimeException("MacOsX i386 is deprecated.");
 		}
 		
 		if (type == TargetOs.MacOsX && is64Bit) {

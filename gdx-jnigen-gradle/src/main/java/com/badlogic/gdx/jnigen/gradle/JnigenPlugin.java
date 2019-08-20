@@ -11,7 +11,9 @@ public class JnigenPlugin implements Plugin<Project> {
 	public void apply(Project project) {
 		JnigenExtension ext = project.getExtensions().create("jnigen", JnigenExtension.class, project);
 
-		project.getTasks().create("jnigen", JnigenTask.class, ext);
+		JnigenTask jnigen = project.getTasks().create("jnigen", JnigenTask.class, ext);
+		jnigen.dependsOn(project.getTasks().getByName("classes"));
+
 		project.getTasks().create("jnigenBuild", JnigenBuildTask.class, ext);
 	}
 }

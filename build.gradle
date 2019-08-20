@@ -23,7 +23,7 @@ subprojects
     targetCompatibility = 1.8
 
     group "com.badlogicgames.gdx"
-    version "2.0.0"
+    version "2.0.0-SNAPSHOT"
 
     publishing {
         repositories {
