@@ -16,8 +16,8 @@
 
 package com.badlogic.gdx.jnigen;
 
-/** Defines the configuration for building a native shared library for a specific platform. Used with {@link AntScriptGenerator} to
- * create Ant build files that invoke the compiler toolchain to create the shared libraries. */
+/** Defines the configuration for building a native shared library for a specific platform. Used with {@link AntScriptGenerator}
+ * to create Ant build files that invoke the compiler toolchain to create the shared libraries. */
 public class BuildTarget {
 	/** The target operating system of a build target. */
 	public enum TargetOs {
@@ -64,8 +64,8 @@ public class BuildTarget {
 	public String libraries;
 	/** The name used for folders for this specific target. Defaults to "${target}(64)" **/
 	public String osFileName;
-	/** The name used for the library file. This is a full file name, including file extension. Default is platform specific.
-	 *  E.g. "lib{sharedLibName}64.so" **/
+	/** The name used for the library file. This is a full file name, including file extension. Default is platform specific. E.g.
+	 * "lib{sharedLibName}64.so" **/
 	public String libName;
 	/** If we require a macos host OS to build this target */ 
 	public boolean requireMacOSToBuild = false;
@@ -160,7 +160,7 @@ public class BuildTarget {
 			// Windows 32-Bit
 			return new BuildTarget(TargetOs.Windows, false, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
 				new String[0], new String[0], "i686-w64-mingw32-", "-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m32",
-				"-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m32", 
+				"-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m32",
 				"-Wl,--kill-at -shared -m32 -static -static-libgcc -static-libstdc++");
 		}
 
@@ -205,16 +205,16 @@ public class BuildTarget {
 		}
 
 		if (type == TargetOs.MacOsX && !is64Bit) {
-			throw new RuntimeException("MacOsX i386 is deprecated.");
+			throw new RuntimeException("macOS 32-bit not supported");
 		}
 		
 		if (type == TargetOs.MacOsX && is64Bit) {
 			// Mac OS X x86 & x86_64
 			BuildTarget mac = new BuildTarget(TargetOs.MacOsX, true, new String[] {"**/*.c"}, new String[0],
 				new String[] {"**/*.cpp"}, new String[0], new String[0], "",
-				"-c -Wall -O2 -arch x86_64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.9",
-				"-c -Wall -O2 -arch x86_64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.9",
-				"-shared -arch x86_64 -mmacosx-version-min=10.9 -stdlib=libc++");
+				"-c -Wall -O2 -arch x86_64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.7 -stdlib=libc++",
+				"-c -Wall -O2 -arch x86_64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.7 -stdlib=libc++",
+				"-shared -arch x86_64 -mmacosx-version-min=10.7 -stdlib=libc++");
 			mac.requireMacOSToBuild = true;
 			return mac;
 		}
@@ -228,11 +228,8 @@ public class BuildTarget {
 		
 		if(type == TargetOs.IOS) {
 			// iOS, 386 simulator and armv7a, compiled to fat static lib
-			BuildTarget ios = new BuildTarget(TargetOs.IOS, false, new String[] {"**/*.c"}, new String[0],
-				new String[] {"**/*.cpp"}, new String[0], new String[0], "",
-				"-c -Wall -O2",
-				"-c -Wall -O2",
-				"rcs");
+			BuildTarget ios = new BuildTarget(TargetOs.IOS, false, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
+					new String[0], new String[0], "", "-c -Wall -O2", "-c -Wall -O2", "rcs");
 			ios.requireMacOSToBuild = true;
 			return ios;
 		}
