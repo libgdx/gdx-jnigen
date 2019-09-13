@@ -50,3 +50,9 @@ gradle-app.setting
 
 *.iml
 /.idea/
+
+# Eclipse
+.project
+.classpath
+.settings
+bin

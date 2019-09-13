@@ -1,11 +1,37 @@
 buildscript {
     repositories {
-        jcenter()
+        mavenLocal()
+        mavenCentral()
     }
 }
 
 allprojects {
     repositories {
-        jcenter()
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+subprojects
+{
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    group "com.badlogicgames.gdx"
+    version "2.0.0-SNAPSHOT"
+
+    publishing {
+        repositories {
+            maven {
+                def releasesRepoUrl = "$rootDir/build/repos/releases"
+                def snapshotsRepoUrl = "$rootDir/build/repos/snapshots"
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            }
+        }
     }
 }

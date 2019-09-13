@@ -16,8 +16,8 @@
 
 package com.badlogic.gdx.jnigen;
 
-/** Defines the configuration for building a native shared library for a specific platform. Used with {@link AntScriptGenerator} to
- * create Ant build files that invoke the compiler toolchain to create the shared libraries. */
+/** Defines the configuration for building a native shared library for a specific platform. Used with {@link AntScriptGenerator}
+ * to create Ant build files that invoke the compiler toolchain to create the shared libraries. */
 public class BuildTarget {
 	/** The target operating system of a build target. */
 	public enum TargetOs {
@@ -28,6 +28,8 @@ public class BuildTarget {
 	public BuildTarget.TargetOs os;
 	/** whether this is a 64-bit build, not used for Android **/
 	public boolean is64Bit;
+	/** whether this is an ARM build, not used for Android **/
+	public boolean isARM;
 	/** the C files and directories to be included in the build, accepts Ant path format, must not be null **/
 	public String[] cIncludes;
 	/** the C files and directories to be excluded from the build, accepts Ant path format, must not be null **/
@@ -38,6 +40,10 @@ public class BuildTarget {
 	public String[] cppExcludes;
 	/** the directories containing headers for the build, must not be null **/
 	public String[] headerDirs;
+	/** the compiler to use when compiling c files. Usually gcc or clang, must not be null */
+	public String cCompiler = "gcc";
+	/** the compiler to use when compiling c++ files. Usually g++ or clang++, must not be null */
+	public String cppCompiler = "g++";
 	/** prefix for the compiler (g++, gcc), useful for cross compilation, must not be null **/
 	public String compilerPrefix;
 	/** the flags passed to the C compiler, must not be null **/
@@ -58,9 +64,19 @@ public class BuildTarget {
 	public String libraries;
 	/** The name used for folders for this specific target. Defaults to "${target}(64)" **/
 	public String osFileName;
-	/** The name used for the library file. This is a full file name, including file extension. Default is platform specific.
-	 *  E.g. "lib{sharedLibName}64.so" **/
-	public String libName; 
+	/** The name used for the library file. This is a full file name, including file extension. Default is platform specific. E.g.
+	 * "lib{sharedLibName}64.so" **/
+	public String libName;
+	/** If we require a macos host OS to build this target */ 
+	public boolean requireMacOSToBuild = false;
+	
+	/** List of ABIs we wish to build for Android. Defaults to all available in current NDK.
+	 * {@link "https://developer.android.com/ndk/guides/application_mk#app_abi"} **/
+	public String[] androidABIs = {"all"};
+	/** Extra lines which will be added to Android's Android.mk */
+	public String[] androidAndroidMk = {};
+	/** Extra lines which will be added to Android's Application.mk */
+	public String[] androidApplicationMk = {};
 
 	/** Creates a new build target. See members of this class for a description of the parameters. */
 	public BuildTarget (BuildTarget.TargetOs targetType, boolean is64Bit, String[] cIncludes, String[] cExcludes,
@@ -91,13 +107,60 @@ public class BuildTarget {
 		this.libraries = "";
 	}
 
+	public String getBuildFilename () {
+		// Use specified buildFileName if it is user provided
+		if (buildFileName != null && !buildFileName.isEmpty())
+			return buildFileName;
+
+		return "build-" + os.toString().toLowerCase() + (isARM ? "arm" : "") + (is64Bit ? "64" : "32") + ".xml";
+	}
+
+	public String getSharedLibFilename (String sharedLibName) {
+		// Use specified libName if it is user provided
+		if (libName != null && !libName.isEmpty())
+			return libName;
+
+		// generate shared lib prefix and suffix, determine jni platform headers directory
+		String libPrefix = "";
+		String libSuffix = "";
+		if (os == TargetOs.Windows) {
+			libSuffix = (is64Bit ? "64" : "") + ".dll";
+		}
+		if (os == TargetOs.Linux || os == TargetOs.Android) {
+			libPrefix = "lib";
+			libSuffix = (isARM ? "arm" : "") + (is64Bit ? "64" : "") + ".so";
+		}
+		if (os == TargetOs.MacOsX) {
+			libPrefix = "lib";
+			libSuffix = (is64Bit ? "64" : "") + ".dylib";
+		}
+		if (os == TargetOs.IOS) {
+			libPrefix = "lib";
+			libSuffix = ".a";
+		}
+		return libPrefix + sharedLibName + libSuffix;
+	}
+
+	public String getTargetFolder () {
+		// Use specified osFileName if it is user provided
+		if (osFileName != null && !osFileName.isEmpty())
+			return osFileName;
+
+		return os.toString().toLowerCase() + (isARM ? "arm" : "") + (is64Bit ? "64" : "32");
+	}
+
 	/** Creates a new default BuildTarget for the given OS, using common default values. */
 	public static BuildTarget newDefaultTarget (BuildTarget.TargetOs type, boolean is64Bit) {
+		return newDefaultTarget(type, is64Bit, false);
+	}
+
+	/** Creates a new default BuildTarget for the given OS, using common default values. */
+	public static BuildTarget newDefaultTarget (BuildTarget.TargetOs type, boolean is64Bit, boolean isARM) {
 		if (type == TargetOs.Windows && !is64Bit) {
 			// Windows 32-Bit
 			return new BuildTarget(TargetOs.Windows, false, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
 				new String[0], new String[0], "i686-w64-mingw32-", "-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m32",
-				"-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m32", 
+				"-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m32",
 				"-Wl,--kill-at -shared -m32 -static -static-libgcc -static-libstdc++");
 		}
 
@@ -107,6 +170,24 @@ public class BuildTarget {
 				new String[0], new String[0], "x86_64-w64-mingw32-", "-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m64",
 				"-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m64",
 				"-Wl,--kill-at -shared -static -static-libgcc -static-libstdc++ -m64");
+		}
+		
+		if (type == TargetOs.Linux && isARM && !is64Bit) {
+			// Linux ARM 32-Bit hardfloat
+			BuildTarget target = new BuildTarget(TargetOs.Linux, false, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
+				new String[0], new String[0], "arm-linux-gnueabihf-", "-c -Wall -O2 -fmessage-length=0 -fPIC",
+				"-c -Wall -O2 -fmessage-length=0 -fPIC", "-shared");
+			target.isARM = true;
+			return target;
+		}
+
+		if (type == TargetOs.Linux && isARM && is64Bit) {
+			// Linux ARM 64-Bit
+			BuildTarget target = new BuildTarget(TargetOs.Linux, true, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
+				new String[0], new String[0], "aarch64-linux-gnu-", "-c -Wall -O2 -fmessage-length=0 -fPIC",
+				"-c -Wall -O2 -fmessage-length=0 -fPIC", "-shared");
+			target.isARM = true;
+			return target;
 		}
 
 		if (type == TargetOs.Linux && !is64Bit) {
@@ -124,22 +205,17 @@ public class BuildTarget {
 		}
 
 		if (type == TargetOs.MacOsX && !is64Bit) {
-			// Mac OS X x86 & x86_64
-			BuildTarget mac = new BuildTarget(TargetOs.MacOsX, false, new String[] {"**/*.c"}, new String[0],
-				new String[] {"**/*.cpp"}, new String[0], new String[0], "",
-				"-c -Wall -O2 -arch i386 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.9",
-				"-c -Wall -O2 -arch i386 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.9",
-				"-shared -arch i386 -mmacosx-version-min=10.9 -stdlib=libc++");
-			return mac;
+			throw new RuntimeException("macOS 32-bit not supported");
 		}
 		
 		if (type == TargetOs.MacOsX && is64Bit) {
 			// Mac OS X x86 & x86_64
 			BuildTarget mac = new BuildTarget(TargetOs.MacOsX, true, new String[] {"**/*.c"}, new String[0],
 				new String[] {"**/*.cpp"}, new String[0], new String[0], "",
-				"-c -Wall -O2 -arch x86_64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.9",
-				"-c -Wall -O2 -arch x86_64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.9",
-				"-shared -arch x86_64 -mmacosx-version-min=10.9 -stdlib=libc++");
+				"-c -Wall -O2 -arch x86_64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.7 -stdlib=libc++",
+				"-c -Wall -O2 -arch x86_64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.7 -stdlib=libc++",
+				"-shared -arch x86_64 -mmacosx-version-min=10.7 -stdlib=libc++");
+			mac.requireMacOSToBuild = true;
 			return mac;
 		}
 
@@ -152,11 +228,9 @@ public class BuildTarget {
 		
 		if(type == TargetOs.IOS) {
 			// iOS, 386 simulator and armv7a, compiled to fat static lib
-			BuildTarget ios = new BuildTarget(TargetOs.IOS, false, new String[] {"**/*.c"}, new String[0],
-				new String[] {"**/*.cpp"}, new String[0], new String[0], "",
-				"-c -Wall -O2",
-				"-c -Wall -O2",
-				"rcs");
+			BuildTarget ios = new BuildTarget(TargetOs.IOS, false, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
+					new String[0], new String[0], "", "-c -Wall -O2", "-c -Wall -O2", "rcs");
+			ios.requireMacOSToBuild = true;
 			return ios;
 		}
 

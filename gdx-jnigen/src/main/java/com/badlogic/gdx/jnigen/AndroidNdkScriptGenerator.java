@@ -50,17 +50,23 @@ public class AndroidNdkScriptGenerator {
 			excludes[idx++] = config.jniDir + "/" + exclude;
 		for (String exclude : target.cppExcludes)
 			excludes[idx++] = config.jniDir + "/" + exclude;
-		excludes[idx] = "**/target/*";
+		//Include jniDir since ** does not match absolute files that start with /
+		excludes[idx] = config.jniDir + "/**/target/*";
 
 		gatherSourceFiles(config.jniDir, includes, excludes, files);
 
 		// create Application.mk file
-		FileDescriptor application = config.jniDir.child("Application.mk");
-		application.writeString(new FileDescriptor("com/badlogic/gdx/jnigen/resources/scripts/Application.mk.template",
-			FileType.Classpath).readString(), false);
+		String template = new FileDescriptor("com/badlogic/gdx/jnigen/resources/scripts/Application.mk.template",
+			FileType.Classpath).readString();
+
+		template = template.replace("%androidABIs%", String.join(" ", target.androidABIs));
+		for(String extra : target.androidApplicationMk)
+			template += "\n" + extra;
+
+		config.jniDir.child("Application.mk").writeString(template, false);
 
 		// create Android.mk file
-		String template = new FileDescriptor("com/badlogic/gdx/jnigen/resources/scripts/Android.mk.template", FileType.Classpath)
+		template = new FileDescriptor("com/badlogic/gdx/jnigen/resources/scripts/Android.mk.template", FileType.Classpath)
 			.readString();
 
 		StringBuilder srcFiles = new StringBuilder();
@@ -85,6 +91,8 @@ public class AndroidNdkScriptGenerator {
 		template = template.replace("%cppFlags%", target.cppFlags);
 		template = template.replace("%linkerFlags%", target.linkerFlags);
 		template = template.replace("%srcFiles%", srcFiles);
+		for(String extra : target.androidAndroidMk)
+			template += "\n" + extra;
 
 		config.jniDir.child("Android.mk").writeString(template, false);
 	}

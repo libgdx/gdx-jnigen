@@ -1,12 +1,6 @@
 dependencies {
-    implementation "com.github.javaparser:javaparser-core:2.3.0"
-    testImplementation "junit:junit:4.12"
-}
-
-eclipse {
-    project {
-        name = "gdx-jnigen"
-    }
+    implementation project(":gdx-jnigen")
+    implementation gradleApi()
 }
 
 task sourcesJar(type: Jar) {
@@ -17,6 +11,7 @@ task sourcesJar(type: Jar) {
 publishing {
     publications {
         maven(MavenPublication) {
+            artifactId = "gdx-jnigen-gradle"
             from components.java
             artifact sourcesJar
         }
