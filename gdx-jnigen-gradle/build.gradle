@@ -2,18 +2,3 @@ dependencies {
     implementation project(":gdx-jnigen")
     implementation gradleApi()
 }
-
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allJava
-    archiveClassifier = 'sources'
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            artifactId = "gdx-jnigen-gradle"
-            from components.java
-            artifact sourcesJar
-        }
-    }
-}
