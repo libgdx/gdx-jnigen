@@ -3,8 +3,9 @@ package com.badlogic.gdx.jnigen;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.badlogic.gdx.utils.SharedLibraryLoader;
+
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -42,7 +43,7 @@ public class JniGenTest {
         BuildExecutor.executeAnt("build/generated/jni/build.xml", "-v", "pack-natives");
 
         // load the test-natives.jar and from it the shared library, then execute the test.
-        new JniGenSharedLibraryLoader("build/libs/test-natives.jar").load("test");
+        new SharedLibraryLoader("build/libs/test-natives.jar").load("test");
     }
 
     @Test

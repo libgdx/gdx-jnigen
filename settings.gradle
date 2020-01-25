@@ -1,2 +1,3 @@
 include ':gdx-jnigen'
 include ':gdx-jnigen-gradle'
+include ':gdx-jnigen-loader'

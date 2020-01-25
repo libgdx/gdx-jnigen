@@ -166,7 +166,7 @@ import com.badlogic.gdx.jnigen.parsing.RobustJavaMethodParser;
  * </pre>
  * 
  * To automatically compile and load the native code, see the classes {@link AntScriptGenerator}, {@link BuildExecutor} and
- * {@link JniGenSharedLibraryLoader} classes. </p>
+ * SharedLibraryLoader classes. </p>
  * 
  * @author mzechner */
 public class NativeCodeGenerator {
