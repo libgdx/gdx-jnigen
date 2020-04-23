@@ -28,4 +28,4 @@ Correct the properties. Create a gpg key if you have not yet one.
 
 4. update e.g. gdx-jnigen README.md --> search & replace version numbers!
    update/tag git: e.g. v0.7.0
-   update version to e.g. 0.8.0-SNAPSHOT in build.gradle
+   update version to e.g. 0.8.0 in gradle.properties

@@ -39,9 +39,13 @@ subprojects
             repositories {
                 maven {
                     url = version.endsWith('SNAPSHOT') ? getSnapshotRepositoryUrl() : getReleaseRepositoryUrl()
-                    credentials {
-                        username = getRepositoryUsername()
-                        password = getRepositoryPassword()
+                    
+                    if (getRepositoryUsername() || getRepositoryPassword())
+                    {
+                        credentials {
+                            username = getRepositoryUsername()
+                            password = getRepositoryPassword()
+                        }
                     }
                 }
             }

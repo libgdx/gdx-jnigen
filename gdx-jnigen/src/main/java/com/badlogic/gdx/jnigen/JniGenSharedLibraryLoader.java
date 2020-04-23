@@ -33,7 +33,10 @@ import java.util.zip.ZipFile;
  * 
  * See {@link AntScriptGenerator}.
  * 
+ * This class is deprecated in favor of SharedLibraryLoader.
+ * 
  * @author mzechner */
+@Deprecated
 public class JniGenSharedLibraryLoader {
 	private static Set<String> loadedLibraries = new HashSet<String>();
 	private String nativesJar;
