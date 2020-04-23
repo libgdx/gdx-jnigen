@@ -15,7 +15,6 @@ public class JniGenTest {
 
     @BeforeClass
     public static void setUp() throws Exception {
-
         // generate C/C++ code
         new NativeCodeGenerator().generate(
                 "src/test/java",
@@ -27,20 +26,21 @@ public class JniGenTest {
 
         // generate build scripts
         BuildConfig buildConfig = new BuildConfig("test", "../../tmp/gdx-jnigen", "../../build/libs", "build/generated/jni");
-        BuildTarget mac64 = BuildTarget.newDefaultTarget(BuildTarget.TargetOs.MacOsX, true);
+        
+        BuildTarget target;
+        if (SharedLibraryLoader.isWindows)
+        	target = BuildTarget.newDefaultTarget(BuildTarget.TargetOs.Windows, SharedLibraryLoader.is64Bit);
+        else if (SharedLibraryLoader.isLinux)
+        	target = BuildTarget.newDefaultTarget(BuildTarget.TargetOs.Linux, SharedLibraryLoader.is64Bit, SharedLibraryLoader.isARM);
+        else if (SharedLibraryLoader.isMac)
+        	target = BuildTarget.newDefaultTarget(BuildTarget.TargetOs.MacOsX, SharedLibraryLoader.is64Bit, SharedLibraryLoader.isARM);
+        else
+        	throw new RuntimeException("Unsupported OS to run tests.");
 
-//		BuildTarget win32 = BuildTarget.newDefaultTarget(TargetOs.Windows, false);
-//		win32.compilerPrefix = "";
-//		win32.cppFlags += " -g";
-//		BuildTarget lin64 = BuildTarget.newDefaultTarget(TargetOs.Linux, true);
-
-        new AntScriptGenerator().generate(buildConfig, mac64);
-
-        // build natives
-//		BuildExecutor.executeAnt("build/generated/jni/build-linux64.xml", "-v -Dhas-compiler=true clean postcompile");
-
-        BuildExecutor.executeAnt("build/generated/jni/build-macosx64.xml", "-v", "-Dhas-compiler=true" , "clean", "postcompile");
-        BuildExecutor.executeAnt("build/generated/jni/build.xml", "-v", "pack-natives");
+        new AntScriptGenerator().generate(buildConfig, target);
+        
+        // compile and pack natives
+        BuildExecutor.executeAnt("build/generated/jni/build.xml", "-v", "compile-natives", "pack-natives");
 
         // load the test-natives.jar and from it the shared library, then execute the test.
         new SharedLibraryLoader("build/libs/test-natives.jar").load("test");

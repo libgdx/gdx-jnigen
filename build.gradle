@@ -45,13 +45,15 @@ subprojects
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
-    group "com.badlogicgames.gdx"
-    version "2.0.0" + (isReleaseBuild() ? "" : "-SNAPSHOT")
+    version project.getProperty('version') + (isReleaseBuild() ? "" : "-SNAPSHOT")
 
     java {
         withJavadocJar()
         withSourcesJar()
     }
 }
+
+apply plugin: 'eclipse'
+eclipse.project.name = "root"
 
 apply from: rootProject.file('publish.gradle')
