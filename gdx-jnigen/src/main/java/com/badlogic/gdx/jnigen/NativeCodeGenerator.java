@@ -31,10 +31,10 @@ import com.badlogic.gdx.jnigen.parsing.JavaMethodParser.JniSection;
 import com.badlogic.gdx.jnigen.parsing.JniHeaderCMethodParser;
 import com.badlogic.gdx.jnigen.parsing.RobustJavaMethodParser;
 
-/** Goes through a Java source directory, checks each .java file for native methods and emits C/C++ code accordingly, both .h and
- * .cpp files.
+/** <p>Goes through a Java source directory, checks each .java file for native methods and emits C/C++ code accordingly, both .h and
+ * .cpp files.</p>
  * 
- * <h2>Augmenting Java Files with C/C++</h2> C/C++ code can be directly added to native methods in the Java file as block comments
+ * <h1>Augmenting Java Files with C/C++</h1> <p>C/C++ code can be directly added to native methods in the Java file as block comments
  * starting at the same line as the method signature. Custom JNI code that is not associated with a native method can be added via
  * a special block comment as shown below.</p>
  * 
@@ -50,23 +50,23 @@ import com.badlogic.gdx.jnigen.parsing.RobustJavaMethodParser;
  *   *<i>/</i>
  * 
  *   public native void addToArray(float[] array, int len, float value); /*
- *     for(int i = 0; i < len; i++) {
+ *     for(int i = 0; i &lt; len; i++) {
  *       array[i] = value;
  *     }
  *   *<i>/</i>
  * }
  * </pre>
  * 
- * The generated header file is automatically included in the .cpp file. Methods and custom JNI code can be mixed throughout the
+ * <p>The generated header file is automatically included in the .cpp file. Methods and custom JNI code can be mixed throughout the
  * Java file, their order is preserved in the generated .cpp file. Method overloading is supported but not recommended as the
  * overloading detection is very basic.</p>
  * 
- * If a native method has strings, one dimensional primitive arrays or direct {@link Buffer} instances as arguments, JNI setup and
+ * <p>If a native method has strings, one dimensional primitive arrays or direct {@link Buffer} instances as arguments, JNI setup and
  * cleanup code is automatically generated.</p>
  * 
  * The following list gives the mapping from Java to C/C++ types for arguments:
  * 
- * <table border="1">
+ * <table border="1" summary="">
  * <tr>
  * <td>Java</td>
  * <td>C/C++</td>
@@ -149,7 +149,7 @@ import com.badlogic.gdx.jnigen.parsing.RobustJavaMethodParser;
  * omit setup and cleanup code by starting the native code block comment with "/*MANUAL" instead of just "/*" to the method name.
  * See libgdx's Gdx2DPixmap load() method for an example.
  * 
- * <h2>.h/.cpp File Generation</h2> The .h files are created via javah, which has to be on your path. The Java classes have to be
+ * <h1>.h/.cpp File Generation</h1> The .h files are created via javah, which has to be on your path. The Java classes have to be
  * compiled and accessible to the javah tool. The name of the generated .h/.cpp files is the fully qualified name of the class,
  * e.g. com.badlogic.jnigen.MyJniClass.h/.cpp. The generator takes the following parameters as input:
  * 
@@ -165,7 +165,7 @@ import com.badlogic.gdx.jnigen.parsing.RobustJavaMethodParser;
  * new NativeCodeGenerator().generate(&quot;src&quot;, &quot;bin&quot;, &quot;jni&quot;);
  * </pre>
  * 
- * To automatically compile and load the native code, see the classes {@link AntScriptGenerator}, {@link BuildExecutor} and
+ * <p>To automatically compile and load the native code, see the classes {@link AntScriptGenerator}, {@link BuildExecutor} and
  * SharedLibraryLoader classes. </p>
  * 
  * @author mzechner */

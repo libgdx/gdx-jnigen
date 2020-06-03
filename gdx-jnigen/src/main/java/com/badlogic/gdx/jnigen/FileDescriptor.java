@@ -112,7 +112,7 @@ public class FileDescriptor {
 	}
 
 	/** Returns a stream for reading this file as bytes.
-	 * @throw RuntimeException if the file handle represents a directory, doesn't exist, or could not be read. */
+	 * @throws RuntimeException if the file handle represents a directory, doesn't exist, or could not be read. */
 	public InputStream read () {
 		if (type == FileType.Classpath && !file.exists()) {
 			InputStream input = FileDescriptor.class.getResourceAsStream("/" + file.getPath().replace('\\', '/'));
@@ -129,13 +129,13 @@ public class FileDescriptor {
 	}
 
 	/** Returns a reader for reading this file as characters.
-	 * @throw RuntimeException if the file handle represents a directory, doesn't exist, or could not be read. */
+	 * @throws RuntimeException if the file handle represents a directory, doesn't exist, or could not be read. */
 	public Reader reader () {
 		return new InputStreamReader(read());
 	}
 
 	/** Returns a reader for reading this file as characters.
-	 * @throw RuntimeException if the file handle represents a directory, doesn't exist, or could not be read. */
+	 * @throws RuntimeException if the file handle represents a directory, doesn't exist, or could not be read. */
 	public Reader reader (String charset) {
 		try {
 			return new InputStreamReader(read(), charset);
@@ -145,13 +145,13 @@ public class FileDescriptor {
 	}
 
 	/** Returns a buffered reader for reading this file as characters.
-	 * @throw RuntimeException if the file handle represents a directory, doesn't exist, or could not be read. */
+	 * @throws RuntimeException if the file handle represents a directory, doesn't exist, or could not be read. */
 	public BufferedReader reader (int bufferSize) {
 		return new BufferedReader(new InputStreamReader(read()), bufferSize);
 	}
 
 	/** Returns a buffered reader for reading this file as characters.
-	 * @throw RuntimeException if the file handle represents a directory, doesn't exist, or could not be read. */
+	 * @throws RuntimeException if the file handle represents a directory, doesn't exist, or could not be read. */
 	public BufferedReader reader (int bufferSize, String charset) {
 		try {
 			return new BufferedReader(new InputStreamReader(read(), charset), bufferSize);
@@ -161,13 +161,13 @@ public class FileDescriptor {
 	}
 
 	/** Reads the entire file into a string using the platform's default charset.
-	 * @throw RuntimeException if the file handle represents a directory, doesn't exist, or could not be read. */
+	 * @throws RuntimeException if the file handle represents a directory, doesn't exist, or could not be read. */
 	public String readString () {
 		return readString(null);
 	}
 
 	/** Reads the entire file into a string using the specified charset.
-	 * @throw RuntimeException if the file handle represents a directory, doesn't exist, or could not be read. */
+	 * @throws RuntimeException if the file handle represents a directory, doesn't exist, or could not be read. */
 	public String readString (String charset) {
 		StringBuilder output = new StringBuilder(512);
 		InputStreamReader reader = null;
@@ -194,7 +194,7 @@ public class FileDescriptor {
 	}
 
 	/** Reads the entire file into a byte array.
-	 * @throw RuntimeException if the file handle represents a directory, doesn't exist, or could not be read. */
+	 * @throws RuntimeException if the file handle represents a directory, doesn't exist, or could not be read. */
 	public byte[] readBytes () {
 		int length = (int)length();
 		if (length == 0) length = 512;
@@ -257,7 +257,7 @@ public class FileDescriptor {
 
 	/** Returns a stream for writing to this file. Parent directories will be created if necessary.
 	 * @param append If false, this file will be overwritten if it exists, otherwise it will be appended.
-	 * @throw RuntimeException if this file handle represents a directory, if it is a {@link FileType#Classpath} or
+	 * @throws RuntimeException if this file handle represents a directory, if it is a {@link FileType#Classpath} or
 	 *        FileType#Internal file, or if it could not be written. */
 	public OutputStream write (boolean append) {
 		if (type == FileType.Classpath) throw new RuntimeException("Cannot write to a classpath file: " + file);
@@ -274,7 +274,7 @@ public class FileDescriptor {
 	/** Reads the remaining bytes from the specified stream and writes them to this file. The stream is closed. Parent directories
 	 * will be created if necessary.
 	 * @param append If false, this file will be overwritten if it exists, otherwise it will be appended.
-	 * @throw RuntimeException if this file handle represents a directory, if it is a {@link FileType#Classpath} or
+	 * @throws RuntimeException if this file handle represents a directory, if it is a {@link FileType#Classpath} or
 	 *        FileType#Internal file, or if it could not be written. */
 	public void write (InputStream input, boolean append) {
 		OutputStream output = null;
@@ -303,7 +303,7 @@ public class FileDescriptor {
 
 	/** Returns a writer for writing to this file using the default charset. Parent directories will be created if necessary.
 	 * @param append If false, this file will be overwritten if it exists, otherwise it will be appended.
-	 * @throw RuntimeException if this file handle represents a directory, if it is a {@link FileType#Classpath} or
+	 * @throws RuntimeException if this file handle represents a directory, if it is a {@link FileType#Classpath} or
 	 *        FileType#Internal file, or if it could not be written. */
 	public Writer writer (boolean append) {
 		return writer(append, null);
@@ -312,7 +312,7 @@ public class FileDescriptor {
 	/** Returns a writer for writing to this file. Parent directories will be created if necessary.
 	 * @param append If false, this file will be overwritten if it exists, otherwise it will be appended.
 	 * @param charset May be null to use the default charset.
-	 * @throw RuntimeException if this file handle represents a directory, if it is a {@link FileType#Classpath} or
+	 * @throws RuntimeException if this file handle represents a directory, if it is a {@link FileType#Classpath} or
 	 *        FileType#Internal file, or if it could not be written. */
 	public Writer writer (boolean append, String charset) {
 		if (type == FileType.Classpath) throw new RuntimeException("Cannot write to a classpath file: " + file);
@@ -332,7 +332,7 @@ public class FileDescriptor {
 
 	/** Writes the specified string to the file using the default charset. Parent directories will be created if necessary.
 	 * @param append If false, this file will be overwritten if it exists, otherwise it will be appended.
-	 * @throw RuntimeException if this file handle represents a directory, if it is a {@link FileType#Classpath} or
+	 * @throws RuntimeException if this file handle represents a directory, if it is a {@link FileType#Classpath} or
 	 *        FileType#Internal file, or if it could not be written. */
 	public void writeString (String string, boolean append) {
 		writeString(string, append, null);
@@ -341,7 +341,7 @@ public class FileDescriptor {
 	/** Writes the specified string to the file as UTF-8. Parent directories will be created if necessary.
 	 * @param append If false, this file will be overwritten if it exists, otherwise it will be appended.
 	 * @param charset May be null to use the default charset.
-	 * @throw RuntimeException if this file handle represents a directory, if it is a {@link FileType#Classpath} or
+	 * @throws RuntimeException if this file handle represents a directory, if it is a {@link FileType#Classpath} or
 	 *        FileType#Internal file, or if it could not be written. */
 	public void writeString (String string, boolean append, String charset) {
 		Writer writer = null;
@@ -360,7 +360,7 @@ public class FileDescriptor {
 
 	/** Writes the specified bytes to the file. Parent directories will be created if necessary.
 	 * @param append If false, this file will be overwritten if it exists, otherwise it will be appended.
-	 * @throw RuntimeException if this file handle represents a directory, if it is a {@link FileType#Classpath} or
+	 * @throws RuntimeException if this file handle represents a directory, if it is a {@link FileType#Classpath} or
 	 *        FileType#Internal file, or if it could not be written. */
 	public void writeBytes (byte[] bytes, boolean append) {
 		OutputStream output = write(append);
@@ -378,7 +378,7 @@ public class FileDescriptor {
 
 	/** Returns the paths to the children of this directory. Returns an empty list if this file handle represents a file and not a
 	 * directory. On the desktop, an FileType#Internal handle to a directory on the classpath will return a zero length array.
-	 * @throw RuntimeException if this file is an {@link FileType#Classpath} file. */
+	 * @throws RuntimeException if this file is an {@link FileType#Classpath} file. */
 	public FileDescriptor[] list () {
 		if (type == FileType.Classpath) throw new RuntimeException("Cannot list a classpath directory: " + file);
 		String[] relativePaths = file().list();
@@ -392,7 +392,7 @@ public class FileDescriptor {
 	/** Returns the paths to the children of this directory with the specified suffix. Returns an empty list if this file handle
 	 * represents a file and not a directory. On the desktop, an FileType#Internal handle to a directory on the classpath will
 	 * return a zero length array.
-	 * @throw RuntimeException if this file is an {@link FileType#Classpath} file. */
+	 * @throws RuntimeException if this file is an {@link FileType#Classpath} file. */
 	public FileDescriptor[] list (String suffix) {
 		if (type == FileType.Classpath) throw new RuntimeException("Cannot list a classpath directory: " + file);
 		String[] relativePaths = file().list();
@@ -422,7 +422,7 @@ public class FileDescriptor {
 	}
 
 	/** Returns a handle to the child with the specified name.
-	 * @throw RuntimeException if this file handle is a {@link FileType#Classpath} or FileType#Internal and the child doesn't
+	 * @throws RuntimeException if this file handle is a {@link FileType#Classpath} or FileType#Internal and the child doesn't
 	 *        exist. */
 	public FileDescriptor child (String name) {
 		if (file.getPath().length() == 0) return new FileDescriptor(new File(name), type);
@@ -440,7 +440,7 @@ public class FileDescriptor {
 		return new FileDescriptor(parent, type);
 	}
 
-	/** @throw RuntimeException if this file handle is a {@link FileType#Classpath} or FileType#Internal file. */
+	/** @throws RuntimeException if this file handle is a {@link FileType#Classpath} or FileType#Internal file. */
 	public boolean mkdirs () {
 		if (type == FileType.Classpath) throw new RuntimeException("Cannot mkdirs with a classpath file: " + file);
 		return file().mkdirs();
@@ -454,14 +454,14 @@ public class FileDescriptor {
 	}
 
 	/** Deletes this file or empty directory and returns success. Will not delete a directory that has children.
-	 * @throw RuntimeException if this file handle is a {@link FileType#Classpath} or FileType#Internal file. */
+	 * @throws RuntimeException if this file handle is a {@link FileType#Classpath} or FileType#Internal file. */
 	public boolean delete () {
 		if (type == FileType.Classpath) throw new RuntimeException("Cannot delete a classpath file: " + file);
 		return file().delete();
 	}
 
 	/** Deletes this file or directory and all children, recursively.
-	 * @throw RuntimeException if this file handle is a {@link FileType#Classpath} or FileType#Internal file. */
+	 * @throws RuntimeException if this file handle is a {@link FileType#Classpath} or FileType#Internal file. */
 	public boolean deleteDirectory () {
 		if (type == FileType.Classpath) throw new RuntimeException("Cannot delete a classpath file: " + file);
 		return deleteDirectory(file());
@@ -474,7 +474,7 @@ public class FileDescriptor {
 	 * directory, this directory is copied recursively into it as a subdirectory, overwriting existing files, or 3) if the
 	 * destination doesn't exist, {@link #mkdirs()} is called on the destination and this directory is copied recursively into it
 	 * as a subdirectory.
-	 * @throw RuntimeException if the destination file handle is a {@link FileType#Classpath} or FileType#Internal file, or copying
+	 * @throws RuntimeException if the destination file handle is a {@link FileType#Classpath} or FileType#Internal file, or copying
 	 *        failed. */
 	public void copyTo (FileDescriptor dest) {
 		if (!isDirectory()) {
@@ -493,7 +493,7 @@ public class FileDescriptor {
 	}
 
 	/** Moves this file to the specified file, overwriting the file if it already exists.
-	 * @throw RuntimeException if the source or destination file handle is a {@link FileType#Classpath} or FileType#Internal file. */
+	 * @throws RuntimeException if the source or destination file handle is a {@link FileType#Classpath} or FileType#Internal file. */
 	public void moveTo (FileDescriptor dest) {
 		if (type == FileType.Classpath) throw new RuntimeException("Cannot move a classpath file: " + file);
 		copyTo(dest);

@@ -16,7 +16,7 @@
 
 package com.badlogic.gdx.jnigen;
 
-/** Specifies the global properties of a native build.</p>
+/** <p>Specifies the global properties of a native build.</p>
  * 
  * The shared library name will be used to generate the shared libraries. The build directory is used to store the object files
  * during compilation for each {@link BuildTarget}. It is relative to the jni directory which houses the C/C++ source code. The

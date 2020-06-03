@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
 import com.badlogic.gdx.jnigen.FileDescriptor.FileType;
 
-/** Generates Ant scripts for multiple native build targets based on the given {@link BuildConfig}.</p>
+/** <p>Generates Ant scripts for multiple native build targets based on the given {@link BuildConfig}.
  * 
  * For each build target, an Ant build script is created that will compile C/C++ files to a shared library for a specific
  * platform. A master build script is generated that will execute the build scripts for each platform and bundles their shared
@@ -48,10 +48,10 @@ import com.badlogic.gdx.jnigen.FileDescriptor.FileType;
  * new SharedLibraryLoader().load("mysharedlibrary)
  * </pre>
  * 
- * This will create the build scripts and execute the build of the shared libraries for each platform, provided that the compilers
+ * <p>This will create the build scripts and execute the build of the shared libraries for each platform, provided that the compilers
  * are available on the system. Mac OS X might have to be treated separately as there are no cross-compilers for it.</p>
  * 
- * The generator will also copy the necessary JNI headers to the jni/jni-headers folder for Windows, Linux and Mac OS X.</p>
+ * <p>The generator will also copy the necessary JNI headers to the jni/jni-headers folder for Windows, Linux and Mac OS X.</p>
  * 
  * @author mzechner */
 public class AntScriptGenerator {

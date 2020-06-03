@@ -19,7 +19,7 @@ package com.badlogic.gdx.jnigen;
 import java.util.zip.ZipFile;
 
 /** Interface used for overriding the way of finding a name of a shared library, for a specific platform.
- * @author Rob Bogie <bogie.rob@gmail.com> */
+ * @author Rob Bogie (bogie.rob@gmail.com) */
 public interface SharedLibraryFinder {
 	/** @param sharedLibName The name of the shared lib that is asked to be loaded.
 	 * @param is64Bit Whether the platform is 64 bit

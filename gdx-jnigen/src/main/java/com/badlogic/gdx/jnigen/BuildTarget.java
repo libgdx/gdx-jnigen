@@ -71,7 +71,7 @@ public class BuildTarget {
 	public boolean requireMacOSToBuild = false;
 	
 	/** List of ABIs we wish to build for Android. Defaults to all available in current NDK.
-	 * {@link "https://developer.android.com/ndk/guides/application_mk#app_abi"} **/
+	 * <a href="https://developer.android.com/ndk/guides/application_mk#app_abi">https://developer.android.com/ndk/guides/application_mk#app_abi</a> **/
 	public String[] androidABIs = {"all"};
 	/** Extra lines which will be added to Android's Android.mk */
 	public String[] androidAndroidMk = {};
