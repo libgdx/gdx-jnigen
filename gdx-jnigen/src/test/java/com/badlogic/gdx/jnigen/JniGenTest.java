@@ -38,9 +38,21 @@ public class JniGenTest {
         	throw new RuntimeException("Unsupported OS to run tests.");
 
         new AntScriptGenerator().generate(buildConfig, target);
-        
+
+        if (SharedLibraryLoader.isMac) {
+            boolean macAntExecutionStatus = BuildExecutor.executeAnt("build/generated/jni/build-macosx64.xml", "-v");
+            if (!macAntExecutionStatus) {
+                throw new RuntimeException("Failure to execute mac ant.");
+            }
+        }
+        boolean antExecutionStatus = BuildExecutor.executeAnt("build/generated/jni/build.xml", "-v", "pack-natives");
+
+
         // compile and pack natives
-        BuildExecutor.executeAnt("build/generated/jni/build.xml", "-v", "compile-natives", "pack-natives");
+
+        if (!antExecutionStatus) {
+            throw new RuntimeException("Failure to execute ant.");
+        }
 
         // load the test-natives.jar and from it the shared library, then execute the test.
         new SharedLibraryLoader("build/libs/test-natives.jar").load("test");
