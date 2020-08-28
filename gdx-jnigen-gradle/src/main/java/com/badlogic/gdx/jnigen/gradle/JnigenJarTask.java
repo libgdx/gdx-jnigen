@@ -31,7 +31,7 @@ public class JnigenJarTask extends Jar {
 		setDescription("Assembles a jar archive containing the native libraries.");
 	}
 	
-	public void add(BuildTarget target, JnigenExtension ext) {
+	public final void add(BuildTarget target, JnigenExtension ext) {
 		add(target, ext, null);
 	}
 	

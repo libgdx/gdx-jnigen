@@ -31,7 +31,7 @@ public class JnigenExtension {
 	public static final TargetOs Android = TargetOs.Android;
 	public static final TargetOs IOS = TargetOs.IOS;
 	
-	private Project project;
+	final Project project;
 
 	/**
 	 * Gradle Tasks are executed in the main project working directory. Supply
@@ -145,7 +145,10 @@ public class JnigenExtension {
 				jarAndroidNatives.dependsOn(jarAndroidNativesABIs[i]);
 			}
 		} else if(type == IOS) {
+			if(jarIOSNatives == null)
+				jarIOSNatives = project.getTasks().create("jnigenJarNativesIOS", JnigenIOSJarTask.class);
 			
+			jarIOSNatives.add(target, this);
 		}
 		else {
 			if(jarDesktopNatives == null)
