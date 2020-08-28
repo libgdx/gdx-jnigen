@@ -51,6 +51,10 @@ subprojects
         withJavadocJar()
         withSourcesJar()
     }
+
+    javadoc {
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
 }
 
 apply plugin: 'eclipse'
