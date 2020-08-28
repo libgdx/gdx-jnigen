@@ -44,6 +44,8 @@ public class BuildTarget {
 	public String cCompiler = "gcc";
 	/** the compiler to use when compiling c++ files. Usually g++ or clang++, must not be null */
 	public String cppCompiler = "g++";
+	/** the command to use when archiving files. Usually ar, must not be null */
+	public String archiver = "ar";
 	/** prefix for the compiler (g++, gcc), useful for cross compilation, must not be null **/
 	public String compilerPrefix;
 	/** the flags passed to the C compiler, must not be null **/
@@ -52,6 +54,8 @@ public class BuildTarget {
 	public String cppFlags;
 	/** the flags passed to the linker, must not be null **/
 	public String linkerFlags;
+	/** the flags passed to the archiver, must not be null **/
+	public String archiverFlags = "rcs";
 	/** the name of the generated build file for this target, defaults to "build-${target}(64)?.xml", must not be null **/
 	public String buildFileName;
 	/** whether to exclude this build target from the master build file, useful for debugging **/
@@ -215,6 +219,8 @@ public class BuildTarget {
 				"-c -Wall -O2 -arch x86_64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.7 -stdlib=libc++",
 				"-c -Wall -O2 -arch x86_64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.7 -stdlib=libc++",
 				"-shared -arch x86_64 -mmacosx-version-min=10.7 -stdlib=libc++");
+			mac.cCompiler = "clang";
+			mac.cppCompiler = "clang++";
 			mac.requireMacOSToBuild = true;
 			return mac;
 		}
@@ -229,7 +235,9 @@ public class BuildTarget {
 		if(type == TargetOs.IOS) {
 			// iOS, 386 simulator and armv7a, compiled to fat static lib
 			BuildTarget ios = new BuildTarget(TargetOs.IOS, false, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
-					new String[0], new String[0], "", "-c -Wall -O2", "-c -Wall -O2", "rcs");
+					new String[0], new String[0], "", "-c -Wall -O2", "-c -Wall -O2", "");
+			ios.cCompiler = "clang";
+			ios.cppCompiler = "clang++";
 			ios.requireMacOSToBuild = true;
 			return ios;
 		}
