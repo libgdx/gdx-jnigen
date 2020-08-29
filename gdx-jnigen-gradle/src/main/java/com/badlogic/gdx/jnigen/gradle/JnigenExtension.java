@@ -110,10 +110,8 @@ public class JnigenExtension {
 				JnigenBuildTargetTask.class, this, target);
 		builtTargetTask.dependsOn(jnigenTask);
 
-		if (!target.excludeFromMasterBuildFile
-				&& (!target.requireMacOSToBuild || System.getProperty("os.name").contains("Mac")))
+		if (!target.excludeFromMasterBuildFile && target.canBuild.getAsBoolean())
 			jnigenBuildTask.dependsOn(builtTargetTask);
-		
 		
 		if(type == Android) {
 			if(jarAndroidNatives == null)

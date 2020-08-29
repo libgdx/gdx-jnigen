@@ -16,6 +16,8 @@
 
 package com.badlogic.gdx.jnigen;
 
+import java.util.function.BooleanSupplier;
+
 /** Defines the configuration for building a native shared library for a specific platform. Used with {@link AntScriptGenerator}
  * to create Ant build files that invoke the compiler toolchain to create the shared libraries. */
 public class BuildTarget {
@@ -71,8 +73,8 @@ public class BuildTarget {
 	/** The name used for the library file. This is a full file name, including file extension. Default is platform specific. E.g.
 	 * "lib{sharedLibName}64.so" **/
 	public String libName;
-	/** If we require a macos host OS to build this target */ 
-	public boolean requireMacOSToBuild = false;
+	/** Condition to check if build this target */
+	public BooleanSupplier canBuild = () -> !System.getProperty("os.name").contains("Mac");
 	
 	/** List of ABIs we wish to build for Android. Defaults to all available in current NDK.
 	 * <a href="https://developer.android.com/ndk/guides/application_mk#app_abi">https://developer.android.com/ndk/guides/application_mk#app_abi</a> **/
@@ -221,7 +223,7 @@ public class BuildTarget {
 				"-shared -arch x86_64 -mmacosx-version-min=10.7 -stdlib=libc++");
 			mac.cCompiler = "clang";
 			mac.cppCompiler = "clang++";
-			mac.requireMacOSToBuild = true;
+			mac.canBuild = () -> System.getProperty("os.name").contains("Mac");
 			return mac;
 		}
 
@@ -238,7 +240,7 @@ public class BuildTarget {
 					new String[0], new String[0], "", "-c -Wall -O2", "-c -Wall -O2", "");
 			ios.cCompiler = "clang";
 			ios.cppCompiler = "clang++";
-			ios.requireMacOSToBuild = true;
+			ios.canBuild = () -> System.getProperty("os.name").contains("Mac");
 			return ios;
 		}
 
