@@ -11,11 +11,13 @@
 	<property name="jniPlatform" value="%jniPlatform%"/>
 	<!-- the compiler to use when compiling c files -->
 	<property name="cCompiler" value="%cCompiler%"/>
-	<!--  the compiler to use when compiling c++ files -->
+	<!-- the compiler to use when compiling c++ files -->
 	<property name="cppCompiler" value="%cppCompiler%"/>
+	<!-- the command to use when archiving files -->
+	<property name="archiver" value="%archiver%"/>
 	<!-- the compilerPrefix for the C & C++ compilers -->
 	<property name="compilerPrefix" value="%compilerPrefix%"/>
-	<!--  the compilerSuffix for the C & C++ compilers -->	
+	<!-- the compilerSuffix for the C & C++ compilers -->
 	<property name="compilerSuffix" value="" />	
 	
 	<!-- define gcc compiler, options and files to compile -->

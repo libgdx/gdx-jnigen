@@ -223,10 +223,12 @@ public class AntScriptGenerator {
 		template = template.replace("%jniPlatform%", jniPlatform);
 		template = template.replace("%cCompiler%", target.cCompiler);
 		template = template.replace("%cppCompiler%", target.cppCompiler);
+		template = template.replace("%archiver%", target.archiver);
 		template = template.replace("%compilerPrefix%", target.compilerPrefix);
 		template = template.replace("%cFlags%", target.cFlags);
 		template = template.replace("%cppFlags%", target.cppFlags);
 		template = template.replace("%linkerFlags%", target.linkerFlags);
+		template = template.replace("%archiverFlags%", target.archiverFlags);
 		template = template.replace("%libraries%", target.libraries);
 		template = template.replace("%cIncludes%", cIncludes);
 		template = template.replace("%cExcludes%", cExcludes);

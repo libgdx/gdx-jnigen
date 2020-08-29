@@ -9,8 +9,17 @@
 	<property name="libName" value="%libName%"/>
 	<!-- the jni header jniPlatform to use -->
 	<property name="jniPlatform" value="mac"/>
+	<!-- the compiler to use when compiling c files -->
+	<property name="cCompiler" value="%cCompiler%"/>
+	<!-- the compiler to use when compiling c++ files -->
+	<property name="cppCompiler" value="%cppCompiler%"/>
+	<!-- the command to use when archiving files -->
+	<property name="archiver" value="%archiver%"/>
 	<!-- the compilerPrefix for the C & C++ compilers -->
-	<property name="compilerPrefix" value="%compilerPrefix%"/>		
+	<property name="compilerPrefix" value="%compilerPrefix%"/>
+	<!-- the compilerSuffix for the C & C++ compilers -->
+	<property name="compilerSuffix" value="" />
+	
 	<property name="iphoneos-sdk" value="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/"/>
 	<property name="iphonesimulator-sdk" value="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk"/>
 	<property name="tvos-sdk" value="/Applications/Xcode.app/Contents/Developer/Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS.sdk/"/>
@@ -18,7 +27,7 @@
 	
 	
 	<!-- define gcc compiler, options and files to compile -->
-	<property name="gcc" value="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"/>	
+	<property name="gcc" value="${compilerPrefix}${cCompiler}${compilerSuffix}"/>
 	<property name="gcc-opts" value="%cFlags%"/>
 	<fileset id="gcc-files" dir="./">
 		<exclude name="target/"/>		
@@ -27,7 +36,7 @@
 	</fileset>
 	
 	<!-- define g++ compiler, options and files to compile -->
-	<property name="g++" value="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"/>
+	<property name="g++" value="${compilerPrefix}${cppCompiler}${compilerSuffix}"/>
 	<property name="g++-opts" value="%cppFlags%"/>
 	<fileset id="g++-files" dir="./">
 		<exclude name="target/"/>
@@ -35,9 +44,9 @@
 		%cppExcludes%
 	</fileset>
 
-	<!-- define linker and options -->
-	<property name="linker" value="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar"/>
-	<property name="linker-opts" value="%linkerFlags%"/>
+	<!-- define ar and options -->
+	<property name="ar" value="${compilerPrefix}${archiver}${compilerSuffix}"/>
+	<property name="ar-opts" value="%archiverFlags%"/>
 	<property name="libraries" value="%libraries%"/>
 	
 	<!-- cleans the build directory, removes all object files and shared libs -->
@@ -104,8 +113,8 @@
 		</apply>
 	</target>	
 
-	<!-- links the shared library based on the previously compiled object files -->
-	<target name="link-386" depends="compile-386">
+	<!-- archives the shared library based on the previously compiled object files -->
+	<target name="archive-386" depends="compile-386">
 		<fileset dir="${buildDir}" id="objFileSet">
 			<patternset>
 				<include name="**/*.o" />
@@ -113,8 +122,8 @@
 		</fileset>
 		<pathconvert pathsep=" " property="objFiles" refid="objFileSet" />
 		<mkdir dir="${libsDir}" />
-		<exec executable="${linker}" failonerror="true" dir="${buildDir}">
-			<arg line="${linker-opts}" />
+		<exec executable="${ar}" failonerror="true" dir="${buildDir}">
+			<arg line="${ar-opts}" />
 			<arg path="${libsDir}/${libName}.386" />
 			<arg line="${objFiles}"/>
 			<arg line="${libraries}" />
@@ -156,8 +165,8 @@
 		</apply>
 	</target>	
 
-	<!-- links the shared library based on the previously compiled object files -->
-	<target name="link-x86_64" depends="compile-x86_64">
+	<!-- archives the shared library based on the previously compiled object files -->
+	<target name="archive-x86_64" depends="compile-x86_64">
 		<fileset dir="${buildDir}" id="objFileSet">
 			<patternset>
 				<include name="**/*.o" />
@@ -165,8 +174,8 @@
 		</fileset>
 		<pathconvert pathsep=" " property="objFiles" refid="objFileSet" />
 		<mkdir dir="${libsDir}" />
-		<exec executable="${linker}" failonerror="true" dir="${buildDir}">
-			<arg line="${linker-opts}" />
+		<exec executable="${ar}" failonerror="true" dir="${buildDir}">
+			<arg line="${ar-opts}" />
 			<arg path="${libsDir}/${libName}.x86_64" />
 			<arg line="${objFiles}"/>
 			<arg line="${libraries}" />
@@ -208,8 +217,8 @@
 		</apply>
 	</target>	
 
-	<!-- links the shared library based on the previously compiled object files -->
-	<target name="link-arm" depends="compile-arm">
+	<!-- archives the shared library based on the previously compiled object files -->
+	<target name="archive-arm" depends="compile-arm">
 		<fileset dir="${buildDir}" id="objFileSet">
 			<patternset>
 				<include name="**/*.o" />
@@ -217,8 +226,8 @@
 		</fileset>
 		<pathconvert pathsep=" " property="objFiles" refid="objFileSet" />
 		<mkdir dir="${libsDir}" />
-		<exec executable="${linker}" failonerror="true" dir="${buildDir}">
-			<arg line="${linker-opts}" />
+		<exec executable="${ar}" failonerror="true" dir="${buildDir}">
+			<arg line="${ar-opts}" />
 			<arg path="${libsDir}/${libName}.armv7" />
 			<arg line="${objFiles}"/>
 			<arg line="${libraries}" />
@@ -260,8 +269,8 @@
 		</apply>
 	</target>	
 
-	<!-- links the shared library based on the previously compiled object files -->
-	<target name="link-arm64" depends="compile-arm64">
+	<!-- archives the shared library based on the previously compiled object files -->
+	<target name="archive-arm64" depends="compile-arm64">
 		<fileset dir="${buildDir}" id="objFileSet">
 			<patternset>
 				<include name="**/*.o" />
@@ -269,8 +278,8 @@
 		</fileset>
 		<pathconvert pathsep=" " property="objFiles" refid="objFileSet" />
 		<mkdir dir="${libsDir}" />
-		<exec executable="${linker}" failonerror="true" dir="${buildDir}">
-			<arg line="${linker-opts}" />
+		<exec executable="${ar}" failonerror="true" dir="${buildDir}">
+			<arg line="${ar-opts}" />
 			<arg path="${libsDir}/${libName}.arm64" />
 			<arg line="${objFiles}"/>
 			<arg line="${libraries}" />
@@ -312,8 +321,8 @@
 		</apply>
 	</target>	
 
-	<!-- links the shared library based on the previously compiled object files -->
-	<target name="link-tvos-x86_64" depends="compile-tvos-x86_64">
+	<!-- archives the shared library based on the previously compiled object files -->
+	<target name="archive-tvos-x86_64" depends="compile-tvos-x86_64">
 		<fileset dir="${buildDir}" id="objFileSet">
 			<patternset>
 				<include name="**/*.o" />
@@ -321,8 +330,8 @@
 		</fileset>
 		<pathconvert pathsep=" " property="objFiles" refid="objFileSet" />
 		<mkdir dir="${libsDir}" />
-		<exec executable="${linker}" failonerror="true" dir="${buildDir}">
-			<arg line="${linker-opts}" />
+		<exec executable="${ar}" failonerror="true" dir="${buildDir}">
+			<arg line="${ar-opts}" />
 			<arg path="${libsDir}/${libName}.tvos.x86_64" />
 			<arg line="${objFiles}"/>
 			<arg line="${libraries}" />
@@ -364,8 +373,8 @@
 		</apply>
 	</target>	
 
-	<!-- links the shared library based on the previously compiled object files -->
-	<target name="link-tvos-arm64" depends="compile-tvos-arm64">
+	<!-- archives the shared library based on the previously compiled object files -->
+	<target name="archive-tvos-arm64" depends="compile-tvos-arm64">
 		<fileset dir="${buildDir}" id="objFileSet">
 			<patternset>
 				<include name="**/*.o" />
@@ -373,15 +382,15 @@
 		</fileset>
 		<pathconvert pathsep=" " property="objFiles" refid="objFileSet" />
 		<mkdir dir="${libsDir}" />
-		<exec executable="${linker}" failonerror="true" dir="${buildDir}">
-			<arg line="${linker-opts}" />
+		<exec executable="${ar}" failonerror="true" dir="${buildDir}">
+			<arg line="${ar-opts}" />
 			<arg path="${libsDir}/${libName}.tvos.arm64" />
 			<arg line="${objFiles}"/>
 			<arg line="${libraries}" />
 		</exec>
 	</target>
 
-	<target name="link-fat">
+	<target name="archive-fat">
 		<exec executable="lipo" failonerror="true" dir="${libsDir}">
 			<arg line="-create -output ${libName} ${libName}.386 ${libName}.x86_64 ${libName}.armv7 ${libName}.arm64"/>
 		</exec>
@@ -390,7 +399,7 @@
 		</exec>
 	</target>
 
-	<target name="postcompile" depends="link-386,link-x86_64,link-arm,link-arm64,link-tvos-x86_64,link-tvos-arm64,link-fat">
+	<target name="postcompile" depends="archive-386,archive-x86_64,archive-arm,archive-arm64,archive-tvos-x86_64,archive-tvos-arm64,archive-fat">
 		%postcompile%
 	</target>
 </project>
