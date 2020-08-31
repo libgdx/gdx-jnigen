@@ -53,11 +53,9 @@ public class JnigenExtension {
 	NativeCodeGeneratorConfig nativeCodeGeneratorConfig;
 	ArrayList<BuildTarget> targets = new ArrayList<BuildTarget>();
 	Action<BuildTarget> all = null;
-	
-	JnigenJarTask jarDesktopNatives = null;
+
 	Task jarAndroidNatives = null;
-	JnigenJarTask[] jarAndroidNativesABIs = null;
-	JnigenJarTask jarIOSNatives = null;
+	JnigenJarTask jarDesktopNatives = null;
 
 	@Inject
 	public JnigenExtension(Project project) {
@@ -95,6 +93,13 @@ public class JnigenExtension {
 	}
 
 	public void add(TargetOs type, boolean is64Bit, boolean isARM, Action<BuildTarget> container) {
+		String name = type + (isARM ? "ARM" : "") + (is64Bit ? "64" : "");
+		
+		if(get(type, is64Bit, isARM) != null)
+			throw new RuntimeException("Attempt to add duplicate build target " + name);
+		if((type == Android || type == IOS) && (is64Bit || isARM))
+			throw new RuntimeException("Android and iOS must not have is64Bit or isARM.");
+		
 		BuildTarget target = BuildTarget.newDefaultTarget(type, is64Bit, isARM);
 
 		if (all != null)
@@ -106,7 +111,7 @@ public class JnigenExtension {
 
 		Task jnigenTask = project.getTasks().getByName("jnigen");
 		Task jnigenBuildTask = project.getTasks().getByName("jnigenBuild");
-		Task builtTargetTask = project.getTasks().create("jnigenBuild" + type + (isARM ? "ARM" : "") + (is64Bit ? "64" : ""),
+		Task builtTargetTask = project.getTasks().create("jnigenBuild" + name,
 				JnigenBuildTargetTask.class, this, target);
 		builtTargetTask.dependsOn(jnigenTask);
 
@@ -114,8 +119,7 @@ public class JnigenExtension {
 			jnigenBuildTask.dependsOn(builtTargetTask);
 		
 		if(type == Android) {
-			if(jarAndroidNatives == null)
-			{
+			if(jarAndroidNatives == null) {
 				jarAndroidNatives = project.getTasks().create("jnigenJarNativesAndroid");
 				jarAndroidNatives.setGroup("jnigen");
 				jarAndroidNatives.setDescription("Assembles all jar archives containing the native libraries for Android.");
@@ -135,7 +139,7 @@ public class JnigenExtension {
 				abis = tmp.toArray(new String[tmp.size()]);
 			}
 			
-			jarAndroidNativesABIs = new JnigenJarTask[abis.length];
+			JnigenJarTask[] jarAndroidNativesABIs = new JnigenJarTask[abis.length];
 			for(int i = 0; i < abis.length; i++) {
 				jarAndroidNativesABIs[i] = project.getTasks().create("jnigenJarNativesAndroid"+abis[i], JnigenJarTask.class, type);
 				jarAndroidNativesABIs[i].add(target, this, abis[i]);
@@ -143,17 +147,45 @@ public class JnigenExtension {
 				jarAndroidNatives.dependsOn(jarAndroidNativesABIs[i]);
 			}
 		} else if(type == IOS) {
-			if(jarIOSNatives == null)
-				jarIOSNatives = project.getTasks().create("jnigenJarNativesIOS", JnigenIOSJarTask.class);
-			
+			JnigenIOSJarTask jarIOSNatives = project.getTasks().create("jnigenJarNativesIOS", JnigenIOSJarTask.class);
 			jarIOSNatives.add(target, this);
 		}
 		else {
 			if(jarDesktopNatives == null)
 				jarDesktopNatives = project.getTasks().create("jnigenJarNativesDesktop", JnigenJarTask.class, type);
-			
 			jarDesktopNatives.add(target, this);
 		}
+	}
+	
+	public BuildTarget get(TargetOs type) {
+		return get(type, false, false, null);
+	}
+
+	public BuildTarget get(TargetOs type, boolean is64Bit) {
+		return get(type, is64Bit, false, null);
+	}
+
+	public BuildTarget get(TargetOs type, boolean is64Bit, boolean isARM) {
+		return get(type, is64Bit, isARM, null);
+	}
+
+	public BuildTarget get(TargetOs type, Action<BuildTarget> container) {
+		return get(type, false, false, container);
+	}
+
+	public BuildTarget get(TargetOs type, boolean is64Bit, Action<BuildTarget> container) {
+		return get(type, is64Bit, false, container);
+	}
+
+	public BuildTarget get(TargetOs type, boolean is64Bit, boolean isARM, Action<BuildTarget> container) {
+		for(BuildTarget target : targets) {
+			if(target.os == type && target.is64Bit == is64Bit && target.isARM == isARM) {
+				if(container != null)
+					container.execute(target);
+				return target;
+			}
+		}
+		return null;
 	}
 
 	class NativeCodeGeneratorConfig {
