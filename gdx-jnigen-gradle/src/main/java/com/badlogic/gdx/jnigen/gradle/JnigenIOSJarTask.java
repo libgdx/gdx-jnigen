@@ -18,12 +18,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.badlogic.gdx.jnigen.BuildTarget;
-import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
 
 public class JnigenIOSJarTask extends JnigenJarTask {
 
 	public JnigenIOSJarTask() {
-		super(TargetOs.IOS);
+		super();
+		getArchiveClassifier().set("natives-ios");
 	}
 	
 	private void generateXML(File robovmXml, String sharedLibName)
