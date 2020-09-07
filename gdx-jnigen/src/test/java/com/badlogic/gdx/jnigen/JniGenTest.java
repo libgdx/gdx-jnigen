@@ -3,6 +3,7 @@ package com.badlogic.gdx.jnigen;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.badlogic.gdx.jnigen.JniGenTestClass.TestInner;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 
 import java.nio.ByteBuffer;
@@ -109,6 +110,12 @@ public class JniGenTest {
     public void testDouble() {
         assertEquals(0.0, JniGenTestClass.testDouble(0.0), 0.001);
         assertEquals(1.0, JniGenTestClass.testDouble(1.0), 0.001);
+    }
+
+    @Test
+    public void testInner() {
+        assertEquals(1, TestInner.testInner(0));
+        assertEquals(2, TestInner.testInner(1));
     }
 
     @Test

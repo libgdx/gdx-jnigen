@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 import com.badlogic.gdx.jnigen.parsing.CMethodParser;
 import com.badlogic.gdx.jnigen.parsing.CMethodParser.CMethod;
@@ -253,7 +254,6 @@ public class NativeCodeGenerator {
 					if (includes != null && !matcher.match(file.path(), includes)) continue;
 					if (excludes != null && matcher.match(file.path(), excludes)) continue;
 					String className = getNativeClassFileName(file);
-					FileDescriptor hFile = new FileDescriptor(jniDir.path() + "/" + className + ".h");
 					FileDescriptor cppFile = new FileDescriptor(jniDir + "/" + className + ".cpp");
 					if (file.lastModified() < cppFile.lastModified()) {
 						System.out.println("C/C++ for '" + file.path() + "' up to date");
@@ -267,8 +267,15 @@ public class NativeCodeGenerator {
 							continue;
 						}
 						System.out.print("Generating C/C++ for '" + file + "'...");
-						generateHFile(file);
-						generateCppFile(javaSegments, hFile, cppFile);
+						generateHFiles(file);
+						
+						List<FileDescriptor> hFiles = new ArrayList<>();
+						for(FileDescriptor f : new FileDescriptor(jniDir.path()).list()) {
+							if(f.name().startsWith(className) && f.name().endsWith(".h"))
+								hFiles.add(f);
+						}
+						
+						generateCppFile(javaSegments, hFiles, cppFile);
 						System.out.println("done");
 					}
 				}
@@ -282,7 +289,7 @@ public class NativeCodeGenerator {
 		return className;
 	}
 
-	private void generateHFile (FileDescriptor file) throws Exception {
+	private void generateHFiles (FileDescriptor file) throws Exception {
 		//Use temporary directory to prevent javac from creating class files somewhere we care about.
 		File tempClassFilesDirectory = Files.createTempDirectory("gdx-jnigen").toFile();
 		String command = "javac -classpath " + classpath + " -d " + tempClassFilesDirectory.getAbsolutePath() + " -h " + jniDir.path() + " " + file.path();
@@ -309,13 +316,16 @@ public class NativeCodeGenerator {
 		buffer.append("#include <" + fileName + ">\n");
 	}
 
-	private void generateCppFile (ArrayList<JavaSegment> javaSegments, FileDescriptor hFile, FileDescriptor cppFile)
+	private void generateCppFile (ArrayList<JavaSegment> javaSegments, List<FileDescriptor> hFiles, FileDescriptor cppFile)
 		throws Exception {
-		String headerFileContent = hFile.readString();
-		ArrayList<CMethod> cMethods = cMethodParser.parse(headerFileContent).getMethods();
-
 		StringBuffer buffer = new StringBuffer();
-		emitHeaderInclude(buffer, hFile.name());
+		
+		ArrayList<CMethod> cMethods = new ArrayList<>();
+		for(FileDescriptor hFile : hFiles) {
+			String headerFileContent = hFile.readString();
+			cMethods.addAll(cMethodParser.parse(headerFileContent).getMethods());
+			emitHeaderInclude(buffer, hFile.name());
+		}
 
 		for (JavaSegment segment : javaSegments) {
 			if (segment instanceof JniSection) {

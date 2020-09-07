@@ -60,15 +60,10 @@ class JniGenTestClass {
 			return true;
 	*/
 
-    // @off
-	/*JNI
-	#include <stdio.h>
-	 */
-
-//	public static class TestInner {
-//		public native void testInner(int arg); /*
-//			printf("%d\n", arg);
-//		*/
-//	}
+	public static class TestInner {
+		public native static int testInner(int arg); /*
+			return arg + 1;
+		*/
+	}
 
 }
