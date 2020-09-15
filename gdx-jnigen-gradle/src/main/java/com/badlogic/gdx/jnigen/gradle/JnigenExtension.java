@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
@@ -186,6 +187,13 @@ public class JnigenExtension {
 			}
 		}
 		return null;
+	}
+	
+	public void each(Predicate<BuildTarget> condition, Action<BuildTarget> container) {
+		for(BuildTarget target : targets) {
+			if(condition.test(target))
+				container.execute(target);
+		}
 	}
 
 	class NativeCodeGeneratorConfig {
