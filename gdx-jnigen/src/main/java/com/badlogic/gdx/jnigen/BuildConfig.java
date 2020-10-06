@@ -57,4 +57,15 @@ public class BuildConfig {
 		this.libsDir = new FileDescriptor(libsDir);
 		this.jniDir = new FileDescriptor(jniDir);
 	}
+
+	public void requireOutputDirs() {
+		// create all the directories for outputing object files, shared libs and natives jar as well as build scripts.
+		if (!libsDir.exists() && !libsDir.mkdirs()) {
+			throw new RuntimeException("Couldn't create directory for shared library files in '" + libsDir + "'");
+		}
+		if (!jniDir.exists() && !jniDir.mkdirs()) {
+			throw new RuntimeException("Couldn't create native code directory '" + jniDir + "'");
+		}
+	}
+
 }

@@ -25,17 +25,9 @@ public class AndroidNdkScriptGenerator {
 	public void generate (BuildConfig config, BuildTarget target) {
 		if (target.os != TargetOs.Android) throw new IllegalArgumentException("target os must be Android");
 
-		// create all the directories for outputing object files, shared libs and natives jar as well as build scripts.
-		if (!config.libsDir.exists()) {
-			if (!config.libsDir.mkdirs())
-				throw new RuntimeException("Couldn't create directory for shared library files in '" + config.libsDir + "'");
-		}
-		if (!config.jniDir.exists()) {
-			if (!config.jniDir.mkdirs())
-				throw new RuntimeException("Couldn't create native code directory '" + config.jniDir + "'");
-		}
+		config.requireOutputDirs();
 
-		ArrayList<FileDescriptor> files = new ArrayList<FileDescriptor>();
+		ArrayList<FileDescriptor> files = new ArrayList<>();
 
 		int idx = 0;
 		String[] includes = new String[target.cIncludes.length + target.cppIncludes.length];
