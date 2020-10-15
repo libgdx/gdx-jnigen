@@ -18,7 +18,7 @@
 	<!-- the compilerPrefix for the C & C++ compilers -->
 	<property name="compilerPrefix" value="%compilerPrefix%"/>
 	<!-- the compilerSuffix for the C & C++ compilers -->
-	<property name="compilerSuffix" value="" />	
+	<property name="compilerSuffix" value="%compilerSuffix%" />
 	
 	<!-- define gcc compiler, options and files to compile -->
 	<property name="gcc" value="${compilerPrefix}${cCompiler}${compilerSuffix}"/>	
