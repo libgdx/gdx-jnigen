@@ -225,6 +225,7 @@ public class AntScriptGenerator {
 		template = template.replace("%cppCompiler%", target.cppCompiler);
 		template = template.replace("%archiver%", target.archiver);
 		template = template.replace("%compilerPrefix%", target.compilerPrefix);
+		template = template.replace("%compilerSuffix%", target.compilerSuffix);
 		template = template.replace("%cFlags%", target.cFlags);
 		template = template.replace("%cppFlags%", target.cppFlags);
 		template = template.replace("%linkerFlags%", target.linkerFlags);

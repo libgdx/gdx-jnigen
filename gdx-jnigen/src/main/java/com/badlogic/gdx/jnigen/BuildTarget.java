@@ -49,7 +49,9 @@ public class BuildTarget {
 	/** the command to use when archiving files. Usually ar, must not be null */
 	public String archiver = "ar";
 	/** prefix for the compiler (g++, gcc), useful for cross compilation, must not be null **/
-	public String compilerPrefix;
+	public String compilerPrefix = "";
+	/** suffix for the compiler (g++, gcc), useful for cross compilation, must not be null **/
+	public String compilerSuffix = "";
 	/** the flags passed to the C compiler, must not be null **/
 	public String cFlags;
 	/** the flags passed to the C++ compiler, must not be null **/
