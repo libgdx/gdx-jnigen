@@ -16,6 +16,7 @@
 
 package com.badlogic.gdx.jnigen;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
@@ -59,36 +60,28 @@ public class AntScriptGenerator {
 	 * @param config the {@link BuildConfig}
 	 * @param targets list of {@link BuildTarget} instances */
 	public void generate (BuildConfig config, BuildTarget... targets) {
-		// create all the directories for outputing object files, shared libs and natives jar as well as build scripts.
-		if (!config.libsDir.exists()) {
-			if (!config.libsDir.mkdirs())
-				throw new RuntimeException("Couldn't create directory for shared library files in '" + config.libsDir + "'");
-		}
-		if (!config.jniDir.exists()) {
-			if (!config.jniDir.mkdirs())
-				throw new RuntimeException("Couldn't create native code directory '" + config.jniDir + "'");
-		}
+		config.requireOutputDirs();
 
 		// copy jni headers
 		copyJniHeaders(config.jniDir.path());
 
 		// copy memcpy_wrap.c, needed if your build platform uses the latest glibc, e.g. Ubuntu 12.10
-		if (config.jniDir.child("memcpy_wrap.c").exists() == false) {
-			new FileDescriptor("com/badlogic/gdx/jnigen/resources/scripts/memcpy_wrap.c", FileType.Classpath).copyTo(config.jniDir
-				.child("memcpy_wrap.c"));
+		if (!config.jniDir.child("memcpy_wrap.c").exists()) {
+			new FileDescriptor("com/badlogic/gdx/jnigen/resources/scripts/memcpy_wrap.c", FileType.Classpath)
+					.copyTo(config.jniDir.child("memcpy_wrap.c"));
 		}
 
-		ArrayList<String> buildFiles = new ArrayList<String>();
-		ArrayList<String> libsDirs = new ArrayList<String>();
-		ArrayList<String> sharedLibFiles = new ArrayList<String>();
+		ArrayList<String> buildFiles = new ArrayList<>();
+		ArrayList<String> libsDirs = new ArrayList<>();
+		ArrayList<String> sharedLibFiles = new ArrayList<>();
 
 		// generate an Ant build script for each target
 		for (BuildTarget target : targets) {
 			String buildFile = generateBuildTargetTemplate(config, target);
-			FileDescriptor libsDir = new FileDescriptor(getLibsDirectory(config, target));
+			FileDescriptor targetLibsDir = getLibsDirectory(config, target);
 
-			if (!libsDir.exists()) {
-				if (!libsDir.mkdirs()) throw new RuntimeException("Couldn't create libs directory '" + libsDir + "'");
+			if (!targetLibsDir.exists() && !targetLibsDir.mkdirs()) {
+				throw new RuntimeException("Couldn't create libs directory '" + targetLibsDir + "'");
 			}
 
 			String buildFileName = target.getBuildFilename();
@@ -102,10 +95,11 @@ public class AntScriptGenerator {
 				}
 
 				String sharedLibFilename = target.getSharedLibFilename(config.sharedLibName);
-				
+
 				if (target.os != TargetOs.Android && target.os != TargetOs.IOS) {
+
 					sharedLibFiles.add(sharedLibFilename);
-					libsDirs.add("../" + libsDir.path().replace('\\', '/'));
+					libsDirs.add(getRelativeLibsDirectoryPath(config, target));
 				}
 			}
 		}
@@ -131,20 +125,21 @@ public class AntScriptGenerator {
 			}
 		}
 
+		FileDescriptor buildFile = config.jniDir.child("build.xml");
+
 		template = template.replace("%projectName%", config.sharedLibName + "-natives");
 		template = template.replace("<clean/>", clean.toString());
 		template = template.replace("<compile/>", compile.toString());
-		template = template.replace("%packFile%", "../" + config.libsDir.path().replace('\\', '/') + "/" + config.sharedLibName
-			+ "-natives.jar");
+		template = template.replace("%packFile%", getRelativePackFilePath(config));
 		template = template.replace("<pack/>", pack);
 
-		config.jniDir.child("build.xml").writeString(template, false);
-		System.out.println("Wrote master build script '" + config.jniDir.child("build.xml") + "'");
+		buildFile.writeString(template, false);
+		System.out.println("Wrote master build script '" + buildFile + "'");
 	}
 
 	private void copyJniHeaders (String jniDir) {
 		final String pack = "com/badlogic/gdx/jnigen/resources/headers";
-		String files[] = {"classfile_constants.h", "jawt.h", "jdwpTransport.h", "jni.h", "linux/jawt_md.h", "linux/jni_md.h",
+		String[] files = {"classfile_constants.h", "jawt.h", "jdwpTransport.h", "jni.h", "linux/jawt_md.h", "linux/jni_md.h",
 			"mac/jni_md.h", "win32/jawt_md.h", "win32/jni_md.h"};
 
 		for (String file : files) {
@@ -160,8 +155,38 @@ public class AntScriptGenerator {
 		return "";
 	}
 
-	public static String getLibsDirectory (BuildConfig config, BuildTarget target) {
-		return config.libsDir.child(target.getTargetFolder()).path().replace('\\', '/');
+	public static FileDescriptor getPackFile (BuildConfig config) {
+		return config.libsDir.child(config.sharedLibName + "-natives.jar");
+	}
+
+	public static String getRelativePackFilePath (BuildConfig config) {
+		Path path1 = config.jniDir.child("build.xml").file.toPath().toAbsolutePath();
+		Path path2 = getPackFile(config).file().toPath().toAbsolutePath();
+		return getRelativePathString(path1, path2);
+	}
+
+	public static FileDescriptor getBuildDirectory (BuildConfig config, BuildTarget target) {
+		return config.buildDir.child(target.getTargetFolder());
+	}
+
+	public static String getRelativeBuildDirectoryPath (BuildConfig config, BuildTarget target) {
+		Path path1 = config.jniDir.file.toPath().toAbsolutePath();
+		Path path2 = getBuildDirectory(config, target).file.toPath().toAbsolutePath();
+		return getRelativePathString(path1, path2);
+	}
+
+	public static FileDescriptor getLibsDirectory (BuildConfig config, BuildTarget target) {
+		return config.libsDir.child(target.getTargetFolder());
+	}
+
+	public static String getRelativeLibsDirectoryPath (BuildConfig config, BuildTarget target) {
+		Path path1 = config.jniDir.file.toPath().toAbsolutePath();
+		Path path2 = getLibsDirectory(config, target).file.toPath().toAbsolutePath();
+		return getRelativePathString(path1, path2);
+	}
+
+	private static String getRelativePathString(Path path1, Path path2) {
+		return path1.relativize(path2).toString().replace("\\", "/");
 	}
 
 	private String generateBuildTargetTemplate (BuildConfig config, BuildTarget target) {
@@ -217,8 +242,8 @@ public class AntScriptGenerator {
 
 		// replace template vars with proper values
 		template = template.replace("%projectName%", config.sharedLibName + "-" + target.os + "-" + (target.isARM ? "arm" : "") + (target.is64Bit ? "64" : "32"));
-		template = template.replace("%buildDir%", config.buildDir.child(target.getTargetFolder()).path().replace('\\', '/'));
-		template = template.replace("%libsDir%", "../" + getLibsDirectory(config, target));
+		template = template.replace("%buildDir%", getRelativeBuildDirectoryPath(config, target));
+		template = template.replace("%libsDir%", getRelativeLibsDirectoryPath(config, target));
 		template = template.replace("%libName%", libName);
 		template = template.replace("%jniPlatform%", jniPlatform);
 		template = template.replace("%cCompiler%", target.cCompiler);
