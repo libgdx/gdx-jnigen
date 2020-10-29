@@ -58,7 +58,7 @@ public class JnigenIOSJarTask extends JnigenJarTask {
 
 			fos.close();
 		} catch (IOException | ParserConfigurationException | TransformerException e) {
-			throw new RuntimeException("Unable to create temporary robovm.xml file");
+			throw new RuntimeException("Unable to create temporary robovm.xml file", e);
 		}
 	}
 	
