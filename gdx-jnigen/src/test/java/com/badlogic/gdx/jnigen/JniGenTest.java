@@ -20,14 +20,14 @@ public class JniGenTest {
         new NativeCodeGenerator().generate(
                 "src/test/java",
                 System.getProperty("java.class.path"),
-                "build/jnigen/source",
+                "build/generated/jni",
                 new String[] { "**/*.java" },
                 null
         );
 
         // generate build scripts
-        BuildConfig buildConfig = new BuildConfig("test", "build/jnigen/targets", "build/jnigen/libs", "build/jnigen/source");
-
+        BuildConfig buildConfig = new BuildConfig("test", "../../tmp/gdx-jnigen", "../../build/libs", "build/generated/jni");
+        
         BuildTarget target;
         if (SharedLibraryLoader.isWindows)
         	target = BuildTarget.newDefaultTarget(BuildTarget.TargetOs.Windows, SharedLibraryLoader.is64Bit);
@@ -41,17 +41,17 @@ public class JniGenTest {
         new AntScriptGenerator().generate(buildConfig, target);
 
         if (SharedLibraryLoader.isMac) {
-            boolean macAntExecutionStatus = BuildExecutor.executeAnt("build/jnigen/source/build-macosx64.xml", "-v");
+            boolean macAntExecutionStatus = BuildExecutor.executeAnt("build/generated/jni/build-macosx64.xml", "-v");
             if (!macAntExecutionStatus) {
                 throw new RuntimeException("Failure to execute mac ant.");
             }
         } else {
-            boolean antExecutionStatus = BuildExecutor.executeAnt("build/jnigen/source/build.xml", "-v", "compile-natives");
+            boolean antExecutionStatus = BuildExecutor.executeAnt("build/generated/jni/build.xml", "-v", "compile-natives");
             if (!antExecutionStatus) {
                 throw new RuntimeException("Failure to execute mac ant.");
             }
         }
-        boolean antExecutionStatus = BuildExecutor.executeAnt("build/jnigen/source/build.xml", "-v", "compile-natives", "pack-natives");
+        boolean antExecutionStatus = BuildExecutor.executeAnt("build/generated/jni/build.xml", "-v", "compile-natives", "pack-natives");
 
 
         // compile and pack natives

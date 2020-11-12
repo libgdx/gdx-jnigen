@@ -231,8 +231,10 @@ public class NativeCodeGenerator {
 		}
 
 		// generate jni directory if necessary
-		if (!this.jniDir.exists() && !this.jniDir.mkdirs()) {
-			throw new Exception("Couldn't create JNI directory '" + jniDir + "'");
+		if (!this.jniDir.exists()) {
+			if (!this.jniDir.mkdirs()) {
+				throw new Exception("Couldn't create JNI directory '" + jniDir + "'");
+			}
 		}
 
 		// process the source directory, emitting c/c++ files to jniDir
@@ -314,7 +316,8 @@ public class NativeCodeGenerator {
 		buffer.append("#include <" + fileName + ">\n");
 	}
 
-	private void generateCppFile (ArrayList<JavaSegment> javaSegments, List<FileDescriptor> hFiles, FileDescriptor cppFile) throws Exception {
+	private void generateCppFile (ArrayList<JavaSegment> javaSegments, List<FileDescriptor> hFiles, FileDescriptor cppFile)
+		throws Exception {
 		StringBuffer buffer = new StringBuffer();
 		
 		ArrayList<CMethod> cMethods = new ArrayList<>();
