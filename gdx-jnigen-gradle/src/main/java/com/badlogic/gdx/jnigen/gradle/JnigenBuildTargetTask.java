@@ -28,8 +28,9 @@ public class JnigenBuildTargetTask extends DefaultTask {
 
 	@TaskAction
 	public void run() {
+		boolean verbose = getProject().findProperty("VERBOSE") != null;
 		if(!BuildExecutor.executeAnt(new File(ext.subProjectDir + ext.jniDir, target.getBuildFilename()).getPath(),
-				"-Drelease=" + ext.release, "clean", "postcompile", "-v")) {
+				"-Drelease=" + ext.release, "clean", "postcompile", verbose ? "-v" : "")) {
 			throw new RuntimeException("Ant execution for " + target.getBuildFilename() + " failed.");
 		}
 	}
