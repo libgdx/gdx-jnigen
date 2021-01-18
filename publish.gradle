@@ -27,6 +27,13 @@ subprojects
                                 distribution = POM_LICENCE_DIST
                             }
                         }
+                        developers {
+                            developer {
+                                id = "Tomski"
+                                name = "Tom Wojciechowski"
+                                email = "tomwojciechowski@asidik.com"
+                            }
+                        }
                         scm {
                             connection = POM_SCM_CONNECTION
                             developerConnection = POM_SCM_DEV_CONNECTION

@@ -1,6 +1,6 @@
 ## gdx-jnigen
 
-[![Build Status](https://libgdx.badlogicgames.com/jenkins/buildStatus/icon?job=gdx-jnigen)](https://libgdx.badlogicgames.com/jenkins/job/gdx-jnigen/)
+[![Build Status](https://github.com/libgdx/gdx-jnigen/workflows/Build%20and%20deploy/badge.svg)](https://github.com/libgdx/gdx-jnigen/actions?query=workflow%3A"Build+and+deploy")
 
 The gdx-jnigen tool can be used with or without libgdx to allow C/C++ code to be written inline
 with Java source code. 
