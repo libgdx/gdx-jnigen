@@ -271,11 +271,20 @@ public class NativeCodeGenerator {
 						
 						List<FileDescriptor> hFiles = new ArrayList<>();
 						for(FileDescriptor f : new FileDescriptor(jniDir.path()).list()) {
-							if(f.name().startsWith(className) && f.name().endsWith(".h"))
+							if(f.name().startsWith(className) && f.name().endsWith(".h")) {
 								hFiles.add(f);
+								// Set the newly created file's modified date to match input.
+								// This allows caching utilities that rely on modification date.
+								f.file().setLastModified(file.lastModified());
+							}
 						}
 						
 						generateCppFile(javaSegments, hFiles, cppFile);
+						
+						// Set the newly created file's modified date to match input.
+						// This allows caching utilities that rely on modification date.
+						cppFile.file().setLastModified(file.lastModified());
+						
 						System.out.println("done");
 					}
 				}
