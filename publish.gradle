@@ -52,13 +52,14 @@ subprojects
         }
 
         signing {
+            useGpgCmd()
             sign publishing.publications.mavenJava
         }
 
         //Simply using "required" in signing block doesn't work because taskGraph isn't ready yet.
         gradle.taskGraph.whenReady {
             tasks.withType(Sign) {
-                onlyIf { isReleaseBuild() && gradle.taskGraph.hasTask("publish") }
+                onlyIf { isReleaseBuild() }
             }
         }
     }
