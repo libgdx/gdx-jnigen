@@ -46,14 +46,14 @@ jobs:
         ORG_GRADLE_PROJECT_NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
 
     - name: Import GPG key
-      if: github.event_name == 'release' && github.event.action == 'created' && github.repository_owner == 'libgdx'
+      if: github.event_name == 'release' && github.repository_owner == 'libgdx'
       id: import_gpg
       uses: crazy-max/ghaction-import-gpg@v3
       with:
         gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
         passphrase: ${{ secrets.GPG_PASSPHRASE }}
     - name: Release build deploy
-      if: github.event_name == 'release' && github.event.action == 'created' && github.repository_owner == 'libgdx'
+      if: github.event_name == 'release' && github.repository_owner == 'libgdx'
       run: ./gradlew build publish -PRELEASE -Psigning.gnupg.keyId=${{ secrets.GPG_KEYID }} -Psigning.gnupg.passphrase=${{ secrets.GPG_PASSPHRASE }} -Psigning.gnupg.keyName=${{ secrets.GPG_KEYID }}
       env:
         ORG_GRADLE_PROJECT_NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
