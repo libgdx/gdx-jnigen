@@ -131,58 +131,6 @@
 		</exec>
 	</target>
 	
-	<!-- compiles all C and C++ files to object files in the build directory, for armv7 builds-->
-	<target name="compile-arm" depends="create-build-dir">
-		<mkdir dir="${buildDir}"/>
-		<antcall target="clean-objfiles"/>
-		<apply failonerror="true" executable="${g++}" dest="${buildDir}" verbose="true">
-			<arg line="-isysroot ${iphoneos-sdk} -arch armv7 -miphoneos-version-min=6.0 -fembed-bitcode ${g++-opts}"/>
-			<arg value="-Ijni-headers"/>
-			<arg value="-Ijni-headers/${jniPlatform}"/>
-			<arg value="-I."/>
-			%headerDirs%
-			<srcfile/>
-			<arg value="-o"/>
-			<targetfile/>
-			<fileset refid="g++-files"/>
-			<compositemapper>
-				<mapper type="glob" from="*.cpp" to="*.o"/>
-				<mapper type="glob" from="*.mm" to="*.o"/>
-			</compositemapper>
-		</apply>
-		<apply failonerror="true" executable="${gcc}" dest="${buildDir}" verbose="true">
-			<arg line="-isysroot ${iphoneos-sdk} -arch armv7 -miphoneos-version-min=6.0 -fembed-bitcode ${gcc-opts}"/>
-			<arg value="-Ijni-headers"/>
-			<arg value="-Ijni-headers/${jniPlatform}"/>
-			<arg value="-I."/>
-			%headerDirs%
-			<srcfile/>
-			<arg value="-o"/>
-			<targetfile/>
-			<fileset refid="gcc-files"/>
-			<compositemapper>
-				<mapper type="glob" from="*.c" to="*.o"/>
-			</compositemapper>
-		</apply>
-	</target>	
-
-	<!-- archives the shared library based on the previously compiled object files -->
-	<target name="archive-arm" depends="compile-arm">
-		<fileset dir="${buildDir}" id="objFileSet">
-			<patternset>
-				<include name="**/*.o" />
-			</patternset>
-		</fileset>
-		<pathconvert pathsep=" " property="objFiles" refid="objFileSet" />
-		<mkdir dir="${libsDir}" />
-		<exec executable="${ar}" failonerror="true" dir="${buildDir}">
-			<arg line="${ar-opts}" />
-			<arg path="${libsDir}/${libName}.armv7" />
-			<arg line="${objFiles}"/>
-			<arg line="${libraries}" />
-		</exec>
-	</target>
-	
 	<!-- compiles all C and C++ files to object files in the build directory, for arm64 builds-->
 	<target name="compile-arm64" depends="create-build-dir,clean-objfiles">
 		<mkdir dir="${buildDir}"/>
@@ -341,14 +289,14 @@
 
 	<target name="archive-fat">
 		<exec executable="lipo" failonerror="true" dir="${libsDir}">
-			<arg line="-create -output ${libName} ${libName}.x86_64 ${libName}.armv7 ${libName}.arm64"/>
+			<arg line="-create -output ${libName} ${libName}.x86_64 ${libName}.arm64"/>
 		</exec>
 		<exec executable="lipo" failonerror="true" dir="${libsDir}">
 			<arg line="-create -output ${libName}.tvos ${libName}.tvos.x86_64 ${libName}.tvos.arm64"/>
 		</exec>
 	</target>
 
-	<target name="postcompile" depends="archive-x86_64,archive-arm,archive-arm64,archive-tvos-x86_64,archive-tvos-arm64,archive-fat">
+	<target name="postcompile" depends="archive-x86_64,archive-arm64,archive-tvos-x86_64,archive-tvos-arm64,archive-fat">
 		%postcompile%
 	</target>
 </project>
