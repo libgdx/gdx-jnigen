@@ -22,8 +22,6 @@
 	
 	<property name="iphoneos-sdk" value="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/"/>
 	<property name="iphonesimulator-sdk" value="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk"/>
-	<property name="tvos-sdk" value="/Applications/Xcode.app/Contents/Developer/Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS.sdk/"/>
-	<property name="tvossimulator-sdk" value="/Applications/Xcode.app/Contents/Developer/Platforms/AppleTVSimulator.platform/Developer/SDKs/AppleTVSimulator.sdk"/>
 	
 	
 	<!-- define gcc compiler, options and files to compile -->
@@ -53,15 +51,7 @@
 	<target name="clean">
 		<delete includeemptydirs="true" quiet="true">
 			<fileset dir="${buildDir}"/>
-			<fileset dir="${libsDir}" includes="**/*" excludes="**/.svn"/>
-		</delete>
-	</target>
-	
-	<target name="clean-objfiles">
-		<delete>
-			<fileset dir="${buildDir}">
-				<include name="**/*.o"/>
-			</fileset>
+			<fileset dir="${libsDir}" includes="**/*"/>
 		</delete>
 	</target>
 	
@@ -71,20 +61,27 @@
 			<fileset refid="g++-files"/>
 			<fileset refid="gcc-files"/>
 		</copy>
+		<mkdir dir="${buildDir}/x86"/>
+		<mkdir dir="${buildDir}/arm32"/>
+		<mkdir dir="${buildDir}/arm64"/>
 		<delete>
-			<fileset dir="${buildDir}">
+			<fileset dir="${buildDir}/x86">
 				<include name="*"/>
-				<exclude name="*.o"/>
+			</fileset>
+			<fileset dir="${buildDir}/arm32">
+				<include name="*"/>
+			</fileset>
+			<fileset dir="${buildDir}/arm64">
+				<include name="*"/>
 			</fileset>
 		</delete>
+		<mkdir dir="${libsDir}"/>
 	</target>
 	
 	<!-- compiles all C and C++ files to object files in the build directory, for x86_64 builds-->
 	<target name="compile-x86_64" depends="create-build-dir">
-		<mkdir dir="${buildDir}"/>
-		<antcall target="clean-objfiles"/>
-		<apply failonerror="true" executable="${g++}" dest="${buildDir}" verbose="true">
-			<arg line="-isysroot ${iphonesimulator-sdk} -arch x86_64 -miphoneos-version-min=6.0 ${g++-opts}"/>
+		<apply failonerror="true" executable="${g++}" dest="${buildDir}/x86" verbose="true">
+			<arg line="-isysroot ${iphonesimulator-sdk} -arch x86_64 -miphoneos-version-min=9.0 ${g++-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
@@ -99,7 +96,7 @@
 			</compositemapper>
 		</apply>
 		<apply failonerror="true" executable="${gcc}" dest="${buildDir}" verbose="true">
-			<arg line="-isysroot ${iphonesimulator-sdk} -arch x86_64 -miphoneos-version-min=6.0 ${gcc-opts}"/>
+			<arg line="-isysroot ${iphonesimulator-sdk} -arch x86_64 -miphoneos-version-min=9.0 ${gcc-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
@@ -116,14 +113,13 @@
 
 	<!-- archives the shared library based on the previously compiled object files -->
 	<target name="archive-x86_64" depends="compile-x86_64">
-		<fileset dir="${buildDir}" id="objFileSet">
+		<fileset dir="${buildDir}/x86" id="objFileSet">
 			<patternset>
 				<include name="**/*.o" />
 			</patternset>
 		</fileset>
 		<pathconvert pathsep=" " property="objFiles" refid="objFileSet" />
-		<mkdir dir="${libsDir}" />
-		<exec executable="${ar}" failonerror="true" dir="${buildDir}">
+		<exec executable="${ar}" failonerror="true" dir="${buildDir}/x86">
 			<arg line="${ar-opts}" />
 			<arg path="${libsDir}/${libName}.x86_64" />
 			<arg line="${objFiles}"/>
@@ -132,11 +128,9 @@
 	</target>
 	
 	<!-- compiles all C and C++ files to object files in the build directory, for arm64 builds-->
-	<target name="compile-arm64" depends="create-build-dir,clean-objfiles">
-		<mkdir dir="${buildDir}"/>
-		<antcall target="clean-objfiles"/>
-		<apply failonerror="true" executable="${g++}" dest="${buildDir}" verbose="true">
-			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=6.0 -fembed-bitcode ${g++-opts}"/>
+	<target name="compile-arm64" depends="create-build-dir">
+		<apply failonerror="true" executable="${g++}" dest="${buildDir}/arm64" verbose="true">
+			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=9.0 -fembed-bitcode ${g++-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
@@ -150,8 +144,8 @@
 				<mapper type="glob" from="*.mm" to="*.o"/>
 			</compositemapper>
 		</apply>
-		<apply failonerror="true" executable="${gcc}" dest="${buildDir}" verbose="true">
-			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=6.0 -fembed-bitcode ${gcc-opts}"/>
+		<apply failonerror="true" executable="${gcc}" dest="${buildDir}/arm64" verbose="true">
+			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=9.0 -fembed-bitcode ${gcc-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
@@ -164,31 +158,28 @@
 				<mapper type="glob" from="*.c" to="*.o"/>
 			</compositemapper>
 		</apply>
-	</target>	
+	</target>
 
 	<!-- archives the shared library based on the previously compiled object files -->
 	<target name="archive-arm64" depends="compile-arm64">
-		<fileset dir="${buildDir}" id="objFileSet">
+		<fileset dir="${buildDir}/arm64" id="objFileSetArm64">
 			<patternset>
 				<include name="**/*.o" />
 			</patternset>
 		</fileset>
-		<pathconvert pathsep=" " property="objFiles" refid="objFileSet" />
-		<mkdir dir="${libsDir}" />
-		<exec executable="${ar}" failonerror="true" dir="${buildDir}">
+		<pathconvert pathsep=" " property="objFilesArm64" refid="objFileSetArm64" />
+		<exec executable="${ar}" failonerror="true" dir="${buildDir}/arm64">
 			<arg line="${ar-opts}" />
 			<arg path="${libsDir}/${libName}.arm64" />
-			<arg line="${objFiles}"/>
+			<arg line="${objFilesArm64}"/>
 			<arg line="${libraries}" />
 		</exec>
 	</target>
-	
-	<!-- compiles all C and C++ files to object files in the build directory, for tvOS x86_64 builds-->
-	<target name="compile-tvos-x86_64" depends="create-build-dir">
-		<mkdir dir="${buildDir}"/>
-		<antcall target="clean-objfiles"/>
-		<apply failonerror="true" executable="${g++}" dest="${buildDir}" verbose="true">
-			<arg line="-isysroot ${tvossimulator-sdk} -arch x86_64 -mtvos-version-min=9.0 ${g++-opts}"/>
+
+	<!-- compiles all C and C++ files to object files in the build directory, for arm32 builds-->
+	<target name="compile-arm32" depends="create-build-dir">
+		<apply failonerror="true" executable="${g++}" dest="${buildDir}/arm32" verbose="true">
+			<arg line="-isysroot ${iphoneos-sdk} -arch armv7 -miphoneos-version-min=9.0 -fembed-bitcode ${g++-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
@@ -202,8 +193,8 @@
 				<mapper type="glob" from="*.mm" to="*.o"/>
 			</compositemapper>
 		</apply>
-		<apply failonerror="true" executable="${gcc}" dest="${buildDir}" verbose="true">
-			<arg line="-isysroot ${tvossimulator-sdk} -arch x86_64 -mtvos-version-min=9.0 ${gcc-opts}"/>
+		<apply failonerror="true" executable="${gcc}" dest="${buildDir}/arm32" verbose="true">
+			<arg line="-isysroot ${iphoneos-sdk} -arch armv7 -miphoneos-version-min=9.0 -fembed-bitcode ${gcc-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
@@ -216,87 +207,31 @@
 				<mapper type="glob" from="*.c" to="*.o"/>
 			</compositemapper>
 		</apply>
-	</target>	
-
-	<!-- archives the shared library based on the previously compiled object files -->
-	<target name="archive-tvos-x86_64" depends="compile-tvos-x86_64">
-		<fileset dir="${buildDir}" id="objFileSet">
-			<patternset>
-				<include name="**/*.o" />
-			</patternset>
-		</fileset>
-		<pathconvert pathsep=" " property="objFiles" refid="objFileSet" />
-		<mkdir dir="${libsDir}" />
-		<exec executable="${ar}" failonerror="true" dir="${buildDir}">
-			<arg line="${ar-opts}" />
-			<arg path="${libsDir}/${libName}.tvos.x86_64" />
-			<arg line="${objFiles}"/>
-			<arg line="${libraries}" />
-		</exec>
 	</target>
-	
-	<!-- compiles all C and C++ files to object files in the build directory, for tvOS arm64 builds-->
-	<target name="compile-tvos-arm64" depends="create-build-dir,clean-objfiles">
-		<mkdir dir="${buildDir}"/>
-		<antcall target="clean-objfiles"/>
-		<apply failonerror="true" executable="${g++}" dest="${buildDir}" verbose="true">
-			<arg line="-isysroot ${tvos-sdk} -arch arm64 -mtvos-version-min=9.0 -fembed-bitcode ${g++-opts}"/>
-			<arg value="-Ijni-headers"/>
-			<arg value="-Ijni-headers/${jniPlatform}"/>
-			<arg value="-I."/>
-			%headerDirs%
-			<srcfile/>
-			<arg value="-o"/>
-			<targetfile/>
-			<fileset refid="g++-files"/>
-			<compositemapper>
-				<mapper type="glob" from="*.cpp" to="*.o"/>
-				<mapper type="glob" from="*.mm" to="*.o"/>
-			</compositemapper>
-		</apply>
-		<apply failonerror="true" executable="${gcc}" dest="${buildDir}" verbose="true">
-			<arg line="-isysroot ${tvos-sdk} -arch arm64 -mtvos-version-min=9.0 -fembed-bitcode ${gcc-opts}"/>
-			<arg value="-Ijni-headers"/>
-			<arg value="-Ijni-headers/${jniPlatform}"/>
-			<arg value="-I."/>
-			%headerDirs%
-			<srcfile/>
-			<arg value="-o"/>
-			<targetfile/>
-			<fileset refid="gcc-files"/>
-			<compositemapper>
-				<mapper type="glob" from="*.c" to="*.o"/>
-			</compositemapper>
-		</apply>
-	</target>	
 
 	<!-- archives the shared library based on the previously compiled object files -->
-	<target name="archive-tvos-arm64" depends="compile-tvos-arm64">
-		<fileset dir="${buildDir}" id="objFileSet">
+	<target name="archive-arm32" depends="compile-arm32">
+		<fileset dir="${buildDir}/arm32" id="objFileSetArm32">
 			<patternset>
 				<include name="**/*.o" />
 			</patternset>
 		</fileset>
-		<pathconvert pathsep=" " property="objFiles" refid="objFileSet" />
-		<mkdir dir="${libsDir}" />
-		<exec executable="${ar}" failonerror="true" dir="${buildDir}">
+		<pathconvert pathsep=" " property="objFilesArm32" refid="objFileSetArm32" />
+		<exec executable="${ar}" failonerror="true" dir="${buildDir}/arm32">
 			<arg line="${ar-opts}" />
-			<arg path="${libsDir}/${libName}.tvos.arm64" />
-			<arg line="${objFiles}"/>
+			<arg path="${libsDir}/${libName}.arm32" />
+			<arg line="${objFilesArm32}"/>
 			<arg line="${libraries}" />
 		</exec>
 	</target>
 
 	<target name="archive-fat">
 		<exec executable="lipo" failonerror="true" dir="${libsDir}">
-			<arg line="-create -output ${libName} ${libName}.x86_64 ${libName}.arm64"/>
-		</exec>
-		<exec executable="lipo" failonerror="true" dir="${libsDir}">
-			<arg line="-create -output ${libName}.tvos ${libName}.tvos.x86_64 ${libName}.tvos.arm64"/>
+			<arg line="-create -output ${libName} ${libName}.x86_64 ${libName}.arm32 ${libName}.arm64"/>
 		</exec>
 	</target>
 
-	<target name="postcompile" depends="archive-x86_64,archive-arm64,archive-tvos-x86_64,archive-tvos-arm64,archive-fat">
+	<target name="postcompile" depends="archive-x86_64,archive-arm32,archive-arm64,archive-fat">
 		%postcompile%
 	</target>
 </project>
