@@ -56,14 +56,26 @@
 	</target>
 	
 	<target name="create-build-dir">
-		<!-- FIXME this is pretty nasty :/ -->
+		<!-- FIXME this is pretty nasty :/
+		     The source files are copied to the output folders
+		     thereby creating the directory hiearchy.
+		     -->
 		<copy todir="${buildDir}">
 			<fileset refid="g++-files"/>
 			<fileset refid="gcc-files"/>
 		</copy>
-		<mkdir dir="${buildDir}/x86"/>
-		<mkdir dir="${buildDir}/arm32"/>
-		<mkdir dir="${buildDir}/arm64"/>
+		<copy todir="${buildDir}/x86">
+			<fileset refid="g++-files"/>
+			<fileset refid="gcc-files"/>
+		</copy>
+		<copy todir="${buildDir}/arm32">
+			<fileset refid="g++-files"/>
+			<fileset refid="gcc-files"/>
+		</copy>
+		<copy todir="${buildDir}/arm64">
+			<fileset refid="g++-files"/>
+			<fileset refid="gcc-files"/>
+		</copy>
 		<delete>
 			<fileset dir="${buildDir}/x86">
 				<include name="*"/>
