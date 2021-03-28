@@ -107,7 +107,7 @@
 				<mapper type="glob" from="*.mm" to="*.o"/>
 			</compositemapper>
 		</apply>
-		<apply failonerror="true" executable="${gcc}" dest="${buildDir}" verbose="true">
+		<apply failonerror="true" executable="${gcc}" dest="${buildDir}/x86" verbose="true">
 			<arg line="-isysroot ${iphonesimulator-sdk} -arch x86_64 -miphoneos-version-min=9.0 ${gcc-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
