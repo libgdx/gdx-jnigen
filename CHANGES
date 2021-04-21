@@ -1,0 +1,2 @@
+[2.2.0]
+- [BREAKING CHANGE] Split macOS arm64 binaries into their own dylib.
