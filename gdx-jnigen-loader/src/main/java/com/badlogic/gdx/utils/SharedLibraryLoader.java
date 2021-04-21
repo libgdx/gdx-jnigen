@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.UUID;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
@@ -63,11 +64,16 @@ public class SharedLibraryLoader {
 		}
 	}
 
-	static private final HashSet<String> loadedLibraries = new HashSet<String>();
+	static private final HashSet<String> loadedLibraries = new HashSet<>();
+	static private final Random random = new Random();
 
 	private String nativesJar;
 
 	public SharedLibraryLoader () {
+	}
+
+	static String randomUUID () {
+		return new UUID(random.nextLong(), random.nextLong()).toString();
 	}
 
 	/** Fetches the natives from the given natives jar file. Used for testing a shared lib on the fly.
@@ -154,7 +160,7 @@ public class SharedLibraryLoader {
 
 			File extractedFile = getExtractedFile(dirName, new File(sourcePath).getName());
 			if (extractedFile == null) {
-				extractedFile = getExtractedFile(UUID.randomUUID().toString(), new File(sourcePath).getName());
+				extractedFile = getExtractedFile(randomUUID(), new File(sourcePath).getName());
 				if (extractedFile == null) throw new SharedLibraryLoadRuntimeException(
 					"Unable to find writable path to extract file. Is the user home directory writable?");
 			}
@@ -214,7 +220,7 @@ public class SharedLibraryLoader {
 		if (file.exists()) {
 			if (!file.canWrite() || !canExecute(file)) return false;
 			// Don't overwrite existing file just to check if we can write to directory.
-			testFile = new File(parent, UUID.randomUUID().toString());
+			testFile = new File(parent, randomUUID().toString());
 		} else {
 			parent.mkdirs();
 			if (!parent.isDirectory()) return false;
