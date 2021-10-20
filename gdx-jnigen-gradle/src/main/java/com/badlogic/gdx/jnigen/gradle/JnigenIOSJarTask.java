@@ -67,6 +67,7 @@ public class JnigenIOSJarTask extends JnigenJarTask {
 		
 		String path = ext.subProjectDir + ext.libsDir + File.separatorChar + targetFolder;
 		from(path, (copySpec) -> {
+			copySpec.include("**/*.framework/");
 			copySpec.include("*.a");
 			copySpec.into("META-INF/robovm/ios/libs");
 		});
@@ -81,7 +82,7 @@ public class JnigenIOSJarTask extends JnigenJarTask {
 		if(!robovmXml.exists()) {
 			generateXML(robovmXml, target.getSharedLibFilename(ext.sharedLibName));
 		}
-		
+
 		from(robovmXml, (copySpec) -> {
 			copySpec.into("META-INF/robovm/ios");
 			copySpec.rename(".*", "robovm.xml");
