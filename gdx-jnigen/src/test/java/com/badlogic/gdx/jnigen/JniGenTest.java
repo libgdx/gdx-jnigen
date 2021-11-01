@@ -48,7 +48,7 @@ public class JniGenTest {
         } else {
             boolean antExecutionStatus = BuildExecutor.executeAnt("build/generated/jni/build.xml", "-v", "compile-natives");
             if (!antExecutionStatus) {
-                throw new RuntimeException("Failure to execute mac ant.");
+                throw new RuntimeException("Failure to execute linux/windows ant.");
             }
         }
         boolean antExecutionStatus = BuildExecutor.executeAnt("build/generated/jni/build.xml", "-v", "compile-natives", "pack-natives");
