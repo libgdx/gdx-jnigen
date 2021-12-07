@@ -26,6 +26,7 @@ public class JnigenTask extends DefaultTask {
 
 		setGroup("jnigen");
 		setDescription("Generates jnigen native code files and build scripts.");
+		dependsOn(ext.nativeCodeGeneratorConfig.sourceSet.getRuntimeClasspath());
 	}
 
 	@TaskAction
@@ -40,17 +41,12 @@ public class JnigenTask extends DefaultTask {
 		log.debug("nativeCodeGeneratorConfig " + ext.nativeCodeGeneratorConfig);
 
 		try {
-			if (ext.nativeCodeGeneratorConfig.multipleSourceSetDirs && ext.nativeCodeGeneratorConfig.sourceDir == null) {
-				log.error("Multiple java SrcDirs detected. Please manually specify nativeCodeGenerator { sourceDir = \"\"}");
-				throw new RuntimeException( "Multiple java SrcDirs detected. Please manually specify nativeCodeGenerator { sourceDir = \"\"}");
-			}
-			
-			String absoluteSourceDir = ext.nativeCodeGeneratorConfig.sourceDir;
+			String absoluteSourceDir = ext.nativeCodeGeneratorConfig.getSourceDir();
 			if(!absoluteSourceDir.startsWith(ext.subProjectDir))
-				absoluteSourceDir = ext.subProjectDir + ext.nativeCodeGeneratorConfig.sourceDir;
+				absoluteSourceDir = ext.subProjectDir + ext.nativeCodeGeneratorConfig.getSourceDir();
 			
 			new NativeCodeGenerator().generate(absoluteSourceDir,
-					ext.nativeCodeGeneratorConfig.classpath, ext.subProjectDir + ext.nativeCodeGeneratorConfig.jniDir,
+					ext.nativeCodeGeneratorConfig.sourceSet.getRuntimeClasspath().getAsPath(), ext.subProjectDir + ext.nativeCodeGeneratorConfig.jniDir,
 					ext.nativeCodeGeneratorConfig.includes, ext.nativeCodeGeneratorConfig.excludes);
 		} catch (Exception e) {
 			throw new RuntimeException("NativeCodeGenerator threw exception", e);

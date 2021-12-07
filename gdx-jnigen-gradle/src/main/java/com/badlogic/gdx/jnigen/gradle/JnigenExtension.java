@@ -15,6 +15,8 @@ import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.badlogic.gdx.jnigen.BuildTarget;
 import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
@@ -23,6 +25,8 @@ import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
  * @author Desu
  */
 public class JnigenExtension {
+	private static final Logger log = LoggerFactory.getLogger(JnigenExtension.class);
+
 	public static final boolean x32 = false;
 	public static final boolean x64 = true;
 	public static final boolean ARM = true;
@@ -52,7 +56,7 @@ public class JnigenExtension {
 	boolean release = true;
 
 	NativeCodeGeneratorConfig nativeCodeGeneratorConfig;
-	ArrayList<BuildTarget> targets = new ArrayList<BuildTarget>();
+	List<BuildTarget> targets = new ArrayList<>();
 	Action<BuildTarget> all = null;
 
 	Task jarAndroidNatives = null;
@@ -197,38 +201,47 @@ public class JnigenExtension {
 	}
 
 	class NativeCodeGeneratorConfig {
-		String sourceDir;
-		String classpath;
+		SourceSet sourceSet;
+		private String sourceDir;
 		String jniDir = "jni";
 		String[] includes = null;
 		String[] excludes = null;
-		
-		/**
-		 * If we detected multiple source dirs and should ask the user to manually define sourceDir.
-		 */
-		boolean multipleSourceSetDirs = false;
 
 		public NativeCodeGeneratorConfig(Project project, String subProjectDir) {
 			JavaPluginConvention javaPlugin = project.getConvention().getPlugin(JavaPluginConvention.class);
 			SourceSetContainer sourceSets = javaPlugin.getSourceSets();
-			SourceSet main = sourceSets.findByName("main");
-			classpath = main.getRuntimeClasspath().getAsPath();
+			sourceSet = sourceSets.findByName("main");
+		}
 
-			Set<File> javaSrcDirs = main.getJava().getSrcDirs();
+		@Override
+		public String toString() {
+			return "NativeCodeGeneratorConfig[sourceDir=`" + sourceDir + "`, sourceSet=`" + sourceSet + "`, jniDir=`"
+					+ jniDir + "`, includes=`" + Arrays.toString(includes)
+					+ "`, excludes=`" + Arrays.toString(excludes) + "`]";
+		}
+
+		public void setSourceDir(String sourceDir) {
+			this.sourceDir = sourceDir;
+		}
+
+		public String getSourceDir()
+		{
+			//If already set, use provided value
+			if(sourceDir != null) {
+				return sourceDir;
+			}
+
+			Set<File> javaSrcDirs = sourceSet.getJava().getSrcDirs();
 			if (javaSrcDirs.size() == 1) {
 				for (File srcDir : javaSrcDirs) {
 					sourceDir = srcDir.getPath();
 				}
 			} else {
-				multipleSourceSetDirs = true;
+				log.error("Multiple java SrcDirs detected. Please manually specify nativeCodeGenerator { sourceDir = \"\"}");
+				throw new RuntimeException( "Multiple java SrcDirs detected. Please manually specify nativeCodeGenerator { sourceDir = \"\"}");
 			}
+			return sourceDir;
 		}
 
-		@Override
-		public String toString() {
-			return "NativeCodeGeneratorConfig[sourceDir=`" + sourceDir + "`, classpath=`" + classpath + "`, jniDir=`"
-					+ jniDir + "`, includes=`" + (includes == null ? "null" : Arrays.toString(includes))
-					+ "`, excludes=`" + (includes == null ? "null" : Arrays.toString(excludes)) + "`]";
-		}
 	}
 }
