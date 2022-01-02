@@ -91,14 +91,22 @@ public class JnigenGenerateRoboVMXml extends DefaultTask {
 			config.appendChild(libs);
 
 			// Add the base library we compiled
-			Element lib = doc.createElement("lib");
-			lib.setTextContent("libs/" + target.getSharedLibFilename(ext.sharedLibName));
-			libs.appendChild(lib);
+			Element libDevice = doc.createElement("lib");
+			libDevice.setAttribute("variant", "device");
+			// If someday the archs changes, the dir needs to be adjusted. But MobiVM has probably then real xcframework support.
+			libDevice.setTextContent("libs/" + ext.sharedLibName + ".xcframework/ios-arm64_armv7/" + target.getSharedLibFilename(ext.sharedLibName));
+			libs.appendChild(libDevice);
+
+			Element libSim = doc.createElement("lib");
+			libSim.setAttribute("variant", "simulator");
+			libSim.setTextContent("libs/" + ext.sharedLibName + ".xcframework/ios-arm64_x86_64-simulator/" + target.getSharedLibFilename(ext.sharedLibName));
+			libs.appendChild(libSim);
+
 
 			// Add any extra libraries we have declared
 			if (!ext.robovm.getExtraLibs().isEmpty()) {
 				for (RoboVMXmlLib l : ext.robovm.getExtraLibs()) {
-					lib = doc.createElement("lib");
+					Element lib = doc.createElement("lib");
 					if (l.variant != null)
 						lib.setAttribute("variant", l.variant);
 					lib.setTextContent(l.path);
