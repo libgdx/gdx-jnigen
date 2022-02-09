@@ -12,9 +12,11 @@ import javax.inject.Inject;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.XmlProvider;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
+import org.gradle.internal.MutableActionSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +64,8 @@ public class JnigenExtension {
 	Task jarAndroidNatives = null;
 	JnigenJarTask jarDesktopNatives = null;
 
+	RoboVMXml robovm = new RoboVMXml();
+
 	@Inject
 	public JnigenExtension(Project project) {
 		this.project = project;
@@ -75,6 +79,10 @@ public class JnigenExtension {
 
 	public void all(Action<BuildTarget> container) {
 		this.all = container;
+	}
+
+	public void robovm(Action<RoboVMXml> action) {
+		action.execute(robovm);
 	}
 	
 	public void add(TargetOs type) {
@@ -151,9 +159,14 @@ public class JnigenExtension {
 				
 				jarAndroidNatives.dependsOn(jarAndroidNativesABIs[i]);
 			}
-		} else if(type == IOS) {
+		} else if (type == IOS) {
+			JnigenGenerateRoboVMXml generateRoboVMXml = project.getTasks().create("jnigenGenerateRoboVMXml",
+					JnigenGenerateRoboVMXml.class, this);
+
 			JnigenIOSJarTask jarIOSNatives = project.getTasks().create("jnigenJarNativesIOS", JnigenIOSJarTask.class);
 			jarIOSNatives.add(target, this);
+
+			jarIOSNatives.dependsOn(generateRoboVMXml);
 		}
 		else {
 			if(jarDesktopNatives == null)
@@ -242,6 +255,42 @@ public class JnigenExtension {
 			}
 			return sourceDir;
 		}
+	}
+	
+	class RoboVMXml {
+		public List<String> forceLinkClasses = new ArrayList<>();
+		public List<RoboVMXmlLib> extraLibs = new ArrayList<>();
 
+		private final MutableActionSet<XmlProvider> xmlAction = new MutableActionSet<>();
+
+		public void withXml(Action<? super XmlProvider> action) {
+			xmlAction.add(action);
+		}
+
+		public Action<XmlProvider> getXmlAction() {
+			return xmlAction;
+		}
+
+		public void forceLinkClass(String forceLinkClass) {
+			forceLinkClasses.add(forceLinkClass);
+		}
+
+		public void extraLib(String path) {
+			extraLibs.add(new RoboVMXmlLib(path, null));
+		}
+
+		public void extraLib(String path, String variant) {
+			extraLibs.add(new RoboVMXmlLib(path, variant));
+		}
+
+		class RoboVMXmlLib {
+			String path;
+			String variant;
+
+			public RoboVMXmlLib(String path, String variant) {
+				this.path = path;
+				this.variant = variant;
+			}
+		}
 	}
 }
