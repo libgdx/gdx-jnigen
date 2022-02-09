@@ -3,7 +3,6 @@ package com.badlogic.gdx.jnigen.gradle;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 
 import javax.inject.Inject;
 import javax.xml.parsers.DocumentBuilder;
@@ -18,7 +17,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
-import org.gradle.internal.xml.XmlTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -35,7 +33,6 @@ public class JnigenGenerateRoboVMXml extends DefaultTask {
 	private static final Logger log = LoggerFactory.getLogger(JnigenGenerateRoboVMXml.class);
 
 	JnigenExtension ext;
-	private final XmlTransformer xmlTransformer = new XmlTransformer();
 
 	@Inject
 	public JnigenGenerateRoboVMXml(JnigenExtension ext) {
@@ -75,11 +72,12 @@ public class JnigenGenerateRoboVMXml extends DefaultTask {
 			Element libs = doc.createElement("libs");
 			config.appendChild(libs);
 
-			// Default assumes we only care about one .a
+			//Add the base library we compiled
 			Element lib = doc.createElement("lib");
 			lib.setTextContent("libs/" + target.getSharedLibFilename(ext.sharedLibName));
 			libs.appendChild(lib);
 
+			//Add any extra libraries we have declared
 			if (!ext.robovm.extraLibs.isEmpty()) {
 				for (RoboVMXmlLib l : ext.robovm.extraLibs) {
 					lib = doc.createElement("lib");
@@ -90,6 +88,7 @@ public class JnigenGenerateRoboVMXml extends DefaultTask {
 				}
 			}
 
+			//Add any forceLinkClasses definitions we have declared
 			if (!ext.robovm.forceLinkClasses.isEmpty()) {
 				Element forceLinkClasses = doc.createElement("forceLinkClasses");
 
@@ -106,16 +105,12 @@ public class JnigenGenerateRoboVMXml extends DefaultTask {
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
 
-			StringWriter writer = new StringWriter();
-			StreamResult result = new StreamResult(writer);
+			FileOutputStream fos = new FileOutputStream(robovmXml);
+			StreamResult result = new StreamResult(fos);
 			transformer.setOutputProperty("omit-xml-declaration", "yes");
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 			transformer.transform(source, result);
-
-			FileOutputStream fos = new FileOutputStream(robovmXml);
-			xmlTransformer.addAction(ext.robovm.getXmlAction());
-			xmlTransformer.transform(writer.toString(), fos);
 			fos.close();
 		} catch (IOException | ParserConfigurationException | TransformerException e) {
 			throw new RuntimeException("Unable to create temporary robovm.xml file", e);

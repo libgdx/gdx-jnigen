@@ -12,11 +12,9 @@ import javax.inject.Inject;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
-import org.gradle.api.XmlProvider;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
-import org.gradle.internal.MutableActionSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -260,16 +258,6 @@ public class JnigenExtension {
 	class RoboVMXml {
 		public List<String> forceLinkClasses = new ArrayList<>();
 		public List<RoboVMXmlLib> extraLibs = new ArrayList<>();
-
-		private final MutableActionSet<XmlProvider> xmlAction = new MutableActionSet<>();
-
-		public void withXml(Action<? super XmlProvider> action) {
-			xmlAction.add(action);
-		}
-
-		public Action<XmlProvider> getXmlAction() {
-			return xmlAction;
-		}
 
 		public void forceLinkClass(String forceLinkClass) {
 			forceLinkClasses.add(forceLinkClass);
