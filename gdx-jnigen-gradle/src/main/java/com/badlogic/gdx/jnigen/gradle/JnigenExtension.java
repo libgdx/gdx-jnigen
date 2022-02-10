@@ -62,6 +62,8 @@ public class JnigenExtension {
 	Task jarAndroidNatives = null;
 	JnigenJarTask jarDesktopNatives = null;
 
+	RoboVMXml robovm = new RoboVMXml();
+
 	@Inject
 	public JnigenExtension(Project project) {
 		this.project = project;
@@ -75,6 +77,10 @@ public class JnigenExtension {
 
 	public void all(Action<BuildTarget> container) {
 		this.all = container;
+	}
+
+	public void robovm(Action<RoboVMXml> action) {
+		action.execute(robovm);
 	}
 	
 	public void add(TargetOs type) {
@@ -151,9 +157,14 @@ public class JnigenExtension {
 				
 				jarAndroidNatives.dependsOn(jarAndroidNativesABIs[i]);
 			}
-		} else if(type == IOS) {
+		} else if (type == IOS) {
+			JnigenGenerateRoboVMXml generateRoboVMXml = project.getTasks().create("jnigenGenerateRoboVMXml",
+					JnigenGenerateRoboVMXml.class, this);
+
 			JnigenIOSJarTask jarIOSNatives = project.getTasks().create("jnigenJarNativesIOS", JnigenIOSJarTask.class);
 			jarIOSNatives.add(target, this);
+
+			jarIOSNatives.dependsOn(generateRoboVMXml);
 		}
 		else {
 			if(jarDesktopNatives == null)
@@ -242,6 +253,60 @@ public class JnigenExtension {
 			}
 			return sourceDir;
 		}
+	}
+	
+	class RoboVMXml {
+		/**
+		 * Use an existing robovm.xml file instead of generating one.
+		 */
+		private File manualFile = null;
+		private List<String> forceLinkClasses = new ArrayList<>();
+		private List<RoboVMXmlLib> extraLibs = new ArrayList<>();
 
+		public File getManualFile() {
+			return manualFile;
+		}
+
+		public List<String> getForceLinkClasses() {
+			return forceLinkClasses;
+		}
+
+		public List<RoboVMXmlLib> getExtraLibs() {
+			return extraLibs;
+		}
+
+		public void manualFile(File manualFile) {
+			if (!forceLinkClasses.isEmpty() || !extraLibs.isEmpty())
+				throw new RuntimeException("robovm cannot use both manualFile and gradle overrides");
+			this.manualFile = manualFile;
+		}
+
+		public void forceLinkClasses(String[] forceLinkClasses) {
+			if (manualFile != null)
+				throw new RuntimeException("robovm cannot use both manualFile and gradle overrides");
+			this.forceLinkClasses.addAll(Arrays.asList(forceLinkClasses));
+		}
+
+		public void extraLib(String path) {
+			if (manualFile != null)
+				throw new RuntimeException("robovm cannot use both manualFile and gradle overrides");
+			extraLibs.add(new RoboVMXmlLib(path, null));
+		}
+
+		public void extraLib(String path, String variant) {
+			if (manualFile != null)
+				throw new RuntimeException("robovm cannot use both manualFile and gradle overrides");
+			extraLibs.add(new RoboVMXmlLib(path, variant));
+		}
+
+		class RoboVMXmlLib {
+			String path;
+			String variant;
+
+			public RoboVMXmlLib(String path, String variant) {
+				this.path = path;
+				this.variant = variant;
+			}
+		}
 	}
 }
