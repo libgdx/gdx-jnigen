@@ -1,2 +1,7 @@
+[2.3.0]
+- [BREAKING CHANGE] [iOS] Added support for specifying robovm.xml `libs` and `forceLinkClasses` definitions.
+- [iOS] Added support for arm64 simulators and replace use of fat static lib with xcframework, see #28
+- Improve shared library load failure message on Android and ARM.
+
 [2.2.0]
 - [BREAKING CHANGE] Split macOS arm64 binaries into their own dylib.
