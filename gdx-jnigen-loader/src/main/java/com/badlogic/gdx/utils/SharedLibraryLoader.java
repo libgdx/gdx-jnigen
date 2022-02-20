@@ -125,7 +125,8 @@ public class SharedLibraryLoader {
 				setLoaded(libraryName);
 			} catch (Throwable ex) {
 				throw new SharedLibraryLoadRuntimeException("Couldn't load shared library '" + platformName + "' for target: "
-					+ System.getProperty("os.name") + (is64Bit ? ", 64-bit" : ", 32-bit"), ex);
+					+ (isAndroid ? "Android" : (System.getProperty("os.name") + (isARM ? ", ARM" : "") + (is64Bit ? ", 64-bit" : ", 32-bit"))),
+						ex);
 			}
 		}
 	}
