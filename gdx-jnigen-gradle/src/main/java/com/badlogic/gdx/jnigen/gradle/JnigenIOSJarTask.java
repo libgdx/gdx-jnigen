@@ -15,6 +15,7 @@ public class JnigenIOSJarTask extends JnigenJarTask {
 
 		String path = ext.subProjectDir + ext.libsDir + File.separatorChar + targetFolder;
 		from(path, (copySpec) -> {
+			copySpec.include("**/*.xcframework/");
 			copySpec.include("**/*.framework/");
 			copySpec.include("**/*.a");
 			copySpec.into("META-INF/robovm/ios/libs");
