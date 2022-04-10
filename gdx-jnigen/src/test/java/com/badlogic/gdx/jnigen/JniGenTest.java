@@ -41,7 +41,13 @@ public class JniGenTest {
         new AntScriptGenerator().generate(buildConfig, target);
 
         if (SharedLibraryLoader.isMac) {
-            boolean macAntExecutionStatus = BuildExecutor.executeAnt("build/generated/jni/build-macosx64.xml", "-v");
+            String scriptToRun;
+            if (SharedLibraryLoader.isARM) {
+                scriptToRun = "build/generated/jni/build-macosxarm64.xml";
+            } else {
+                scriptToRun = "build/generated/jni/build-macosx64.xml";
+            }
+            boolean macAntExecutionStatus = BuildExecutor.executeAnt(scriptToRun, "-v");
             if (!macAntExecutionStatus) {
                 throw new RuntimeException("Failure to execute mac ant.");
             }

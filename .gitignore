@@ -56,3 +56,4 @@ gradle-app.setting
 .classpath
 .settings
 bin
+out/
