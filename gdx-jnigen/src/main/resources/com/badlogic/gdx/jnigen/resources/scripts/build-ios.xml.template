@@ -47,7 +47,7 @@
 
 	<!-- define linker and options -->
     <property name="linker" value="${cppCompiler}" />
-	<property name="linker-opts" value="%linkerFlags%"/>
+	<property name="linker-opts" value="%linkerFlags% -install_name @rpath/${libName}.framework/${libName}"/>
 	<property name="libraries" value="%libraries%"/>
 	
 	<!-- cleans the build directory, removes all object files and shared libs -->
