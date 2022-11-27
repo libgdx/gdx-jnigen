@@ -253,7 +253,8 @@ public class BuildTarget {
 		if(type == TargetOs.IOS) {
 			// iOS, x86_64 simulator, armv7, and arm64 compiled to fat static lib
 			BuildTarget ios = new BuildTarget(TargetOs.IOS, false, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
-					new String[0], new String[0], "", "-c -Wall -O2 -stdlib=libc++", "-c -Wall -O2 -stdlib=libc++", "");
+					new String[0], new String[0], "", "-c -Wall -O2 -stdlib=libc++", "-c -Wall -O2 -stdlib=libc++",
+					"-shared -stdlib=libc++");
 			ios.cCompiler = "clang";
 			ios.cppCompiler = "clang++";
 			ios.canBuild = () -> System.getProperty("os.name").contains("Mac");

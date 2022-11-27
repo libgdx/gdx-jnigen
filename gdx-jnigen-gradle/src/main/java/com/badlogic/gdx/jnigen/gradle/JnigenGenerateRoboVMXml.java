@@ -87,21 +87,28 @@ public class JnigenGenerateRoboVMXml extends DefaultTask {
 			Element config = doc.createElement("config");
 			doc.appendChild(config);
 
-			Element libs = doc.createElement("libs");
-			config.appendChild(libs);
+			Element frameworkPaths = doc.createElement("frameworkPaths");
+			config.appendChild(frameworkPaths);
 
 			// Add the base library we compiled
-			Element libDevice = doc.createElement("lib");
-			libDevice.setAttribute("variant", "device");
+			Element pathDevice = doc.createElement("path");
+			pathDevice.setAttribute("variant", "device");
 			// If someday the archs changes, the dir needs to be adjusted. But MobiVM has probably then real xcframework support.
-			libDevice.setTextContent("libs/" + ext.sharedLibName + ".xcframework/ios-arm64_armv7/" + target.getSharedLibFilename(ext.sharedLibName));
-			libs.appendChild(libDevice);
+			// Weell, armv7 will die soon and still no xcframework support :/
+			pathDevice.setTextContent("libs/" + ext.sharedLibName + ".xcframework/ios-arm64_armv7/");
+			frameworkPaths.appendChild(pathDevice);
 
-			Element libSim = doc.createElement("lib");
-			libSim.setAttribute("variant", "simulator");
-			libSim.setTextContent("libs/" + ext.sharedLibName + ".xcframework/ios-arm64_x86_64-simulator/" + target.getSharedLibFilename(ext.sharedLibName));
-			libs.appendChild(libSim);
+			Element pathSim = doc.createElement("path");
+			pathSim.setAttribute("variant", "simulator");
+			pathSim.setTextContent("libs/" + ext.sharedLibName + ".xcframework/ios-arm64_x86_64-simulator/");
+			frameworkPaths.appendChild(pathSim);
 
+			Element frameworks = doc.createElement("frameworks");
+			config.appendChild(frameworks);
+
+			Element framework = doc.createElement("framework");
+			framework.setTextContent(ext.sharedLibName);
+			frameworks.appendChild(framework);
 
 			// Add any extra libraries we have declared
 			if (!ext.robovm.getExtraLibs().isEmpty()) {
@@ -110,7 +117,7 @@ public class JnigenGenerateRoboVMXml extends DefaultTask {
 					if (l.variant != null)
 						lib.setAttribute("variant", l.variant);
 					lib.setTextContent(l.path);
-					libs.appendChild(lib);
+					frameworkPaths.appendChild(lib);
 				}
 			}
 

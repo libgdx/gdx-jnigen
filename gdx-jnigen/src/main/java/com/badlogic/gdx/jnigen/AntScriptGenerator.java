@@ -95,6 +95,11 @@ public class AntScriptGenerator {
 			config.jniDir.child(buildFileName).writeString(buildFile, false);
 			System.out.println("Wrote target '" + target.os + (target.isARM ? "arm" : "") + (target.is64Bit ? "64" : "") + "' build script '"
 				+ config.jniDir.child(buildFileName) + "'");
+			if (target.os == TargetOs.IOS) {
+				byte[] plist = new FileDescriptor("com/badlogic/gdx/jnigen/resources/scripts/Info.plist.template", FileType.Classpath)
+						.readBytes();
+				config.jniDir.child("Info.plist").writeBytes(plist, false);
+			}
 
 			if (!target.excludeFromMasterBuildFile) {
 				if (target.os != TargetOs.MacOsX && target.os != TargetOs.IOS) {
@@ -219,7 +224,7 @@ public class AntScriptGenerator {
 		template = template.replace("%projectName%", config.sharedLibName + "-" + target.os + "-" + (target.isARM ? "arm" : "") + (target.is64Bit ? "64" : "32"));
 		template = template.replace("%buildDir%", config.buildDir.child(target.getTargetFolder()).path().replace('\\', '/'));
 		template = template.replace("%libsDir%", "../" + getLibsDirectory(config, target));
-		template = template.replace("%libName%", libName);
+		template = template.replace("%libName%", config.sharedLibName);
 		template = template.replace("%xcframeworkName%", config.sharedLibName);
 		template = template.replace("%jniPlatform%", jniPlatform);
 		template = template.replace("%cCompiler%", target.cCompiler);

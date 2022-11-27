@@ -112,7 +112,10 @@ public class SharedLibraryLoader {
 	 * @param libraryName The platform independent library name. If not contain a prefix (eg lib) or suffix (eg .dll). */
 	public void load (String libraryName) {
 		// in case of iOS, things have been linked statically to the executable, bail out.
-		if (isIos) return;
+		if (isIos) {
+			System.load(libraryName);
+			return;
+		}
 
 		synchronized (SharedLibraryLoader.class) {
 			if (isLoaded(libraryName)) return;
