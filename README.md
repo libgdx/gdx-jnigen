@@ -17,7 +17,7 @@ See the libGDX Wiki for usage: https://libgdx.com/wiki/utils/jnigen
 
 We recommend you look at some existing projects for examples:
 - [gdx](https://github.com/libgdx/libgdx/blob/master/gdx/build.gradle)
-- [gdx-freetye](https://github.com/libgdx/libgdx/blob/master/extensions/gdx-freetype/build.gradle)
+- [gdx-freetype](https://github.com/libgdx/libgdx/blob/master/extensions/gdx-freetype/build.gradle)
 - [gdx-bullet](https://github.com/libgdx/libgdx/blob/master/extensions/gdx-bullet/build.gradle)
 - [gdx-video-desktop](https://github.com/libgdx/gdx-video/blob/master/gdx-video-desktop/build.gradle)
 - [Jamepad](https://github.com/libgdx/Jamepad/blob/master/build.gradle)
