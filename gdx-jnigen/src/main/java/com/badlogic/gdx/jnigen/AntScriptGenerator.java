@@ -224,7 +224,7 @@ public class AntScriptGenerator {
 		template = template.replace("%projectName%", config.sharedLibName + "-" + target.os + "-" + (target.isARM ? "arm" : "") + (target.is64Bit ? "64" : "32"));
 		template = template.replace("%buildDir%", config.buildDir.child(target.getTargetFolder()).path().replace('\\', '/'));
 		template = template.replace("%libsDir%", "../" + getLibsDirectory(config, target));
-		template = template.replace("%libName%", config.sharedLibName);
+		template = template.replace("%libName%", libName);
 		template = template.replace("%xcframeworkName%", config.sharedLibName);
 		template = template.replace("%xcframeworkBundleIdentifier%", config.xcframeworkBundleIdentifier);
 		template = template.replace("%jniPlatform%", jniPlatform);
