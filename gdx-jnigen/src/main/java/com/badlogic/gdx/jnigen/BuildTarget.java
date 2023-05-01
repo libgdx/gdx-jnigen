@@ -142,10 +142,6 @@ public class BuildTarget {
 			libPrefix = "lib";
 			libSuffix = (isARM ? "arm" : "") + (is64Bit ? "64" : "") + ".dylib";
 		}
-		if (os == TargetOs.IOS) {
-			libPrefix = "lib";
-			libSuffix = ".a";
-		}
 		return libPrefix + sharedLibName + libSuffix;
 	}
 
