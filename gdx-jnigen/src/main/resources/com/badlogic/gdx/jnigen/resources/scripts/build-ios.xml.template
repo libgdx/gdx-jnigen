@@ -109,6 +109,7 @@
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
+			<arg value="-g"/>
 			%headerDirs%
 			<srcfile/>
 			<arg value="-o"/>
@@ -124,6 +125,7 @@
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
+			<arg value="-g"/>
 			%headerDirs%
 			<srcfile/>
 			<arg value="-o"/>
@@ -161,6 +163,7 @@
             <arg value="-Ijni-headers"/>
             <arg value="-Ijni-headers/${jniPlatform}"/>
             <arg value="-I."/>
+            <arg value="-g"/>
             %headerDirs%
             <srcfile/>
             <arg value="-o"/>
@@ -176,6 +179,7 @@
             <arg value="-Ijni-headers"/>
             <arg value="-Ijni-headers/${jniPlatform}"/>
             <arg value="-I."/>
+            <arg value="-g"/>
             %headerDirs%
             <srcfile/>
             <arg value="-o"/>
@@ -212,6 +216,7 @@
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
+			<arg value="-g"/>
 			%headerDirs%
 			<srcfile/>
 			<arg value="-o"/>
@@ -227,6 +232,7 @@
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
+			<arg value="-g"/>
 			%headerDirs%
 			<srcfile/>
 			<arg value="-o"/>
@@ -263,6 +269,7 @@
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
+			<arg value="-g"/>
 			%headerDirs%
 			<srcfile/>
 			<arg value="-o"/>
@@ -278,6 +285,7 @@
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
+			<arg value="-g"/>
 			%headerDirs%
 			<srcfile/>
 			<arg value="-o"/>
@@ -350,10 +358,48 @@
         </exec>
     </target>
 
-	<target name="create-xcframework" depends="build-plist-device,build-plist-simulator">
+    <target name="generate-dsyms" depends="build-plist-device,build-plist-simulator">
+		<exec executable="dsymutil" failonerror="true" dir="${buildDir}">
+			<arg line="${absolute.buildDir}/simulator/${libName}.framework/${libName}"/>
+			<arg line="-o"/>
+			<arg line="${absolute.buildDir}/simulator/${libName}.framework.dSYM"/>
+		</exec>
+		<exec executable="dsymutil" failonerror="true" dir="${buildDir}">
+			<arg line="${absolute.buildDir}/device/${libName}.framework/${libName}"/>
+			<arg line="-o"/>
+			<arg line="${absolute.buildDir}/device/${libName}.framework.dSYM"/>
+		</exec>
+	</target>
+
+
+    <target name="strip" depends="generate-dsyms">
+		<exec executable="strip" failonerror="true" dir="${buildDir}">
+			<arg line="-x"/>
+			<arg line="${absolute.buildDir}/simulator/${libName}.framework/${libName}"/>
+		</exec>
+		<exec executable="strip" failonerror="true" dir="${buildDir}">
+			<arg line="-x"/>
+			<arg line="${absolute.buildDir}/device/${libName}.framework/${libName}"/>
+		</exec>
+	</target>
+
+	<target name="create-xcframework" depends="strip">
         <exec executable="xcodebuild" failonerror="true">
-            <arg line="-create-xcframework -framework ${buildDir}/device/${libName}.framework -framework ${buildDir}/simulator/${libName}.framework -output ${libsDir}/${xcframeworkName}.xcframework"/>
-        </exec>
+            <arg line="-create-xcframework"/>
+
+			<arg line="-framework"/>
+			<arg line="${buildDir}/device/${libName}.framework"/>
+			<arg line="-debug-symbols"/>
+			<arg line="${absolute.buildDir}/device/${libName}.framework.dSYM"/>
+
+			<arg line="-framework"/>
+			<arg line="${buildDir}/simulator/${libName}.framework"/>
+			<arg line="-debug-symbols"/>
+			<arg line="${absolute.buildDir}/simulator/${libName}.framework.dSYM"/>
+
+			<arg line="-output"/>
+			<arg line="${libsDir}/${xcframeworkName}.xcframework"/>
+		</exec>
 	</target>
 
 	<target name="postcompile" depends="create-xcframework">
