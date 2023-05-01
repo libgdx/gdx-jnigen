@@ -10,6 +10,8 @@
 	<property name="libName" value="%libName%"/>
     <!-- the name of the xcframework library -->
     <property name="xcframeworkName" value="%xcframeworkName%"/>
+    <!-- the bundle identifier of the xcframework library -->
+    <property name="xcframeworkBundleIdentifier" value="%xcframeworkBundleIdentifier%"/>
 	<!-- the jni header jniPlatform to use -->
 	<property name="jniPlatform" value="mac"/>
 	<!-- the compiler to use when compiling c files -->
@@ -328,7 +330,7 @@
             <arg line="write ${absolute.buildDir}/device/${libName}.framework/Info.plist DTPlatformName iphoneos"/>
         </exec>
         <exec executable="defaults" failonerror="true" dir="${buildDir}">
-            <arg line="write ${absolute.buildDir}/device/${libName}.framework/Info.plist CFBundleIdentifier idk.random.identifier.${libName}"/>
+            <arg line="write ${absolute.buildDir}/device/${libName}.framework/Info.plist CFBundleIdentifier ${xcframeworkBundleIdentifier}"/>
         </exec>
     </target>
 
@@ -344,7 +346,7 @@
             <arg line="write ${absolute.buildDir}/simulator/${libName}.framework/Info.plist DTPlatformName iphonesimulator"/>
         </exec>
         <exec executable="defaults" failonerror="true" dir="${buildDir}">
-            <arg line="write ${absolute.buildDir}/simulator/${libName}.framework/Info.plist CFBundleIdentifier idk.random.identifier.${libName}"/>
+            <arg line="write ${absolute.buildDir}/simulator/${libName}.framework/Info.plist CFBundleIdentifier ${xcframeworkBundleIdentifier}"/>
         </exec>
     </target>
 

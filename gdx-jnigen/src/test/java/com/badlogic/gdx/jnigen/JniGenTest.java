@@ -26,7 +26,7 @@ public class JniGenTest {
         );
 
         // generate build scripts
-        BuildConfig buildConfig = new BuildConfig("test", "../../tmp/gdx-jnigen", "../../build/libs", "build/generated/jni");
+        BuildConfig buildConfig = new BuildConfig("test", "../../tmp/gdx-jnigen", "../../build/libs", "build/generated/jni", null);
         
         BuildTarget target;
         if (SharedLibraryLoader.isWindows)

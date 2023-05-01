@@ -48,6 +48,8 @@ public class JnigenExtension {
 	String temporaryDir = "target";
 	String libsDir = "libs";
 	String jniDir = "jni";
+
+	String xcframeworkBundleIdentifier = null;
 	
 	/**
 	 * If we should build with release flag set.<br/>
