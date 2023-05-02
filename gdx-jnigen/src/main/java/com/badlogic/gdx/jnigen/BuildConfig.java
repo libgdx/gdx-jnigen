@@ -35,8 +35,6 @@ public class BuildConfig {
 	public final FileDescriptor jniDir;
 	/** additional shared library files to be packed into the natives jar, relative to the jni dir **/
 	public String[] sharedLibs;
-	/** ios framework bundle identifier */
-	public final String xcframeworkBundleIdentifier;
 
 	/** Creates a new BuildConfig. The build directory, the libs directory and the jni directory are assumed to be "target", "libs"
 	 * and "jni". All paths are relative to the application's working directory.
@@ -46,20 +44,17 @@ public class BuildConfig {
 		this.buildDir = new FileDescriptor("target");
 		this.libsDir = new FileDescriptor("libs");
 		this.jniDir = new FileDescriptor("jni");
-		this.xcframeworkBundleIdentifier = "gdx.jnigen." + sharedLibName;
 	}
 
 	/** Creates a new BuildConfig. All paths are relative to the application's working directory.
 	 * @param sharedLibName the shared library name, without prefix or suffix, e.g. 'gdx', 'bullet'
 	 * @param temporaryDir
 	 * @param libsDir
-	 * @param jniDir
-	 * @param xcframeworkBundleIdentifier */
-	public BuildConfig (String sharedLibName, String temporaryDir, String libsDir, String jniDir, String xcframeworkBundleIdentifier) {
+	 * @param jniDir */
+	public BuildConfig (String sharedLibName, String temporaryDir, String libsDir, String jniDir) {
 		this.sharedLibName = sharedLibName;
 		this.buildDir = new FileDescriptor(temporaryDir);
 		this.libsDir = new FileDescriptor(libsDir);
 		this.jniDir = new FileDescriptor(jniDir);
-		this.xcframeworkBundleIdentifier = xcframeworkBundleIdentifier == null ? ("gdx.jnigen." + sharedLibName) : xcframeworkBundleIdentifier;
 	}
 }

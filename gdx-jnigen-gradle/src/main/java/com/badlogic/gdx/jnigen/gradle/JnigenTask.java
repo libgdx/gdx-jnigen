@@ -53,7 +53,7 @@ public class JnigenTask extends DefaultTask {
 		}
 
 		BuildConfig buildConfig = new BuildConfig(ext.sharedLibName, ext.temporaryDir, ext.libsDir,
-				ext.subProjectDir + ext.jniDir, ext.xcframeworkBundleIdentifier);
+				ext.subProjectDir + ext.jniDir);
 		new AntScriptGenerator().generate(buildConfig, ext.targets.toArray(new BuildTarget[0]));
 	}
 }

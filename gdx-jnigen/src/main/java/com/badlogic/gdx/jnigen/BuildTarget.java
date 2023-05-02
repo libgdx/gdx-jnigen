@@ -85,6 +85,8 @@ public class BuildTarget {
 	public String[] androidAndroidMk = {};
 	/** Extra lines which will be added to Android's Application.mk */
 	public String[] androidApplicationMk = {};
+	/** ios framework bundle identifier, if null an automatically generated bundle identifier will be used */
+	public String xcframeworkBundleIdentifier = null;
 
 	/** Creates a new build target. See members of this class for a description of the parameters. */
 	public BuildTarget (BuildTarget.TargetOs targetType, boolean is64Bit, String[] cIncludes, String[] cExcludes,

@@ -226,7 +226,7 @@ public class AntScriptGenerator {
 		template = template.replace("%libsDir%", "../" + getLibsDirectory(config, target));
 		template = template.replace("%libName%", libName);
 		template = template.replace("%xcframeworkName%", config.sharedLibName);
-		template = template.replace("%xcframeworkBundleIdentifier%", config.xcframeworkBundleIdentifier);
+		template = template.replace("%xcframeworkBundleIdentifier%", target.xcframeworkBundleIdentifier == null ? ("gdx.jnigen." + config.sharedLibName) : target.xcframeworkBundleIdentifier);
 		template = template.replace("%jniPlatform%", jniPlatform);
 		template = template.replace("%cCompiler%", target.cCompiler);
 		template = template.replace("%cppCompiler%", target.cppCompiler);
