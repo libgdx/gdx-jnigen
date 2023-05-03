@@ -1,3 +1,9 @@
+[2.4.0]
+- [BREAKING CHANGE] [iOS] Move static libraries to dynamic libraries
+- [iOS] Add support for specifying `extraXCFrameworks`
+- [iOS] Remove deprecated bitcode generation
+- [iOS] Generate dSYM files for the frameworks
+
 [2.3.0]
 - [BREAKING CHANGE] [iOS] Added support for specifying robovm.xml `libs` and `forceLinkClasses` definitions.
 - [iOS] Added support for arm64 simulators and replace use of fat static lib with xcframework, see #28
