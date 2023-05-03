@@ -67,6 +67,7 @@ jnigen {
         //forceLinkClasses "pattern3"
         // Add extra library "test.a" with variant "device"
         //extraLib "test.a", "device"
+        //extraXCFramework "libs/test.xcframework"
     }
 
     // Add BuildTargets

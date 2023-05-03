@@ -262,6 +262,7 @@ public class JnigenExtension {
 		private File manualFile = null;
 		private List<String> forceLinkClasses = new ArrayList<>();
 		private List<RoboVMXmlLib> extraLibs = new ArrayList<>();
+		private List<String> extraXCFrameworks = new ArrayList<>();
 
 		public File getManualFile() {
 			return manualFile;
@@ -273,6 +274,10 @@ public class JnigenExtension {
 
 		public List<RoboVMXmlLib> getExtraLibs() {
 			return extraLibs;
+		}
+
+		public List<String> getExtraXCFrameworks() {
+			return extraXCFrameworks;
 		}
 
 		public void manualFile(File manualFile) {
@@ -297,6 +302,12 @@ public class JnigenExtension {
 			if (manualFile != null)
 				throw new RuntimeException("robovm cannot use both manualFile and gradle overrides");
 			extraLibs.add(new RoboVMXmlLib(path, variant));
+		}
+
+		public void extraXCFramework(String path) {
+			if (manualFile != null)
+				throw new RuntimeException("robovm cannot use both manualFile and gradle overrides");
+			extraXCFrameworks.add(path);
 		}
 
 		class RoboVMXmlLib {

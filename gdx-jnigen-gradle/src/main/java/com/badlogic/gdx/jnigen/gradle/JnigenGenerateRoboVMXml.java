@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.HashSet;
 
 import javax.inject.Inject;
 import javax.xml.parsers.DocumentBuilder;
@@ -87,30 +88,52 @@ public class JnigenGenerateRoboVMXml extends DefaultTask {
 			Element config = doc.createElement("config");
 			doc.appendChild(config);
 
-			Element libs = doc.createElement("libs");
-			config.appendChild(libs);
+			HashSet<String> addedPaths = new HashSet<>();
+			Element frameworkPaths = doc.createElement("frameworkPaths");
+			config.appendChild(frameworkPaths);
 
-			// Add the base library we compiled
-			Element libDevice = doc.createElement("lib");
-			libDevice.setAttribute("variant", "device");
-			// If someday the archs changes, the dir needs to be adjusted. But MobiVM has probably then real xcframework support.
-			libDevice.setTextContent("libs/" + ext.sharedLibName + ".xcframework/ios-arm64_armv7/" + target.getSharedLibFilename(ext.sharedLibName));
-			libs.appendChild(libDevice);
+			Element xcFrameworkPath = doc.createElement("path");
+			xcFrameworkPath.setTextContent("libs");
+			addedPaths.add("libs");
 
-			Element libSim = doc.createElement("lib");
-			libSim.setAttribute("variant", "simulator");
-			libSim.setTextContent("libs/" + ext.sharedLibName + ".xcframework/ios-arm64_x86_64-simulator/" + target.getSharedLibFilename(ext.sharedLibName));
-			libs.appendChild(libSim);
+			frameworkPaths.appendChild(xcFrameworkPath);
 
+			Element frameworks = doc.createElement("frameworks");
+			config.appendChild(frameworks);
+
+			Element framework = doc.createElement("framework");
+			framework.setTextContent(ext.sharedLibName);
+			frameworks.appendChild(framework);
 
 			// Add any extra libraries we have declared
 			if (!ext.robovm.getExtraLibs().isEmpty()) {
+				Element libs = doc.createElement("libs");
 				for (RoboVMXmlLib l : ext.robovm.getExtraLibs()) {
 					Element lib = doc.createElement("lib");
 					if (l.variant != null)
 						lib.setAttribute("variant", l.variant);
 					lib.setTextContent(l.path);
 					libs.appendChild(lib);
+				}
+				config.appendChild(libs);
+			}
+
+			// Add any extra xcFramework we have declared
+			// TODO: 03.05.23 Rework at somepoint, if xcframeworks tag merging works
+			if (!ext.robovm.getExtraXCFrameworks().isEmpty()) {
+				for (String path : ext.robovm.getExtraXCFrameworks()) {
+					String xcFrameworkName = path.substring(path.lastIndexOf('/') + 1);
+					xcFrameworkName = xcFrameworkName.substring(0, xcFrameworkName.lastIndexOf('.'));
+					String frameworkPath = path.substring(0, path.lastIndexOf('/'));
+					if (!addedPaths.contains(frameworkPath)) {
+						addedPaths.add(frameworkPath);
+						Element pathEl = doc.createElement("path");
+						pathEl.setTextContent(frameworkPath);
+						frameworkPaths.appendChild(pathEl);
+					}
+					Element frameworkEl = doc.createElement("framework");
+					frameworkEl.setTextContent(xcFrameworkName);
+					frameworks.appendChild(frameworkEl);
 				}
 			}
 

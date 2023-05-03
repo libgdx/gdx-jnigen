@@ -85,6 +85,8 @@ public class BuildTarget {
 	public String[] androidAndroidMk = {};
 	/** Extra lines which will be added to Android's Application.mk */
 	public String[] androidApplicationMk = {};
+	/** ios framework bundle identifier, if null an automatically generated bundle identifier will be used */
+	public String xcframeworkBundleIdentifier = null;
 
 	/** Creates a new build target. See members of this class for a description of the parameters. */
 	public BuildTarget (BuildTarget.TargetOs targetType, boolean is64Bit, String[] cIncludes, String[] cExcludes,
@@ -141,10 +143,6 @@ public class BuildTarget {
 		if (os == TargetOs.MacOsX) {
 			libPrefix = "lib";
 			libSuffix = (isARM ? "arm" : "") + (is64Bit ? "64" : "") + ".dylib";
-		}
-		if (os == TargetOs.IOS) {
-			libPrefix = "lib";
-			libSuffix = ".a";
 		}
 		return libPrefix + sharedLibName + libSuffix;
 	}
@@ -253,7 +251,8 @@ public class BuildTarget {
 		if(type == TargetOs.IOS) {
 			// iOS, x86_64 simulator, armv7, and arm64 compiled to fat static lib
 			BuildTarget ios = new BuildTarget(TargetOs.IOS, false, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
-					new String[0], new String[0], "", "-c -Wall -O2 -stdlib=libc++", "-c -Wall -O2 -stdlib=libc++", "");
+					new String[0], new String[0], "", "-c -Wall -O2 -stdlib=libc++", "-c -Wall -O2 -stdlib=libc++",
+					"-shared -stdlib=libc++");
 			ios.cCompiler = "clang";
 			ios.cppCompiler = "clang++";
 			ios.canBuild = () -> System.getProperty("os.name").contains("Mac");

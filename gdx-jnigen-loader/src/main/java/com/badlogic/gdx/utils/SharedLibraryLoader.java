@@ -111,7 +111,7 @@ public class SharedLibraryLoader {
 	/** Loads a shared library for the platform the application is running on.
 	 * @param libraryName The platform independent library name. If not contain a prefix (eg lib) or suffix (eg .dll). */
 	public void load (String libraryName) {
-		// in case of iOS, things have been linked statically to the executable, bail out.
+		// in case of iOS, it's unnecessary to dlopen
 		if (isIos) return;
 
 		synchronized (SharedLibraryLoader.class) {

@@ -3,12 +3,15 @@
 	<property environment="env"/>	
 	<!-- output directory for temporary object files -->
 	<property name="buildDir" value="%buildDir%" />
+	<property name="absolute.buildDir" location="${buildDir}"/>
 	<!-- output directory for the shared library -->
 	<property name="libsDir" value="%libsDir%" />
 	<!-- the name of the shared library -->
 	<property name="libName" value="%libName%"/>
     <!-- the name of the xcframework library -->
     <property name="xcframeworkName" value="%xcframeworkName%"/>
+    <!-- the bundle identifier of the xcframework library -->
+    <property name="xcframeworkBundleIdentifier" value="%xcframeworkBundleIdentifier%"/>
 	<!-- the jni header jniPlatform to use -->
 	<property name="jniPlatform" value="mac"/>
 	<!-- the compiler to use when compiling c files -->
@@ -44,9 +47,9 @@
 		%cppExcludes%
 	</fileset>
 
-	<!-- define ar and options -->
-	<property name="ar" value="${compilerPrefix}${archiver}${compilerSuffix}"/>
-	<property name="ar-opts" value="%archiverFlags%"/>
+	<!-- define linker and options -->
+    <property name="linker" value="${cppCompiler}" />
+	<property name="linker-opts" value="%linkerFlags% -install_name @rpath/${libName}.framework/${libName}"/>
 	<property name="libraries" value="%libraries%"/>
 	
 	<!-- cleans the build directory, removes all object files and shared libs -->
@@ -66,11 +69,11 @@
 			<fileset refid="g++-files"/>
 			<fileset refid="gcc-files"/>
 		</copy>
-		<copy todir="${buildDir}/x86">
+		<copy todir="${buildDir}/x86_64">
 			<fileset refid="g++-files"/>
 			<fileset refid="gcc-files"/>
 		</copy>
-        <copy todir="${buildDir}/arm64-sim">
+        <copy todir="${buildDir}/arm64-simulator">
             <fileset refid="g++-files"/>
             <fileset refid="gcc-files"/>
         </copy>
@@ -83,10 +86,10 @@
 			<fileset refid="gcc-files"/>
 		</copy>
 		<delete>
-			<fileset dir="${buildDir}/x86">
+			<fileset dir="${buildDir}/x86_64">
 				<include name="*"/>
 			</fileset>
-            <fileset dir="${buildDir}/arm64-sim">
+            <fileset dir="${buildDir}/arm64-simulator">
 				<include name="*"/>
             </fileset>
 			<fileset dir="${buildDir}/arm32">
@@ -101,11 +104,12 @@
 	
 	<!-- compiles all C and C++ files to object files in the build directory, for x86_64 builds-->
 	<target name="compile-x86_64" depends="create-build-dir">
-		<apply failonerror="true" executable="${g++}" dest="${buildDir}/x86" verbose="true">
+		<apply failonerror="true" executable="${g++}" dest="${buildDir}/x86_64" verbose="true">
 			<arg line="-isysroot ${iphonesimulator-sdk} -arch x86_64 -mios-simulator-version-min=9.0 ${g++-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
+			<arg value="-g"/>
 			%headerDirs%
 			<srcfile/>
 			<arg value="-o"/>
@@ -116,11 +120,12 @@
 				<mapper type="glob" from="*.mm" to="*.o"/>
 			</compositemapper>
 		</apply>
-		<apply failonerror="true" executable="${gcc}" dest="${buildDir}/x86" verbose="true">
+		<apply failonerror="true" executable="${gcc}" dest="${buildDir}/x86_64" verbose="true">
 			<arg line="-isysroot ${iphonesimulator-sdk} -arch x86_64 -mios-simulator-version-min=9.0 ${gcc-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
+			<arg value="-g"/>
 			%headerDirs%
 			<srcfile/>
 			<arg value="-o"/>
@@ -130,31 +135,35 @@
 				<mapper type="glob" from="*.c" to="*.o"/>
 			</compositemapper>
 		</apply>
-	</target>	
-
-	<!-- archives the shared library based on the previously compiled object files -->
-	<target name="archive-x86_64" depends="compile-x86_64">
-		<fileset dir="${buildDir}/x86" id="objFileSet">
-			<patternset>
-				<include name="**/*.o" />
-			</patternset>
-		</fileset>
-		<pathconvert pathsep=" " property="objFiles" refid="objFileSet" />
-		<exec executable="${ar}" failonerror="true" dir="${buildDir}/x86">
-			<arg line="${ar-opts}" />
-			<arg path="${buildDir}/${libName}.x86_64" />
-			<arg line="${objFiles}"/>
-			<arg line="${libraries}" />
-		</exec>
 	</target>
 
+    <!-- links the shared library based on the previously compiled object files -->
+    <target name="link-x86_64" depends="compile-x86_64">
+        <fileset dir="${buildDir}/x86_64" id="objFileSet">
+            <patternset>
+                <include name="**/*.o" />
+            </patternset>
+        </fileset>
+        <pathconvert pathsep=" " property="objFiles" refid="objFileSet" />
+        <mkdir dir="${libsDir}" />
+        <exec executable="${linker}" failonerror="true" dir="${buildDir}/x86_64">
+			<arg line="-isysroot ${iphonesimulator-sdk} -arch x86_64 -mios-simulator-version-min=9.0 ${linker-opts}"/>
+            <arg value="-o" />
+            <arg path="${buildDir}/x86_64/${libName}" />
+            <arg line="${objFiles}"/>
+            <arg line="${libraries}" />
+        </exec>
+    </target>
+
+
     <!-- compiles all C and C++ files to object files in the build directory, for arm64 simulator builds-->
-    <target name="compile-arm64-sim" depends="create-build-dir">
-        <apply failonerror="true" executable="${g++}" dest="${buildDir}/arm64-sim" verbose="true">
+    <target name="compile-arm64-simulator" depends="create-build-dir">
+        <apply failonerror="true" executable="${g++}" dest="${buildDir}/arm64-simulator" verbose="true">
             <arg line="-isysroot ${iphonesimulator-sdk} -arch arm64 -mios-simulator-version-min=9.0 ${g++-opts}"/>
             <arg value="-Ijni-headers"/>
             <arg value="-Ijni-headers/${jniPlatform}"/>
             <arg value="-I."/>
+            <arg value="-g"/>
             %headerDirs%
             <srcfile/>
             <arg value="-o"/>
@@ -165,11 +174,12 @@
                 <mapper type="glob" from="*.mm" to="*.o"/>
             </compositemapper>
         </apply>
-        <apply failonerror="true" executable="${gcc}" dest="${buildDir}/arm64-sim" verbose="true">
+        <apply failonerror="true" executable="${gcc}" dest="${buildDir}/arm64-simulator" verbose="true">
             <arg line="-isysroot ${iphonesimulator-sdk} -arch arm64 -mios-simulator-version-min=9.0 ${gcc-opts}"/>
             <arg value="-Ijni-headers"/>
             <arg value="-Ijni-headers/${jniPlatform}"/>
             <arg value="-I."/>
+            <arg value="-g"/>
             %headerDirs%
             <srcfile/>
             <arg value="-o"/>
@@ -181,18 +191,20 @@
         </apply>
     </target>
 
-    <!-- archives the shared library based on the previously compiled object files -->
-    <target name="archive-arm64-sim" depends="compile-arm64-sim">
-        <fileset dir="${buildDir}/arm64-sim" id="objFileSetArm64Sim">
+    <!-- links the shared library based on the previously compiled object files -->
+    <target name="link-arm64-simulator" depends="compile-arm64-simulator">
+        <fileset dir="${buildDir}/arm64-simulator" id="objFileSetArm64Simulator">
             <patternset>
                 <include name="**/*.o" />
             </patternset>
         </fileset>
-        <pathconvert pathsep=" " property="objFilesArm64Sim" refid="objFileSetArm64Sim" />
-        <exec executable="${ar}" failonerror="true" dir="${buildDir}/arm64-sim">
-            <arg line="${ar-opts}" />
-            <arg path="${buildDir}/${libName}.arm64-sim" />
-            <arg line="${objFilesArm64Sim}"/>
+        <pathconvert pathsep=" " property="objFilesArm64Simulator" refid="objFileSetArm64Simulator" />
+        <mkdir dir="${libsDir}" />
+        <exec executable="${linker}" failonerror="true" dir="${buildDir}/arm64-simulator">
+            <arg line="-isysroot ${iphonesimulator-sdk} -arch arm64 -mios-simulator-version-min=9.0 ${linker-opts}"/>
+            <arg value="-o" />
+            <arg path="${buildDir}/arm64-simulator/${libName}" />
+            <arg line="${objFilesArm64Simulator}"/>
             <arg line="${libraries}" />
         </exec>
     </target>
@@ -200,10 +212,11 @@
 	<!-- compiles all C and C++ files to object files in the build directory, for arm64 builds-->
 	<target name="compile-arm64" depends="create-build-dir">
 		<apply failonerror="true" executable="${g++}" dest="${buildDir}/arm64" verbose="true">
-			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=9.0 -fembed-bitcode ${g++-opts}"/>
+			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=9.0 ${g++-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
+			<arg value="-g"/>
 			%headerDirs%
 			<srcfile/>
 			<arg value="-o"/>
@@ -215,10 +228,11 @@
 			</compositemapper>
 		</apply>
 		<apply failonerror="true" executable="${gcc}" dest="${buildDir}/arm64" verbose="true">
-			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=9.0 -fembed-bitcode ${gcc-opts}"/>
+			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=9.0 ${gcc-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
+			<arg value="-g"/>
 			%headerDirs%
 			<srcfile/>
 			<arg value="-o"/>
@@ -230,29 +244,32 @@
 		</apply>
 	</target>
 
-	<!-- archives the shared library based on the previously compiled object files -->
-	<target name="archive-arm64" depends="compile-arm64">
-		<fileset dir="${buildDir}/arm64" id="objFileSetArm64">
-			<patternset>
-				<include name="**/*.o" />
-			</patternset>
-		</fileset>
-		<pathconvert pathsep=" " property="objFilesArm64" refid="objFileSetArm64" />
-		<exec executable="${ar}" failonerror="true" dir="${buildDir}/arm64">
-			<arg line="${ar-opts}" />
-			<arg path="${buildDir}/${libName}.arm64" />
-			<arg line="${objFilesArm64}"/>
-			<arg line="${libraries}" />
-		</exec>
-	</target>
+    <!-- links the shared library based on the previously compiled object files -->
+    <target name="link-arm64" depends="compile-arm64">
+        <fileset dir="${buildDir}/arm64" id="objFileSetArm64">
+            <patternset>
+                <include name="**/*.o" />
+            </patternset>
+        </fileset>
+        <pathconvert pathsep=" " property="objFilesArm64" refid="objFileSetArm64" />
+        <mkdir dir="${libsDir}" />
+        <exec executable="${linker}" failonerror="true" dir="${buildDir}/arm64">
+			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=9.0 ${linker-opts}"/>
+            <arg value="-o" />
+            <arg path="${buildDir}/arm64/${libName}" />
+            <arg line="${objFilesArm64}"/>
+            <arg line="${libraries}" />
+        </exec>
+    </target>
 
 	<!-- compiles all C and C++ files to object files in the build directory, for arm32 builds-->
 	<target name="compile-arm32" depends="create-build-dir">
 		<apply failonerror="true" executable="${g++}" dest="${buildDir}/arm32" verbose="true">
-			<arg line="-isysroot ${iphoneos-sdk} -arch armv7 -miphoneos-version-min=9.0 -fembed-bitcode ${g++-opts}"/>
+			<arg line="-isysroot ${iphoneos-sdk} -arch armv7 -miphoneos-version-min=9.0 ${g++-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
+			<arg value="-g"/>
 			%headerDirs%
 			<srcfile/>
 			<arg value="-o"/>
@@ -264,10 +281,11 @@
 			</compositemapper>
 		</apply>
 		<apply failonerror="true" executable="${gcc}" dest="${buildDir}/arm32" verbose="true">
-			<arg line="-isysroot ${iphoneos-sdk} -arch armv7 -miphoneos-version-min=9.0 -fembed-bitcode ${gcc-opts}"/>
+			<arg line="-isysroot ${iphoneos-sdk} -arch armv7 -miphoneos-version-min=9.0 ${gcc-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
+			<arg value="-g"/>
 			%headerDirs%
 			<srcfile/>
 			<arg value="-o"/>
@@ -279,40 +297,112 @@
 		</apply>
 	</target>
 
-	<!-- archives the shared library based on the previously compiled object files -->
-	<target name="archive-arm32" depends="compile-arm32">
-		<fileset dir="${buildDir}/arm32" id="objFileSetArm32">
-			<patternset>
-				<include name="**/*.o" />
-			</patternset>
-		</fileset>
-		<pathconvert pathsep=" " property="objFilesArm32" refid="objFileSetArm32" />
-		<exec executable="${ar}" failonerror="true" dir="${buildDir}/arm32">
-			<arg line="${ar-opts}" />
-			<arg path="${buildDir}/${libName}.arm32" />
-			<arg line="${objFilesArm32}"/>
-			<arg line="${libraries}" />
-		</exec>
-	</target>
+    <!-- links the shared library based on the previously compiled object files -->
+    <target name="link-arm32" depends="compile-arm32">
+        <fileset dir="${buildDir}/arm32" id="objFileSetArm32">
+            <patternset>
+                <include name="**/*.o" />
+            </patternset>
+        </fileset>
+        <pathconvert pathsep=" " property="objFilesArm32" refid="objFileSetArm32" />
+        <mkdir dir="${libsDir}" />
+        <exec executable="${linker}" failonerror="true" dir="${buildDir}/arm32">
+			<arg line="-isysroot ${iphoneos-sdk} -arch armv7 -miphoneos-version-min=9.0 ${linker-opts}"/>
+            <arg value="-o" />
+            <arg path="${buildDir}/arm32/${libName}" />
+            <arg line="${objFilesArm32}"/>
+            <arg line="${libraries}" />
+        </exec>
+    </target>
 
-	<target name="archive-fat">
-	    <mkdir dir="${buildDir}/real"/>
+	<target name="archive-fat" depends="link-x86_64,link-arm32,link-arm64-simulator,link-arm64">
+	    <mkdir dir="${buildDir}/device/${libName}.framework/"/>
 		<exec executable="lipo" failonerror="true" dir="${buildDir}">
-			<arg line="-create -output real/${libName} ${libName}.arm32 ${libName}.arm64"/>
+			<arg line="-create -output device/${libName}.framework/${libName} arm32/${libName} arm64/${libName}"/>
 		</exec>
-	    <mkdir dir="${buildDir}/sim"/>
+	    <mkdir dir="${buildDir}/simulator/${libName}.framework/"/>
         <exec executable="lipo" failonerror="true" dir="${buildDir}">
-            <arg line="-create -output sim/${libName} ${libName}.x86_64 ${libName}.arm64-sim"/>
+            <arg line="-create -output simulator/${libName}.framework/${libName} x86_64/${libName} arm64-simulator/${libName}"/>
         </exec>
 	</target>
 
-	<target name="create-frameworks" depends="archive-fat">
+    <target name="build-plist-device" depends="archive-fat">
+        <copy file="Info.plist" tofile="${buildDir}/device/${libName}.framework/Info.plist"/>
+        <exec executable="defaults" failonerror="true" dir="${buildDir}">
+            <arg line="write ${absolute.buildDir}/device/${libName}.framework/Info.plist CFBundleName ${libName}"/>
+        </exec>
+        <exec executable="defaults" failonerror="true" dir="${buildDir}">
+            <arg line="write ${absolute.buildDir}/device/${libName}.framework/Info.plist CFBundleExecutable ${libName}"/>
+        </exec>
+        <exec executable="defaults" failonerror="true" dir="${buildDir}">
+            <arg line="write ${absolute.buildDir}/device/${libName}.framework/Info.plist DTPlatformName iphoneos"/>
+        </exec>
+        <exec executable="defaults" failonerror="true" dir="${buildDir}">
+            <arg line="write ${absolute.buildDir}/device/${libName}.framework/Info.plist CFBundleIdentifier ${xcframeworkBundleIdentifier}"/>
+        </exec>
+    </target>
+
+    <target name="build-plist-simulator" depends="archive-fat">
+        <copy file="Info.plist" tofile="${buildDir}/simulator/${libName}.framework/Info.plist"/>
+        <exec executable="defaults" failonerror="true" dir="${buildDir}">
+            <arg line="write ${absolute.buildDir}/simulator/${libName}.framework/Info.plist CFBundleName ${libName}"/>
+        </exec>
+        <exec executable="defaults" failonerror="true" dir="${buildDir}">
+            <arg line="write ${absolute.buildDir}/simulator/${libName}.framework/Info.plist CFBundleExecutable ${libName}"/>
+        </exec>
+        <exec executable="defaults" failonerror="true" dir="${buildDir}">
+            <arg line="write ${absolute.buildDir}/simulator/${libName}.framework/Info.plist DTPlatformName iphonesimulator"/>
+        </exec>
+        <exec executable="defaults" failonerror="true" dir="${buildDir}">
+            <arg line="write ${absolute.buildDir}/simulator/${libName}.framework/Info.plist CFBundleIdentifier ${xcframeworkBundleIdentifier}"/>
+        </exec>
+    </target>
+
+    <target name="generate-dsyms" depends="build-plist-device,build-plist-simulator">
+		<exec executable="dsymutil" failonerror="true" dir="${buildDir}">
+			<arg line="${absolute.buildDir}/simulator/${libName}.framework/${libName}"/>
+			<arg line="-o"/>
+			<arg line="${absolute.buildDir}/simulator/${libName}.framework.dSYM"/>
+		</exec>
+		<exec executable="dsymutil" failonerror="true" dir="${buildDir}">
+			<arg line="${absolute.buildDir}/device/${libName}.framework/${libName}"/>
+			<arg line="-o"/>
+			<arg line="${absolute.buildDir}/device/${libName}.framework.dSYM"/>
+		</exec>
+	</target>
+
+
+    <target name="strip" depends="generate-dsyms">
+		<exec executable="strip" failonerror="true" dir="${buildDir}">
+			<arg line="-x"/>
+			<arg line="${absolute.buildDir}/simulator/${libName}.framework/${libName}"/>
+		</exec>
+		<exec executable="strip" failonerror="true" dir="${buildDir}">
+			<arg line="-x"/>
+			<arg line="${absolute.buildDir}/device/${libName}.framework/${libName}"/>
+		</exec>
+	</target>
+
+	<target name="create-xcframework" depends="strip">
         <exec executable="xcodebuild" failonerror="true">
-            <arg line="-create-xcframework -library ${buildDir}/real/${libName} -library ${buildDir}/sim/${libName} -output ${libsDir}/${xcframeworkName}.xcframework"/>
-        </exec>
+            <arg line="-create-xcframework"/>
+
+			<arg line="-framework"/>
+			<arg line="${buildDir}/device/${libName}.framework"/>
+			<arg line="-debug-symbols"/>
+			<arg line="${absolute.buildDir}/device/${libName}.framework.dSYM"/>
+
+			<arg line="-framework"/>
+			<arg line="${buildDir}/simulator/${libName}.framework"/>
+			<arg line="-debug-symbols"/>
+			<arg line="${absolute.buildDir}/simulator/${libName}.framework.dSYM"/>
+
+			<arg line="-output"/>
+			<arg line="${libsDir}/${xcframeworkName}.xcframework"/>
+		</exec>
 	</target>
 
-	<target name="postcompile" depends="archive-x86_64,archive-arm32,archive-arm64-sim,archive-arm64,create-frameworks">
+	<target name="postcompile" depends="create-xcframework">
 		%postcompile%
 	</target>
 </project>
