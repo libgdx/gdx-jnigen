@@ -77,10 +77,6 @@
             <fileset refid="g++-files"/>
             <fileset refid="gcc-files"/>
         </copy>
-		<copy todir="${buildDir}/arm32">
-			<fileset refid="g++-files"/>
-			<fileset refid="gcc-files"/>
-		</copy>
 		<copy todir="${buildDir}/arm64">
 			<fileset refid="g++-files"/>
 			<fileset refid="gcc-files"/>
@@ -92,9 +88,6 @@
             <fileset dir="${buildDir}/arm64-simulator">
 				<include name="*"/>
             </fileset>
-			<fileset dir="${buildDir}/arm32">
-				<include name="*"/>
-			</fileset>
 			<fileset dir="${buildDir}/arm64">
 				<include name="*"/>
 			</fileset>
@@ -262,64 +255,9 @@
         </exec>
     </target>
 
-	<!-- compiles all C and C++ files to object files in the build directory, for arm32 builds-->
-	<target name="compile-arm32" depends="create-build-dir">
-		<apply failonerror="true" executable="${g++}" dest="${buildDir}/arm32" verbose="true">
-			<arg line="-isysroot ${iphoneos-sdk} -arch armv7 -miphoneos-version-min=9.0 ${g++-opts}"/>
-			<arg value="-Ijni-headers"/>
-			<arg value="-Ijni-headers/${jniPlatform}"/>
-			<arg value="-I."/>
-			<arg value="-g"/>
-			%headerDirs%
-			<srcfile/>
-			<arg value="-o"/>
-			<targetfile/>
-			<fileset refid="g++-files"/>
-			<compositemapper>
-				<mapper type="glob" from="*.cpp" to="*.o"/>
-				<mapper type="glob" from="*.mm" to="*.o"/>
-			</compositemapper>
-		</apply>
-		<apply failonerror="true" executable="${gcc}" dest="${buildDir}/arm32" verbose="true">
-			<arg line="-isysroot ${iphoneos-sdk} -arch armv7 -miphoneos-version-min=9.0 ${gcc-opts}"/>
-			<arg value="-Ijni-headers"/>
-			<arg value="-Ijni-headers/${jniPlatform}"/>
-			<arg value="-I."/>
-			<arg value="-g"/>
-			%headerDirs%
-			<srcfile/>
-			<arg value="-o"/>
-			<targetfile/>
-			<fileset refid="gcc-files"/>
-			<compositemapper>
-				<mapper type="glob" from="*.c" to="*.o"/>
-			</compositemapper>
-		</apply>
-	</target>
-
-    <!-- links the shared library based on the previously compiled object files -->
-    <target name="link-arm32" depends="compile-arm32">
-        <fileset dir="${buildDir}/arm32" id="objFileSetArm32">
-            <patternset>
-                <include name="**/*.o" />
-            </patternset>
-        </fileset>
-        <pathconvert pathsep=" " property="objFilesArm32" refid="objFileSetArm32" />
-        <mkdir dir="${libsDir}" />
-        <exec executable="${linker}" failonerror="true" dir="${buildDir}/arm32">
-			<arg line="-isysroot ${iphoneos-sdk} -arch armv7 -miphoneos-version-min=9.0 ${linker-opts}"/>
-            <arg value="-o" />
-            <arg path="${buildDir}/arm32/${libName}" />
-            <arg line="${objFilesArm32}"/>
-            <arg line="${libraries}" />
-        </exec>
-    </target>
-
-	<target name="archive-fat" depends="link-x86_64,link-arm32,link-arm64-simulator,link-arm64">
+	<target name="archive-fat" depends="link-x86_64,link-arm64-simulator,link-arm64">
 	    <mkdir dir="${buildDir}/device/${libName}.framework/"/>
-		<exec executable="lipo" failonerror="true" dir="${buildDir}">
-			<arg line="-create -output device/${libName}.framework/${libName} arm32/${libName} arm64/${libName}"/>
-		</exec>
+		<copy file="${buildDir}/arm64/${libName}" tofile="${buildDir}/device/${libName}.framework/${libName}"/>
 	    <mkdir dir="${buildDir}/simulator/${libName}.framework/"/>
         <exec executable="lipo" failonerror="true" dir="${buildDir}">
             <arg line="-create -output simulator/${libName}.framework/${libName} x86_64/${libName} arm64-simulator/${libName}"/>
