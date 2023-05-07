@@ -1,5 +1,7 @@
 [2.4.0]
 - [BREAKING CHANGE] [iOS] Move static libraries to dynamic libraries
+- [BREAKING CHANGE] [iOS] Remove armv7 slices
+- [BREAKING CHANGE] [iOS] Bump minimum deployment target to 11
 - [iOS] Add support for specifying `extraXCFrameworks`
 - [iOS] Remove deprecated bitcode generation
 - [iOS] Generate dSYM files for the frameworks
