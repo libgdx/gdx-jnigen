@@ -98,7 +98,7 @@
 	<!-- compiles all C and C++ files to object files in the build directory, for x86_64 builds-->
 	<target name="compile-x86_64" depends="create-build-dir">
 		<apply failonerror="true" executable="${g++}" dest="${buildDir}/x86_64" verbose="true">
-			<arg line="-isysroot ${iphonesimulator-sdk} -arch x86_64 -mios-simulator-version-min=9.0 ${g++-opts}"/>
+			<arg line="-isysroot ${iphonesimulator-sdk} -arch x86_64 -mios-simulator-version-min=11.0 ${g++-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
@@ -114,7 +114,7 @@
 			</compositemapper>
 		</apply>
 		<apply failonerror="true" executable="${gcc}" dest="${buildDir}/x86_64" verbose="true">
-			<arg line="-isysroot ${iphonesimulator-sdk} -arch x86_64 -mios-simulator-version-min=9.0 ${gcc-opts}"/>
+			<arg line="-isysroot ${iphonesimulator-sdk} -arch x86_64 -mios-simulator-version-min=11.0 ${gcc-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
@@ -140,7 +140,7 @@
         <pathconvert pathsep=" " property="objFiles" refid="objFileSet" />
         <mkdir dir="${libsDir}" />
         <exec executable="${linker}" failonerror="true" dir="${buildDir}/x86_64">
-			<arg line="-isysroot ${iphonesimulator-sdk} -arch x86_64 -mios-simulator-version-min=9.0 ${linker-opts}"/>
+			<arg line="-isysroot ${iphonesimulator-sdk} -arch x86_64 -mios-simulator-version-min=11.0 ${linker-opts}"/>
             <arg value="-o" />
             <arg path="${buildDir}/x86_64/${libName}" />
             <arg line="${objFiles}"/>
@@ -152,7 +152,7 @@
     <!-- compiles all C and C++ files to object files in the build directory, for arm64 simulator builds-->
     <target name="compile-arm64-simulator" depends="create-build-dir">
         <apply failonerror="true" executable="${g++}" dest="${buildDir}/arm64-simulator" verbose="true">
-            <arg line="-isysroot ${iphonesimulator-sdk} -arch arm64 -mios-simulator-version-min=9.0 ${g++-opts}"/>
+            <arg line="-isysroot ${iphonesimulator-sdk} -arch arm64 -mios-simulator-version-min=11.0 ${g++-opts}"/>
             <arg value="-Ijni-headers"/>
             <arg value="-Ijni-headers/${jniPlatform}"/>
             <arg value="-I."/>
@@ -168,7 +168,7 @@
             </compositemapper>
         </apply>
         <apply failonerror="true" executable="${gcc}" dest="${buildDir}/arm64-simulator" verbose="true">
-            <arg line="-isysroot ${iphonesimulator-sdk} -arch arm64 -mios-simulator-version-min=9.0 ${gcc-opts}"/>
+            <arg line="-isysroot ${iphonesimulator-sdk} -arch arm64 -mios-simulator-version-min=11.0 ${gcc-opts}"/>
             <arg value="-Ijni-headers"/>
             <arg value="-Ijni-headers/${jniPlatform}"/>
             <arg value="-I."/>
@@ -194,7 +194,7 @@
         <pathconvert pathsep=" " property="objFilesArm64Simulator" refid="objFileSetArm64Simulator" />
         <mkdir dir="${libsDir}" />
         <exec executable="${linker}" failonerror="true" dir="${buildDir}/arm64-simulator">
-            <arg line="-isysroot ${iphonesimulator-sdk} -arch arm64 -mios-simulator-version-min=9.0 ${linker-opts}"/>
+            <arg line="-isysroot ${iphonesimulator-sdk} -arch arm64 -mios-simulator-version-min=11.0 ${linker-opts}"/>
             <arg value="-o" />
             <arg path="${buildDir}/arm64-simulator/${libName}" />
             <arg line="${objFilesArm64Simulator}"/>
@@ -205,7 +205,7 @@
 	<!-- compiles all C and C++ files to object files in the build directory, for arm64 builds-->
 	<target name="compile-arm64" depends="create-build-dir">
 		<apply failonerror="true" executable="${g++}" dest="${buildDir}/arm64" verbose="true">
-			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=9.0 ${g++-opts}"/>
+			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=11.0 ${g++-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
@@ -221,7 +221,7 @@
 			</compositemapper>
 		</apply>
 		<apply failonerror="true" executable="${gcc}" dest="${buildDir}/arm64" verbose="true">
-			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=9.0 ${gcc-opts}"/>
+			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=11.0 ${gcc-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
@@ -247,7 +247,7 @@
         <pathconvert pathsep=" " property="objFilesArm64" refid="objFileSetArm64" />
         <mkdir dir="${libsDir}" />
         <exec executable="${linker}" failonerror="true" dir="${buildDir}/arm64">
-			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=9.0 ${linker-opts}"/>
+			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=11.0 ${linker-opts}"/>
             <arg value="-o" />
             <arg path="${buildDir}/arm64/${libName}" />
             <arg line="${objFilesArm64}"/>
