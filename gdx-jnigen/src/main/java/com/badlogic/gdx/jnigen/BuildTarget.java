@@ -87,6 +87,8 @@ public class BuildTarget {
 	public String[] androidApplicationMk = {};
 	/** ios framework bundle identifier, if null an automatically generated bundle identifier will be used */
 	public String xcframeworkBundleIdentifier = null;
+	/** Minimum supported iOS version, will default to iOS 11*/
+	public String minIOSVersion = "11.0";
 
 	/** Creates a new build target. See members of this class for a description of the parameters. */
 	public BuildTarget (BuildTarget.TargetOs targetType, boolean is64Bit, String[] cIncludes, String[] cExcludes,
