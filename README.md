@@ -92,7 +92,12 @@ jnigen {
         // Specify which ABIs to build
         //androidABIs = ["armeabi", "armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
     }
-    add(IOS)
+    add(IOS) {
+        // Define ios framework bundle identifier
+        // xcframeworkBundleIdentifier = "com.badlogic.gdx.JniGen
+        // Deinfe minimum supported iOS version
+        // minIOSVersion = "11.0"
+    }
 
     // Customize each BuildTarget that matches the condition
     each({ it.os != Android && !it.isARM }) {

@@ -227,6 +227,7 @@ public class AntScriptGenerator {
 		template = template.replace("%libName%", libName);
 		template = template.replace("%xcframeworkName%", config.sharedLibName);
 		template = template.replace("%xcframeworkBundleIdentifier%", target.xcframeworkBundleIdentifier == null ? ("gdx.jnigen." + config.sharedLibName) : target.xcframeworkBundleIdentifier);
+		template = template.replace("%minIOSVersion%", target.minIOSVersion);
 		template = template.replace("%jniPlatform%", jniPlatform);
 		template = template.replace("%cCompiler%", target.cCompiler);
 		template = template.replace("%cppCompiler%", target.cppCompiler);

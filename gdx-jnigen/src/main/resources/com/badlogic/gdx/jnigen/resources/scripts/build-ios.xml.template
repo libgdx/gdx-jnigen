@@ -12,6 +12,8 @@
     <property name="xcframeworkName" value="%xcframeworkName%"/>
     <!-- the bundle identifier of the xcframework library -->
     <property name="xcframeworkBundleIdentifier" value="%xcframeworkBundleIdentifier%"/>
+    <!-- The minimum iOS version -->
+    <property name="minIOSVersion" value="%minIOSVersion%"/>
 	<!-- the jni header jniPlatform to use -->
 	<property name="jniPlatform" value="mac"/>
 	<!-- the compiler to use when compiling c files -->
@@ -98,7 +100,7 @@
 	<!-- compiles all C and C++ files to object files in the build directory, for x86_64 builds-->
 	<target name="compile-x86_64" depends="create-build-dir">
 		<apply failonerror="true" executable="${g++}" dest="${buildDir}/x86_64" verbose="true">
-			<arg line="-isysroot ${iphonesimulator-sdk} -arch x86_64 -mios-simulator-version-min=11.0 ${g++-opts}"/>
+			<arg line="-isysroot ${iphonesimulator-sdk} -arch x86_64 -mios-simulator-version-min=${minIOSVersion} ${g++-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
@@ -114,7 +116,7 @@
 			</compositemapper>
 		</apply>
 		<apply failonerror="true" executable="${gcc}" dest="${buildDir}/x86_64" verbose="true">
-			<arg line="-isysroot ${iphonesimulator-sdk} -arch x86_64 -mios-simulator-version-min=11.0 ${gcc-opts}"/>
+			<arg line="-isysroot ${iphonesimulator-sdk} -arch x86_64 -mios-simulator-version-min=${minIOSVersion} ${gcc-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
@@ -140,7 +142,7 @@
         <pathconvert pathsep=" " property="objFiles" refid="objFileSet" />
         <mkdir dir="${libsDir}" />
         <exec executable="${linker}" failonerror="true" dir="${buildDir}/x86_64">
-			<arg line="-isysroot ${iphonesimulator-sdk} -arch x86_64 -mios-simulator-version-min=11.0 ${linker-opts}"/>
+			<arg line="-isysroot ${iphonesimulator-sdk} -arch x86_64 -mios-simulator-version-min=${minIOSVersion} ${linker-opts}"/>
             <arg value="-o" />
             <arg path="${buildDir}/x86_64/${libName}" />
             <arg line="${objFiles}"/>
@@ -152,7 +154,7 @@
     <!-- compiles all C and C++ files to object files in the build directory, for arm64 simulator builds-->
     <target name="compile-arm64-simulator" depends="create-build-dir">
         <apply failonerror="true" executable="${g++}" dest="${buildDir}/arm64-simulator" verbose="true">
-            <arg line="-isysroot ${iphonesimulator-sdk} -arch arm64 -mios-simulator-version-min=11.0 ${g++-opts}"/>
+            <arg line="-isysroot ${iphonesimulator-sdk} -arch arm64 -mios-simulator-version-min=${minIOSVersion} ${g++-opts}"/>
             <arg value="-Ijni-headers"/>
             <arg value="-Ijni-headers/${jniPlatform}"/>
             <arg value="-I."/>
@@ -168,7 +170,7 @@
             </compositemapper>
         </apply>
         <apply failonerror="true" executable="${gcc}" dest="${buildDir}/arm64-simulator" verbose="true">
-            <arg line="-isysroot ${iphonesimulator-sdk} -arch arm64 -mios-simulator-version-min=11.0 ${gcc-opts}"/>
+            <arg line="-isysroot ${iphonesimulator-sdk} -arch arm64 -mios-simulator-version-min=${minIOSVersion} ${gcc-opts}"/>
             <arg value="-Ijni-headers"/>
             <arg value="-Ijni-headers/${jniPlatform}"/>
             <arg value="-I."/>
@@ -194,7 +196,7 @@
         <pathconvert pathsep=" " property="objFilesArm64Simulator" refid="objFileSetArm64Simulator" />
         <mkdir dir="${libsDir}" />
         <exec executable="${linker}" failonerror="true" dir="${buildDir}/arm64-simulator">
-            <arg line="-isysroot ${iphonesimulator-sdk} -arch arm64 -mios-simulator-version-min=11.0 ${linker-opts}"/>
+            <arg line="-isysroot ${iphonesimulator-sdk} -arch arm64 -mios-simulator-version-min=${minIOSVersion} ${linker-opts}"/>
             <arg value="-o" />
             <arg path="${buildDir}/arm64-simulator/${libName}" />
             <arg line="${objFilesArm64Simulator}"/>
@@ -205,7 +207,7 @@
 	<!-- compiles all C and C++ files to object files in the build directory, for arm64 builds-->
 	<target name="compile-arm64" depends="create-build-dir">
 		<apply failonerror="true" executable="${g++}" dest="${buildDir}/arm64" verbose="true">
-			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=11.0 ${g++-opts}"/>
+			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=${minIOSVersion} ${g++-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
@@ -221,7 +223,7 @@
 			</compositemapper>
 		</apply>
 		<apply failonerror="true" executable="${gcc}" dest="${buildDir}/arm64" verbose="true">
-			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=11.0 ${gcc-opts}"/>
+			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=${minIOSVersion} ${gcc-opts}"/>
 			<arg value="-Ijni-headers"/>
 			<arg value="-Ijni-headers/${jniPlatform}"/>
 			<arg value="-I."/>
@@ -247,7 +249,7 @@
         <pathconvert pathsep=" " property="objFilesArm64" refid="objFileSetArm64" />
         <mkdir dir="${libsDir}" />
         <exec executable="${linker}" failonerror="true" dir="${buildDir}/arm64">
-			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=11.0 ${linker-opts}"/>
+			<arg line="-isysroot ${iphoneos-sdk} -arch arm64 -miphoneos-version-min=${minIOSVersion} ${linker-opts}"/>
             <arg value="-o" />
             <arg path="${buildDir}/arm64/${libName}" />
             <arg line="${objFilesArm64}"/>
@@ -266,33 +268,45 @@
 
     <target name="build-plist-device" depends="archive-fat">
         <copy file="Info.plist" tofile="${buildDir}/device/${libName}.framework/Info.plist"/>
-        <exec executable="defaults" failonerror="true" dir="${buildDir}">
-            <arg line="write ${absolute.buildDir}/device/${libName}.framework/Info.plist CFBundleName ${libName}"/>
+        <exec executable="/usr/libexec/PlistBuddy" failonerror="true" dir="${buildDir}">
+            <arg value="-c"/>
+            <arg value="Set :CFBundleName ${libName}"/>
+            <arg value="-c"/>
+            <arg value="Set :CFBundleExecutable ${libName}"/>
+            <arg value="-c"/>
+            <arg value="Set :DTPlatformName iphoneos"/>
+            <arg value="-c"/>
+            <arg value="Set :CFBundleIdentifier ${xcframeworkBundleIdentifier}"/>
+            <arg value="-c"/>
+            <arg value="Set :MinimumOSVersion ${minIOSVersion}"/>
+            <arg value="${absolute.buildDir}/device/${libName}.framework/Info.plist"/>
         </exec>
-        <exec executable="defaults" failonerror="true" dir="${buildDir}">
-            <arg line="write ${absolute.buildDir}/device/${libName}.framework/Info.plist CFBundleExecutable ${libName}"/>
-        </exec>
-        <exec executable="defaults" failonerror="true" dir="${buildDir}">
-            <arg line="write ${absolute.buildDir}/device/${libName}.framework/Info.plist DTPlatformName iphoneos"/>
-        </exec>
-        <exec executable="defaults" failonerror="true" dir="${buildDir}">
-            <arg line="write ${absolute.buildDir}/device/${libName}.framework/Info.plist CFBundleIdentifier ${xcframeworkBundleIdentifier}"/>
+        <exec executable="plutil" failonerror="true" dir="${buildDir}">
+            <arg line="-convert"/>
+            <arg line="binary1"/>
+            <arg line="${absolute.buildDir}/device/${libName}.framework/Info.plist"/>
         </exec>
     </target>
 
     <target name="build-plist-simulator" depends="archive-fat">
         <copy file="Info.plist" tofile="${buildDir}/simulator/${libName}.framework/Info.plist"/>
-        <exec executable="defaults" failonerror="true" dir="${buildDir}">
-            <arg line="write ${absolute.buildDir}/simulator/${libName}.framework/Info.plist CFBundleName ${libName}"/>
+        <exec executable="/usr/libexec/PlistBuddy" failonerror="true" dir="${buildDir}">
+            <arg value="-c"/>
+            <arg value="Set :CFBundleName ${libName}"/>
+            <arg value="-c"/>
+            <arg value="Set :CFBundleExecutable ${libName}"/>
+            <arg value="-c"/>
+            <arg value="Set :DTPlatformName iphonesimulator"/>
+            <arg value="-c"/>
+            <arg value="Set :CFBundleIdentifier ${xcframeworkBundleIdentifier}"/>
+            <arg value="-c"/>
+            <arg value="Set :MinimumOSVersion ${minIOSVersion}"/>
+            <arg value="${absolute.buildDir}/simulator/${libName}.framework/Info.plist"/>
         </exec>
-        <exec executable="defaults" failonerror="true" dir="${buildDir}">
-            <arg line="write ${absolute.buildDir}/simulator/${libName}.framework/Info.plist CFBundleExecutable ${libName}"/>
-        </exec>
-        <exec executable="defaults" failonerror="true" dir="${buildDir}">
-            <arg line="write ${absolute.buildDir}/simulator/${libName}.framework/Info.plist DTPlatformName iphonesimulator"/>
-        </exec>
-        <exec executable="defaults" failonerror="true" dir="${buildDir}">
-            <arg line="write ${absolute.buildDir}/simulator/${libName}.framework/Info.plist CFBundleIdentifier ${xcframeworkBundleIdentifier}"/>
+        <exec executable="plutil" failonerror="true" dir="${buildDir}">
+            <arg line="-convert"/>
+            <arg line="binary1"/>
+            <arg line="${absolute.buildDir}/simulator/${libName}.framework/Info.plist"/>
         </exec>
     </target>
 
