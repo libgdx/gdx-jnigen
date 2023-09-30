@@ -42,6 +42,7 @@ public class SharedLibraryLoader {
 	static public boolean isIos = false;
 	static public boolean isAndroid = false;
 	static public boolean isARM = System.getProperty("os.arch").startsWith("arm") || System.getProperty("os.arch").startsWith("aarch64");
+	static public boolean isRISCV = System.getProperty("os.arch").startsWith("riscv");
 	static public boolean is64Bit = System.getProperty("os.arch").contains("64") || System.getProperty("os.arch").startsWith("armv8");
 
 	static {
@@ -103,7 +104,7 @@ public class SharedLibraryLoader {
 	/** Maps a platform independent library name to a platform dependent name. */
 	public String mapLibraryName (String libraryName) {
 		if (isWindows) return libraryName + (is64Bit ? "64.dll" : ".dll");
-		if (isLinux) return "lib" + libraryName + (isARM ? "arm" : "") + (is64Bit ? "64.so" : ".so");
+		if (isLinux) return "lib" + libraryName + (isARM ? "arm" : isRISCV ? "riscv" : "") + (is64Bit ? "64.so" : ".so");
 		if (isMac) return "lib" + libraryName + (isARM ? "arm" : "") + (is64Bit ? "64.dylib" : ".dylib");
 		return libraryName;
 	}
@@ -125,7 +126,7 @@ public class SharedLibraryLoader {
 				setLoaded(libraryName);
 			} catch (Throwable ex) {
 				throw new SharedLibraryLoadRuntimeException("Couldn't load shared library '" + platformName + "' for target: "
-					+ (isAndroid ? "Android" : (System.getProperty("os.name") + (isARM ? ", ARM" : "") + (is64Bit ? ", 64-bit" : ", 32-bit"))),
+					+ (isAndroid ? "Android" : (System.getProperty("os.name") + (isARM ? ", ARM" : isRISCV ? ", RISCV" : "") + (is64Bit ? ", 64-bit" : ", 32-bit"))),
 						ex);
 			}
 		}

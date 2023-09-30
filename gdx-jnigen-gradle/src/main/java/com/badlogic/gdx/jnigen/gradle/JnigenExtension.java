@@ -30,6 +30,7 @@ public class JnigenExtension {
 	public static final boolean x32 = false;
 	public static final boolean x64 = true;
 	public static final boolean ARM = true;
+	public static final boolean RISCV = true;
 	public static final TargetOs Windows = TargetOs.Windows;
 	public static final TargetOs Linux = TargetOs.Linux;
 	public static final TargetOs MacOsX = TargetOs.MacOsX;
@@ -104,14 +105,18 @@ public class JnigenExtension {
 	}
 
 	public void add(TargetOs type, boolean is64Bit, boolean isARM, Action<BuildTarget> container) {
-		String name = type + (isARM ? "ARM" : "") + (is64Bit ? "64" : "");
-		
-		if(get(type, is64Bit, isARM) != null)
+		add(type, is64Bit, isARM, false, container);
+	}
+
+	public void add(TargetOs type, boolean is64Bit, boolean isARM, boolean isRISCV, Action<BuildTarget> container) {
+		String name = type + (isARM ? "ARM" : isRISCV ? "RISCV" : "") + (is64Bit ? "64" : "");
+
+		if(get(type, is64Bit, isARM, isRISCV) != null)
 			throw new RuntimeException("Attempt to add duplicate build target " + name);
-		if((type == Android || type == IOS) && (is64Bit || isARM))
-			throw new RuntimeException("Android and iOS must not have is64Bit or isARM.");
-		
-		BuildTarget target = BuildTarget.newDefaultTarget(type, is64Bit, isARM);
+		if((type == Android || type == IOS) && (is64Bit || isARM || isRISCV))
+			throw new RuntimeException("Android and iOS must not have is64Bit or isARM or isRISCV.");
+
+		BuildTarget target = BuildTarget.newDefaultTarget(type, is64Bit, isARM, isRISCV);
 
 		if (all != null)
 			all.execute(target);
@@ -185,6 +190,10 @@ public class JnigenExtension {
 		return get(type, is64Bit, isARM, null);
 	}
 
+	public BuildTarget get(TargetOs type, boolean is64Bit, boolean isARM, boolean isRISCV) {
+		return get(type, is64Bit, isARM, isRISCV, null);
+	}
+
 	public BuildTarget get(TargetOs type, Action<BuildTarget> container) {
 		return get(type, false, false, container);
 	}
@@ -194,8 +203,12 @@ public class JnigenExtension {
 	}
 
 	public BuildTarget get(TargetOs type, boolean is64Bit, boolean isARM, Action<BuildTarget> container) {
+		return get(type, is64Bit, isARM, false, container);
+	}
+
+	public BuildTarget get(TargetOs type, boolean is64Bit, boolean isARM, boolean isRISCV, Action<BuildTarget> container) {
 		for(BuildTarget target : targets) {
-			if(target.os == type && target.is64Bit == is64Bit && target.isARM == isARM) {
+			if(target.os == type && target.is64Bit == is64Bit && (target.isARM == isARM || target.isRISCV == isRISCV)) {
 				if(container != null)
 					container.execute(target);
 				return target;
