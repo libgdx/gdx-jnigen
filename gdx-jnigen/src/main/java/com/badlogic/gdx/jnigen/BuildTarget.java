@@ -32,7 +32,7 @@ public class BuildTarget {
 	public boolean is64Bit;
 	/** whether this is an ARM build, not used for Android **/
 	public boolean isARM;
-	/** whether this is an ARM build, not used for Android **/
+	/** whether this is a RISC-V build, not used for Android **/
 	public boolean isRISCV;
 	/** the C files and directories to be included in the build, accepts Ant path format, must not be null **/
 	public String[] cIncludes;

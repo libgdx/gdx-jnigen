@@ -208,7 +208,7 @@ public class JnigenExtension {
 
 	public BuildTarget get(TargetOs type, boolean is64Bit, boolean isARM, boolean isRISCV, Action<BuildTarget> container) {
 		for(BuildTarget target : targets) {
-			if(target.os == type && target.is64Bit == is64Bit && (target.isARM == isARM || target.isRISCV == isRISCV)) {
+			if(target.os == type && target.is64Bit == is64Bit && target.isARM == isARM && target.isRISCV == isRISCV) {
 				if(container != null)
 					container.execute(target);
 				return target;
