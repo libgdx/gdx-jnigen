@@ -93,7 +93,7 @@ public class AntScriptGenerator {
 
 			String buildFileName = target.getBuildFilename();
 			config.jniDir.child(buildFileName).writeString(buildFile, false);
-			System.out.println("Wrote target '" + target.os + (target.isARM ? "arm" : target.isRISCV ? "riscv" : "") + (target.is64Bit ? "64" : "") + "' build script '"
+			System.out.println("Wrote target '" + target.os + target.architecture.toSuffix() + target.bitness.toSuffix() + "' build script '"
 				+ config.jniDir.child(buildFileName) + "'");
 			if (target.os == TargetOs.IOS) {
 				byte[] plist = new FileDescriptor("com/badlogic/gdx/jnigen/resources/scripts/Info.plist.template", FileType.Classpath)
@@ -221,7 +221,7 @@ public class AntScriptGenerator {
 		}
 
 		// replace template vars with proper values
-		template = template.replace("%projectName%", config.sharedLibName + "-" + target.os + "-" + (target.isARM ? "arm" : target.isRISCV ? "riscv" : "") + (target.is64Bit ? "64" : "32"));
+		template = template.replace("%projectName%", config.sharedLibName + "-" + target.os + "-" + target.architecture.toSuffix() + target.bitness.name().substring(1));
 		template = template.replace("%buildDir%", config.buildDir.child(target.getTargetFolder()).path().replace('\\', '/'));
 		template = template.replace("%libsDir%", "../" + getLibsDirectory(config, target));
 		template = template.replace("%libName%", libName);

@@ -32,7 +32,7 @@ public class JniGenTest {
         if (SharedLibraryLoader.isWindows)
         	target = BuildTarget.newDefaultTarget(BuildTarget.TargetOs.Windows, SharedLibraryLoader.is64Bit);
         else if (SharedLibraryLoader.isLinux)
-        	target = BuildTarget.newDefaultTarget(BuildTarget.TargetOs.Linux, SharedLibraryLoader.is64Bit, SharedLibraryLoader.isARM, SharedLibraryLoader.isRISCV);
+        	target = BuildTarget.newDefaultTarget(BuildTarget.TargetOs.Linux, SharedLibraryLoader.is64Bit ? BuildTarget.Architecture.Bitness._64 : BuildTarget.Architecture.Bitness._32, SharedLibraryLoader.isARM ? BuildTarget.Architecture.ARM : SharedLibraryLoader.isRISCV ? BuildTarget.Architecture.RISCV : BuildTarget.Architecture.x86);
         else if (SharedLibraryLoader.isMac)
         	target = BuildTarget.newDefaultTarget(BuildTarget.TargetOs.MacOsX, SharedLibraryLoader.is64Bit, SharedLibraryLoader.isARM);
         else

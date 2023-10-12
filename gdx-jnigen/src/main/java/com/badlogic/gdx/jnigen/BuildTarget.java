@@ -26,14 +26,30 @@ public class BuildTarget {
 		Windows, Linux, MacOsX, Android, IOS
 	}
 
+	public enum Architecture {
+		x86, ARM, RISCV;
+
+		public String toSuffix() {
+			if (this == x86) return "";
+			else return this.name().toLowerCase();
+		}
+
+		public enum Bitness {
+			_32, _64, _128;
+
+			public String toSuffix() {
+				if (this == _32) return "";
+				else return this.name().substring(1);
+			}
+		}
+	}
+
 	/** the target operating system **/
 	public BuildTarget.TargetOs os;
-	/** whether this is a 64-bit build, not used for Android **/
-	public boolean is64Bit;
-	/** whether this is an ARM build, not used for Android **/
-	public boolean isARM;
-	/** whether this is a RISC-V build, not used for Android **/
-	public boolean isRISCV;
+	/** whether this is a 32-bit, 64-bit or 128-bit build, not used for Android **/
+	public Architecture.Bitness bitness;
+	/** whether this is an x86, ARM or RISC-V build, not used for Android **/
+	public Architecture architecture;
 	/** the C files and directories to be included in the build, accepts Ant path format, must not be null **/
 	public String[] cIncludes;
 	/** the C files and directories to be excluded from the build, accepts Ant path format, must not be null **/
@@ -93,9 +109,7 @@ public class BuildTarget {
 	public String minIOSVersion = "11.0";
 
 	/** Creates a new build target. See members of this class for a description of the parameters. */
-	public BuildTarget (BuildTarget.TargetOs targetType, boolean is64Bit, String[] cIncludes, String[] cExcludes,
-		String[] cppIncludes, String[] cppExcludes, String[] headerDirs, String compilerPrefix, String cFlags, String cppFlags,
-		String linkerFlags) {
+	public BuildTarget(BuildTarget.TargetOs targetType, Architecture.Bitness bitness, String[] cIncludes, String[] cExcludes, String[] cppIncludes, String[] cppExcludes, String[] headerDirs, String compilerPrefix, String cFlags, String cppFlags, String linkerFlags) {
 		if (targetType == null) throw new IllegalArgumentException("targetType must not be null");
 		if (cIncludes == null) cIncludes = new String[0];
 		if (cExcludes == null) cExcludes = new String[0];
@@ -108,7 +122,7 @@ public class BuildTarget {
 		if (linkerFlags == null) linkerFlags = "";
 
 		this.os = targetType;
-		this.is64Bit = is64Bit;
+		this.bitness = bitness;
 		this.cIncludes = cIncludes;
 		this.cExcludes = cExcludes;
 		this.cppIncludes = cppIncludes;
@@ -126,7 +140,7 @@ public class BuildTarget {
 		if (buildFileName != null && !buildFileName.isEmpty())
 			return buildFileName;
 
-		return "build-" + os.toString().toLowerCase() + (isARM ? "arm" : isRISCV ? "riscv" : "") + (is64Bit ? "64" : "32") + ".xml";
+		return "build-" + os.toString().toLowerCase() + architecture.toSuffix() + bitness.name().substring(1) + ".xml";
 	}
 
 	public String getSharedLibFilename (String sharedLibName) {
@@ -136,17 +150,17 @@ public class BuildTarget {
 
 		// generate shared lib prefix and suffix, determine jni platform headers directory
 		String libPrefix = "";
-		String libSuffix = "";
+		String libSuffix = architecture.toSuffix() + bitness.toSuffix();
 		if (os == TargetOs.Windows) {
-			libSuffix = (is64Bit ? "64" : "") + ".dll";
+			libSuffix +=  ".dll";
 		}
 		if (os == TargetOs.Linux || os == TargetOs.Android) {
 			libPrefix = "lib";
-			libSuffix = (isARM ? "arm" : isRISCV ? "riscv" : "") + (is64Bit ? "64" : "") + ".so";
+			libSuffix += ".so";
 		}
 		if (os == TargetOs.MacOsX) {
 			libPrefix = "lib";
-			libSuffix = (isARM ? "arm" : "") + (is64Bit ? "64" : "") + ".dylib";
+			libSuffix += ".dylib";
 		}
 		return libPrefix + sharedLibName + libSuffix;
 	}
@@ -156,7 +170,7 @@ public class BuildTarget {
 		if (osFileName != null && !osFileName.isEmpty())
 			return osFileName;
 
-		return os.toString().toLowerCase() + (isARM ? "arm" : isRISCV ? "riscv" : "") + (is64Bit ? "64" : "32");
+		return os.toString().toLowerCase() + architecture.toSuffix() + bitness.name().substring(1);
 	}
 
 	/** Creates a new default BuildTarget for the given OS, using common default values. */
@@ -166,84 +180,84 @@ public class BuildTarget {
 
 	/** Creates a new default BuildTarget for the given OS, using common default values. */
 	public static BuildTarget newDefaultTarget (BuildTarget.TargetOs type, boolean is64Bit, boolean isARM) {
-		return newDefaultTarget(type, is64Bit, isARM, false);
+		return newDefaultTarget(type, is64Bit ? Architecture.Bitness._64 : Architecture.Bitness._32, isARM ? Architecture.ARM : Architecture.x86);
 	}
 
 	/** Creates a new default BuildTarget for the given OS, using common default values. */
-	public static BuildTarget newDefaultTarget (BuildTarget.TargetOs type, boolean is64Bit, boolean isARM, boolean isRISCV) {
-		if (type == TargetOs.Windows && !is64Bit) {
+	public static BuildTarget newDefaultTarget (BuildTarget.TargetOs type, Architecture.Bitness bitness, Architecture architecture) {
+		if (type == TargetOs.Windows && bitness != Architecture.Bitness._64) {
 			// Windows 32-Bit
-			return new BuildTarget(TargetOs.Windows, false, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
+			return new BuildTarget(TargetOs.Windows, Architecture.Bitness._32, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
 				new String[0], new String[0], "i686-w64-mingw32-", "-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m32",
 				"-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m32",
 				"-Wl,--kill-at -shared -m32 -static -static-libgcc -static-libstdc++");
 		}
 
-		if (type == TargetOs.Windows && is64Bit) {
+		if (type == TargetOs.Windows && bitness == Architecture.Bitness._64) {
 			// Windows 64-Bit
-			return new BuildTarget(TargetOs.Windows, true, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
+			return new BuildTarget(TargetOs.Windows, Architecture.Bitness._64, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
 				new String[0], new String[0], "x86_64-w64-mingw32-", "-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m64",
 				"-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m64",
 				"-Wl,--kill-at -shared -static -static-libgcc -static-libstdc++ -m64");
 		}
 
-		if (type == TargetOs.Linux && isRISCV && !is64Bit) {
+		if (type == TargetOs.Linux && architecture == Architecture.RISCV && bitness != Architecture.Bitness._64) {
 			// Linux RISCV 32-Bit
-			BuildTarget target = new BuildTarget(TargetOs.Linux, false, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
+			BuildTarget target = new BuildTarget(TargetOs.Linux, Architecture.Bitness._32, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
 					new String[0], new String[0], "riscv32-linux-gnu-", "-c -Wall -O2 -fmessage-length=0 -fPIC",
 					"-c -Wall -O2 -fmessage-length=0 -fPIC", "-shared");
-			target.isRISCV = true;
+			target.architecture = Architecture.RISCV;
 			return target;
 		}
 
-		if (type == TargetOs.Linux && isRISCV && is64Bit) {
+		if (type == TargetOs.Linux && architecture == Architecture.RISCV && bitness == Architecture.Bitness._64) {
 			// Linux RISCV 64-Bit
-			BuildTarget target = new BuildTarget(TargetOs.Linux, true, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
+			BuildTarget target = new BuildTarget(TargetOs.Linux, Architecture.Bitness._64, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
 					new String[0], new String[0], "riscv64-linux-gnu-", "-c -Wall -O2 -fmessage-length=0 -fPIC",
 					"-c -Wall -O2 -fmessage-length=0 -fPIC", "-shared");
-			target.isRISCV = true;
+			target.architecture = Architecture.RISCV;
 			return target;
 		}
 
-		if (type == TargetOs.Linux && isARM && !is64Bit) {
+		if (type == TargetOs.Linux && architecture == Architecture.ARM && bitness != Architecture.Bitness._64) {
 			// Linux ARM 32-Bit hardfloat
-			BuildTarget target = new BuildTarget(TargetOs.Linux, false, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
+			BuildTarget target = new BuildTarget(TargetOs.Linux, Architecture.Bitness._32, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
 				new String[0], new String[0], "arm-linux-gnueabihf-", "-c -Wall -O2 -fmessage-length=0 -fPIC",
 				"-c -Wall -O2 -fmessage-length=0 -fPIC", "-shared");
-			target.isARM = true;
+			target.architecture = Architecture.ARM;
 			return target;
 		}
 
-		if (type == TargetOs.Linux && isARM && is64Bit) {
+		if (type == TargetOs.Linux && architecture == Architecture.ARM && bitness == Architecture.Bitness._64) {
 			// Linux ARM 64-Bit
-			BuildTarget target = new BuildTarget(TargetOs.Linux, true, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
+			BuildTarget target = new BuildTarget(TargetOs.Linux, Architecture.Bitness._64, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
 				new String[0], new String[0], "aarch64-linux-gnu-", "-c -Wall -O2 -fmessage-length=0 -fPIC",
 				"-c -Wall -O2 -fmessage-length=0 -fPIC", "-shared");
-			target.isARM = true;
+			target.architecture = Architecture.ARM;
 			return target;
 		}
 
-		if (type == TargetOs.Linux && !is64Bit) {
+		if (type == TargetOs.Linux && bitness != Architecture.Bitness._64) {
 			// Linux 32-Bit
-			return new BuildTarget(TargetOs.Linux, false, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
+			return new BuildTarget(TargetOs.Linux, Architecture.Bitness._32, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
 				new String[0], new String[0], "", "-c -Wall -O2 -mfpmath=sse -msse -fmessage-length=0 -m32 -fPIC",
 				"-c -Wall -O2 -mfpmath=sse -msse -fmessage-length=0 -m32 -fPIC", "-shared -m32");
 		}
 
-		if (type == TargetOs.Linux && is64Bit) {
+		if (type == TargetOs.Linux && bitness == Architecture.Bitness._64) {
 			// Linux 64-Bit
-			return new BuildTarget(TargetOs.Linux, true, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
+			return new BuildTarget(TargetOs.Linux, Architecture.Bitness._64, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
 				new String[0], new String[0], "", "-c -Wall -O2 -mfpmath=sse -msse -fmessage-length=0 -m64 -fPIC",
 				"-c -Wall -O2 -mfpmath=sse -msse -fmessage-length=0 -m64 -fPIC", "-shared -m64 -Wl,-wrap,memcpy");
 		}
 
-		if (type == TargetOs.MacOsX && !is64Bit) {
+		if (type == TargetOs.MacOsX && bitness == Architecture.Bitness._32) {
 			throw new RuntimeException("macOS 32-bit not supported");
 		}
-		
-		if (type == TargetOs.MacOsX && is64Bit && isARM) {
+
+		if (type == TargetOs.MacOsX && bitness == Architecture.Bitness._64 && architecture == Architecture.ARM) {
 			// Mac OS aarch64
-			BuildTarget mac = new BuildTarget(TargetOs.MacOsX, true, new String[] {"**/*.c"}, new String[0],
+			BuildTarget mac = new BuildTarget(TargetOs.MacOsX, Architecture.Bitness._64, new String[] {"**/*.c"}, new String[0],
 				new String[] {"**/*.cpp"}, new String[0], new String[0], "",
 				"-c -Wall -O2 -arch arm64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.7 -stdlib=libc++",
 				"-c -Wall -O2 -arch arm64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.7 -stdlib=libc++",
@@ -251,13 +265,13 @@ public class BuildTarget {
 			mac.cCompiler = "clang";
 			mac.cppCompiler = "clang++";
 			mac.canBuild = () -> System.getProperty("os.name").contains("Mac");
-			mac.isARM = true;
+			mac.architecture = Architecture.ARM;
 			return mac;
 		}
-		
-		if (type == TargetOs.MacOsX && is64Bit) {
+
+		if (type == TargetOs.MacOsX && bitness == Architecture.Bitness._64) {
 			// Mac OS x86_64
-			BuildTarget mac = new BuildTarget(TargetOs.MacOsX, true, new String[] {"**/*.c"}, new String[0],
+			BuildTarget mac = new BuildTarget(TargetOs.MacOsX, Architecture.Bitness._64, new String[] {"**/*.c"}, new String[0],
 				new String[] {"**/*.cpp"}, new String[0], new String[0], "",
 				"-c -Wall -O2 -arch x86_64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.7 -stdlib=libc++",
 				"-c -Wall -O2 -arch x86_64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.7 -stdlib=libc++",
@@ -269,7 +283,7 @@ public class BuildTarget {
 		}
 
 		if (type == TargetOs.Android) {
-			BuildTarget android = new BuildTarget(TargetOs.Android, false, new String[] {"**/*.c"}, new String[0],
+			BuildTarget android = new BuildTarget(TargetOs.Android, Architecture.Bitness._32, new String[] {"**/*.c"}, new String[0],
 				new String[] {"**/*.cpp"}, new String[0], new String[0], "", "-O2 -Wall -D__ANDROID__", "-O2 -Wall -D__ANDROID__",
 				"-lm");
 			return android;
@@ -277,7 +291,7 @@ public class BuildTarget {
 		
 		if(type == TargetOs.IOS) {
 			// iOS, x86_64 simulator, armv7, and arm64 compiled to fat static lib
-			BuildTarget ios = new BuildTarget(TargetOs.IOS, false, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
+			BuildTarget ios = new BuildTarget(TargetOs.IOS, Architecture.Bitness._32, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
 					new String[0], new String[0], "", "-c -Wall -O2 -stdlib=libc++", "-c -Wall -O2 -stdlib=libc++",
 					"-shared -stdlib=libc++");
 			ios.cCompiler = "clang";

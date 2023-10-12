@@ -105,18 +105,18 @@ public class JnigenExtension {
 	}
 
 	public void add(TargetOs type, boolean is64Bit, boolean isARM, Action<BuildTarget> container) {
-		add(type, is64Bit, isARM, false, container);
+		add(type, is64Bit ? BuildTarget.Architecture.Bitness._64 : BuildTarget.Architecture.Bitness._32, isARM ? BuildTarget.Architecture.ARM : BuildTarget.Architecture.x86, container);
 	}
 
-	public void add(TargetOs type, boolean is64Bit, boolean isARM, boolean isRISCV, Action<BuildTarget> container) {
-		String name = type + (isARM ? "ARM" : isRISCV ? "RISCV" : "") + (is64Bit ? "64" : "");
+	public void add(TargetOs type, BuildTarget.Architecture.Bitness bitness, BuildTarget.Architecture architecture, Action<BuildTarget> container) {
+		String name = type + architecture.toSuffix().toUpperCase() + bitness.toSuffix();
 
-		if(get(type, is64Bit, isARM, isRISCV) != null)
+		if(get(type, bitness, architecture) != null)
 			throw new RuntimeException("Attempt to add duplicate build target " + name);
-		if((type == Android || type == IOS) && (is64Bit || isARM || isRISCV))
+		if((type == Android || type == IOS) && bitness != BuildTarget.Architecture.Bitness._32 && architecture != BuildTarget.Architecture.x86)
 			throw new RuntimeException("Android and iOS must not have is64Bit or isARM or isRISCV.");
 
-		BuildTarget target = BuildTarget.newDefaultTarget(type, is64Bit, isARM, isRISCV);
+		BuildTarget target = BuildTarget.newDefaultTarget(type, bitness, architecture);
 
 		if (all != null)
 			all.execute(target);
@@ -190,8 +190,8 @@ public class JnigenExtension {
 		return get(type, is64Bit, isARM, null);
 	}
 
-	public BuildTarget get(TargetOs type, boolean is64Bit, boolean isARM, boolean isRISCV) {
-		return get(type, is64Bit, isARM, isRISCV, null);
+	public BuildTarget get(TargetOs type, BuildTarget.Architecture.Bitness bitness, BuildTarget.Architecture architecture) {
+		return get(type, bitness, architecture, null);
 	}
 
 	public BuildTarget get(TargetOs type, Action<BuildTarget> container) {
@@ -203,12 +203,12 @@ public class JnigenExtension {
 	}
 
 	public BuildTarget get(TargetOs type, boolean is64Bit, boolean isARM, Action<BuildTarget> container) {
-		return get(type, is64Bit, isARM, false, container);
+		return get(type, is64Bit ? BuildTarget.Architecture.Bitness._64 : BuildTarget.Architecture.Bitness._32, isARM ? BuildTarget.Architecture.ARM : BuildTarget.Architecture.x86, container);
 	}
 
-	public BuildTarget get(TargetOs type, boolean is64Bit, boolean isARM, boolean isRISCV, Action<BuildTarget> container) {
+	public BuildTarget get(TargetOs type, BuildTarget.Architecture.Bitness bitness, BuildTarget.Architecture architecture, Action<BuildTarget> container) {
 		for(BuildTarget target : targets) {
-			if(target.os == type && target.is64Bit == is64Bit && target.isARM == isARM && target.isRISCV == isRISCV) {
+			if(target.os == type && target.bitness == bitness && target.architecture == architecture) {
 				if(container != null)
 					container.execute(target);
 				return target;
