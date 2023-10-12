@@ -49,7 +49,7 @@ public class BuildTarget {
 	/** whether this is a 32-bit, 64-bit or 128-bit build, not used for Android **/
 	public Architecture.Bitness bitness;
 	/** whether this is an x86, ARM or RISC-V build, not used for Android **/
-	public Architecture architecture;
+	public Architecture architecture = Architecture.x86;
 	/** the C files and directories to be included in the build, accepts Ant path format, must not be null **/
 	public String[] cIncludes;
 	/** the C files and directories to be excluded from the build, accepts Ant path format, must not be null **/
@@ -185,7 +185,7 @@ public class BuildTarget {
 
 	/** Creates a new default BuildTarget for the given OS, using common default values. */
 	public static BuildTarget newDefaultTarget (BuildTarget.TargetOs type, Architecture.Bitness bitness, Architecture architecture) {
-		if (type == TargetOs.Windows && bitness != Architecture.Bitness._64) {
+		if (type == TargetOs.Windows && bitness == Architecture.Bitness._32) {
 			// Windows 32-Bit
 			return new BuildTarget(TargetOs.Windows, Architecture.Bitness._32, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
 				new String[0], new String[0], "i686-w64-mingw32-", "-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m32",
@@ -201,7 +201,7 @@ public class BuildTarget {
 				"-Wl,--kill-at -shared -static -static-libgcc -static-libstdc++ -m64");
 		}
 
-		if (type == TargetOs.Linux && architecture == Architecture.RISCV && bitness != Architecture.Bitness._64) {
+		if (type == TargetOs.Linux && architecture == Architecture.RISCV && bitness == Architecture.Bitness._32) {
 			// Linux RISCV 32-Bit
 			BuildTarget target = new BuildTarget(TargetOs.Linux, Architecture.Bitness._32, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
 					new String[0], new String[0], "riscv32-linux-gnu-", "-c -Wall -O2 -fmessage-length=0 -fPIC",
@@ -219,7 +219,7 @@ public class BuildTarget {
 			return target;
 		}
 
-		if (type == TargetOs.Linux && architecture == Architecture.ARM && bitness != Architecture.Bitness._64) {
+		if (type == TargetOs.Linux && architecture == Architecture.ARM && bitness == Architecture.Bitness._32) {
 			// Linux ARM 32-Bit hardfloat
 			BuildTarget target = new BuildTarget(TargetOs.Linux, Architecture.Bitness._32, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
 				new String[0], new String[0], "arm-linux-gnueabihf-", "-c -Wall -O2 -fmessage-length=0 -fPIC",
@@ -237,7 +237,7 @@ public class BuildTarget {
 			return target;
 		}
 
-		if (type == TargetOs.Linux && bitness != Architecture.Bitness._64) {
+		if (type == TargetOs.Linux && bitness == Architecture.Bitness._32) {
 			// Linux 32-Bit
 			return new BuildTarget(TargetOs.Linux, Architecture.Bitness._32, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
 				new String[0], new String[0], "", "-c -Wall -O2 -mfpmath=sse -msse -fmessage-length=0 -m32 -fPIC",
