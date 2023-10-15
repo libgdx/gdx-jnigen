@@ -27,10 +27,12 @@ import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
 public class JnigenExtension {
 	private static final Logger log = LoggerFactory.getLogger(JnigenExtension.class);
 
+	@Deprecated
 	public static final boolean x32 = false;
+	@Deprecated
 	public static final boolean x64 = true;
+	@Deprecated
 	public static final boolean ARM = true;
-	public static final boolean RISCV = true;
 	public static final TargetOs Windows = TargetOs.Windows;
 	public static final TargetOs Linux = TargetOs.Linux;
 	public static final TargetOs MacOsX = TargetOs.MacOsX;
@@ -85,25 +87,37 @@ public class JnigenExtension {
 	}
 	
 	public void add(TargetOs type) {
-		add(type, false, false, null);
+		add(type, BuildTarget.Architecture.Bitness._32);
 	}
 
+	public void add(TargetOs type, BuildTarget.Architecture.Bitness bitness) {
+		add(type, bitness, BuildTarget.Architecture.x86);
+	}
+
+	public void add(TargetOs type, BuildTarget.Architecture.Bitness bitness, BuildTarget.Architecture architecture) {
+		add(type, bitness, architecture, null);
+	}
+
+	@Deprecated
 	public void add(TargetOs type, boolean is64Bit) {
 		add(type, is64Bit, false, null);
 	}
 
+	@Deprecated
 	public void add(TargetOs type, boolean is64Bit, boolean isARM) {
 		add(type, is64Bit, isARM, null);
 	}
 
 	public void add(TargetOs type, Action<BuildTarget> container) {
-		add(type, false, false, container);
+		add(type, BuildTarget.Architecture.Bitness._32, BuildTarget.Architecture.x86, container);
 	}
 
+	@Deprecated
 	public void add(TargetOs type, boolean is64Bit, Action<BuildTarget> container) {
 		add(type, is64Bit, false, container);
 	}
 
+	@Deprecated
 	public void add(TargetOs type, boolean is64Bit, boolean isARM, Action<BuildTarget> container) {
 		add(type, is64Bit ? BuildTarget.Architecture.Bitness._64 : BuildTarget.Architecture.Bitness._32, isARM ? BuildTarget.Architecture.ARM : BuildTarget.Architecture.x86, container);
 	}

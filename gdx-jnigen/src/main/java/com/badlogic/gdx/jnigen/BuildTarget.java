@@ -152,7 +152,7 @@ public class BuildTarget {
 		String libPrefix = "";
 		String libSuffix = architecture.toSuffix() + bitness.toSuffix();
 		if (os == TargetOs.Windows) {
-			libSuffix +=  ".dll";
+			libSuffix += ".dll";
 		}
 		if (os == TargetOs.Linux || os == TargetOs.Android) {
 			libPrefix = "lib";
@@ -173,12 +173,21 @@ public class BuildTarget {
 		return os.toString().toLowerCase() + architecture.toSuffix() + bitness.name().substring(1);
 	}
 
-	/** Creates a new default BuildTarget for the given OS, using common default values. */
+	/** Creates a new default BuildTarget for the given OS, using common default values.
+	 * @deprecated Use {@link #newDefaultTarget(BuildTarget.TargetOs, Architecture.Bitness) newDefaultTarget} method.*/
+	@Deprecated
 	public static BuildTarget newDefaultTarget (BuildTarget.TargetOs type, boolean is64Bit) {
 		return newDefaultTarget(type, is64Bit, false);
 	}
 
 	/** Creates a new default BuildTarget for the given OS, using common default values. */
+	public static BuildTarget newDefaultTarget (BuildTarget.TargetOs type, Architecture.Bitness bitness) {
+		return newDefaultTarget(type, bitness, Architecture.x86);
+	}
+
+	/** Creates a new default BuildTarget for the given OS, using common default values.
+	 * @deprecated Use {@link #newDefaultTarget(BuildTarget.TargetOs, Architecture.Bitness, Architecture) newDefaultTarget} method.*/
+	@Deprecated
 	public static BuildTarget newDefaultTarget (BuildTarget.TargetOs type, boolean is64Bit, boolean isARM) {
 		return newDefaultTarget(type, is64Bit ? Architecture.Bitness._64 : Architecture.Bitness._32, isARM ? Architecture.ARM : Architecture.x86);
 	}
