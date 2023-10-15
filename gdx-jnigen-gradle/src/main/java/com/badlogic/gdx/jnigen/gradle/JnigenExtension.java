@@ -27,12 +27,12 @@ import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
 public class JnigenExtension {
 	private static final Logger log = LoggerFactory.getLogger(JnigenExtension.class);
 
-	@Deprecated
-	public static final boolean x32 = false;
-	@Deprecated
-	public static final boolean x64 = true;
-	@Deprecated
-	public static final boolean ARM = true;
+	public static final BuildTarget.Architecture.Bitness x32 = BuildTarget.Architecture.Bitness._32;
+	public static final BuildTarget.Architecture.Bitness x64 = BuildTarget.Architecture.Bitness._64;
+	public static final BuildTarget.Architecture.Bitness x128 = BuildTarget.Architecture.Bitness._128;
+	public static final BuildTarget.Architecture x86 = BuildTarget.Architecture.x86;
+	public static final BuildTarget.Architecture ARM = BuildTarget.Architecture.ARM;
+	public static final BuildTarget.Architecture RISCV = BuildTarget.Architecture.RISCV;
 	public static final TargetOs Windows = TargetOs.Windows;
 	public static final TargetOs Linux = TargetOs.Linux;
 	public static final TargetOs MacOsX = TargetOs.MacOsX;
