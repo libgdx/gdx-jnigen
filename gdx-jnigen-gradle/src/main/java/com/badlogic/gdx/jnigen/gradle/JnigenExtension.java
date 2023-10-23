@@ -193,13 +193,19 @@ public class JnigenExtension {
 	}
 	
 	public BuildTarget get(TargetOs type) {
-		return get(type, false, false, null);
+		return get(type, BuildTarget.Architecture.Bitness._32, BuildTarget.Architecture.x86, null);
 	}
 
+	public BuildTarget get(TargetOs type, BuildTarget.Architecture.Bitness bitness) {
+		return get(type, bitness, BuildTarget.Architecture.x86);
+	}
+
+	@Deprecated
 	public BuildTarget get(TargetOs type, boolean is64Bit) {
 		return get(type, is64Bit, false, null);
 	}
 
+	@Deprecated
 	public BuildTarget get(TargetOs type, boolean is64Bit, boolean isARM) {
 		return get(type, is64Bit, isARM, null);
 	}
@@ -209,13 +215,15 @@ public class JnigenExtension {
 	}
 
 	public BuildTarget get(TargetOs type, Action<BuildTarget> container) {
-		return get(type, false, false, container);
+		return get(type, BuildTarget.Architecture.Bitness._32, BuildTarget.Architecture.x86, container);
 	}
 
+	@Deprecated
 	public BuildTarget get(TargetOs type, boolean is64Bit, Action<BuildTarget> container) {
 		return get(type, is64Bit, false, container);
 	}
 
+	@Deprecated
 	public BuildTarget get(TargetOs type, boolean is64Bit, boolean isARM, Action<BuildTarget> container) {
 		return get(type, is64Bit ? BuildTarget.Architecture.Bitness._64 : BuildTarget.Architecture.Bitness._32, isARM ? BuildTarget.Architecture.ARM : BuildTarget.Architecture.x86, container);
 	}
