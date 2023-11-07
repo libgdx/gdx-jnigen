@@ -7,14 +7,14 @@ import javax.inject.Inject;
 import org.gradle.api.tasks.bundling.Jar;
 
 import com.badlogic.gdx.jnigen.BuildTarget;
-import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
+import com.badlogic.gdx.utils.Os;
 
 /**
  * @author Desu
  */
 public class JnigenJarTask extends Jar {
 	@Inject
-	public JnigenJarTask(TargetOs os) {
+	public JnigenJarTask(Os os) {
 		switch(os) {
 			case Android:
 				getArchiveClassifier().set("natives-android");

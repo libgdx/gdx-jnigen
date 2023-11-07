@@ -18,7 +18,7 @@ package com.badlogic.gdx.jnigen;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
+import com.badlogic.gdx.utils.Os;
 import com.badlogic.gdx.jnigen.FileDescriptor.FileType;
 
 /** <p>Generates Ant scripts for multiple native build targets based on the given {@link BuildConfig}.
@@ -33,12 +33,12 @@ import com.badlogic.gdx.jnigen.FileDescriptor.FileType;
  * A common use case looks like this:
  * 
  * <pre>
- * BuildTarget win32 = BuildTarget.newDefaultBuildTarget(TargetOs.Windows, false);
- * BuildTarget win64 = BuildTarget.newDefaultBuildTarget(TargetOs.Windows, true);
- * BuildTarget linux32 = BuildTarget.newDefaultBuildTarget(TargetOs.Linux, false);
- * BuildTarget linux64 = BuildTarget.newDefaultBuildTarget(TargetOs.Linux, true);
- * BuildTarget mac = BuildTarget.newDefaultBuildTarget(TargetOs.MacOsX, false);
- * BuildTarget android = BuildTarget.newDefaultBuildTarget(TargetOs.Android, false);
+ * BuildTarget win32 = BuildTarget.newDefaultTarget(Os.Windows, Architecture.Bitness._32);
+ * BuildTarget win64 = BuildTarget.newDefaultTarget(Os.Windows, Architecture.Bitness._64);
+ * BuildTarget linux32 = BuildTarget.newDefaultTarget(Os.Linux, Architecture.Bitness._32);
+ * BuildTarget linux64 = BuildTarget.newDefaultTarget(Os.Linux, Architecture.Bitness._64);
+ * BuildTarget mac = BuildTarget.newDefaultTarget(Os.MacOsX, Architecture.Bitness._32);
+ * BuildTarget android = BuildTarget.newDefaultTarget(Os.Android, Architecture.Bitness._32);
  * BuildConfig config = new BuildConfig("mysharedlibrary");
  * 
  * new AntScriptGenerator().generate(config, win32, win64, linux32, linux64, mac, android);
@@ -95,20 +95,20 @@ public class AntScriptGenerator {
 			config.jniDir.child(buildFileName).writeString(buildFile, false);
 			System.out.println("Wrote target '" + target.os + target.architecture.toSuffix() + target.bitness.toSuffix() + "' build script '"
 				+ config.jniDir.child(buildFileName) + "'");
-			if (target.os == TargetOs.IOS) {
+			if (target.os == Os.IOS) {
 				byte[] plist = new FileDescriptor("com/badlogic/gdx/jnigen/resources/scripts/Info.plist.template", FileType.Classpath)
 						.readBytes();
 				config.jniDir.child("Info.plist").writeBytes(plist, false);
 			}
 
 			if (!target.excludeFromMasterBuildFile) {
-				if (target.os != TargetOs.MacOsX && target.os != TargetOs.IOS) {
+				if (target.os != Os.MacOsX && target.os != Os.IOS) {
 					buildFiles.add(buildFileName);
 				}
 
 				String sharedLibFilename = target.getSharedLibFilename(config.sharedLibName);
-				
-				if (target.os != TargetOs.Android && target.os != TargetOs.IOS) {
+
+				if (target.os != Os.Android && target.os != Os.IOS) {
 					sharedLibFiles.add(sharedLibFilename);
 					libsDirs.add("../" + libsDir.path().replace('\\', '/'));
 				}
@@ -158,20 +158,13 @@ public class AntScriptGenerator {
 		}
 	}
 
-	private String getJniPlatform (TargetOs os) {
-		if (os == TargetOs.Windows) return "win32";
-		if (os == TargetOs.Linux) return "linux";
-		if (os == TargetOs.MacOsX) return "mac";
-		return "";
-	}
-
 	public static String getLibsDirectory (BuildConfig config, BuildTarget target) {
 		return config.libsDir.child(target.getTargetFolder()).path().replace('\\', '/');
 	}
 
 	private String generateBuildTargetTemplate (BuildConfig config, BuildTarget target) {
 		// special case for android
-		if (target.os == TargetOs.Android) {
+		if (target.os == Os.Android) {
 			new AndroidNdkScriptGenerator().generate(config, target);
 			String template = new FileDescriptor("com/badlogic/gdx/jnigen/resources/scripts/build-android.xml.template",
 				FileType.Classpath).readString();
@@ -182,7 +175,7 @@ public class AntScriptGenerator {
 
 		// read template file from resources
 		String template = null;
-		if (target.os == TargetOs.IOS) {
+		if (target.os == Os.IOS) {
 			template = new FileDescriptor("com/badlogic/gdx/jnigen/resources/scripts/build-ios.xml.template", FileType.Classpath)
 				.readString();
 		} else {
@@ -192,7 +185,6 @@ public class AntScriptGenerator {
 
 		// generate shared lib filename and jni platform headers directory name
 		String libName = target.getSharedLibFilename(config.sharedLibName);
-		String jniPlatform = getJniPlatform(target.os);
 
 		// generate include and exclude fileset Ant description for C/C++
 		// append memcpy_wrap.c to list of files to be build
@@ -228,7 +220,7 @@ public class AntScriptGenerator {
 		template = template.replace("%xcframeworkName%", config.sharedLibName);
 		template = template.replace("%xcframeworkBundleIdentifier%", target.xcframeworkBundleIdentifier == null ? ("gdx.jnigen." + config.sharedLibName) : target.xcframeworkBundleIdentifier);
 		template = template.replace("%minIOSVersion%", target.minIOSVersion);
-		template = template.replace("%jniPlatform%", jniPlatform);
+		template = template.replace("%jniPlatform%", target.os.getJniPlatform());
 		template = template.replace("%cCompiler%", target.cCompiler);
 		template = template.replace("%cppCompiler%", target.cppCompiler);
 		template = template.replace("%archiver%", target.archiver);

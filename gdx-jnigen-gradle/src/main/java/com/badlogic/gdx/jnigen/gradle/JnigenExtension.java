@@ -19,7 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.badlogic.gdx.jnigen.BuildTarget;
-import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
+import com.badlogic.gdx.utils.Architecture;
+import com.badlogic.gdx.utils.Os;
 
 /**
  * @author Desu
@@ -27,18 +28,18 @@ import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
 public class JnigenExtension {
 	private static final Logger log = LoggerFactory.getLogger(JnigenExtension.class);
 
-	public static final BuildTarget.Architecture.Bitness x32 = BuildTarget.Architecture.Bitness._32;
-	public static final BuildTarget.Architecture.Bitness x64 = BuildTarget.Architecture.Bitness._64;
-	public static final BuildTarget.Architecture.Bitness x128 = BuildTarget.Architecture.Bitness._128;
-	public static final BuildTarget.Architecture x86 = BuildTarget.Architecture.x86;
-	public static final BuildTarget.Architecture ARM = BuildTarget.Architecture.ARM;
-	public static final BuildTarget.Architecture RISCV = BuildTarget.Architecture.RISCV;
-	public static final TargetOs Windows = TargetOs.Windows;
-	public static final TargetOs Linux = TargetOs.Linux;
-	public static final TargetOs MacOsX = TargetOs.MacOsX;
-	public static final TargetOs Android = TargetOs.Android;
-	public static final TargetOs IOS = TargetOs.IOS;
-	
+	public static final Architecture.Bitness x32 = Architecture.Bitness._32;
+	public static final Architecture.Bitness x64 = Architecture.Bitness._64;
+	public static final Architecture.Bitness x128 = Architecture.Bitness._128;
+	public static final Architecture x86 = Architecture.x86;
+	public static final Architecture ARM = Architecture.ARM;
+	public static final Architecture RISCV = Architecture.RISCV;
+	public static final Os Windows = Os.Windows;
+	public static final Os Linux = Os.Linux;
+	public static final Os MacOsX = Os.MacOsX;
+	public static final Os Android = Os.Android;
+	public static final Os IOS = Os.IOS;
+
 	final Project project;
 
 	/**
@@ -85,49 +86,49 @@ public class JnigenExtension {
 	public void robovm(Action<RoboVMXml> action) {
 		action.execute(robovm);
 	}
-	
-	public void add(TargetOs type) {
-		add(type, BuildTarget.Architecture.Bitness._32);
+
+	public void add(Os type) {
+		add(type, Architecture.Bitness._32);
 	}
 
-	public void add(TargetOs type, BuildTarget.Architecture.Bitness bitness) {
-		add(type, bitness, BuildTarget.Architecture.x86);
+	public void add(Os type, Architecture.Bitness bitness) {
+		add(type, bitness, Architecture.x86);
 	}
 
-	public void add(TargetOs type, BuildTarget.Architecture.Bitness bitness, BuildTarget.Architecture architecture) {
+	public void add(Os type, Architecture.Bitness bitness, Architecture architecture) {
 		add(type, bitness, architecture, null);
 	}
 
 	@Deprecated
-	public void add(TargetOs type, boolean is64Bit) {
+	public void add(Os type, boolean is64Bit) {
 		add(type, is64Bit, false, null);
 	}
 
 	@Deprecated
-	public void add(TargetOs type, boolean is64Bit, boolean isARM) {
+	public void add(Os type, boolean is64Bit, boolean isARM) {
 		add(type, is64Bit, isARM, null);
 	}
 
-	public void add(TargetOs type, Action<BuildTarget> container) {
-		add(type, BuildTarget.Architecture.Bitness._32, BuildTarget.Architecture.x86, container);
+	public void add(Os type, Action<BuildTarget> container) {
+		add(type, Architecture.Bitness._32, Architecture.x86, container);
 	}
 
 	@Deprecated
-	public void add(TargetOs type, boolean is64Bit, Action<BuildTarget> container) {
+	public void add(Os type, boolean is64Bit, Action<BuildTarget> container) {
 		add(type, is64Bit, false, container);
 	}
 
 	@Deprecated
-	public void add(TargetOs type, boolean is64Bit, boolean isARM, Action<BuildTarget> container) {
-		add(type, is64Bit ? BuildTarget.Architecture.Bitness._64 : BuildTarget.Architecture.Bitness._32, isARM ? BuildTarget.Architecture.ARM : BuildTarget.Architecture.x86, container);
+	public void add(Os type, boolean is64Bit, boolean isARM, Action<BuildTarget> container) {
+		add(type, is64Bit ? Architecture.Bitness._64 : Architecture.Bitness._32, isARM ? Architecture.ARM : Architecture.x86, container);
 	}
 
-	public void add(TargetOs type, BuildTarget.Architecture.Bitness bitness, BuildTarget.Architecture architecture, Action<BuildTarget> container) {
+	public void add(Os type, Architecture.Bitness bitness, Architecture architecture, Action<BuildTarget> container) {
 		String name = type + architecture.toSuffix().toUpperCase() + bitness.toSuffix();
 
 		if(get(type, bitness, architecture) != null)
 			throw new RuntimeException("Attempt to add duplicate build target " + name);
-		if((type == Android || type == IOS) && bitness != BuildTarget.Architecture.Bitness._32 && architecture != BuildTarget.Architecture.x86)
+		if((type == Android || type == IOS) && bitness != Architecture.Bitness._32 && architecture != Architecture.x86)
 			throw new RuntimeException("Android and iOS must not have is64Bit or isARM or isRISCV.");
 
 		BuildTarget target = BuildTarget.newDefaultTarget(type, bitness, architecture);
@@ -191,44 +192,44 @@ public class JnigenExtension {
 			jarDesktopNatives.add(target, this);
 		}
 	}
-	
-	public BuildTarget get(TargetOs type) {
-		return get(type, BuildTarget.Architecture.Bitness._32, BuildTarget.Architecture.x86, null);
+
+	public BuildTarget get(Os type) {
+		return get(type, Architecture.Bitness._32, Architecture.x86, null);
 	}
 
-	public BuildTarget get(TargetOs type, BuildTarget.Architecture.Bitness bitness) {
-		return get(type, bitness, BuildTarget.Architecture.x86);
+	public BuildTarget get(Os type, Architecture.Bitness bitness) {
+		return get(type, bitness, Architecture.x86);
 	}
 
 	@Deprecated
-	public BuildTarget get(TargetOs type, boolean is64Bit) {
+	public BuildTarget get(Os type, boolean is64Bit) {
 		return get(type, is64Bit, false, null);
 	}
 
 	@Deprecated
-	public BuildTarget get(TargetOs type, boolean is64Bit, boolean isARM) {
+	public BuildTarget get(Os type, boolean is64Bit, boolean isARM) {
 		return get(type, is64Bit, isARM, null);
 	}
 
-	public BuildTarget get(TargetOs type, BuildTarget.Architecture.Bitness bitness, BuildTarget.Architecture architecture) {
+	public BuildTarget get(Os type, Architecture.Bitness bitness, Architecture architecture) {
 		return get(type, bitness, architecture, null);
 	}
 
-	public BuildTarget get(TargetOs type, Action<BuildTarget> container) {
-		return get(type, BuildTarget.Architecture.Bitness._32, BuildTarget.Architecture.x86, container);
+	public BuildTarget get(Os type, Action<BuildTarget> container) {
+		return get(type, Architecture.Bitness._32, Architecture.x86, container);
 	}
 
 	@Deprecated
-	public BuildTarget get(TargetOs type, boolean is64Bit, Action<BuildTarget> container) {
+	public BuildTarget get(Os type, boolean is64Bit, Action<BuildTarget> container) {
 		return get(type, is64Bit, false, container);
 	}
 
 	@Deprecated
-	public BuildTarget get(TargetOs type, boolean is64Bit, boolean isARM, Action<BuildTarget> container) {
-		return get(type, is64Bit ? BuildTarget.Architecture.Bitness._64 : BuildTarget.Architecture.Bitness._32, isARM ? BuildTarget.Architecture.ARM : BuildTarget.Architecture.x86, container);
+	public BuildTarget get(Os type, boolean is64Bit, boolean isARM, Action<BuildTarget> container) {
+		return get(type, is64Bit ? Architecture.Bitness._64 : Architecture.Bitness._32, isARM ? Architecture.ARM : Architecture.x86, container);
 	}
 
-	public BuildTarget get(TargetOs type, BuildTarget.Architecture.Bitness bitness, BuildTarget.Architecture architecture, Action<BuildTarget> container) {
+	public BuildTarget get(Os type, Architecture.Bitness bitness, Architecture architecture, Action<BuildTarget> container) {
 		for(BuildTarget target : targets) {
 			if(target.os == type && target.bitness == bitness && target.architecture == architecture) {
 				if(container != null)

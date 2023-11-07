@@ -4,6 +4,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.badlogic.gdx.jnigen.JniGenTestClass.TestInner;
+import com.badlogic.gdx.utils.Architecture;
+import com.badlogic.gdx.utils.Os;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 
 import java.nio.ByteBuffer;
@@ -27,22 +29,14 @@ public class JniGenTest {
 
         // generate build scripts
         BuildConfig buildConfig = new BuildConfig("test", "../../tmp/gdx-jnigen", "../../build/libs", "build/generated/jni");
-        
-        BuildTarget target;
-        if (SharedLibraryLoader.isWindows)
-        	target = BuildTarget.newDefaultTarget(BuildTarget.TargetOs.Windows, SharedLibraryLoader.is64Bit);
-        else if (SharedLibraryLoader.isLinux)
-        	target = BuildTarget.newDefaultTarget(BuildTarget.TargetOs.Linux, SharedLibraryLoader.is64Bit ? BuildTarget.Architecture.Bitness._64 : BuildTarget.Architecture.Bitness._32, SharedLibraryLoader.isARM ? BuildTarget.Architecture.ARM : SharedLibraryLoader.isRISCV ? BuildTarget.Architecture.RISCV : BuildTarget.Architecture.x86);
-        else if (SharedLibraryLoader.isMac)
-        	target = BuildTarget.newDefaultTarget(BuildTarget.TargetOs.MacOsX, SharedLibraryLoader.is64Bit, SharedLibraryLoader.isARM);
-        else
-        	throw new RuntimeException("Unsupported OS to run tests.");
+
+        BuildTarget target =  BuildTarget.newDefaultTarget(SharedLibraryLoader.os, SharedLibraryLoader.bitness, SharedLibraryLoader.architecture);
 
         new AntScriptGenerator().generate(buildConfig, target);
 
-        if (SharedLibraryLoader.isMac) {
+        if (SharedLibraryLoader.os == Os.MacOsX) {
             String scriptToRun;
-            if (SharedLibraryLoader.isARM) {
+            if (SharedLibraryLoader.architecture == Architecture.ARM) {
                 scriptToRun = "build/generated/jni/build-macosxarm64.xml";
             } else {
                 scriptToRun = "build/generated/jni/build-macosx64.xml";
