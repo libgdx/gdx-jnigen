@@ -118,6 +118,10 @@ public class JnigenExtension {
 		add(type, is64Bit, false, container);
 	}
 
+	public void add(Os type, Architecture.Bitness bitness, Action<BuildTarget> container) {
+		add(type, bitness, Architecture.x86, container);
+	}
+
 	@Deprecated
 	public void add(Os type, boolean is64Bit, boolean isARM, Action<BuildTarget> container) {
 		add(type, is64Bit ? Architecture.Bitness._64 : Architecture.Bitness._32, isARM ? Architecture.ARM : Architecture.x86, container);
