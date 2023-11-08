@@ -18,12 +18,12 @@ package com.badlogic.gdx.jnigen;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
 import com.badlogic.gdx.jnigen.FileDescriptor.FileType;
+import com.badlogic.gdx.utils.Os;
 
 public class AndroidNdkScriptGenerator {
 	public void generate (BuildConfig config, BuildTarget target) {
-		if (target.os != TargetOs.Android) throw new IllegalArgumentException("target os must be Android");
+		if (target.os != Os.Android) throw new IllegalArgumentException("target os must be Android");
 
 		// create all the directories for outputing object files, shared libs and natives jar as well as build scripts.
 		if (!config.libsDir.exists()) {

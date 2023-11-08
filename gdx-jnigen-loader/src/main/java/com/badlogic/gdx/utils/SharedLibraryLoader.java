@@ -36,33 +36,78 @@ import java.util.zip.ZipFile;
  * @author mzechner
  * @author Nathan Sweet */
 public class SharedLibraryLoader {
-	static public boolean isWindows = System.getProperty("os.name").contains("Windows");
-	static public boolean isLinux = System.getProperty("os.name").contains("Linux");
-	static public boolean isMac = System.getProperty("os.name").contains("Mac");
-	static public boolean isIos = false;
-	static public boolean isAndroid = false;
-	static public boolean isARM = System.getProperty("os.arch").startsWith("arm") || System.getProperty("os.arch").startsWith("aarch64");
-	static public boolean is64Bit = System.getProperty("os.arch").contains("64") || System.getProperty("os.arch").startsWith("armv8");
+
+	static public Os os;
+	static public Architecture.Bitness bitness = Architecture.Bitness._32;
+	static public Architecture architecture = Architecture.x86;
 
 	static {
+		if (System.getProperty("os.name").contains("Windows"))
+			os = Os.Windows;
+		else if (System.getProperty("os.name").contains("Linux"))
+			os = Os.Linux;
+		else if (System.getProperty("os.name").contains("Mac"))
+			os = Os.MacOsX;
+
+		if (System.getProperty("os.arch").startsWith("arm") || System.getProperty("os.arch").startsWith("aarch64"))
+			architecture = Architecture.ARM;
+		else if (System.getProperty("os.arch").startsWith("riscv"))
+			architecture = Architecture.RISCV;
+
+		if (System.getProperty("os.arch").contains("64") || System.getProperty("os.arch").startsWith("armv8"))
+			bitness = Architecture.Bitness._64;
+		else if (System.getProperty("os.arch").contains("128"))
+			bitness = Architecture.Bitness._128;
+
 		boolean isMOEiOS = System.getProperty("moe.platform.name") != null;
 		String vm = System.getProperty("java.runtime.name");
 		if (vm != null && vm.contains("Android Runtime")) {
-			isAndroid = true;
-			isWindows = false;
-			isLinux = false;
-			isMac = false;
-			is64Bit = false;
+			os = Os.Android;
+			bitness = Architecture.Bitness._32;
+			architecture = Architecture.x86;
 		}
-		if (isMOEiOS || (!isAndroid && !isWindows && !isLinux && !isMac)) {
-			isIos = true;
-			isAndroid = false;
-			isWindows = false;
-			isLinux = false;
-			isMac = false;
-			is64Bit = false;
+		if (isMOEiOS || (os != Os.Android && os != Os.Windows && os != Os.Linux && os != Os.MacOsX)) {
+			os = Os.IOS;
+			bitness = Architecture.Bitness._32;
+			architecture = Architecture.x86;
 		}
 	}
+
+	/**
+	 * @deprecated Use {@link #os} as {@code SharedLibraryLoader.os == Os.Windows} instead.
+	 */
+	@Deprecated
+	static public boolean isWindows = os == Os.Windows;
+	/**
+	 * @deprecated Use {@link #os} as {@code SharedLibraryLoader.os == Os.Linux} instead.
+	 */
+	@Deprecated
+	static public boolean isLinux = os == Os.Linux;
+	/**
+	 * @deprecated Use {@link #os} as {@code SharedLibraryLoader.os == Os.MacOsX} instead.
+	 */
+	@Deprecated
+	static public boolean isMac = os == Os.MacOsX;
+	/**
+	 * @deprecated Use {@link #os} as {@code SharedLibraryLoader.os == Os.IOS} instead.
+	 */
+	@Deprecated
+	static public boolean isIos = os == Os.IOS;
+	/**
+	 * @deprecated Use {@link #os} as {@code SharedLibraryLoader.os == Os.Android} instead.
+	 */
+	@Deprecated
+	static public boolean isAndroid = os == Os.Android;
+	/**
+	 * @deprecated Use {@link #architecture} as {@code SharedLibraryLoader.architecture == Architecture.ARM} instead.
+	 */
+	@Deprecated
+	static public boolean isARM = architecture == Architecture.ARM;
+	/**
+	 * @deprecated Use {@link #bitness} as {@code SharedLibraryLoader.bitness == Architecture.Bitness._64} instead.
+	 */
+	@Deprecated
+	static public boolean is64Bit = bitness == Architecture.Bitness._64;
 
 	static private final HashSet<String> loadedLibraries = new HashSet<>();
 	static private final Random random = new Random();
@@ -102,30 +147,27 @@ public class SharedLibraryLoader {
 
 	/** Maps a platform independent library name to a platform dependent name. */
 	public String mapLibraryName (String libraryName) {
-		if (isWindows) return libraryName + (is64Bit ? "64.dll" : ".dll");
-		if (isLinux) return "lib" + libraryName + (isARM ? "arm" : "") + (is64Bit ? "64.so" : ".so");
-		if (isMac) return "lib" + libraryName + (isARM ? "arm" : "") + (is64Bit ? "64.dylib" : ".dylib");
-		return libraryName;
+		return os.getLibPrefix() + libraryName + architecture.toSuffix() + bitness.toSuffix() + "." + os.getLibExtension();
 	}
 
 	/** Loads a shared library for the platform the application is running on.
 	 * @param libraryName The platform independent library name. If not contain a prefix (eg lib) or suffix (eg .dll). */
 	public void load (String libraryName) {
 		// in case of iOS, it's unnecessary to dlopen
-		if (isIos) return;
+		if (os == Os.IOS) return;
 
 		synchronized (SharedLibraryLoader.class) {
 			if (isLoaded(libraryName)) return;
 			String platformName = mapLibraryName(libraryName);
 			try {
-				if (isAndroid)
+				if (os == Os.Android)
 					System.loadLibrary(platformName);
 				else
 					loadFile(platformName);
 				setLoaded(libraryName);
 			} catch (Throwable ex) {
 				throw new SharedLibraryLoadRuntimeException("Couldn't load shared library '" + platformName + "' for target: "
-					+ (isAndroid ? "Android" : (System.getProperty("os.name") + (isARM ? ", ARM" : "") + (is64Bit ? ", 64-bit" : ", 32-bit"))),
+					+ (os == Os.Android ? "Android" : (System.getProperty("os.name") + ", " + architecture.name() + ", " + bitness.name().substring(1) + "-bit")),
 						ex);
 			}
 		}

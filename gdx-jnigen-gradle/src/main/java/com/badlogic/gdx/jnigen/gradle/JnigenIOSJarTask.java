@@ -3,11 +3,11 @@ package com.badlogic.gdx.jnigen.gradle;
 import java.io.File;
 
 import com.badlogic.gdx.jnigen.BuildTarget;
-import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
+import com.badlogic.gdx.utils.Os;
 
 public class JnigenIOSJarTask extends JnigenJarTask {
 	public JnigenIOSJarTask() {
-		super(TargetOs.IOS);
+		super(Os.IOS);
 	}
 
 	public void add(BuildTarget target, JnigenExtension ext, String abi) {

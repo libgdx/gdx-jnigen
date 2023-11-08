@@ -26,7 +26,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.badlogic.gdx.jnigen.BuildTarget;
-import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
+import com.badlogic.gdx.utils.Os;
 import com.badlogic.gdx.jnigen.gradle.JnigenExtension.RoboVMXml.RoboVMXmlLib;
 
 /**
@@ -47,7 +47,7 @@ public class JnigenGenerateRoboVMXml extends DefaultTask {
 
 	@TaskAction
 	public void run() {
-		BuildTarget target = ext.get(TargetOs.IOS);
+		BuildTarget target = ext.get(Os.IOS);
 		if (target == null) {
 			log.info("Nothing to do because no IOS BuildTarget");
 			return;
