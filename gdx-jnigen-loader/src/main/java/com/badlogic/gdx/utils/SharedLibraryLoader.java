@@ -73,20 +73,39 @@ public class SharedLibraryLoader {
 		}
 	}
 
+	/**
+	 * @deprecated Use {@link #os} as {@code SharedLibraryLoader.os == Os.Windows} instead.
+	 */
 	@Deprecated
 	static public boolean isWindows = os == Os.Windows;
+	/**
+	 * @deprecated Use {@link #os} as {@code SharedLibraryLoader.os == Os.Linux} instead.
+	 */
 	@Deprecated
 	static public boolean isLinux = os == Os.Linux;
+	/**
+	 * @deprecated Use {@link #os} as {@code SharedLibraryLoader.os == Os.MacOsX} instead.
+	 */
 	@Deprecated
 	static public boolean isMac = os == Os.MacOsX;
+	/**
+	 * @deprecated Use {@link #os} as {@code SharedLibraryLoader.os == Os.IOS} instead.
+	 */
 	@Deprecated
 	static public boolean isIos = os == Os.IOS;
+	/**
+	 * @deprecated Use {@link #os} as {@code SharedLibraryLoader.os == Os.Android} instead.
+	 */
 	@Deprecated
 	static public boolean isAndroid = os == Os.Android;
+	/**
+	 * @deprecated Use {@link #architecture} as {@code SharedLibraryLoader.architecture == Architecture.ARM} instead.
+	 */
 	@Deprecated
 	static public boolean isARM = architecture == Architecture.ARM;
-	@Deprecated
-	static public boolean isRISCV = architecture == Architecture.RISCV;
+	/**
+	 * @deprecated Use {@link #bitness} as {@code SharedLibraryLoader.bitness == Architecture.Bitness._64} instead.
+	 */
 	@Deprecated
 	static public boolean is64Bit = bitness == Architecture.Bitness._64;
 
