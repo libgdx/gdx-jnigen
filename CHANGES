@@ -1,3 +1,7 @@
+[2.5.0]
+- [BREAKING CHANGE] Added Enum for Os/Architecture/Bitness
+- Linux RISCV Support
+
 [2.4.0]
 - [BREAKING CHANGE] [iOS] Move static libraries to dynamic libraries
 - [BREAKING CHANGE] [iOS] Remove armv7 slices
