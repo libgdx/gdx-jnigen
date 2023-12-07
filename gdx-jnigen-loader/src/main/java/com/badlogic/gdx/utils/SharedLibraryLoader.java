@@ -54,7 +54,7 @@ public class SharedLibraryLoader {
 		else if (System.getProperty("os.arch").startsWith("riscv"))
 			architecture = Architecture.RISCV;
 		else if (System.getProperty("os.arch").startsWith("loongarch"))
-			architecture = Architecture.LOONGARCH
+			architecture = Architecture.LOONGARCH;
 
 		if (System.getProperty("os.arch").contains("64") || System.getProperty("os.arch").startsWith("armv8"))
 			bitness = Architecture.Bitness._64;
