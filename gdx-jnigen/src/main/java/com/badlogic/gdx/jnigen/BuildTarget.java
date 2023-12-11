@@ -179,7 +179,7 @@ public class BuildTarget {
 
 		if (type == Os.Linux && architecture == Architecture.LOONGARCH && bitness == Architecture.Bitness._64) {
 			// Linux LoongArch 64-Bit
-			BuildTarget target = new BuildTarget(Os.Linux, Architecture.Bitness._32, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
+			BuildTarget target = new BuildTarget(Os.Linux, Architecture.Bitness._64, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
 					new String[0], new String[0], "loongarch64-linux-gnu-", "-c -Wall -O2 -fmessage-length=0 -fPIC",
 					"-c -Wall -O2 -fmessage-length=0 -fPIC", "-shared");
 			target.architecture = Architecture.LOONGARCH;
