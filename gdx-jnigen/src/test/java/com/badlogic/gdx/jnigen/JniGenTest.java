@@ -125,7 +125,7 @@ public class JniGenTest {
 
         assertTrue(JniGenTestClass.test(
                 true, (byte)1, (char)2, (short)3, 4, 5, 6, 7,
-                buffer, new boolean[] { false }, new char[] { 9 },
+                buffer, new boolean[] { false }, new char[] { '9' },
                 new short[] { 10 }, new int[] { 11 }, new long[] { 12 },
                 new float[] { 13 }, new double[] { 14 },
                 null, "Hurray", JniGenTestClass.class, new RuntimeException(), new JniGenTestClass()));
