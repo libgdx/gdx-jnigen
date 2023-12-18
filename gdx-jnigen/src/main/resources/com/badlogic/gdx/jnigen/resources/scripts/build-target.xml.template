@@ -89,6 +89,7 @@
 				</not>
 			</and>
 		</condition>
+        <fail message="Compiler ${gcc} or ${g++} not found." unless="has-compiler"/>
 		%precompile%
 	</target>
 	
