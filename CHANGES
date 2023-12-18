@@ -1,5 +1,6 @@
 [2.5.1]
 - [BREAKING CHANGE] Missing compilers will no longer silently fail #52
+- Windows ARM built target #51
 - Fix regression in library loading on android #55 
 - Enforce UTF-8 for java header generation #53
 
