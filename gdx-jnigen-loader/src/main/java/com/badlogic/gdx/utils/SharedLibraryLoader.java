@@ -149,6 +149,8 @@ public class SharedLibraryLoader {
 
 	/** Maps a platform independent library name to a platform dependent name. */
 	public String mapLibraryName (String libraryName) {
+		if (os == Os.Android)
+			return libraryName;
 		return os.getLibPrefix() + libraryName + architecture.toSuffix() + bitness.toSuffix() + "." + os.getLibExtension();
 	}
 
