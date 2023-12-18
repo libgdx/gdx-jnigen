@@ -177,6 +177,15 @@ public class BuildTarget {
 				"-Wl,--kill-at -shared -static -static-libgcc -static-libstdc++ -m64");
 		}
 
+		if (type == Os.Linux && architecture == Architecture.LOONGARCH && bitness == Architecture.Bitness._64) {
+			// Linux LoongArch 64-Bit
+			BuildTarget target = new BuildTarget(Os.Linux, Architecture.Bitness._64, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
+					new String[0], new String[0], "loongarch64-unknown-linux-gnu-", "-c -Wall -O2 -fmessage-length=0 -fPIC",
+					"-c -Wall -O2 -fmessage-length=0 -fPIC", "-shared");
+			target.architecture = Architecture.LOONGARCH;
+			return target;
+		}
+
 		if (type == Os.Linux && architecture == Architecture.RISCV && bitness == Architecture.Bitness._32) {
 			// Linux RISCV 32-Bit
 			BuildTarget target = new BuildTarget(Os.Linux, Architecture.Bitness._32, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
