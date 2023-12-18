@@ -53,7 +53,7 @@ class JniGenTestClass {
 			printf("char[0]: %c\n", charArray [0]);
 			printf("short[0]: %d\n", shortArray [0]);
 			printf("int[0]: %d\n", intArray [0]);
-			printf("long[0]: %ll\n", longArray [0]);
+			printf("long[0]: %lld\n", longArray [0]);
 			printf("float[0]: %f\n", floatArray [0]);
 			printf("double[0]: %f\n", doubleArray [0]);
 			printf("string: %s fuck this nuts\n", string);

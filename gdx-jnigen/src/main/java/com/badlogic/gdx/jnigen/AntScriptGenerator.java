@@ -231,11 +231,11 @@ public class AntScriptGenerator {
 		template = template.replace("%linkerFlags%", target.linkerFlags);
 		template = template.replace("%archiverFlags%", target.archiverFlags);
 		template = template.replace("%libraries%", target.libraries);
-		template = template.replace("%cIncludes%", cIncludes);
-		template = template.replace("%cExcludes%", cExcludes);
-		template = template.replace("%cppIncludes%", cppIncludes);
-		template = template.replace("%cppExcludes%", cppExcludes);
-		template = template.replace("%headerDirs%", headerDirs);
+		template = template.replace("%cIncludes%", cIncludes.toString().trim());
+		template = template.replace("%cExcludes%", cExcludes.toString().trim());
+		template = template.replace("%cppIncludes%", cppIncludes.toString().trim());
+		template = template.replace("%cppExcludes%", cppExcludes.toString().trim());
+		template = template.replace("%headerDirs%", headerDirs.toString().trim());
 		template = template.replace("%precompile%", target.preCompileTask == null ? "" : target.preCompileTask);
 		template = template.replace("%postcompile%", target.postCompileTask == null ? "" : target.postCompileTask);
 
