@@ -53,6 +53,8 @@ public class SharedLibraryLoader {
 			architecture = Architecture.ARM;
 		else if (System.getProperty("os.arch").startsWith("riscv"))
 			architecture = Architecture.RISCV;
+		else if (System.getProperty("os.arch").startsWith("loongarch"))
+			architecture = Architecture.LOONGARCH;
 
 		if (System.getProperty("os.arch").contains("64") || System.getProperty("os.arch").startsWith("armv8"))
 			bitness = Architecture.Bitness._64;
@@ -147,6 +149,8 @@ public class SharedLibraryLoader {
 
 	/** Maps a platform independent library name to a platform dependent name. */
 	public String mapLibraryName (String libraryName) {
+		if (os == Os.Android)
+			return libraryName;
 		return os.getLibPrefix() + libraryName + architecture.toSuffix() + bitness.toSuffix() + "." + os.getLibExtension();
 	}
 

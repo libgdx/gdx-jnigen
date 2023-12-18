@@ -1,7 +1,7 @@
 package com.badlogic.gdx.utils;
 
 public enum Architecture {
-	x86, ARM, RISCV;
+	x86, ARM, RISCV,LOONGARCH;
 
 	public String toSuffix() {
 		if (this == x86) return "";

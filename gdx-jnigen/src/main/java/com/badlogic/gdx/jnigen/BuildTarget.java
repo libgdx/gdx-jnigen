@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -75,7 +75,7 @@ public class BuildTarget {
 	public String libName;
 	/** Condition to check if build this target */
 	public BooleanSupplier canBuild = () -> !System.getProperty("os.name").contains("Mac");
-	
+
 	/** List of ABIs we wish to build for Android. Defaults to all available in current NDK.
 	 * <a href="https://developer.android.com/ndk/guides/application_mk#app_abi">https://developer.android.com/ndk/guides/application_mk#app_abi</a> **/
 	public String[] androidABIs = {"all"};
@@ -194,6 +194,15 @@ public class BuildTarget {
 					"-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m64",
 					"-Wl,--kill-at -shared -static -static-libgcc -static-libstdc++ -m64");
 			target.architecture = Architecture.ARM;
+			return target;
+		}
+
+		if (type == Os.Linux && architecture == Architecture.LOONGARCH && bitness == Architecture.Bitness._64) {
+			// Linux LoongArch 64-Bit
+			BuildTarget target = new BuildTarget(Os.Linux, Architecture.Bitness._64, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
+					new String[0], new String[0], "loongarch64-unknown-linux-gnu-", "-c -Wall -O2 -fmessage-length=0 -fPIC",
+					"-c -Wall -O2 -fmessage-length=0 -fPIC", "-shared");
+			target.architecture = Architecture.LOONGARCH;
 			return target;
 		}
 
