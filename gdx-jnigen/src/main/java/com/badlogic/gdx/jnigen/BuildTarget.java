@@ -180,9 +180,9 @@ public class BuildTarget {
 		if (type == Os.Windows && architecture == Architecture.ARM && bitness == Architecture.Bitness._32) {
 			// Windows ARM 32-Bit
 			BuildTarget target = new BuildTarget(Os.Windows, Architecture.Bitness._32, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
-					new String[0], new String[0], "armv7-w64-mingw32-", "-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m32",
-					"-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m32",
-					"-Wl,--kill-at -shared -m32 -static -static-libgcc -static-libstdc++");
+					new String[0], new String[0], "armv7-w64-mingw32-", "-c -Wall -O2 -fmessage-length=0",
+					"-c -Wall -O2 -fmessage-length=0",
+					"-Wl,--kill-at -shared -static -static-libgcc -static-libstdc++");
 			target.architecture = Architecture.ARM;
 			return target;
 		}
@@ -190,9 +190,9 @@ public class BuildTarget {
 		if (type == Os.Windows && architecture == Architecture.ARM && bitness == Architecture.Bitness._64) {
 			// Windows ARM 64-Bit
 			BuildTarget target = new BuildTarget(Os.Windows, Architecture.Bitness._64, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
-					new String[0], new String[0], "aarch64-w64-mingw32-", "-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m64",
-					"-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m64",
-					"-Wl,--kill-at -shared -static -static-libgcc -static-libstdc++ -m64");
+					new String[0], new String[0], "aarch64-w64-mingw32-", "-c -Wall -O2 -fmessage-length=0",
+					"-c -Wall -O2 -fmessage-length=0",
+					"-Wl,--kill-at -shared -static -static-libgcc -static-libstdc++");
 			target.architecture = Architecture.ARM;
 			return target;
 		}
