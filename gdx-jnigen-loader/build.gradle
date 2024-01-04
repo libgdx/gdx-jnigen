@@ -1,5 +1,32 @@
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.badlogicgames.gdx:gdx-jnigen-gradle:2.5.1"
+    }
+}
+
+apply plugin: "com.badlogicgames.gdx.gdx-jnigen"
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    dependsOn("jnigenJarNativesDesktop", "jnigenBuild")
+    useJUnitPlatform()
+}
+
+jnigen {
+    sharedLibName = "jnigen-native"
+
+    add(Linux, x64)
+}
 
 eclipse {
     project {
