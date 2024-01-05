@@ -12,6 +12,8 @@ import com.badlogic.gdx.jnigen.BuildConfig;
 import com.badlogic.gdx.jnigen.BuildTarget;
 import com.badlogic.gdx.jnigen.NativeCodeGenerator;
 
+import java.util.Arrays;
+
 /**
  * @author Desu
  */
@@ -40,17 +42,20 @@ public class JnigenTask extends DefaultTask {
 		log.debug("sharedLibName " + ext.sharedLibName);
 		log.debug("nativeCodeGeneratorConfig " + ext.nativeCodeGeneratorConfig);
 
-		try {
-			String absoluteSourceDir = ext.nativeCodeGeneratorConfig.getSourceDir();
-			if(!absoluteSourceDir.startsWith(ext.subProjectDir))
-				absoluteSourceDir = ext.subProjectDir + ext.nativeCodeGeneratorConfig.getSourceDir();
-			
-			new NativeCodeGenerator().generate(absoluteSourceDir,
-					ext.nativeCodeGeneratorConfig.sourceSet.getRuntimeClasspath().getAsPath(), ext.subProjectDir + ext.nativeCodeGeneratorConfig.jniDir,
-					ext.nativeCodeGeneratorConfig.includes, ext.nativeCodeGeneratorConfig.excludes);
-		} catch (Exception e) {
-			throw new RuntimeException("NativeCodeGenerator threw exception", e);
-		}
+
+
+		String[] absoluteSourceDirs = ext.nativeCodeGeneratorConfig.getSourceDirs();
+		Arrays.stream(absoluteSourceDirs)
+				.map(s -> s.startsWith(ext.subProjectDir) ? s : ext.subProjectDir + s)
+				.forEach(s -> {
+					try {
+						new NativeCodeGenerator().generate(s,
+								ext.nativeCodeGeneratorConfig.sourceSet.getRuntimeClasspath().getAsPath(), ext.subProjectDir + ext.nativeCodeGeneratorConfig.jniDir,
+								ext.nativeCodeGeneratorConfig.includes, ext.nativeCodeGeneratorConfig.excludes);
+					} catch (Exception e) {
+						throw new RuntimeException("NativeCodeGenerator threw exception", e);
+					}
+				});
 
 		BuildConfig buildConfig = new BuildConfig(ext.sharedLibName, ext.temporaryDir, ext.libsDir,
 				ext.subProjectDir + ext.jniDir);

@@ -253,7 +253,7 @@ public class JnigenExtension {
 
 	class NativeCodeGeneratorConfig {
 		SourceSet sourceSet;
-		private String sourceDir;
+		private String[] sourceDirs;
 		String jniDir = "jni";
 		String[] includes = null;
 		String[] excludes = null;
@@ -266,32 +266,32 @@ public class JnigenExtension {
 
 		@Override
 		public String toString() {
-			return "NativeCodeGeneratorConfig[sourceDir=`" + sourceDir + "`, sourceSet=`" + sourceSet + "`, jniDir=`"
+			return "NativeCodeGeneratorConfig[sourceDir=`" + Arrays.toString(sourceDirs) + "`, sourceSet=`" + sourceSet + "`, jniDir=`"
 					+ jniDir + "`, includes=`" + Arrays.toString(includes)
 					+ "`, excludes=`" + Arrays.toString(excludes) + "`]";
 		}
 
+		/**
+		 * This method is deprecated in favor of {@link NativeCodeGeneratorConfig#setSourceDirs(String[])}
+		 */
+		@Deprecated
 		public void setSourceDir(String sourceDir) {
-			this.sourceDir = sourceDir;
+			this.sourceDirs = new String[]{sourceDir};
 		}
 
-		public String getSourceDir()
+		public void setSourceDirs(String[] sourceDirs) {
+			this.sourceDirs = sourceDirs;
+		}
+
+		public String[] getSourceDirs()
 		{
 			//If already set, use provided value
-			if(sourceDir != null) {
-				return sourceDir;
+			if(sourceDirs != null) {
+				return sourceDirs;
 			}
 
-			Set<File> javaSrcDirs = sourceSet.getJava().getSrcDirs();
-			if (javaSrcDirs.size() == 1) {
-				for (File srcDir : javaSrcDirs) {
-					sourceDir = srcDir.getPath();
-				}
-			} else {
-				log.error("Multiple java SrcDirs detected. Please manually specify nativeCodeGenerator { sourceDir = \"\"}");
-				throw new RuntimeException( "Multiple java SrcDirs detected. Please manually specify nativeCodeGenerator { sourceDir = \"\"}");
-			}
-			return sourceDir;
+			sourceDirs = sourceSet.getJava().getSrcDirs().stream().map(File::getPath).toArray(String[]::new);
+			return sourceDirs;
 		}
 	}
 	
