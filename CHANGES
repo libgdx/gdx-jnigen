@@ -1,3 +1,6 @@
+[2.5.2]
+- Add support for defining multiple source directories in the gradle plugin
+
 [2.5.1]
 - [BREAKING CHANGE] Missing compilers will no longer silently fail #52
 - Windows ARM built target #51
