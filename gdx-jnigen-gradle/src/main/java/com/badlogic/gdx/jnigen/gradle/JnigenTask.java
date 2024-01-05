@@ -42,10 +42,7 @@ public class JnigenTask extends DefaultTask {
 		log.debug("sharedLibName " + ext.sharedLibName);
 		log.debug("nativeCodeGeneratorConfig " + ext.nativeCodeGeneratorConfig);
 
-
-
-		String[] absoluteSourceDirs = ext.nativeCodeGeneratorConfig.getSourceDirs();
-		Arrays.stream(absoluteSourceDirs)
+		Arrays.stream(ext.nativeCodeGeneratorConfig.getSourceDirs())
 				.map(s -> s.startsWith(ext.subProjectDir) ? s : ext.subProjectDir + s)
 				.forEach(s -> {
 					try {
