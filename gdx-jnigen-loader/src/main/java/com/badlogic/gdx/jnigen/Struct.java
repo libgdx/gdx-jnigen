@@ -1,7 +1,7 @@
 package com.badlogic.gdx.jnigen;
 
-import com.badlogic.gdx.jnigen.gc.GCHandler;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
+import com.badlogic.gdx.jnigen.pointer.StructPointer;
 
 public abstract class Struct extends Pointing {
 
@@ -13,6 +13,7 @@ public abstract class Struct extends Pointing {
         super(size);
     }
 
+    public abstract <T extends Struct> StructPointer<T> asPointer();
 
     public abstract long getSize();
 }
