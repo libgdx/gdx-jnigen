@@ -1,13 +1,14 @@
 package com.badlogic.gdx.jnigen.gc;
 
 import com.badlogic.gdx.jnigen.Struct;
+import com.badlogic.gdx.jnigen.pointer.Pointing;
 
 import java.lang.ref.PhantomReference;
 
-public class StructPhantomReference extends PhantomReference<Struct> {
+public class PointingPhantomReference extends PhantomReference<Pointing> {
 
     private final long pointer;
-    public StructPhantomReference(Struct referent) {
+    public PointingPhantomReference(Pointing referent) {
         super(referent, GCHandler.REFERENCE_QUEUE);
         this.pointer = referent.getPointer();
     }

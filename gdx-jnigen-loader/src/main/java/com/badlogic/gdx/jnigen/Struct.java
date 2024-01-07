@@ -1,23 +1,18 @@
 package com.badlogic.gdx.jnigen;
 
 import com.badlogic.gdx.jnigen.gc.GCHandler;
+import com.badlogic.gdx.jnigen.pointer.Pointing;
 
-public class Struct {
+public abstract class Struct extends Pointing {
 
-    private final long pointer;
-
-    protected Struct(long pointer) {
-        if (pointer <= -1)
-            throw new IllegalArgumentException("Pointer must be positive.");
-        this.pointer = pointer;
+    protected Struct(long pointer, boolean freeOnGC) {
+        super(pointer, freeOnGC);
     }
 
-    public Struct(int size) {
-        this.pointer = Global.calloc(size);
-        GCHandler.enqueueMallocedStruct(this);
+    protected Struct(long size) {
+        super(size);
     }
 
-    public long getPointer() {
-        return pointer;
-    }
+
+    public abstract long getSize();
 }
