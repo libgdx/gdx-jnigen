@@ -9,6 +9,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StructMethodsTest {
 
+    static {
+        Global.free(0);
+    }
+
     @Test
     public void testPassByValue() {
         TestStruct testStruct = new TestStruct();
@@ -23,6 +27,25 @@ public class StructMethodsTest {
         testStruct.setField2(7);
         pointer.set(testStruct);
         assertEquals(7, TestStruct.passPointerTest(pointer));
+
+        assertEquals(7, testStruct.getField2());
+        assertEquals(0, testStruct.getField4());
+
+        testStruct = pointer.get();
+        assertEquals(5, testStruct.getField4());
+        assertEquals(7, testStruct.getField2());
+    }
+
+    @Test
+    public void testPassPointerAsPointer() {
+        TestStruct testStruct = new TestStruct();
+        testStruct.setField2(7);
+
+        StructPointer<TestStruct> pointer = testStruct.asPointer();
+        assertEquals(7, TestStruct.passPointerTest(pointer));
+
+        assertEquals(7, testStruct.getField2());
+        assertEquals(5, testStruct.getField4());
 
         testStruct = pointer.get();
         assertEquals(5, testStruct.getField4());
@@ -40,7 +63,6 @@ public class StructMethodsTest {
 
     @Test
     public void returnStructPointerTest() {
-        Global.free(0);
         StructPointer<TestStruct> testStructPtr = TestStruct.returnStructPointerTest();
         TestStruct testStruct = testStructPtr.get();
         testStructPtr.free();
@@ -53,7 +75,6 @@ public class StructMethodsTest {
 
     @Test
     public void testGetSetStruct() {
-        Global.free(0);
 
         TestStruct testStruct = new TestStruct();
 
