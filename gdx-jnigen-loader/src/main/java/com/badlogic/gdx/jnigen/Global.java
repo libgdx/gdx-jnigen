@@ -9,7 +9,12 @@ public class Global {
     }
 
     /*JNI
-    #include <cstdlib>
+    #include <stdlib.h>
+    #include <string.h>
+    */
+
+    public static native long malloc(long size);/*
+        return (jlong)malloc(size);
     */
 
     public static native long calloc(long size);/*
@@ -18,5 +23,9 @@ public class Global {
 
     public static native void free(long pointer);/*
         free((void*)pointer);
+    */
+
+    public static native void memcpy(long dst, long src, long size);/*
+        memcpy((void*)dst, (void*)src, size);
     */
 }
