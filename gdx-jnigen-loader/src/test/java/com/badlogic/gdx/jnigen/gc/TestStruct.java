@@ -74,12 +74,18 @@ public class TestStruct extends Struct {
     */
 
     private static final long __size;
+    private static final long __ffi_type;
 
     static {
         __size = calculateSize();
+        __ffi_type = generateFFIType();
     }
 
     private static native long calculateSize();/*
+        return (jlong)sizeof(TestStruct);
+    */
+
+    private static native long generateFFIType();/*
         return (jlong)sizeof(TestStruct);
     */
 
@@ -100,6 +106,11 @@ public class TestStruct extends Struct {
     @Override
     public long getSize() {
         return __size;
+    }
+
+    @Override
+    public long getFFIType() {
+        return __ffi_type;
     }
 
     public long getField1() {

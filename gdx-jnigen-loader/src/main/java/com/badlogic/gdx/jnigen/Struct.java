@@ -16,4 +16,6 @@ public abstract class Struct extends Pointing {
     public abstract <T extends Struct> StructPointer<T> asPointer();
 
     public abstract long getSize();
+
+    public abstract long getFFIType();
 }
