@@ -2,7 +2,6 @@ package com.badlogic.gdx.jnigen.gc;
 
 import com.badlogic.gdx.jnigen.Global;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
-import org.graalvm.nativebridge.In;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

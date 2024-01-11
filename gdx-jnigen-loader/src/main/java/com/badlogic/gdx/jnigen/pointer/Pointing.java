@@ -9,8 +9,6 @@ public class Pointing {
     private boolean freeOnGC;
 
     protected Pointing(long pointer, boolean freeOnGC) {
-        if (pointer <= -1)
-            throw new IllegalArgumentException("Pointer must be positive.");
         this.pointer = pointer;
         this.freeOnGC = freeOnGC;
         if (freeOnGC)

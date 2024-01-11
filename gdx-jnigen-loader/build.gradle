@@ -1,31 +1,106 @@
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+import java.nio.file.Files
 
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
+        maven { url("https://oss.sonatype.org/content/repositories/snapshots/") }
     }
     dependencies {
-        classpath "com.badlogicgames.gdx:gdx-jnigen-gradle:2.5.1"
+        classpath "com.badlogicgames.gdx:gdx-jnigen-gradle:2.5.1-SNAPSHOT"
     }
 }
 
+plugins {
+    id "de.undercouch.download" version "5.0.1"
+}
+
 apply plugin: "com.badlogicgames.gdx.gdx-jnigen"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+tasks.register("fetchLibFFI", Download) {
+    src 'https://github.com/libffi/libffi/releases/download/v3.4.4/libffi-3.4.4.tar.gz'
+    dest 'build/libFFI.tar.gz'
+    onlyIfModified true
+    useETag "all"
+}
+
+tasks.register("extractLibFFI", Copy) {
+    doFirst {
+        delete 'build/libFFI/'
+        mkdir 'build/libFFI/'
+    }
+    dependsOn 'fetchLibFFI'
+    from tarTree(resources.gzip('build/libFFI.tar.gz'))
+    into 'build/libFFI/'
+    eachFile { file ->
+        file.path = file.relativePath.segments[1..-1].join('/')
+    }
+}
+
+def createBuildTask(String platformName, String architecture, String specialFlags = "", List<String> specialArgs = []) {
+    task("build_${platformName}_${architecture}") {
+        dependsOn("extractLibFFI")
+        doLast {
+            def tmpDir = Files.createTempDirectory(platformName + "_" + architecture).resolve("libFFI")
+            copy {
+                from 'build/libFFI'
+                into tmpDir
+            }
+            exec {
+                workingDir = tmpDir.toFile()
+                commandLine = "./configure"
+                environment "CFLAGS", specialFlags
+                environment "LDFLAGS", specialFlags
+                args = ["--prefix=${new File(buildDir,  platformName + "_" + architecture)}"] + specialArgs
+            }
+            exec {
+                workingDir = tmpDir.toFile()
+                commandLine = "make"
+                args = ["-j${Runtime.getRuntime().availableProcessors()}"]
+            }
+            exec {
+                workingDir = tmpDir.toFile()
+                commandLine = "make"
+                args = ["install"]
+            }
+            delete tmpDir
+        }
+    }
+}
+
+task build_mac {
+    dependsOn createBuildTask("mac", "arm64", "-arch arm64")
+    //dependsOn createBuildTask("mac", "x86_64", "-arch x86_64")
+}
+
 test {
-    dependsOn("jnigenJarNativesDesktop", "jnigenBuild")
+    dependsOn("jnigenBuild", "jnigenJarNativesDesktop")
     useJUnitPlatform()
 }
 
 jnigen {
     sharedLibName = "jnigen-native"
 
+    nativeCodeGenerator {
+        it.sourceDirs = [file("src/main/java"), file("src/test/java")]
+    }
+
+    all {
+        headerDirs += [file("build/mac_arm64/include/")]
+        linkerFlags += " ${file("build/mac_x86_64/lib/libffi.a").absolutePath} "
+    }
+
     add(Linux, x64)
+    add(MacOsX, x64, ARM)
 }
 
 eclipse {
