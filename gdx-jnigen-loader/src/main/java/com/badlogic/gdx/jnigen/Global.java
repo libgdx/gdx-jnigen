@@ -2,6 +2,7 @@ package com.badlogic.gdx.jnigen;
 
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
+import com.badlogic.gdx.jnigen.ffi.ClosureInfo;
 import com.badlogic.gdx.jnigen.ffi.ParameterTypes;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 
@@ -16,7 +17,7 @@ public class Global {
     static {
         new SharedLibraryLoader("build/libs/gdx-jnigen-loader-2.5.1-SNAPSHOT-natives-desktop.jar").load("jnigen-native");
         try {
-            init(Global.class.getDeclaredMethod("dispatchCallback", Object.class, Object[].class));
+            init(Global.class.getDeclaredMethod("dispatchCallback", ClosureInfo.class, ByteBuffer.class));
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
@@ -33,7 +34,7 @@ public class Global {
         bool _hadToAttach = false;                                          \
         JNIEnv* env;                                                        \
         if (gJVM->GetEnv((void**)&env, JNI_VERSION_1_6) == JNI_EDETACHED) { \
-            gJVM->AttachCurrentThread((void**)&env, NULL);                          \
+            gJVM->AttachCurrentThread((void**)&env, NULL);                  \
             _hadToAttach = true;                                            \
         }
 
@@ -48,9 +49,23 @@ public class Global {
 
     void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
         ATTACH_ENV()
-        jobject toCallOn = (jobject) user;
-        // jobjectArray array = env->NewObjectArray(0, );
-        env->CallStaticVoidMethod(globalClass, dispatchCallbackMethod, toCallOn, NULL);
+        jobject closureInfo = (jobject) user;
+        void* backingBuffer[cif->nargs * 8];
+        jobject jBuffer = NULL;
+        if (cif->nargs != 0) {
+            jBuffer = env->NewDirectByteBuffer(backingBuffer, cif->nargs * 8);
+            for (int i = 0; i < cif->nargs; i++) {
+                ffi_type* type = cif->arg_types[i];
+                if(type->type == FFI_TYPE_STRUCT) {
+                    void* structBuf = malloc(type->size);
+                    memcpy(structBuf, args[i], type->size);
+                    backingBuffer[i] = structBuf;
+                } else {
+                    memcpy(backingBuffer + i, args[i],  type->size);
+                }
+            }
+        }
+        env->CallStaticVoidMethod(globalClass, dispatchCallbackMethod, closureInfo, jBuffer);
         DETACH_ENV()
     }
 
@@ -62,15 +77,8 @@ public class Global {
         globalClass = (jclass)env->NewGlobalRef(clazz);
     */
 
-    public static void dispatchCallback(Object toCallOn, Object[] parameter) {
-        try {
-            // Catch method
-            Method toCall = toCallOn.getClass().getDeclaredMethods()[0];
-            toCall.setAccessible(true);
-            toCall.invoke(toCallOn, parameter);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+    public static <T extends Closure> void dispatchCallback(ClosureInfo<T> toCallOn, ByteBuffer parameter) {
+        toCallOn.invoke(parameter);
     }
 
     private static native long nativeCreateCif(long returnType, ByteBuffer parameters, int size); /*
@@ -103,7 +111,7 @@ public class Global {
 
         ffi_cif* cif = (ffi_cif*)malloc(sizeof(ffi_cif));
         ffi_prep_cif(cif, FFI_DEFAULT_ABI, size, &ffi_type_void, parameterFFITypes);
-        return (jlong)cif;
+        return reinterpret_cast<jlong>(cif);
     */
 
     private static long generateFFICifForClass(Class<? extends Closure> closureClass) {
@@ -135,20 +143,21 @@ public class Global {
         long cif = getFFICifForClass(object.getClass());
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(8);
         byteBuffer.order(ByteOrder.nativeOrder());
-        long fnPtr = createClosureForObject(cif, object, byteBuffer);
+        ClosureInfo<T> closureInfo = new ClosureInfo<>(cif, object.getClass().getDeclaredMethods()[0], object);
+        long fnPtr = createClosureForObject(cif, closureInfo, byteBuffer);
         long closurePtr = byteBuffer.getLong();
 
         return new ClosureObject<>(fnPtr, closurePtr, false);
     }
 
-    public static native <T extends Closure> long createClosureForObject(long cif, T object, ByteBuffer closureRet);/*
+    public static native <T extends Closure> long createClosureForObject(long cif, ClosureInfo<T> object, ByteBuffer closureRet);/*
         jobject toCallOn = env->NewGlobalRef(object);
         void* fnPtr;
         ffi_closure* closure = (ffi_closure*)ffi_closure_alloc(sizeof(ffi_closure), &fnPtr);
 
         ffi_prep_closure_loc(closure, (ffi_cif*)cif, callbackHandler, toCallOn, fnPtr);
         *((ffi_closure**) closureRet) = closure;
-        return (jlong)fnPtr;
+        return reinterpret_cast<jlong>(fnPtr);
     */
 
     public static native void freeClosure(long closurePtr);/*
@@ -158,11 +167,11 @@ public class Global {
     */
 
     public static native long malloc(long size);/*
-        return (jlong)malloc(size);
+        return reinterpret_cast<jlong>(malloc(size));
     */
 
     public static native long calloc(long size);/*
-        return (jlong)calloc(1, size);
+        return reinterpret_cast<jlong>(calloc(1, size));
     */
 
     public static native void free(long pointer);/*
