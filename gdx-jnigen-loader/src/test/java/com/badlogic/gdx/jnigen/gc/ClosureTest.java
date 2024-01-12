@@ -27,7 +27,7 @@ public class ClosureTest {
     @Test
     public void testCallbackLongArg() {
         AtomicLong changed = new AtomicLong(0);
-        ClosureObject<CallbackNoReturnLongArg> closureObject = ClosureObject.fromClosure((arg) -> changed.set(arg));
+        ClosureObject<CallbackNoReturnLongArg> closureObject = ClosureObject.fromClosure(changed::set);
         Closures.methodWithCallbackLongArg(closureObject.getFnPtr());
         assertEquals(5, changed.get());
         closureObject.free();

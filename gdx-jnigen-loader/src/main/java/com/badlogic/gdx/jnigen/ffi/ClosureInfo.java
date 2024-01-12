@@ -25,7 +25,9 @@ public class ClosureInfo<T extends Closure> {
         objects = new Object[parameters.length];
     }
 
-    public Object invoke(ByteBuffer parameter) {
+    public Object invoke(ByteBuffer parameter) throws InvocationTargetException, IllegalAccessException {
+        if (parameters.length == 0)
+            return toCall.invoke(toCallOn);
         parameter.order(ByteOrder.nativeOrder());
         for (int i = 0; i < parameters.length; i++) {
             Class<?> param = parameters[i];
@@ -48,11 +50,7 @@ public class ClosureInfo<T extends Closure> {
                 objects[i] = Double.longBitsToDouble(value);
             }
         }
-        try {
-            return toCall.invoke(toCallOn, objects);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+        return toCall.invoke(toCallOn, objects);
     }
 
     public long getCif() {
