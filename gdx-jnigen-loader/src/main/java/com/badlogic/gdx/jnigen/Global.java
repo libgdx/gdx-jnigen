@@ -78,7 +78,11 @@ public class Global {
     */
 
     public static <T extends Closure> void dispatchCallback(ClosureInfo<T> toCallOn, ByteBuffer parameter) {
-        toCallOn.invoke(parameter);
+        try {
+            toCallOn.invoke(parameter);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static native long nativeCreateCif(long returnType, ByteBuffer parameters, int size); /*
