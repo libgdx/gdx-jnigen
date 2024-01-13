@@ -17,7 +17,9 @@ public class Global {
     static {
         new SharedLibraryLoader("build/libs/gdx-jnigen-loader-2.5.1-SNAPSHOT-natives-desktop.jar").load("jnigen-native");
         try {
-            init(Global.class.getDeclaredMethod("dispatchCallback", ClosureInfo.class, ByteBuffer.class));
+            boolean res = init(Global.class.getDeclaredMethod("dispatchCallback", ClosureInfo.class, ByteBuffer.class));
+            if (!res)
+                throw new RuntimeException("JNI initialization failed.");
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
@@ -71,10 +73,15 @@ public class Global {
 
     */
 
-    public static native void init(Method dispatchCallbackReflectedMethod);/*
+    public static native boolean init(Method dispatchCallbackReflectedMethod);/*
         env->GetJavaVM(&gJVM);
-        dispatchCallbackMethod = env->FromReflectedMethod(dispatchCallbackReflectedMethod);
         globalClass = (jclass)env->NewGlobalRef(clazz);
+        dispatchCallbackMethod = env->FromReflectedMethod(dispatchCallbackReflectedMethod);
+        if (dispatchCallbackMethod == NULL) {
+            fprintf(stderr, "com.badlogic.gdx.jnigen.Global#dispatchCallback is not reachable via JNI\n");
+            return JNI_FALSE;
+        }
+        return JNI_TRUE;
     */
 
     public static <T extends Closure> void dispatchCallback(ClosureInfo<T> toCallOn, ByteBuffer parameter) {
