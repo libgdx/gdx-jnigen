@@ -11,7 +11,7 @@ public class ParameterTypes {
         if (toMap == boolean.class)
             return -1;
         if (toMap == char.class)
-            return -1;
+            return -2;
         if (toMap == byte.class)
             return -1;
         if (toMap == short.class)
