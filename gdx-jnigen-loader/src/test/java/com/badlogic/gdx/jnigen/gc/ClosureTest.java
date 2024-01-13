@@ -128,7 +128,7 @@ public class ClosureTest {
         assertEquals(3, changed.getShort());
         assertEquals(4, changed.get());
         assertEquals(5, changed.getChar());
-        assertTrue(changed.get() == 1);
+        assertEquals(1, changed.get());
         assertEquals(6.6f, changed.getFloat());
         assertEquals(7.7, changed.getDouble());
         closureObject.free();
