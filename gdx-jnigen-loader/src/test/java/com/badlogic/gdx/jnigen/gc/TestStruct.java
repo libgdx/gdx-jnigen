@@ -1,19 +1,15 @@
 package com.badlogic.gdx.jnigen.gc;
 
+import com.badlogic.gdx.jnigen.Global;
 import com.badlogic.gdx.jnigen.Struct;
+import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 
 public class TestStruct extends Struct {
 
     /*JNI
-        #include <stdint.h>
-        #include <stdlib.h>
-        typedef struct TestStruct {
-            uint64_t field1;
-            uint32_t field2;
-            uint16_t field3;
-            uint8_t field4;
-        } TestStruct;
+        #include "definitions.h"
+        #include <ffi.h>
     */
 
     // GLOBAL FUNCTIONS
@@ -36,6 +32,10 @@ public class TestStruct extends Struct {
         tStruct->field4 = 5;
         return tStruct->field2;
     */
+
+    public interface CallbackNoReturnStructArg extends Closure {
+        void toCall(TestStruct arg);
+    }
 
     public static TestStruct returnStructTest() {
         TestStruct testStruct = new TestStruct();
@@ -79,6 +79,8 @@ public class TestStruct extends Struct {
     static {
         __size = calculateSize();
         __ffi_type = generateFFIType();
+        Global.registerStructFFIType(TestStruct.class, __ffi_type);
+        Global.registerPointingSupplier(TestStruct.class, TestStruct::new);
     }
 
     private static native long calculateSize();/*
@@ -86,8 +88,23 @@ public class TestStruct extends Struct {
     */
 
     private static native long generateFFIType();/*
-        return (jlong)sizeof(TestStruct);
+        ffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));
+        type->type = FFI_TYPE_STRUCT;
+        type->size = sizeof(TestStruct);
+        type->alignment = alignof(TestStruct);
+        type->elements = (ffi_type**)malloc(sizeof(ffi_type*) * 5);
+        type->elements[0] = &ffi_type_uint64;
+        type->elements[1] = &ffi_type_uint32;
+        type->elements[2] = &ffi_type_uint16;
+        type->elements[3] = &ffi_type_uint8;
+        type->elements[4] = NULL;
+
+        return reinterpret_cast<jlong>(type);
     */
+
+    protected TestStruct(long pointer, boolean freeOnGC) {
+        super(pointer, freeOnGC);
+    }
 
     protected TestStruct() {
         super(__size);
