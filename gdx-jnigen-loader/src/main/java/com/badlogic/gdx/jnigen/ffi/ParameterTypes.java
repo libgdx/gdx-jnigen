@@ -1,5 +1,6 @@
 package com.badlogic.gdx.jnigen.ffi;
 
+import com.badlogic.gdx.jnigen.Global;
 import com.badlogic.gdx.jnigen.Struct;
 
 import java.util.HashMap;
@@ -25,7 +26,14 @@ public class ParameterTypes {
         if (toMap == double.class)
             return -6;
 
-        throw new IllegalArgumentException("Only primitive types are currently supported");
+        if (Struct.class.isAssignableFrom(toMap)) {
+            long type = Global.getStructFFIType((Class<? extends Struct>)toMap);
+            if (type == 0)
+                throw new IllegalArgumentException("Class " + toMap.getName() + " does not got registered yet.");
+            return type;
+        }
+
+        throw new IllegalArgumentException("Class " + toMap.getName() + " can not be mapped to native.");
 
     }
 }
