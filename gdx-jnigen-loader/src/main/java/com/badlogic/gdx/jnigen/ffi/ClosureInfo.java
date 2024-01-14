@@ -1,6 +1,10 @@
 package com.badlogic.gdx.jnigen.ffi;
 
+import com.badlogic.gdx.jnigen.Global;
+import com.badlogic.gdx.jnigen.Struct;
 import com.badlogic.gdx.jnigen.closure.Closure;
+import com.badlogic.gdx.jnigen.pointer.Pointing;
+import com.badlogic.gdx.jnigen.util.WrappingPointingSupplier;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,6 +19,7 @@ public class ClosureInfo<T extends Closure> {
 
     private Class<?>[] parameters;
     private Object[] objects;
+    private final WrappingPointingSupplier<? extends Pointing>[] pointingSuppliers;
 
     public ClosureInfo(long cif, Method toCall, T toCallOn) {
         this.cif = cif;
@@ -22,10 +27,21 @@ public class ClosureInfo<T extends Closure> {
         this.toCallOn = toCallOn;
         toCall.setAccessible(true);
         parameters = toCall.getParameterTypes();
+        pointingSuppliers = new WrappingPointingSupplier[parameters.length];
+        for (int i = 0; i < parameters.length; i++) {
+            if (Struct.class.isAssignableFrom(parameters[i])) {
+                @SuppressWarnings("unchecked")
+                WrappingPointingSupplier<? extends Pointing> supplier = Global.getPointingSupplier((Class<? extends Pointing>)parameters[i]);
+                if (supplier == null)
+                    throw new IllegalArgumentException("Class " + parameters[i].getName() + " has no registered supplier.");
+                pointingSuppliers[i] = supplier;
+            }
+        }
         objects = new Object[parameters.length];
     }
 
-    public Object invoke(ByteBuffer parameter) throws InvocationTargetException, IllegalAccessException {
+    public Object invoke(ByteBuffer parameter)
+            throws InvocationTargetException, IllegalAccessException {
         if (parameters.length == 0)
             return toCall.invoke(toCallOn);
         parameter.order(ByteOrder.nativeOrder());
@@ -53,6 +69,8 @@ public class ClosureInfo<T extends Closure> {
                 parameter.position(parameter.position() + 4);
             } else if (param == double.class) {
                 objects[i] = Double.longBitsToDouble(parameter.getLong());
+            } else if (Struct.class.isAssignableFrom(param)) {
+                objects[i] = pointingSuppliers[i].create(parameter.getLong(), true);
             }
         }
         return toCall.invoke(toCallOn, objects);
