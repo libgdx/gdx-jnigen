@@ -6,8 +6,7 @@ import com.badlogic.gdx.jnigen.closure.ClosureObject;
 public class Closures {
 
     /*JNI
-        #include <stdint.h>
-        #include <stdbool.h>
+        #include "definitions.h"
      */
 
     public interface CallbackNoReturnNoArg extends Closure {
@@ -97,6 +96,16 @@ public class Closures {
     public static native void methodWithCallbackDoubleArg(long fnPtr);/*
         double arg = 5.5;
         ((void (*)(double))fnPtr)(arg);
+    */
+
+    public static native void methodWithCallbackStructArg(long fnPtr);/*
+        TestStruct arg = {
+            .field1 = 1,
+            .field2 = 2,
+            .field3 = 3,
+            .field4 = 4
+        };
+        ((void (*)(TestStruct))fnPtr)(arg);
     */
 
     public static native void methodWithCallbackAllArgs(long fnPtr);/*

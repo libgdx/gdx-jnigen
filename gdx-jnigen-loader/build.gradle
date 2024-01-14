@@ -95,7 +95,7 @@ jnigen {
     }
 
     all {
-        headerDirs += [file("build/mac_arm64/include/")]
+        headerDirs += [file("build/mac_arm64/include/"), file("src/test/native/")]
         linkerFlags += " ${file("build/mac_x86_64/lib/libffi.a").absolutePath} "
         cFlags += " -std=c11 "
         cppFlags += " -std=c++11 " // for using alignof
