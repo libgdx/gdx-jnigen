@@ -1,5 +1,6 @@
 package com.badlogic.gdx.jnigen.gc;
 
+import com.badlogic.gdx.jnigen.Global;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnAllArgs;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnBooleanArg;
@@ -11,6 +12,8 @@ import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnIntArg;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnLongArg;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnNoArg;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnShortArg;
+import com.badlogic.gdx.jnigen.gc.TestStruct.CallbackNoReturnStructArg;
+import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
@@ -105,6 +108,21 @@ public class ClosureTest {
         ClosureObject<CallbackNoReturnDoubleArg> closureObject = ClosureObject.fromClosure(changed::put);
         Closures.methodWithCallbackDoubleArg(closureObject.getFnPtr());
         assertEquals(5.5, changed.get(0));
+        closureObject.free();
+    }
+
+    @Test
+    public void testCallbackStructArg() {
+        Global.free(0);
+        new TestStruct();
+        StructPointer<TestStruct> structPointer = new StructPointer<>(TestStruct::new);
+        ClosureObject<CallbackNoReturnStructArg> closureObject = ClosureObject.fromClosure(structPointer::set);
+        Closures.methodWithCallbackStructArg(closureObject.getFnPtr());
+        TestStruct testStruct = structPointer.get();
+        assertEquals(1, testStruct.getField1());
+        assertEquals(2, testStruct.getField2());
+        assertEquals(3, testStruct.getField3());
+        assertEquals(4, testStruct.getField4());
         closureObject.free();
     }
 
