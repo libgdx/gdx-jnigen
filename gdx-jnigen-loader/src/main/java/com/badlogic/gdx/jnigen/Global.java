@@ -4,6 +4,8 @@ import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.ffi.ClosureInfo;
 import com.badlogic.gdx.jnigen.ffi.ParameterTypes;
+import com.badlogic.gdx.jnigen.pointer.Pointing;
+import com.badlogic.gdx.jnigen.util.WrappingPointingSupplier;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 
 import java.lang.reflect.InvocationTargetException;
@@ -26,6 +28,10 @@ public class Global {
     }
 
     private static final HashMap<Class<? extends Closure>, Long> classCifMap = new HashMap<>();
+
+    private static final HashMap<Class<? extends Struct>, Long> classStructFFITypeMap = new HashMap<>();
+
+    private static final HashMap<Class<? extends Pointing>, WrappingPointingSupplier<? extends Pointing>> classPointingSupplierMap = new HashMap<>();
 
     /*JNI
     #include <stdlib.h>
@@ -92,8 +98,33 @@ public class Global {
         }
     }
 
+    public static void registerStructFFIType(Class<? extends Struct> structClass, long ffiType) {
+        synchronized (classStructFFITypeMap) {
+            classStructFFITypeMap.put(structClass, ffiType);
+        }
+    }
+
+    public static long getStructFFIType(Class<? extends Struct> structClass) {
+        synchronized (classStructFFITypeMap) {
+            return classStructFFITypeMap.getOrDefault(structClass, 0L);
+        }
+    }
+
+    public static <T extends Pointing> void registerPointingSupplier(Class<T> toRegister, WrappingPointingSupplier<T> supplier) {
+        synchronized (classPointingSupplierMap) {
+            classPointingSupplierMap.put(toRegister, supplier);
+        }
+    }
+
+    public static <T extends Pointing> WrappingPointingSupplier<T> getPointingSupplier(Class<T> toGet) {
+        synchronized (classPointingSupplierMap) {
+            //noinspection unchecked
+            return (WrappingPointingSupplier<T>)classPointingSupplierMap.get(toGet);
+        }
+    }
+
     private static native long nativeCreateCif(long returnType, ByteBuffer parameters, int size); /*
-        uint64_t* params = (uint64_t*) parameters;
+        int64_t* params = (int64_t*) parameters;
         ffi_type** parameterFFITypes = (ffi_type**)malloc(sizeof(ffi_type*) * size);
         for (int i = 0; i < size; i++) {
             switch (params[i]) {
