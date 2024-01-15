@@ -25,7 +25,14 @@ public class Global {
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
+        POINTER_SIZE = getPointerSize();
     }
+
+    public static final int POINTER_SIZE;
+
+    public static native int getPointerSize();/*
+        return sizeof(void*);
+    */
 
     private static final HashMap<Class<? extends Closure>, Long> classCifMap = new HashMap<>();
 
@@ -51,7 +58,10 @@ public class Global {
     #define DETACH_ENV()                 \
         if (_hadToAttach) {              \
             gJVM->DetachCurrentThread(); \
-    }
+        }
+
+    #define CONVERT_TO_64_BIT(x) static_cast<uint64_t>(reinterpret_cast<uintptr_t>(x));
+    #define CONVERT_TO_VOID_POINTER(x) static_cast<uintptr_t>(reinterpret_cast<void*>(x));
 
     jmethodID dispatchCallbackMethod = NULL;
     jclass globalClass = NULL;
