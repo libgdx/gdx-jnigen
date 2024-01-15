@@ -37,6 +37,10 @@ public class TestStruct extends Struct {
         void toCall(TestStruct arg);
     }
 
+    public interface CallbackNoReturnStructPointerArg extends Closure {
+        void toCall(StructPointer<TestStruct> arg);
+    }
+
     public static TestStruct returnStructTest() {
         TestStruct testStruct = new TestStruct();
         returnStructTest(testStruct.getPointer());
@@ -57,7 +61,7 @@ public class TestStruct extends Struct {
     */
 
     public static StructPointer<TestStruct> returnStructPointerTest() {
-        return new StructPointer<>(returnStructPointerTestN(), false, TestStruct::new);
+        return new StructPointer<>(returnStructPointerTestN(), false);
     }
 
     private static native long returnStructPointerTestN();/*
@@ -81,6 +85,7 @@ public class TestStruct extends Struct {
         __ffi_type = generateFFIType();
         Global.registerStructFFIType(TestStruct.class, __ffi_type);
         Global.registerPointingSupplier(TestStruct.class, TestStruct::new);
+        Global.registerStructSize(TestStruct.class, __size);
     }
 
     private static native long calculateSize();/*
@@ -108,16 +113,6 @@ public class TestStruct extends Struct {
 
     protected TestStruct() {
         super(__size);
-    }
-
-    @Override
-    public StructPointer<TestStruct> asPointer() {
-        // Okay, this might be shit, because we now get a new view on the Struct as a StructPointer.
-        // This might lead to problems, where the original Struct gets freed, while the StructPointer view still exists.
-        // So, we might need an efficient way to determine, if another Pointing exists, that targets the same address.
-        // This way we can Queue the StructPointer and wait with release, until both went out of reach.
-        // Another way might be, that the StructPointer holds a strong ref to the Struct, but I don't like that.
-        return new StructPointer<>(getPointer(), false, TestStruct::new);
     }
 
     @Override

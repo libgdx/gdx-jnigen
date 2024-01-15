@@ -21,7 +21,7 @@ public class StructMethodsTest {
 
     @Test
     public void testPassPointer() {
-        StructPointer<TestStruct> pointer = new StructPointer<>(TestStruct::new);
+        StructPointer<TestStruct> pointer = new StructPointer<>();
         TestStruct testStruct = new TestStruct();
         testStruct.setField2(7);
         pointer.set(testStruct);
@@ -30,7 +30,7 @@ public class StructMethodsTest {
         assertEquals(7, testStruct.getField2());
         assertEquals(0, testStruct.getField4());
 
-        testStruct = pointer.get();
+        testStruct = pointer.get(TestStruct.class);
         assertEquals(5, testStruct.getField4());
         assertEquals(7, testStruct.getField2());
     }
@@ -46,7 +46,7 @@ public class StructMethodsTest {
         assertEquals(7, testStruct.getField2());
         assertEquals(5, testStruct.getField4());
 
-        testStruct = pointer.get();
+        testStruct = pointer.get(TestStruct.class);
         assertEquals(5, testStruct.getField4());
         assertEquals(7, testStruct.getField2());
     }
@@ -63,7 +63,7 @@ public class StructMethodsTest {
     @Test
     public void returnStructPointerTest() {
         StructPointer<TestStruct> testStructPtr = TestStruct.returnStructPointerTest();
-        TestStruct testStruct = testStructPtr.get();
+        TestStruct testStruct = testStructPtr.get(TestStruct.class);
         testStructPtr.free();
 
         assertEquals(1, testStruct.getField1());

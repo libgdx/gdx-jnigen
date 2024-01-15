@@ -13,6 +13,7 @@ import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnLongArg;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnNoArg;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnShortArg;
 import com.badlogic.gdx.jnigen.gc.TestStruct.CallbackNoReturnStructArg;
+import com.badlogic.gdx.jnigen.gc.TestStruct.CallbackNoReturnStructPointerArg;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import org.junit.jupiter.api.Test;
 
@@ -23,6 +24,7 @@ import java.nio.ShortBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -115,15 +117,34 @@ public class ClosureTest {
     public void testCallbackStructArg() {
         Global.free(0);
         new TestStruct();
-        StructPointer<TestStruct> structPointer = new StructPointer<>(TestStruct::new);
+        StructPointer<TestStruct> structPointer = new StructPointer<>();
         ClosureObject<CallbackNoReturnStructArg> closureObject = ClosureObject.fromClosure(structPointer::set);
         Closures.methodWithCallbackStructArg(closureObject.getFnPtr());
-        TestStruct testStruct = structPointer.get();
+        TestStruct testStruct = structPointer.get(TestStruct.class);
         assertEquals(1, testStruct.getField1());
         assertEquals(2, testStruct.getField2());
         assertEquals(3, testStruct.getField3());
         assertEquals(4, testStruct.getField4());
         closureObject.free();
+    }
+
+    @Test
+    public void testCallbackStructPointerArg() {
+        Global.free(0);
+        new TestStruct();
+        new StructPointer<>();
+        AtomicReference<StructPointer<TestStruct>> ref = new AtomicReference<>();
+        ClosureObject<CallbackNoReturnStructPointerArg> closureObject = ClosureObject.fromClosure(ref::set);
+        Closures.methodWithCallbackStructPointerArg(closureObject.getFnPtr());
+        StructPointer<TestStruct> structPointer = ref.get();
+        TestStruct testStruct = structPointer.get(TestStruct.class);
+        assertEquals(1, testStruct.getField1());
+        assertEquals(2, testStruct.getField2());
+        assertEquals(3, testStruct.getField3());
+        assertEquals(4, testStruct.getField4());
+        testStruct = null;
+        closureObject.free();
+        structPointer.free();
     }
 
     @Test

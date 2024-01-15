@@ -108,6 +108,18 @@ public class Closures {
         ((void (*)(TestStruct))fnPtr)(arg);
     */
 
+    public static native void methodWithCallbackStructPointerArg(long fnPtr);/*
+        TestStruct str = {
+            .field1 = 1,
+            .field2 = 2,
+            .field3 = 3,
+            .field4 = 4
+        };
+        TestStruct* arg = (TestStruct*) malloc(sizeof(TestStruct));
+        *arg = str;
+        ((void (*)(TestStruct*))fnPtr)(arg);
+    */
+
     public static native void methodWithCallbackAllArgs(long fnPtr);/*
         uint64_t arg1 = 1;
         uint32_t arg2 = 2;
