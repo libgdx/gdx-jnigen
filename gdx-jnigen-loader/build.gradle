@@ -6,16 +6,21 @@ buildscript {
         mavenCentral()
         maven { url("https://oss.sonatype.org/content/repositories/snapshots/") }
     }
+
+    project.group = "THIS_IS_THE_DUMBEST_HACK"
     dependencies {
         classpath "com.badlogicgames.gdx:gdx-jnigen-gradle:2.5.1-SNAPSHOT"
     }
 }
+
+
 
 plugins {
     id "de.undercouch.download" version "5.0.1"
 }
 
 apply plugin: "com.badlogicgames.gdx.gdx-jnigen"
+project.group = "com.badlogicgames.gdx"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
