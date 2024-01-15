@@ -11,6 +11,9 @@ public class GCTests {
 
     @Test
     public void testStructReleased() throws InterruptedException {
+        while (!GCHandler.referenceHolder.isEmpty())
+            System.gc();
+
         assertEquals(0, GCHandler.referenceHolder.size());
         Struct struct = new TestStruct();
         assertEquals(1, GCHandler.referenceHolder.size());
