@@ -4,6 +4,8 @@ import com.badlogic.gdx.jnigen.Global;
 import com.badlogic.gdx.jnigen.Struct;
 import com.badlogic.gdx.jnigen.util.DereferencingStructSupplier;
 
+import static com.badlogic.gdx.jnigen.Global.POINTER_SIZE;
+
 public class StructPointer<T extends Struct> extends Pointing {
 
     static {
@@ -16,7 +18,7 @@ public class StructPointer<T extends Struct> extends Pointing {
     }
 
     public StructPointer() {
-        super(8); // Determine pointer size per system?
+        super(POINTER_SIZE);
     }
 
     public void set(T struct) {
