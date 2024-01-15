@@ -192,7 +192,7 @@ public class Global {
         return nativeCreateCif(0, mappedParameter, parameters.length);
     }
 
-    private static long getFFICifForClass(Class<? extends Closure> closureClass) {
+    public static long getFFICifForClass(Class<? extends Closure> closureClass) {
         synchronized (classCifMap) {
             return classCifMap.computeIfAbsent(closureClass, Global::generateFFICifForClass);
         }
