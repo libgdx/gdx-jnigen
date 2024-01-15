@@ -29,7 +29,7 @@ public class ClosureInfo<T extends Closure> {
         parameters = toCall.getParameterTypes();
         pointingSuppliers = new WrappingPointingSupplier[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
-            if (Struct.class.isAssignableFrom(parameters[i])) {
+            if (Pointing.class.isAssignableFrom(parameters[i])) {
                 @SuppressWarnings("unchecked")
                 WrappingPointingSupplier<? extends Pointing> supplier = Global.getPointingSupplier((Class<? extends Pointing>)parameters[i]);
                 if (supplier == null)
@@ -71,6 +71,8 @@ public class ClosureInfo<T extends Closure> {
                 objects[i] = Double.longBitsToDouble(parameter.getLong());
             } else if (Struct.class.isAssignableFrom(param)) {
                 objects[i] = pointingSuppliers[i].create(parameter.getLong(), true);
+            } else if (Pointing.class.isAssignableFrom(param)) {
+                objects[i] = pointingSuppliers[i].create(parameter.getLong(), false);
             }
         }
         return toCall.invoke(toCallOn, objects);

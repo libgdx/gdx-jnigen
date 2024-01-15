@@ -31,6 +31,8 @@ public class Global {
 
     private static final HashMap<Class<? extends Struct>, Long> classStructFFITypeMap = new HashMap<>();
 
+    private static final HashMap<Class<? extends Struct>, Long> classStructSizeMap = new HashMap<>();
+
     private static final HashMap<Class<? extends Pointing>, WrappingPointingSupplier<? extends Pointing>> classPointingSupplierMap = new HashMap<>();
 
     /*JNI
@@ -58,10 +60,10 @@ public class Global {
     void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
         ATTACH_ENV()
         jobject closureInfo = (jobject) user;
-        void* backingBuffer[cif->nargs * 8];
+        void* backingBuffer[cif->nargs * sizeof(void*)];
         jobject jBuffer = NULL;
         if (cif->nargs != 0) {
-            jBuffer = env->NewDirectByteBuffer(backingBuffer, cif->nargs * 8);
+            jBuffer = env->NewDirectByteBuffer(backingBuffer, cif->nargs * sizeof(void*));
             for (int i = 0; i < cif->nargs; i++) {
                 ffi_type* type = cif->arg_types[i];
                 if(type->type == FFI_TYPE_STRUCT) {
@@ -110,6 +112,18 @@ public class Global {
         }
     }
 
+    public static void registerStructSize(Class<? extends Struct> structClass, long size) {
+        synchronized (classStructSizeMap) {
+            classStructSizeMap.put(structClass, size);
+        }
+    }
+
+    public static long getStructSize(Class<? extends Struct> structClass) {
+        synchronized (classStructSizeMap) {
+            return classStructSizeMap.getOrDefault(structClass, 0L);
+        }
+    }
+
     public static <T extends Pointing> void registerPointingSupplier(Class<T> toRegister, WrappingPointingSupplier<T> supplier) {
         synchronized (classPointingSupplierMap) {
             classPointingSupplierMap.put(toRegister, supplier);
@@ -145,6 +159,9 @@ public class Global {
                     break;
                 case -6:
                     parameterFFITypes[i] = &ffi_type_double;
+                    break;
+                case -7:
+                    parameterFFITypes[i] = &ffi_type_pointer;
                     break;
                 default:
                     parameterFFITypes[i] = ((ffi_type**)params)[i];
@@ -222,5 +239,11 @@ public class Global {
 
     public static native void memcpy(long dst, long src, long size);/*
         memcpy((void*)dst, (void*)src, size);
+    */
+
+    public static native long clone(long src, long size);/*
+        void* dst = malloc(size);
+        memcpy((void*)dst, (void*)src, size);
+        return reinterpret_cast<jlong>(dst);
     */
 }

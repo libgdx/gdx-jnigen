@@ -2,8 +2,7 @@ package com.badlogic.gdx.jnigen.ffi;
 
 import com.badlogic.gdx.jnigen.Global;
 import com.badlogic.gdx.jnigen.Struct;
-
-import java.util.HashMap;
+import com.badlogic.gdx.jnigen.pointer.Pointing;
 
 public class ParameterTypes {
 
@@ -32,6 +31,9 @@ public class ParameterTypes {
                 throw new IllegalArgumentException("Class " + toMap.getName() + " does not got registered yet.");
             return type;
         }
+
+        if (Pointing.class.isAssignableFrom(toMap))
+            return -7;
 
         throw new IllegalArgumentException("Class " + toMap.getName() + " can not be mapped to native.");
 
