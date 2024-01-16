@@ -1,6 +1,6 @@
 package com.badlogic.gdx.jnigen.gc;
 
-import com.badlogic.gdx.jnigen.Struct;
+import com.badlogic.gdx.jnigen.pointer.Struct;
 import org.junit.jupiter.api.Test;
 
 import java.lang.ref.WeakReference;
