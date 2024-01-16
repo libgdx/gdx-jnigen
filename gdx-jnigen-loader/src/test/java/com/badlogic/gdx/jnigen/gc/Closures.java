@@ -11,43 +11,104 @@ public class Closures {
 
     public interface CallbackNoReturnNoArg extends Closure {
         void toCall();
+
+        @Override
+        default Object invoke(Object[] parameter) {
+            toCall();
+            return null;
+        }
     }
 
     public interface CallbackNoReturnLongArg extends Closure {
         void toCall(long arg);
+
+        @Override
+        default Object invoke(Object[] parameters) {
+            toCall((Long)parameters[0]);
+            return null;
+        }
     }
 
     public interface CallbackNoReturnIntArg extends Closure {
         void toCall(int arg);
+
+        @Override
+        default Object invoke(Object[] parameters) {
+            toCall((Integer)parameters[0]);
+            return null;
+        }
     }
 
 
     public interface CallbackNoReturnShortArg extends Closure {
         void toCall(short arg);
+
+        @Override
+        default Object invoke(Object[] parameters) {
+            toCall((Short)parameters[0]);
+            return null;
+        }
     }
 
     public interface CallbackNoReturnByteArg extends Closure {
         void toCall(byte arg);
+
+        @Override
+        default Object invoke(Object[] parameters) {
+            toCall((Byte)parameters[0]);
+            return null;
+        }
     }
 
     public interface CallbackNoReturnCharArg extends Closure {
         void toCall(char arg);
+
+        @Override
+        default Object invoke(Object[] parameters) {
+            toCall((Character)parameters[0]);
+            return null;
+        }
     }
 
     public interface CallbackNoReturnBooleanArg extends Closure {
         void toCall(boolean arg);
+
+        @Override
+        default Object invoke(Object[] parameters) {
+            toCall((Boolean)parameters[0]);
+            return null;
+        }
     }
 
     public interface CallbackNoReturnFloatArg extends Closure {
         void toCall(float arg);
+
+        @Override
+        default Object invoke(Object[] parameters) {
+            toCall((Float)parameters[0]);
+            return null;
+        }
     }
 
     public interface CallbackNoReturnDoubleArg extends Closure {
         void toCall(double arg);
+
+        @Override
+        default Object invoke(Object[] parameters) {
+            toCall((Double)parameters[0]);
+            return null;
+        }
     }
 
     public interface CallbackNoReturnAllArgs extends Closure {
         void toCall(long arg1, int arg2, short arg3, byte arg4, char arg5, boolean arg6, float arg7, double arg8);
+
+        @Override
+        default Object invoke(Object[] parameter) {
+            toCall((Long)parameter[0], (Integer)parameter[1], (Short)parameter[2], (Byte)parameter[3],
+                    (Character)parameter[4], (Boolean)parameter[5], (Float)parameter[6], (Double)parameter[7]);
+            return null;
+        }
     }
 
     public static void methodWithCallback(ClosureObject<CallbackNoReturnNoArg> closure) {

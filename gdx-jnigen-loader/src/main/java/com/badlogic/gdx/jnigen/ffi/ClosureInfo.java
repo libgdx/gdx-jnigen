@@ -8,7 +8,7 @@ import com.badlogic.gdx.jnigen.util.WrappingPointingSupplier;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -17,42 +17,42 @@ import static com.badlogic.gdx.jnigen.ffi.ParameterTypes.*;
 public class ClosureInfo<T extends Closure> {
 
     private final long cif;
-    private final Method toCall;
     private final T toCallOn;
 
-    private Class<?>[] parameters;
+    private Class<?>[] parameterTypes;
     private Object[] objects;
     private final WrappingPointingSupplier<? extends Pointing>[] pointingSuppliers;
     private byte flags = 0;
 
-    public ClosureInfo(long cif, Method toCall, T toCallOn) {
+    public ClosureInfo(long cif, Parameter[] parameters, T toCallOn) {
         this.cif = cif;
-        this.toCall = toCall;
         this.toCallOn = toCallOn;
-        toCall.setAccessible(true);
-        parameters = toCall.getParameterTypes();
+        parameterTypes = new Class[parameters.length];
         pointingSuppliers = new WrappingPointingSupplier[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
-            if (Pointing.class.isAssignableFrom(parameters[i])) {
+            Parameter parameter = parameters[i];
+            parameterTypes[i] = parameter.getType();
+            if (Pointing.class.isAssignableFrom(parameter.getType())) {
                 @SuppressWarnings("unchecked")
-                WrappingPointingSupplier<?> supplier = Global.getPointingSupplier((Class<? extends Pointing>)parameters[i]);
+                WrappingPointingSupplier<?> supplier = Global.getPointingSupplier((Class<? extends Pointing>)parameter.getType());
                 if (supplier == null)
                     throw new IllegalArgumentException("Class " + parameters[i].getName() + " has no registered supplier.");
                 pointingSuppliers[i] = supplier;
             }
-            Annotation[] annotations = toCall.getParameterAnnotations()[i];
-            flags = ParameterTypes.buildFlags(parameters[i], annotations);
+            Annotation[] annotations = parameter.getAnnotations();
+            flags = ParameterTypes.buildFlags(parameter.getType(), annotations);
         }
         objects = new Object[parameters.length];
     }
 
     public Object invoke(ByteBuffer parameter)
             throws InvocationTargetException, IllegalAccessException {
-        if (parameters.length == 0)
-            return toCall.invoke(toCallOn);
+        if (parameterTypes.length == 0)
+            return toCallOn.invoke(null);
+
         parameter.order(ByteOrder.nativeOrder());
-        for (int i = 0; i < parameters.length; i++) {
-            Class<?> param = parameters[i];
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Class<?> param = parameterTypes[i];
             if (param == boolean.class) {
                 objects[i] = parameter.get() == 1;
                 parameter.position(parameter.position() + 7);
@@ -81,18 +81,6 @@ public class ClosureInfo<T extends Closure> {
                 objects[i] = pointingSuppliers[i].create(parameter.getLong(), false);
             }
         }
-        return toCall.invoke(toCallOn, objects);
-    }
-
-    public long getCif() {
-        return cif;
-    }
-
-    public Method getToCall() {
-        return toCall;
-    }
-
-    public T getToCallOn() {
-        return toCallOn;
+        return toCallOn.invoke(objects);
     }
 }
