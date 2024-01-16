@@ -1,7 +1,6 @@
-package com.badlogic.gdx.jnigen;
+package com.badlogic.gdx.jnigen.pointer;
 
-import com.badlogic.gdx.jnigen.pointer.Pointing;
-import com.badlogic.gdx.jnigen.pointer.StructPointer;
+import com.badlogic.gdx.jnigen.Global;
 
 public abstract class Struct extends Pointing {
 
@@ -19,7 +18,7 @@ public abstract class Struct extends Pointing {
         // So, we might need an efficient way to determine, if another Pointing exists, that targets the same address.
         // This way we can Queue the StructPointer and wait with release, until both went out of reach.
         // Another way might be, that the StructPointer holds a strong ref to the Struct, but I don't like that.
-        return new StructPointer<>(getPointer(), false);
+        return (StructPointer<T>)Global.getStructPointer(getClass()).create(getPointer(), false);
     }
 
     public abstract long getSize();
