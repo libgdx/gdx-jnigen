@@ -35,10 +35,22 @@ public class TestStruct extends Struct {
 
     public interface CallbackNoReturnStructArg extends Closure {
         void toCall(TestStruct arg);
+
+        @Override
+        default Object invoke(Object[] parameter) {
+            toCall((TestStruct)parameter[0]);
+            return null;
+        }
     }
 
     public interface CallbackNoReturnStructPointerArg extends Closure {
         void toCall(TestStruct.TestStructPointer arg);
+
+        @Override
+        default Object invoke(Object[] parameter) {
+            toCall((TestStruct.TestStructPointer)parameter[0]);
+            return null;
+        }
     }
 
     public static TestStruct returnStructTest() {
