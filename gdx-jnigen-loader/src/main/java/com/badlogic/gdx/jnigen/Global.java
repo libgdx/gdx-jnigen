@@ -228,7 +228,7 @@ public class Global {
         long cif = getFFICifForClass(object.getClass());
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(8);
         byteBuffer.order(ByteOrder.nativeOrder());
-        ClosureInfo<T> closureInfo = new ClosureInfo<>(cif, object.getClass().getDeclaredMethods()[0], object);
+        ClosureInfo<T> closureInfo = new ClosureInfo<>(cif, object.getClass().getDeclaredMethods()[0].getParameters(), object);
         long fnPtr = createClosureForObject(cif, closureInfo, byteBuffer);
         long closurePtr = byteBuffer.getLong();
 
