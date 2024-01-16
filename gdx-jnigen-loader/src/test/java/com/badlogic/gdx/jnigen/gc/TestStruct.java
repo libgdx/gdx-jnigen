@@ -1,7 +1,7 @@
 package com.badlogic.gdx.jnigen.gc;
 
 import com.badlogic.gdx.jnigen.Global;
-import com.badlogic.gdx.jnigen.Struct;
+import com.badlogic.gdx.jnigen.pointer.Struct;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 
@@ -19,7 +19,7 @@ public class TestStruct extends Struct {
 
     private static native int passByValueTest(long pointer);/*
         TestStruct tStruct = *((TestStruct*) pointer);
-
+        tStruct.field4 = 0;
         return tStruct.field2;
     */
 
@@ -38,7 +38,7 @@ public class TestStruct extends Struct {
     }
 
     public interface CallbackNoReturnStructPointerArg extends Closure {
-        void toCall(StructPointer<TestStruct> arg);
+        void toCall(TestStruct.TestStructPointer arg);
     }
 
     public static TestStruct returnStructTest() {
@@ -60,8 +60,8 @@ public class TestStruct extends Struct {
         *ret = str;
     */
 
-    public static StructPointer<TestStruct> returnStructPointerTest() {
-        return new StructPointer<>(returnStructPointerTestN(), false);
+    public static TestStruct.TestStructPointer returnStructPointerTest() {
+        return new TestStructPointer(returnStructPointerTestN(), false);
     }
 
     private static native long returnStructPointerTestN();/*
@@ -86,6 +86,7 @@ public class TestStruct extends Struct {
         Global.registerStructFFIType(TestStruct.class, __ffi_type);
         Global.registerPointingSupplier(TestStruct.class, TestStruct::new);
         Global.registerStructSize(TestStruct.class, __size);
+        Global.registerStructPointer(TestStruct.class, TestStructPointer::new);
     }
 
     private static native long calculateSize();/*
@@ -191,4 +192,24 @@ public class TestStruct extends Struct {
                 break;
         }
     */
+
+    public static class TestStructPointer extends TestStruct implements StructPointer<TestStruct> {
+
+        static {
+            Global.registerPointingSupplier(TestStructPointer.class, TestStructPointer::new);
+        }
+
+        public TestStructPointer(long pointer, boolean freeOnGC) {
+            super(pointer, freeOnGC);
+        }
+
+        public TestStructPointer() {
+
+        }
+
+        @Override
+        public Class<TestStruct> getStructClass() {
+            return TestStruct.class;
+        }
+    }
 }

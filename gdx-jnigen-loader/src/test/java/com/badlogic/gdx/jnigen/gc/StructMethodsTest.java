@@ -1,6 +1,7 @@
 package com.badlogic.gdx.jnigen.gc;
 
 import com.badlogic.gdx.jnigen.Global;
+import com.badlogic.gdx.jnigen.gc.TestStruct.TestStructPointer;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +22,7 @@ public class StructMethodsTest {
 
     @Test
     public void testPassPointer() {
-        StructPointer<TestStruct> pointer = new StructPointer<>();
+        StructPointer<TestStruct> pointer = new TestStructPointer();
         TestStruct testStruct = new TestStruct();
         testStruct.setField2(7);
         pointer.set(testStruct);
@@ -30,7 +31,7 @@ public class StructMethodsTest {
         assertEquals(7, testStruct.getField2());
         assertEquals(0, testStruct.getField4());
 
-        testStruct = pointer.get(TestStruct.class);
+        testStruct = pointer.get();
         assertEquals(5, testStruct.getField4());
         assertEquals(7, testStruct.getField2());
     }
@@ -46,7 +47,7 @@ public class StructMethodsTest {
         assertEquals(7, testStruct.getField2());
         assertEquals(5, testStruct.getField4());
 
-        testStruct = pointer.get(TestStruct.class);
+        testStruct = pointer.get();
         assertEquals(5, testStruct.getField4());
         assertEquals(7, testStruct.getField2());
     }
@@ -63,7 +64,7 @@ public class StructMethodsTest {
     @Test
     public void returnStructPointerTest() {
         StructPointer<TestStruct> testStructPtr = TestStruct.returnStructPointerTest();
-        TestStruct testStruct = testStructPtr.get(TestStruct.class);
+        TestStruct testStruct = testStructPtr.get();
         testStructPtr.free();
 
         assertEquals(1, testStruct.getField1());

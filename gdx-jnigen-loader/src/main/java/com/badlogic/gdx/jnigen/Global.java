@@ -5,11 +5,14 @@ import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.ffi.ClosureInfo;
 import com.badlogic.gdx.jnigen.ffi.ParameterTypes;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
+import com.badlogic.gdx.jnigen.pointer.Struct;
+import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import com.badlogic.gdx.jnigen.util.WrappingPointingSupplier;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.HashMap;
@@ -42,6 +45,8 @@ public class Global {
 
     private static final HashMap<Class<? extends Pointing>, WrappingPointingSupplier<? extends Pointing>> classPointingSupplierMap = new HashMap<>();
 
+    private static final HashMap<Class<? extends Struct>, WrappingPointingSupplier<? extends StructPointer<?>>> classStructPointerMap = new HashMap<>();
+
     /*JNI
     #include <stdlib.h>
     #include <string.h>
@@ -59,9 +64,6 @@ public class Global {
         if (_hadToAttach) {              \
             gJVM->DetachCurrentThread(); \
         }
-
-    #define CONVERT_TO_64_BIT(x) static_cast<uint64_t>(reinterpret_cast<uintptr_t>(x));
-    #define CONVERT_TO_VOID_POINTER(x) static_cast<uintptr_t>(reinterpret_cast<void*>(x));
 
     jmethodID dispatchCallbackMethod = NULL;
     jclass globalClass = NULL;
@@ -107,6 +109,19 @@ public class Global {
             toCallOn.invoke(parameter);
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static <T extends Struct, S extends Pointing & StructPointer<T>> void registerStructPointer(Class<T> structClass, WrappingPointingSupplier<S> pointerClass) {
+        synchronized (classStructPointerMap) {
+            classStructPointerMap.put(structClass, pointerClass);
+        }
+    }
+
+    public static <T extends Struct, S extends Pointing & StructPointer<T>> WrappingPointingSupplier<S> getStructPointer(Class<T> structClass) {
+        synchronized (classStructPointerMap) {
+            //noinspection unchecked
+            return (WrappingPointingSupplier<S>)classStructPointerMap.get(structClass);
         }
     }
 
@@ -190,13 +205,14 @@ public class Global {
         Method callingMethod = methods[0];
         if (callingMethod.getReturnType() != void.class)
             throw new IllegalArgumentException("Closures are currently only allowed to have a Void return");
-        Class<?>[] parameters = callingMethod.getParameterTypes();
+        Parameter[] parameters = callingMethod.getParameters();
+
 
         // Yes, I'm extremely lazy and don't want to deal with JNI array handling
         ByteBuffer mappedParameter = ByteBuffer.allocateDirect(parameters.length * 8);
         mappedParameter.order(ByteOrder.nativeOrder());
-        for (Class<?> parameter : parameters) {
-            mappedParameter.putLong(ParameterTypes.mapObjectToID(parameter));
+        for (Parameter parameter : parameters) {
+            mappedParameter.putLong(ParameterTypes.mapObjectToID(parameter.getType(), parameter.getAnnotations()));
         }
 
         return nativeCreateCif(0, mappedParameter, parameters.length);

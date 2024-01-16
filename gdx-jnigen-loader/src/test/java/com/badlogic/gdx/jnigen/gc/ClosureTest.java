@@ -14,6 +14,7 @@ import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnNoArg;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnShortArg;
 import com.badlogic.gdx.jnigen.gc.TestStruct.CallbackNoReturnStructArg;
 import com.badlogic.gdx.jnigen.gc.TestStruct.CallbackNoReturnStructPointerArg;
+import com.badlogic.gdx.jnigen.gc.TestStruct.TestStructPointer;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import org.junit.jupiter.api.Test;
 
@@ -117,10 +118,10 @@ public class ClosureTest {
     public void testCallbackStructArg() {
         Global.free(0);
         new TestStruct();
-        StructPointer<TestStruct> structPointer = new StructPointer<>();
+        StructPointer<TestStruct> structPointer = new TestStructPointer();
         ClosureObject<CallbackNoReturnStructArg> closureObject = ClosureObject.fromClosure(structPointer::set);
         Closures.methodWithCallbackStructArg(closureObject.getFnPtr());
-        TestStruct testStruct = structPointer.get(TestStruct.class);
+        TestStruct testStruct = structPointer.get();
         assertEquals(1, testStruct.getField1());
         assertEquals(2, testStruct.getField2());
         assertEquals(3, testStruct.getField3());
@@ -132,12 +133,12 @@ public class ClosureTest {
     public void testCallbackStructPointerArg() {
         Global.free(0);
         new TestStruct();
-        new StructPointer<>();
+        new TestStructPointer();
         AtomicReference<StructPointer<TestStruct>> ref = new AtomicReference<>();
         ClosureObject<CallbackNoReturnStructPointerArg> closureObject = ClosureObject.fromClosure(ref::set);
         Closures.methodWithCallbackStructPointerArg(closureObject.getFnPtr());
         StructPointer<TestStruct> structPointer = ref.get();
-        TestStruct testStruct = structPointer.get(TestStruct.class);
+        TestStruct testStruct = structPointer.get();
         assertEquals(1, testStruct.getField1());
         assertEquals(2, testStruct.getField2());
         assertEquals(3, testStruct.getField3());

@@ -1,32 +1,28 @@
 package com.badlogic.gdx.jnigen.pointer;
 
 import com.badlogic.gdx.jnigen.Global;
-import com.badlogic.gdx.jnigen.Struct;
-import com.badlogic.gdx.jnigen.util.DereferencingStructSupplier;
 
-import static com.badlogic.gdx.jnigen.Global.POINTER_SIZE;
+public interface StructPointer<T extends Struct> {
 
-public class StructPointer<T extends Struct> extends Pointing {
-
-    static {
-        Global.registerPointingSupplier(StructPointer.class, StructPointer::new);
+    public static <T extends Struct> StructPointer<T> of(Class<T> of) {
+        // Make better, by being able to reference the default constructir
+        return Global.getStructPointer(of).create(Global.malloc(Global.getStructSize(of)), true);
     }
 
-
-    public StructPointer(long pointer, boolean freeOnGC) {
-        super(pointer, freeOnGC);
+    default T get() {
+        long newPtr = Global.clone(getPointer(), getSize());
+        return Global.getPointingSupplier(getStructClass()).create(newPtr, true);
     }
 
-    public StructPointer() {
-        super(POINTER_SIZE);
+    default void set(T struct) {
+        Global.memcpy(getPointer(), struct.getPointer(), getSize());
     }
 
-    public void set(T struct) {
-        Global.memcpy(getPointer(), struct.getPointer(), struct.getSize());
-    }
+    Class<T> getStructClass();
 
-    public T get(Class<T> classToGet) {
-        long ptr = Global.clone(getPointer(), Global.getStructSize(classToGet));
-        return Global.getPointingSupplier(classToGet).create(ptr, true);
-    }
+    long getSize();
+
+    long getPointer();
+
+    void free();
 }

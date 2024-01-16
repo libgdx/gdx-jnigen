@@ -1,6 +1,5 @@
 package com.badlogic.gdx.jnigen.gc;
 
-import com.badlogic.gdx.jnigen.Struct;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
 
 import java.lang.ref.PhantomReference;

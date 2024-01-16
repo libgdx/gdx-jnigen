@@ -1,15 +1,18 @@
 package com.badlogic.gdx.jnigen.ffi;
 
 import com.badlogic.gdx.jnigen.Global;
-import com.badlogic.gdx.jnigen.Struct;
+import com.badlogic.gdx.jnigen.pointer.Struct;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
 import com.badlogic.gdx.jnigen.util.WrappingPointingSupplier;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
+import static com.badlogic.gdx.jnigen.ffi.ParameterTypes.*;
 
 public class ClosureInfo<T extends Closure> {
 
@@ -20,6 +23,7 @@ public class ClosureInfo<T extends Closure> {
     private Class<?>[] parameters;
     private Object[] objects;
     private final WrappingPointingSupplier<? extends Pointing>[] pointingSuppliers;
+    private byte flags = 0;
 
     public ClosureInfo(long cif, Method toCall, T toCallOn) {
         this.cif = cif;
@@ -31,11 +35,13 @@ public class ClosureInfo<T extends Closure> {
         for (int i = 0; i < parameters.length; i++) {
             if (Pointing.class.isAssignableFrom(parameters[i])) {
                 @SuppressWarnings("unchecked")
-                WrappingPointingSupplier<? extends Pointing> supplier = Global.getPointingSupplier((Class<? extends Pointing>)parameters[i]);
+                WrappingPointingSupplier<?> supplier = Global.getPointingSupplier((Class<? extends Pointing>)parameters[i]);
                 if (supplier == null)
                     throw new IllegalArgumentException("Class " + parameters[i].getName() + " has no registered supplier.");
                 pointingSuppliers[i] = supplier;
             }
+            Annotation[] annotations = toCall.getParameterAnnotations()[i];
+            flags = ParameterTypes.buildFlags(parameters[i], annotations);
         }
         objects = new Object[parameters.length];
     }
@@ -70,7 +76,7 @@ public class ClosureInfo<T extends Closure> {
             } else if (param == double.class) {
                 objects[i] = Double.longBitsToDouble(parameter.getLong());
             } else if (Struct.class.isAssignableFrom(param)) {
-                objects[i] = pointingSuppliers[i].create(parameter.getLong(), true);
+                objects[i] = pointingSuppliers[i].create(parameter.getLong(), (flags & PASS_AS_POINTER) == 0);
             } else if (Pointing.class.isAssignableFrom(param)) {
                 objects[i] = pointingSuppliers[i].create(parameter.getLong(), false);
             }
