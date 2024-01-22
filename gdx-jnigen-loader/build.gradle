@@ -83,13 +83,28 @@ def createBuildTask(String platformName, String architecture, String specialFlag
 }
 
 task build_mac {
-    dependsOn createBuildTask("mac", "arm64", "-arch arm64")
-    //dependsOn createBuildTask("mac", "x86_64", "-arch x86_64")
+    dependsOn createBuildTask("macosx", "arm64", "-arch arm64", ["--host=arm64-apple-darwin"])
+    dependsOn createBuildTask("macosx", "x86_64", "-arch x86_64", ["--host=x86_64-apple-darwin"])
+}
+
+task build_linux {
+    dependsOn createBuildTask("linux", "x86", "", ["--host=i686-linux-gnu"])
+    dependsOn createBuildTask("linux", "x86_64", "", ["--host=x86_64-linux-gnu"])
+    dependsOn createBuildTask("linux", "arm32", "", ["--host=arm-linux-gnueabihf"])
+    dependsOn createBuildTask("linux", "arm64", "", ["--host=aarch64-linux-gnu"])
+}
+
+task build_windows {
+    dependsOn createBuildTask("windows", "x86", "", ["--host=i686-w64-mingw32"])
+    dependsOn createBuildTask("windows", "x86_64", "", ["--host=x86_64-w64-mingw32"])
+    dependsOn createBuildTask("windows", "arm32", "", ["--host=armv7-w64-mingw32"])
+    dependsOn createBuildTask("windows", "arm64", "", ["--host=aarch64-w64-mingw32"])
 }
 
 test {
     dependsOn("jnigenBuild", "jnigenJarNativesDesktop")
     useJUnitPlatform()
+    outputs.upToDateWhen {false}
 }
 
 jnigen {
@@ -100,8 +115,11 @@ jnigen {
     }
 
     all {
-        headerDirs += [file("build/mac_arm64/include/"), file("src/test/native/")]
-        linkerFlags += " ${file("build/mac_x86_64/lib/libffi.a").absolutePath} "
+        def name = it.os.name().toLowerCase()
+        def arch = it.architecture.name() + it.bitness.toSuffix()
+        def combined = name + "_" + arch
+        headerDirs += [file("build/${combined}/include/"), file("src/test/native/")]
+        linkerFlags += " ${file("build/${combined}/lib/libffi.a").absolutePath} "
         cFlags += " -std=c11 "
         cppFlags += " -std=c++11 " // for using alignof
     }
