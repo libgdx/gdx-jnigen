@@ -112,13 +112,13 @@ public class Global {
         }
     }
 
-    public static <T extends Struct, S extends Pointing & StructPointer<T>> void registerStructPointer(Class<T> structClass, WrappingPointingSupplier<S> pointerClass) {
+    public static <T extends Struct, S extends StructPointer<T>> void registerStructPointer(Class<T> structClass, WrappingPointingSupplier<S> pointerClass) {
         synchronized (classStructPointerMap) {
             classStructPointerMap.put(structClass, pointerClass);
         }
     }
 
-    public static <T extends Struct, S extends Pointing & StructPointer<T>> WrappingPointingSupplier<S> getStructPointer(Class<T> structClass) {
+    public static <T extends Struct, S extends StructPointer<T>> WrappingPointingSupplier<S> getStructPointer(Class<T> structClass) {
         synchronized (classStructPointerMap) {
             //noinspection unchecked
             return (WrappingPointingSupplier<S>)classStructPointerMap.get(structClass);
