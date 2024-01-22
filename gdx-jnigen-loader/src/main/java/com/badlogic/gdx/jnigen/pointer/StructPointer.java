@@ -24,6 +24,7 @@ public abstract class StructPointer<T extends Struct> extends Pointing {
 
     public T asStruct() {
         // Shiiit tooooo, we somehow need to prevent freeing to early
+        // Also, cache this
         return Global.getPointingSupplier(getStructClass()).create(getPointer(), false);
     }
 
