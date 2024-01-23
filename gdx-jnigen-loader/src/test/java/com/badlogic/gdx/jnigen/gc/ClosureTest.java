@@ -2,6 +2,7 @@ package com.badlogic.gdx.jnigen.gc;
 
 import com.badlogic.gdx.jnigen.Global;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
+import com.badlogic.gdx.jnigen.gc.Closures.CallbackLongReturnNoArg;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnAllArgs;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnBooleanArg;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnByteArg;
@@ -171,6 +172,14 @@ public class ClosureTest {
         assertEquals(1, changed.get());
         assertEquals(6.6f, changed.getFloat());
         assertEquals(7.7, changed.getDouble());
+        closureObject.free();
+    }
+
+    @Test
+    public void testCallbackLongReturn() {
+        ClosureObject<CallbackLongReturnNoArg> closureObject = ClosureObject.fromClosure(() -> 55);
+        long ret = Closures.methodWithCallbackLongReturn(closureObject.getFnPtr());
+        assertEquals(55, ret);
         closureObject.free();
     }
 }

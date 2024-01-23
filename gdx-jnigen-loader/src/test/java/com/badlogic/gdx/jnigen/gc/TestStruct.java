@@ -38,9 +38,8 @@ public class TestStruct extends Struct {
         void toCall(TestStruct arg);
 
         @Override
-        default Object invoke(JavaTypeWrapper[] parameters) {
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
             toCall((TestStruct)parameters[0].asPointing());
-            return null;
         }
     }
 
@@ -48,9 +47,8 @@ public class TestStruct extends Struct {
         void toCall(TestStruct.TestStructPointer arg);
 
         @Override
-        default Object invoke(JavaTypeWrapper[] parameters) {
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
             toCall((TestStruct.TestStructPointer)parameters[0].asPointing());
-            return null;
         }
     }
 
