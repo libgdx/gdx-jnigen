@@ -23,7 +23,7 @@ public final class ClosureInfo<T extends Closure> {
     private Class<?>[] parameterTypes;
     private JavaTypeWrapper[] cachedWrappers;
     private final WrappingPointingSupplier<? extends Pointing>[] pointingSuppliers;
-    private byte flags = 0;
+    private byte[] flags;
     private AtomicBoolean cacheLock = new AtomicBoolean(false);
 
     public ClosureInfo(long cif, Parameter[] parameters, T toCallOn) {
@@ -31,6 +31,7 @@ public final class ClosureInfo<T extends Closure> {
         this.toCallOn = toCallOn;
         parameterTypes = new Class[parameters.length];
         pointingSuppliers = new WrappingPointingSupplier[parameters.length];
+        flags = new byte[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
             Parameter parameter = parameters[i];
             parameterTypes[i] = parameter.getType();
@@ -42,7 +43,7 @@ public final class ClosureInfo<T extends Closure> {
                 pointingSuppliers[i] = supplier;
             }
             Annotation[] annotations = parameter.getAnnotations();
-            flags = ParameterTypes.buildFlags(parameter.getType(), annotations);
+            flags[i] = ParameterTypes.buildFlags(parameter.getType(), annotations);
         }
         cachedWrappers = createWrapper();
     }
@@ -95,7 +96,7 @@ public final class ClosureInfo<T extends Closure> {
             } else if (param == double.class) {
                 wrapper.setValue(parameter.getLong());
             } else if (Struct.class.isAssignableFrom(param)) {
-                wrapper.setValue(pointingSuppliers[i].create(parameter.getLong(), (flags & PASS_AS_POINTER) == 0));
+                wrapper.setValue(pointingSuppliers[i].create(parameter.getLong(), (flags[i] & PASS_AS_POINTER) == 0));
             } else if (Pointing.class.isAssignableFrom(param)) {
                 wrapper.setValue(pointingSuppliers[i].create(parameter.getLong(), false));
             }
