@@ -1,15 +1,23 @@
 package com.badlogic.gdx.jnigen.pointer;
 
 import com.badlogic.gdx.jnigen.Global;
+import com.badlogic.gdx.jnigen.util.WrappingPointingSupplier;
 
 public abstract class StructPointer<T extends Struct> extends Pointing {
 
+    private final long size;
+    private final WrappingPointingSupplier<T> supplier;
+
     protected StructPointer(long pointer, boolean freeOnGC) {
         super(pointer, freeOnGC);
+        this.size = Global.getStructSize(getStructClass());
+        this.supplier = Global.getPointingSupplier(getStructClass());
     }
 
     public StructPointer(long size) {
         super(size);
+        this.size = Global.getStructSize(getStructClass());
+        this.supplier = Global.getPointingSupplier(getStructClass());
     }
 
     public static <T extends Struct> StructPointer<T> of(Class<T> of) {
@@ -18,21 +26,21 @@ public abstract class StructPointer<T extends Struct> extends Pointing {
     }
 
     public T get() {
-        long newPtr = Global.clone(getPointer(), getSize());
-        return Global.getPointingSupplier(getStructClass()).create(newPtr, true);
+        long newPtr = Global.clone(getPointer(), size);
+        return supplier.create(newPtr, true);
     }
 
     public T asStruct() {
-        // Shiiit tooooo, we somehow need to prevent freeing to early
-        // Also, cache this
-        return Global.getPointingSupplier(getStructClass()).create(getPointer(), false);
+        return supplier.create(getPointer(), true);
     }
 
     public void set(T struct) {
-        Global.memcpy(getPointer(), struct.getPointer(), getSize());
+        Global.memcpy(getPointer(), struct.getPointer(), size);
     }
 
     public abstract Class<T> getStructClass();
 
-    public abstract long getSize();
+    public long getSize() {
+        return size;
+    }
 }

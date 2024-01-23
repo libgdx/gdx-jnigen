@@ -6,12 +6,16 @@ import com.badlogic.gdx.jnigen.pointer.Pointing;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.ref.ReferenceQueue;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GCHandler {
     protected static final ReferenceQueue<Pointing> REFERENCE_QUEUE = new ReferenceQueue<>();
-    protected static final Set<PointingPhantomReference> referenceHolder = Collections.synchronizedSet(new HashSet<PointingPhantomReference>());
+    protected static final Set<PointingPhantomReference> referenceHolder = Collections.synchronizedSet(new HashSet<>());
+    protected static final Map<Long, AtomicInteger> countMap = Collections.synchronizedMap(new HashMap<>());
 
     private static final Thread RELEASER = new Thread() {
         @Override
@@ -22,7 +26,10 @@ public class GCHandler {
                     if (!referenceHolder.remove(releasedStructRef)) {
                         System.err.println("Reference holder did not contained released StructRef.");
                     }
-                    Global.free(releasedStructRef.getPointer());
+                    AtomicInteger counter = countMap.get(releasedStructRef.getPointer());
+                    int count = counter.decrementAndGet();
+                    if (count <= 0)
+                        Global.free(releasedStructRef.getPointer());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -45,6 +52,7 @@ public class GCHandler {
 
     public static void enqueuePointer(Pointing pointing) {
         PointingPhantomReference structPhantomReference = new PointingPhantomReference(pointing);
+        countMap.put(pointing.getPointer(), new AtomicInteger(1));
         referenceHolder.add(structPhantomReference);
     }
 

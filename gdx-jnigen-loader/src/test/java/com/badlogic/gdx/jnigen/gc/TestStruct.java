@@ -1,7 +1,6 @@
 package com.badlogic.gdx.jnigen.gc;
 
 import com.badlogic.gdx.jnigen.Global;
-import com.badlogic.gdx.jnigen.pointer.Pointing;
 import com.badlogic.gdx.jnigen.pointer.Struct;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
@@ -223,11 +222,6 @@ public class TestStruct extends Struct {
         @Override
         public Class<TestStruct> getStructClass() {
             return TestStruct.class;
-        }
-
-        @Override
-        public long getSize() {
-            return __size;
         }
     }
 }
