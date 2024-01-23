@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.badlogic.gdx.jnigen.ffi.ParameterTypes.*;
 
-public class ClosureInfo<T extends Closure> {
+public final class ClosureInfo<T extends Closure> {
 
     private final long cif;
     private final T toCallOn;
