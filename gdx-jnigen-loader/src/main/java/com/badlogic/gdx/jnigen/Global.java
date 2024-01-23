@@ -51,6 +51,8 @@ public class Global {
     #include <stdlib.h>
     #include <string.h>
     #include <ffi.h>
+    #include "definitions.h"
+
 
     #define ATTACH_ENV()                                                    \
         bool _hadToAttach = false;                                          \
@@ -87,7 +89,13 @@ public class Global {
                 }
             }
         }
-        env->CallStaticVoidMethod(globalClass, dispatchCallbackMethod, closureInfo, jBuffer);
+        jlong ret = env->CallStaticLongMethod(globalClass, dispatchCallbackMethod, closureInfo, jBuffer);
+        ffi_type* rtype = cif->rtype;
+        if(rtype->type == FFI_TYPE_STRUCT) {
+            memcpy(result, reinterpret_cast<void*>(ret), rtype->size);
+        } else {
+            memcpy(result, &ret, rtype->size);
+        }
         DETACH_ENV()
     }
 
@@ -104,9 +112,9 @@ public class Global {
         return JNI_TRUE;
     */
 
-    public static <T extends Closure> void dispatchCallback(ClosureInfo<T> toCallOn, ByteBuffer parameter) {
+    public static <T extends Closure> long dispatchCallback(ClosureInfo<T> toCallOn, ByteBuffer parameter) {
         try {
-            toCallOn.invoke(parameter);
+            return toCallOn.invoke(parameter);
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -163,38 +171,12 @@ public class Global {
     }
 
     private static native long nativeCreateCif(long returnType, ByteBuffer parameters, int size); /*
-        int64_t* params = (int64_t*) parameters;
+        ffi_type** params = (ffi_type**) parameters;
         ffi_type** parameterFFITypes = (ffi_type**)malloc(sizeof(ffi_type*) * size);
-        for (int i = 0; i < size; i++) {
-            switch (params[i]) {
-                case -1:
-                    parameterFFITypes[i] = &ffi_type_uint8;
-                    break;
-                case -2:
-                    parameterFFITypes[i] = &ffi_type_uint16;
-                    break;
-                case -3:
-                    parameterFFITypes[i] = &ffi_type_uint32;
-                    break;
-                case -4:
-                    parameterFFITypes[i] = &ffi_type_uint64;
-                    break;
-                case -5:
-                    parameterFFITypes[i] = &ffi_type_float;
-                    break;
-                case -6:
-                    parameterFFITypes[i] = &ffi_type_double;
-                    break;
-                case -7:
-                    parameterFFITypes[i] = &ffi_type_pointer;
-                    break;
-                default:
-                    parameterFFITypes[i] = ((ffi_type**)params)[i];
-            }
-        }
+        memcpy(parameterFFITypes, parameters, sizeof(ffi_type*) * size);
 
         ffi_cif* cif = (ffi_cif*)malloc(sizeof(ffi_cif));
-        ffi_prep_cif(cif, FFI_DEFAULT_ABI, size, &ffi_type_void, parameterFFITypes);
+        ffi_prep_cif(cif, FFI_DEFAULT_ABI, size, reinterpret_cast<ffi_type*>(returnType), parameterFFITypes);
         return reinterpret_cast<jlong>(cif);
     */
 
@@ -203,10 +185,9 @@ public class Global {
         if (methods.length != 1)
             throw new IllegalArgumentException("Closures are only allowed to implement one function");
         Method callingMethod = methods[0];
-        if (callingMethod.getReturnType() != void.class)
-            throw new IllegalArgumentException("Closures are currently only allowed to have a Void return");
-        Parameter[] parameters = callingMethod.getParameters();
+        Class<?> returnType = callingMethod.getReturnType();
 
+        Parameter[] parameters = callingMethod.getParameters();
 
         // Yes, I'm extremely lazy and don't want to deal with JNI array handling
         ByteBuffer mappedParameter = ByteBuffer.allocateDirect(parameters.length * 8);
@@ -215,7 +196,7 @@ public class Global {
             mappedParameter.putLong(ParameterTypes.mapObjectToID(parameter.getType(), parameter.getAnnotations()));
         }
 
-        return nativeCreateCif(0, mappedParameter, parameters.length);
+        return nativeCreateCif(ParameterTypes.mapObjectToID(returnType, callingMethod.getAnnotations()), mappedParameter, parameters.length);
     }
 
     public static long getFFICifForClass(Class<? extends Closure> closureClass) {
@@ -228,7 +209,7 @@ public class Global {
         long cif = getFFICifForClass(object.getClass());
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(8);
         byteBuffer.order(ByteOrder.nativeOrder());
-        ClosureInfo<T> closureInfo = new ClosureInfo<>(cif, object.getClass().getDeclaredMethods()[0].getParameters(), object);
+        ClosureInfo<T> closureInfo = new ClosureInfo<>(cif, object.getClass().getDeclaredMethods()[0], object);
         long fnPtr = createClosureForObject(cif, closureInfo, byteBuffer);
         long closurePtr = byteBuffer.getLong();
 

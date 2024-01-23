@@ -4,6 +4,6 @@ import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
 
 public interface Closure {
 
-    Object invoke(JavaTypeWrapper[] parameter);
+    void invoke(JavaTypeWrapper[] parameter, JavaTypeWrapper returnType);
 
 }
