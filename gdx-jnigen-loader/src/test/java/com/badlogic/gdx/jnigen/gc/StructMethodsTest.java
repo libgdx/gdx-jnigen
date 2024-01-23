@@ -74,6 +74,23 @@ public class StructMethodsTest {
     }
 
     @Test
+    public void structPointerAsStrutTest() {
+        StructPointer<TestStruct> testStructPtr = TestStruct.returnStructPointerTest();
+        TestStruct testStruct = testStructPtr.asStruct();
+
+        assertEquals(1, testStruct.getField1());
+        assertEquals(2, testStruct.getField2());
+        assertEquals(3, testStruct.getField3());
+        assertEquals(4, testStruct.getField4());
+
+        testStruct.setField1(7);
+        assertEquals(7, testStruct.getField1());
+        testStruct = testStructPtr.get();
+        assertEquals(7, testStruct.getField1());
+        testStructPtr.free();
+    }
+
+    @Test
     public void testGetSetStruct() {
 
         TestStruct testStruct = new TestStruct();
