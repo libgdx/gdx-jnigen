@@ -3,7 +3,7 @@ package com.badlogic.gdx.jnigen.closure;
 import com.badlogic.gdx.jnigen.Global;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
 
-public class ClosureObject<T extends Closure> extends Pointing {
+public final class ClosureObject<T extends Closure> extends Pointing {
 
     private final long fnPtr;
 
