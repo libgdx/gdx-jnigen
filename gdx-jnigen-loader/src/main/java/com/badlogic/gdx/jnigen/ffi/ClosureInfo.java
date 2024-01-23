@@ -11,6 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.badlogic.gdx.jnigen.ffi.ParameterTypes.*;
 
@@ -20,9 +21,10 @@ public class ClosureInfo<T extends Closure> {
     private final T toCallOn;
 
     private Class<?>[] parameterTypes;
-    private Object[] objects;
+    private JavaTypeWrapper[] cachedWrappers;
     private final WrappingPointingSupplier<? extends Pointing>[] pointingSuppliers;
     private byte flags = 0;
+    private AtomicInteger lockCount = new AtomicInteger(0);
 
     public ClosureInfo(long cif, Parameter[] parameters, T toCallOn) {
         this.cif = cif;
@@ -42,7 +44,16 @@ public class ClosureInfo<T extends Closure> {
             Annotation[] annotations = parameter.getAnnotations();
             flags = ParameterTypes.buildFlags(parameter.getType(), annotations);
         }
-        objects = new Object[parameters.length];
+        cachedWrappers = createWrapper();
+    }
+
+    private JavaTypeWrapper[] createWrapper() {
+        JavaTypeWrapper[] wrappers = new JavaTypeWrapper[parameterTypes.length];
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Class<?> type = parameterTypes[i];
+            wrappers[i] = new JavaTypeWrapper(type);
+        }
+        return wrappers;
     }
 
     public Object invoke(ByteBuffer parameter)
@@ -51,36 +62,44 @@ public class ClosureInfo<T extends Closure> {
             return toCallOn.invoke(null);
 
         parameter.order(ByteOrder.nativeOrder());
-        for (int i = 0; i < parameterTypes.length; i++) {
-            Class<?> param = parameterTypes[i];
+
+        JavaTypeWrapper[] wrappers = cachedWrappers;
+        if (lockCount.getAndIncrement() != 0)
+            wrappers = createWrapper();
+        for (int i = 0; i < wrappers.length; i++) {
+            JavaTypeWrapper wrapper = wrappers[i];
+            Class<?> param = wrapper.getWrappingClass();
             if (param == boolean.class) {
-                objects[i] = parameter.get() == 1;
+                wrapper.setValue(parameter.get());
                 parameter.position(parameter.position() + 7);
             } else if (param == char.class) {
-                objects[i] = parameter.getChar();
+                wrapper.setValue(parameter.getChar());
                 parameter.position(parameter.position() + 6);
             } else if (param == byte.class) {
-                objects[i] = parameter.get();
+                wrapper.setValue(parameter.get());
                 parameter.position(parameter.position() + 7);
             } else if (param == short.class) {
-                objects[i] = parameter.getShort();
+                wrapper.setValue(parameter.getShort());
                 parameter.position(parameter.position() + 6);
-            }else if (param == int.class) {
-                objects[i] = parameter.getInt();
+            } else if (param == int.class) {
+                wrapper.setValue(parameter.getInt());
                 parameter.position(parameter.position() + 4);
-            }else if (param == long.class) {
-                objects[i] = parameter.getLong();
+            } else if (param == long.class) {
+                wrapper.setValue(parameter.getLong());
             } else if (param == float.class) {
-                objects[i] = Float.intBitsToFloat(parameter.getInt());
+                wrapper.setValue(parameter.getInt());
                 parameter.position(parameter.position() + 4);
             } else if (param == double.class) {
-                objects[i] = Double.longBitsToDouble(parameter.getLong());
+                wrapper.setValue(parameter.getLong());
             } else if (Struct.class.isAssignableFrom(param)) {
-                objects[i] = pointingSuppliers[i].create(parameter.getLong(), (flags & PASS_AS_POINTER) == 0);
+                wrapper.setValue(pointingSuppliers[i].create(parameter.getLong(), (flags & PASS_AS_POINTER) == 0));
             } else if (Pointing.class.isAssignableFrom(param)) {
-                objects[i] = pointingSuppliers[i].create(parameter.getLong(), false);
+                wrapper.setValue(pointingSuppliers[i].create(parameter.getLong(), false));
             }
         }
-        return toCallOn.invoke(objects);
+
+        Object returnValue = toCallOn.invoke(wrappers);
+        lockCount.decrementAndGet();
+        return returnValue;
     }
 }

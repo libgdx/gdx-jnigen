@@ -2,6 +2,7 @@ package com.badlogic.gdx.jnigen.gc;
 
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
+import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
 
 public class Closures {
 
@@ -13,7 +14,7 @@ public class Closures {
         void toCall();
 
         @Override
-        default Object invoke(Object[] parameter) {
+        default Object invoke(JavaTypeWrapper[] parameters) {
             toCall();
             return null;
         }
@@ -23,8 +24,8 @@ public class Closures {
         void toCall(long arg);
 
         @Override
-        default Object invoke(Object[] parameters) {
-            toCall((Long)parameters[0]);
+        default Object invoke(JavaTypeWrapper[] parameters) {
+            toCall(parameters[0].asLong());
             return null;
         }
     }
@@ -33,8 +34,8 @@ public class Closures {
         void toCall(int arg);
 
         @Override
-        default Object invoke(Object[] parameters) {
-            toCall((Integer)parameters[0]);
+        default Object invoke(JavaTypeWrapper[] parameters) {
+            toCall(parameters[0].asInt());
             return null;
         }
     }
@@ -44,8 +45,8 @@ public class Closures {
         void toCall(short arg);
 
         @Override
-        default Object invoke(Object[] parameters) {
-            toCall((Short)parameters[0]);
+        default Object invoke(JavaTypeWrapper[] parameters) {
+            toCall(parameters[0].asShort());
             return null;
         }
     }
@@ -54,8 +55,8 @@ public class Closures {
         void toCall(byte arg);
 
         @Override
-        default Object invoke(Object[] parameters) {
-            toCall((Byte)parameters[0]);
+        default Object invoke(JavaTypeWrapper[] parameters) {
+            toCall(parameters[0].asByte());
             return null;
         }
     }
@@ -64,8 +65,8 @@ public class Closures {
         void toCall(char arg);
 
         @Override
-        default Object invoke(Object[] parameters) {
-            toCall((Character)parameters[0]);
+        default Object invoke(JavaTypeWrapper[] parameters) {
+            toCall(parameters[0].asChar());
             return null;
         }
     }
@@ -74,8 +75,8 @@ public class Closures {
         void toCall(boolean arg);
 
         @Override
-        default Object invoke(Object[] parameters) {
-            toCall((Boolean)parameters[0]);
+        default Object invoke(JavaTypeWrapper[] parameters) {
+            toCall(parameters[0].asBoolean());
             return null;
         }
     }
@@ -84,8 +85,8 @@ public class Closures {
         void toCall(float arg);
 
         @Override
-        default Object invoke(Object[] parameters) {
-            toCall((Float)parameters[0]);
+        default Object invoke(JavaTypeWrapper[] parameters) {
+            toCall(parameters[0].asFloat());
             return null;
         }
     }
@@ -94,8 +95,8 @@ public class Closures {
         void toCall(double arg);
 
         @Override
-        default Object invoke(Object[] parameters) {
-            toCall((Double)parameters[0]);
+        default Object invoke(JavaTypeWrapper[] parameters) {
+            toCall(parameters[0].asDouble());
             return null;
         }
     }
@@ -104,9 +105,10 @@ public class Closures {
         void toCall(long arg1, int arg2, short arg3, byte arg4, char arg5, boolean arg6, float arg7, double arg8);
 
         @Override
-        default Object invoke(Object[] parameter) {
-            toCall((Long)parameter[0], (Integer)parameter[1], (Short)parameter[2], (Byte)parameter[3],
-                    (Character)parameter[4], (Boolean)parameter[5], (Float)parameter[6], (Double)parameter[7]);
+        default Object invoke(JavaTypeWrapper[] parameters) {
+            toCall(parameters[0].asLong(), parameters[1].asInt(), parameters[2].asShort(),
+                    parameters[3].asByte(), parameters[4].asChar(), parameters[5].asBoolean(), parameters[6].asFloat(),
+                    parameters[7].asDouble());
             return null;
         }
     }
