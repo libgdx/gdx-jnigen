@@ -16,12 +16,26 @@ public final class JavaTypeWrapper {
         this.wrappingType = value;
     }
 
+    public void setValue(double value) {
+        this.wrappingType = Double.doubleToLongBits(value);
+    }
+
+    public void setValue(float value) {
+        this.wrappingType = Float.floatToIntBits(value);
+    }
+
     public void setValue(Pointing wrappingPointing) {
         this.wrappingPointing = wrappingPointing;
     }
 
     public Class<?> getWrappingClass() {
         return wrappingClass;
+    }
+
+    public long unwrapToLong() {
+        if (wrappingClass.isPrimitive())
+            return wrappingType;
+        return wrappingPointing.getPointer();
     }
 
     public boolean asBoolean() {
