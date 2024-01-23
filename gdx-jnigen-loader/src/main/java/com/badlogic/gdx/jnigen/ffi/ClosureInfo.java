@@ -11,7 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.badlogic.gdx.jnigen.ffi.ParameterTypes.*;
 
@@ -24,7 +24,7 @@ public class ClosureInfo<T extends Closure> {
     private JavaTypeWrapper[] cachedWrappers;
     private final WrappingPointingSupplier<? extends Pointing>[] pointingSuppliers;
     private byte flags = 0;
-    private AtomicInteger lockCount = new AtomicInteger(0);
+    private AtomicBoolean cacheLock = new AtomicBoolean(false);
 
     public ClosureInfo(long cif, Parameter[] parameters, T toCallOn) {
         this.cif = cif;
@@ -64,8 +64,11 @@ public class ClosureInfo<T extends Closure> {
         parameter.order(ByteOrder.nativeOrder());
 
         JavaTypeWrapper[] wrappers = cachedWrappers;
-        if (lockCount.getAndIncrement() != 0)
+        boolean usedCachedWrapper = true;
+        if (!cacheLock.compareAndSet(false, true)) {
             wrappers = createWrapper();
+            usedCachedWrapper = false;
+        }
         for (int i = 0; i < wrappers.length; i++) {
             JavaTypeWrapper wrapper = wrappers[i];
             Class<?> param = wrapper.getWrappingClass();
@@ -99,7 +102,8 @@ public class ClosureInfo<T extends Closure> {
         }
 
         Object returnValue = toCallOn.invoke(wrappers);
-        lockCount.decrementAndGet();
+        if (usedCachedWrapper)
+            cacheLock.set(false);
         return returnValue;
     }
 }
