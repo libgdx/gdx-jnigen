@@ -52,7 +52,7 @@ public class GCHandler {
 
     public static void enqueuePointer(Pointing pointing) {
         PointingPhantomReference structPhantomReference = new PointingPhantomReference(pointing);
-        countMap.put(pointing.getPointer(), new AtomicInteger(1));
+        countMap.computeIfAbsent(pointing.getPointer(), peer -> new AtomicInteger(0)).incrementAndGet();
         referenceHolder.add(structPhantomReference);
     }
 
