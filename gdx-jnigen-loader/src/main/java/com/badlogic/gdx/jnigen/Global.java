@@ -78,7 +78,7 @@ public class Global {
         jobject jBuffer = NULL;
         if (cif->nargs != 0) {
             jBuffer = env->NewDirectByteBuffer(backingBuffer, cif->nargs * sizeof(void*));
-            for (int i = 0; i < cif->nargs; i++) {
+            for (size_t i = 0; i < cif->nargs; i++) {
                 ffi_type* type = cif->arg_types[i];
                 if(type->type == FFI_TYPE_STRUCT) {
                     void* structBuf = malloc(type->size);
