@@ -112,6 +112,69 @@ public class Closures {
         }
     }
 
+    public interface CallbackIntReturnNoArg extends Closure {
+        int toCall();
+
+        @Override
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            returnType.setValue(toCall());
+        }
+    }
+
+    public interface CallbackShortReturnNoArg extends Closure {
+        short toCall();
+
+        @Override
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            returnType.setValue(toCall());
+        }
+    }
+
+    public interface CallbackCharReturnNoArg extends Closure {
+        char toCall();
+
+        @Override
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            returnType.setValue(toCall());
+        }
+    }
+
+    public interface CallbackByteReturnNoArg extends Closure {
+        byte toCall();
+
+        @Override
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            returnType.setValue(toCall());
+        }
+    }
+
+    public interface CallbackBooleanReturnNoArg extends Closure {
+        boolean toCall();
+
+        @Override
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            returnType.setValue(toCall() ? 1 : 0);
+        }
+    }
+
+    public interface CallbackFloatReturnNoArg extends Closure {
+        float toCall();
+
+        @Override
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            returnType.setValue(toCall());
+        }
+    }
+
+    public interface CallbackDoubleReturnNoArg extends Closure {
+        double toCall();
+
+        @Override
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            returnType.setValue(toCall());
+        }
+    }
+
     public static void methodWithCallback(ClosureObject<CallbackNoReturnNoArg> closure) {
         methodWithCallback(closure.getFnPtr());
     }
@@ -193,8 +256,36 @@ public class Closures {
         double arg8 = 7.7;
         ((void (*)(uint64_t, uint32_t, uint16_t, uint8_t, uint16_t, bool, float, double))fnPtr)(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
     */
+
     public static native long methodWithCallbackLongReturn(long fnPtr);/*
-        return ((long (*)())fnPtr)();
+        return ((uint64_t (*)())fnPtr)();
     */
 
+    public static native int methodWithCallbackIntReturn(long fnPtr);/*
+        return ((uint32_t (*)())fnPtr)();
+    */
+
+    public static native short methodWithCallbackShortReturn(long fnPtr);/*
+        return ((uint16_t (*)())fnPtr)();
+    */
+
+    public static native char methodWithCallbackCharReturn(long fnPtr);/*
+        return ((uint16_t (*)())fnPtr)();
+    */
+
+    public static native byte methodWithCallbackByteReturn(long fnPtr);/*
+        return ((uint8_t (*)())fnPtr)();
+    */
+
+    public static native boolean methodWithCallbackBooleanReturn(long fnPtr);/*
+        return ((uint8_t (*)())fnPtr)() == 1;
+    */
+
+    public static native float methodWithCallbackFloatReturn(long fnPtr);/*
+        return ((float (*)())fnPtr)();
+    */
+
+    public static native double methodWithCallbackDoubleReturn(long fnPtr);/*
+        return ((double (*)())fnPtr)();
+    */
 }
