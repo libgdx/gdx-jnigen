@@ -1,6 +1,7 @@
 package com.badlogic.gdx.jnigen.gc;
 
 import com.badlogic.gdx.jnigen.Global;
+import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
 import com.badlogic.gdx.jnigen.pointer.Struct;
 import com.badlogic.gdx.jnigen.closure.Closure;
@@ -51,6 +52,46 @@ public class TestStruct extends Struct {
             toCall((TestStruct.TestStructPointer)parameters[0].asPointing());
         }
     }
+
+    public interface CallbackStructReturnNoArg extends Closure {
+        TestStruct toCall();
+
+        @Override
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            returnType.setValue(toCall());
+        }
+    }
+
+    public interface CallbackStructPointerReturnNoArg extends Closure {
+        StructPointer<TestStruct> toCall();
+
+        @Override
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            returnType.setValue(toCall());
+        }
+    }
+
+    public static StructPointer<TestStruct> methodWithStructPointerReturn(
+            ClosureObject<CallbackStructPointerReturnNoArg> closure) {
+        long peer = methodWithCallbackStructPointerReturn(closure.getFnPtr());
+        return new TestStructPointer(peer, false);
+    }
+
+    public static TestStruct methodWithStructReturn(ClosureObject<CallbackStructReturnNoArg> closure) {
+        TestStruct testStruct = new TestStruct();
+        System.out.println(testStruct.getPointer());
+        methodWithCallbackStructReturn(closure.getFnPtr(), testStruct.getPointer());
+        return testStruct;
+    }
+
+    private static native void methodWithCallbackStructReturn(long fnPtr, long pointer);/*
+        *reinterpret_cast<TestStruct*>(pointer) = ((TestStruct (*)())fnPtr)();
+     */
+
+
+    public static native long methodWithCallbackStructPointerReturn(long fnPtr);/*
+         return reinterpret_cast<jlong>(((TestStruct* (*)())fnPtr)());
+    */
 
     public static TestStruct returnStructTest() {
         TestStruct testStruct = new TestStruct();
