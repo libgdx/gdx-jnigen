@@ -79,7 +79,6 @@ public class TestStruct extends Struct {
 
     public static TestStruct methodWithStructReturn(ClosureObject<CallbackStructReturnNoArg> closure) {
         TestStruct testStruct = new TestStruct();
-        System.out.println(testStruct.getPointer());
         methodWithCallbackStructReturn(closure.getFnPtr(), testStruct.getPointer());
         return testStruct;
     }
