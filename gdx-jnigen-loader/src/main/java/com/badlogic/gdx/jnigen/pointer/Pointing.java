@@ -28,6 +28,14 @@ public class Pointing {
         freed = true;
     }
 
+    public boolean isFreed() {
+        return freed;
+    }
+
+    public boolean getsGCFreed() {
+        return freeOnGC;
+    }
+
     public long getPointer() {
         return pointer;
     }
