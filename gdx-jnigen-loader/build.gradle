@@ -116,10 +116,10 @@ jnigen {
 
     all {
         def name = it.os.name().toLowerCase()
-        def arch = it.architecture.name() + it.bitness.toSuffix()
+        def arch = it.architecture.name() + (it.architecture == x86 ? "_" : "") + it.bitness.toSuffix()
         def combined = name + "_" + arch
         headerDirs += [file("build/${combined}/include/"), file("src/test/native/")]
-        linkerFlags += " ${file("build/${combined}/lib/libffi.a").absolutePath} "
+        libraries += "${file("build/${combined}/lib/libffi.a").absolutePath}"
         cFlags += " -std=c11 "
         cppFlags += " -std=c++11 " // for using alignof
     }
@@ -127,6 +127,9 @@ jnigen {
     add(Linux, x64)
     add(MacOsX, x64, ARM)
 }
+
+jnigenJarNativesDesktop.mustRunAfter jnigenBuild
+
 
 eclipse {
     project {
