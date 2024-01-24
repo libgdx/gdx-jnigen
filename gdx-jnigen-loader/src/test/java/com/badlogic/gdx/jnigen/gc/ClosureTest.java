@@ -2,6 +2,12 @@ package com.badlogic.gdx.jnigen.gc;
 
 import com.badlogic.gdx.jnigen.Global;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
+import com.badlogic.gdx.jnigen.gc.Closures.CallbackBooleanReturnNoArg;
+import com.badlogic.gdx.jnigen.gc.Closures.CallbackByteReturnNoArg;
+import com.badlogic.gdx.jnigen.gc.Closures.CallbackCharReturnNoArg;
+import com.badlogic.gdx.jnigen.gc.Closures.CallbackDoubleReturnNoArg;
+import com.badlogic.gdx.jnigen.gc.Closures.CallbackFloatReturnNoArg;
+import com.badlogic.gdx.jnigen.gc.Closures.CallbackIntReturnNoArg;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackLongReturnNoArg;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnAllArgs;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnBooleanArg;
@@ -13,8 +19,11 @@ import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnIntArg;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnLongArg;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnNoArg;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnShortArg;
+import com.badlogic.gdx.jnigen.gc.Closures.CallbackShortReturnNoArg;
 import com.badlogic.gdx.jnigen.gc.TestStruct.CallbackNoReturnStructArg;
 import com.badlogic.gdx.jnigen.gc.TestStruct.CallbackNoReturnStructPointerArg;
+import com.badlogic.gdx.jnigen.gc.TestStruct.CallbackStructPointerReturnNoArg;
+import com.badlogic.gdx.jnigen.gc.TestStruct.CallbackStructReturnNoArg;
 import com.badlogic.gdx.jnigen.gc.TestStruct.TestStructPointer;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import org.junit.jupiter.api.Test;
@@ -28,8 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ClosureTest {
 
@@ -180,6 +188,86 @@ public class ClosureTest {
         ClosureObject<CallbackLongReturnNoArg> closureObject = ClosureObject.fromClosure(() -> 55);
         long ret = Closures.methodWithCallbackLongReturn(closureObject.getFnPtr());
         assertEquals(55, ret);
+        closureObject.free();
+    }
+
+    @Test
+    public void testCallbackIntReturn() {
+        ClosureObject<CallbackIntReturnNoArg> closureObject = ClosureObject.fromClosure(() -> 55);
+        int ret = Closures.methodWithCallbackIntReturn(closureObject.getFnPtr());
+        assertEquals(55, ret);
+        closureObject.free();
+    }
+
+    @Test
+    public void testCallbackShortReturn() {
+        ClosureObject<CallbackShortReturnNoArg> closureObject = ClosureObject.fromClosure(() -> (short)55);
+        short ret = Closures.methodWithCallbackShortReturn(closureObject.getFnPtr());
+        assertEquals(55, ret);
+        closureObject.free();
+    }
+
+    @Test
+    public void testCallbackCharReturn() {
+        ClosureObject<CallbackCharReturnNoArg> closureObject = ClosureObject.fromClosure(() -> 'a');
+        char ret = Closures.methodWithCallbackCharReturn(closureObject.getFnPtr());
+        assertEquals('a', ret);
+        closureObject.free();
+    }
+
+    @Test
+    public void testCallbackByteReturn() {
+        ClosureObject<CallbackByteReturnNoArg> closureObject = ClosureObject.fromClosure(() -> (byte)55);
+        byte ret = Closures.methodWithCallbackByteReturn(closureObject.getFnPtr());
+        assertEquals(55, ret);
+        closureObject.free();
+    }
+
+    @Test
+    public void testCallbackBooleanReturn() {
+        ClosureObject<CallbackBooleanReturnNoArg> closureObject = ClosureObject.fromClosure(() -> true);
+        boolean ret = Closures.methodWithCallbackBooleanReturn(closureObject.getFnPtr());
+        assertTrue(ret);
+        closureObject.free();
+    }
+
+    @Test
+    public void testCallbackFloatReturn() {
+        ClosureObject<CallbackFloatReturnNoArg> closureObject = ClosureObject.fromClosure(() -> 55.55f);
+        float ret = Closures.methodWithCallbackFloatReturn(closureObject.getFnPtr());
+        assertEquals(55.55f, ret);
+        closureObject.free();
+    }
+
+    @Test
+    public void testCallbackDoubleReturn() {
+        ClosureObject<CallbackDoubleReturnNoArg> closureObject = ClosureObject.fromClosure(() -> 55.55);
+        double ret = Closures.methodWithCallbackDoubleReturn(closureObject.getFnPtr());
+        assertEquals(55.55, ret);
+        closureObject.free();
+    }
+
+    @Test
+    public void testCallbackStructReturn() {
+        TestStruct struct = new TestStruct();
+        struct.setField3((short)77);
+        ClosureObject<CallbackStructReturnNoArg> closureObject = ClosureObject.fromClosure(() -> struct);
+        TestStruct ret = TestStruct.methodWithStructReturn(closureObject);
+        assertNotEquals(struct.getPointer(), ret.getPointer());
+        assertEquals(77, struct.getField3());
+        assertEquals(77, ret.getField3());
+        closureObject.free();
+    }
+
+    @Test
+    public void testCallbackStructPointerReturn() {
+        StructPointer<TestStruct> structPointer = new TestStructPointer();
+        structPointer.asStruct().setField3((short)77);
+        ClosureObject<CallbackStructPointerReturnNoArg> closureObject = ClosureObject.fromClosure(() -> structPointer);
+        StructPointer<TestStruct> ret = TestStruct.methodWithStructPointerReturn(closureObject);
+        assertEquals(structPointer.getPointer(), ret.getPointer());
+        assertEquals(77, structPointer.asStruct().getField3());
+        assertEquals(77, ret.asStruct().getField3());
         closureObject.free();
     }
 }
