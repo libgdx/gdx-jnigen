@@ -31,7 +31,7 @@ public abstract class StructPointer<T extends Struct> extends Pointing {
     }
 
     public T asStruct() {
-        return supplier.create(getPointer(), true);
+        return supplier.create(getPointer(), getsGCFreed());
     }
 
     public void set(T struct) {

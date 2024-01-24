@@ -14,7 +14,7 @@ public abstract class Struct extends Pointing {
 
     public <T extends Struct> StructPointer<T> asPointer() {
         //noinspection unchecked
-        return (StructPointer<T>)Global.getStructPointer(getClass()).create(getPointer(), true);
+        return (StructPointer<T>)Global.getStructPointer(getClass()).create(getPointer(), getsGCFreed());
     }
 
     public abstract long getSize();
