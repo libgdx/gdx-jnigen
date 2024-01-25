@@ -13,13 +13,8 @@ public class BaseTest {
     }
 
     @BeforeEach
-    public void emptyGCBefore() {
-        while (GCHandler.nativeObjectCount() != 0)
-            System.gc();
-    }
-
     @AfterEach
-    public void emptyGCAfter() {
+    public void emptyGC() {
         while (GCHandler.nativeObjectCount() != 0)
             System.gc();
     }
