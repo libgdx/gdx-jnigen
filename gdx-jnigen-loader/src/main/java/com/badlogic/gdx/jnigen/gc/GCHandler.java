@@ -14,8 +14,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class GCHandler {
     protected static final ReferenceQueue<Pointing> REFERENCE_QUEUE = new ReferenceQueue<>();
-    protected static final Set<PointingPhantomReference> referenceHolder = Collections.synchronizedSet(new HashSet<>());
-    protected static final Map<Long, AtomicInteger> countMap = Collections.synchronizedMap(new HashMap<>());
+    private static final Set<PointingPhantomReference> referenceHolder = Collections.synchronizedSet(new HashSet<>());
+    private static final Map<Long, AtomicInteger> countMap = Collections.synchronizedMap(new HashMap<>());
 
     private static final Thread RELEASER = new Thread() {
         @Override
@@ -54,6 +54,10 @@ public class GCHandler {
         PointingPhantomReference structPhantomReference = new PointingPhantomReference(pointing);
         countMap.computeIfAbsent(pointing.getPointer(), peer -> new AtomicInteger(0)).incrementAndGet();
         referenceHolder.add(structPhantomReference);
+    }
+
+    public static int nativeObjectCount() {
+        return referenceHolder.size();
     }
 
 }
