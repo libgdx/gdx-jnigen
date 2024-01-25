@@ -7,11 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class StructMethodsTest {
-
-    static {
-        Global.free(0);
-    }
+public class StructMethodsTest extends BaseTest {
 
     @Test
     public void testPassByValue() {

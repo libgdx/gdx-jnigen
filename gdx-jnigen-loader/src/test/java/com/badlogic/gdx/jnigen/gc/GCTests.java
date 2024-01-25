@@ -6,22 +6,21 @@ import org.junit.jupiter.api.Test;
 import java.lang.ref.WeakReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class GCTests {
+public class GCTests extends BaseTest {
 
     @Test
-    public void testStructReleased() throws InterruptedException {
-        while (!GCHandler.referenceHolder.isEmpty())
-            System.gc();
-
-        assertEquals(0, GCHandler.referenceHolder.size());
+    public void testStructReleased() {
+        assertEquals(0, GCHandler.nativeObjectCount());
         Struct struct = new TestStruct();
-        assertEquals(1, GCHandler.referenceHolder.size());
+        assertEquals(1, GCHandler.nativeObjectCount());
         WeakReference<Struct> toCheckGC = new WeakReference<>(struct);
         struct = null;
-        while (toCheckGC.get() != null)
+        while (GCHandler.nativeObjectCount() != 0)
             System.gc();
-        Thread.sleep(100); // SHit, but works for the moment
-        assertEquals(0, GCHandler.referenceHolder.size());
+
+        assertNull(toCheckGC.get());
+        assertEquals(0, GCHandler.nativeObjectCount());
     }
 }

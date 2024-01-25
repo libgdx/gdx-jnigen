@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class GlobalTests {
+public class GlobalTests extends BaseTest {
 
     //@Test
     public void diffClassSameCifTest() {

@@ -31,6 +31,10 @@ public class Global {
         POINTER_SIZE = getPointerSize();
     }
 
+    public static void init() {
+        // To force static initializer
+    }
+
     public static final int POINTER_SIZE;
 
     public static native int getPointerSize();/*
@@ -101,7 +105,7 @@ public class Global {
 
     */
 
-    public static native boolean init(Method dispatchCallbackReflectedMethod);/*
+    private static native boolean init(Method dispatchCallbackReflectedMethod);/*
         env->GetJavaVM(&gJVM);
         globalClass = (jclass)env->NewGlobalRef(clazz);
         dispatchCallbackMethod = env->FromReflectedMethod(dispatchCallbackReflectedMethod);

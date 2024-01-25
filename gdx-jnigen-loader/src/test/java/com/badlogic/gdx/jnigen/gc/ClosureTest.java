@@ -39,8 +39,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ClosureTest {
-
+public class ClosureTest extends BaseTest {
 
     @Test
     public void testCallbackNoValue() {
@@ -125,7 +124,6 @@ public class ClosureTest {
 
     @Test
     public void testCallbackStructArg() {
-        Global.free(0);
         new TestStruct();
         StructPointer<TestStruct> structPointer = new TestStructPointer();
         ClosureObject<CallbackNoReturnStructArg> closureObject = ClosureObject.fromClosure(structPointer::set);
@@ -140,7 +138,6 @@ public class ClosureTest {
 
     @Test
     public void testCallbackStructPointerArg() {
-        Global.free(0);
         new TestStruct();
         new TestStructPointer();
         AtomicReference<StructPointer<TestStruct>> ref = new AtomicReference<>();
