@@ -1,5 +1,6 @@
 package com.badlogic.gdx.jnigen.generator;
 
+import com.badlogic.gdx.jnigen.generator.types.TypeKind;
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.Pointer;
 import org.bytedeco.javacpp.PointerPointer;
@@ -8,7 +9,12 @@ import org.bytedeco.llvm.clang.CXClientData;
 import org.bytedeco.llvm.clang.CXCursor;
 import org.bytedeco.llvm.clang.CXCursorVisitor;
 import org.bytedeco.llvm.clang.CXIndex;
+import org.bytedeco.llvm.clang.CXSourceLocation;
+import org.bytedeco.llvm.clang.CXString;
 import org.bytedeco.llvm.clang.CXTranslationUnit;
+import org.bytedeco.llvm.clang.CXType;
+
+import java.nio.ByteBuffer;
 
 import static org.bytedeco.llvm.global.clang.*;
 
@@ -17,8 +23,9 @@ public class Generator {
     public static void main(String[] args) {
         // What does 0,1 mean? Who knows!
         CXIndex index = clang_createIndex(0,1);
-        BytePointer file = new BytePointer("/home/berstanio/IdeaProjects/gdx-jnigen/gdx-jnigen-generator/src/test/resources/definitions.h");
-        String[] parameter = new String[]{};
+        BytePointer file = new BytePointer("gdx-jnigen-generator/src/test/resources/definitions.h");
+        // Determine sysroot dynamically
+        String[] parameter = new String[]{"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"};
         PointerPointer<BytePointer> argPointer = new PointerPointer<>(parameter);
         CXTranslationUnit translationUnit = clang_parseTranslationUnit(index, file, argPointer, parameter.length, null, 0,
                 CXTranslationUnit_SkipFunctionBodies | CXTranslationUnit_DetailedPreprocessingRecord | CXTranslationUnit_IncludeAttributedTypes);
@@ -26,18 +33,35 @@ public class Generator {
         CXCursorVisitor visitor = new CXCursorVisitor() {
             @Override
             public int call(@ByVal CXCursor current, @ByVal CXCursor parent, CXClientData cxClientData) {
+                CXSourceLocation location = clang_getCursorLocation(current);
+                if (clang_Location_isFromMainFile(location) == 0)
+                    return CXChildVisit_Continue;
+
+                ByteBuffer buffer = cxClientData.asByteBuffer();
+                String name = clang_getCursorSpelling(current).getString(); // Why the hell does `getString` dispose the CXString?
                 switch (current.kind()) {
                     case CXCursor_StructDecl:
-                        System.out.println(current.data().getString(0));
+                        System.out.println("Starting struct " + name);
+                        break;
+                    case CXCursor_FieldDecl:
+                        if (parent.kind() == CXCursor_StructDecl) {
+                            CXType type = clang_getCursorType(current);
+                            TypeKind kind = TypeKind.getTypeKind(type);
+                            System.out.println("Struct-Field " + name + " with size: " + kind.getSize() + " and kind: " + kind);
+                        }
+                        break;
+                    default:
+                        System.out.println(name + " " +  current.kind());
                 }
-                System.out.println("Howdyy " + current.kind());
+
                 return CXChildVisit_Recurse;
             }
         };
-        clang_visitChildren(clang_getTranslationUnitCursor(translationUnit), visitor, null);
+        CXClientData cxClientData = new CXClientData(Pointer.malloc(1));
+        clang_visitChildren(clang_getTranslationUnitCursor(translationUnit), visitor, cxClientData);
         argPointer.close();
         file.close();
-        translationUnit.close();
-        visitor.close();
+        clang_disposeTranslationUnit(translationUnit);
+        clang_disposeIndex(index);
     }
 }
