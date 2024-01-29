@@ -6,6 +6,7 @@ import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.Parameter;
@@ -61,17 +62,17 @@ public class StructType implements Emitable {
 
         // Pointer
         ClassOrInterfaceDeclaration pointerClass = compilationUnit.addClass(pointerName, Keyword.PUBLIC, Keyword.STATIC, Keyword.FINAL);
+        pointerClass.addMember(pointerClass);
         pointerClass.addExtendedType("StructPointer<" + name + ">");
         ConstructorDeclaration pointerConstructor = pointerClass.addConstructor(Keyword.PUBLIC);
-        pointerConstructor.setParameter(0, new Parameter(PrimitiveType.longType(), "pointer"));
-        pointerConstructor.setParameter(1, new Parameter(PrimitiveType.booleanType(), "freeOnGC"));
+        pointerConstructor.addParameter(new Parameter(PrimitiveType.longType(), "pointer"));
+        pointerConstructor.addParameter(new Parameter(PrimitiveType.booleanType(), "freeOnGC"));
         BlockStmt body = new BlockStmt();
         body.addStatement("super(pointer, freeOnGC);");
         pointerConstructor.setBody(body);
-
-
+        ConstructorDeclaration defaultConstructor = pointerClass.addConstructor(Keyword.PUBLIC);
+        defaultConstructor.createBody().addStatement("super(__size);");
     }
-
     static class StructField {
         private String name;
         private TypeKind kind;

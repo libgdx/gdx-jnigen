@@ -69,7 +69,7 @@ public class Generator {
     }
 
     public static void generateJavaCode() {
-
+        Manager.getInstance().emit();
     }
 
     public static void main(String[] args) {
