@@ -136,8 +136,9 @@ public class TestStruct extends Struct {
         __ffi_type = generateFFIType();
         Global.registerStructFFIType(TestStruct.class, __ffi_type);
         Global.registerPointingSupplier(TestStruct.class, TestStruct::new);
-        Global.registerStructSize(TestStruct.class, __size);
+        Global.registerNewStructPointerSupplier(TestStruct.class, TestStructPointer::new);
         Global.registerStructPointer(TestStruct.class, TestStructPointer::new);
+        Global.registerPointingSupplier(TestStructPointer.class, TestStructPointer::new);
     }
 
     private static native long calculateSize();/*
@@ -244,11 +245,7 @@ public class TestStruct extends Struct {
         }
     */
 
-    public static class TestStructPointer extends StructPointer<TestStruct> {
-
-        static {
-            Global.registerPointingSupplier(TestStructPointer.class, TestStructPointer::new);
-        }
+    public static final class TestStructPointer extends StructPointer<TestStruct> {
 
         public TestStructPointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);
@@ -261,6 +258,11 @@ public class TestStruct extends Struct {
         @Override
         public Class<TestStruct> getStructClass() {
             return TestStruct.class;
+        }
+
+        @Override
+        public long getSize() {
+            return __size;
         }
     }
 }
