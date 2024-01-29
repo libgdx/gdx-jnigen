@@ -7,6 +7,7 @@ import com.badlogic.gdx.jnigen.ffi.ParameterTypes;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
 import com.badlogic.gdx.jnigen.pointer.Struct;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
+import com.badlogic.gdx.jnigen.util.NewPointingSupplier;
 import com.badlogic.gdx.jnigen.util.WrappingPointingSupplier;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 
@@ -45,7 +46,7 @@ public class Global {
 
     private static final HashMap<Class<? extends Struct>, Long> classStructFFITypeMap = new HashMap<>();
 
-    private static final HashMap<Class<? extends Struct>, Long> classStructSizeMap = new HashMap<>();
+    private static final HashMap<Class<? extends Struct>, NewPointingSupplier<? extends StructPointer<?>>> classNewStructPointerMap = new HashMap<>();
 
     private static final HashMap<Class<? extends Pointing>, WrappingPointingSupplier<? extends Pointing>> classPointingSupplierMap = new HashMap<>();
 
@@ -149,15 +150,16 @@ public class Global {
         }
     }
 
-    public static void registerStructSize(Class<? extends Struct> structClass, long size) {
-        synchronized (classStructSizeMap) {
-            classStructSizeMap.put(structClass, size);
+    public static <T extends Struct, S extends StructPointer<T>> void registerNewStructPointerSupplier(Class<T> structClass, NewPointingSupplier<S> supplier) {
+        synchronized (classNewStructPointerMap) {
+            classNewStructPointerMap.put(structClass, supplier);
         }
     }
 
-    public static long getStructSize(Class<? extends Struct> structClass) {
-        synchronized (classStructSizeMap) {
-            return classStructSizeMap.getOrDefault(structClass, 0L);
+    public static <T extends Struct, S extends StructPointer<T>> NewPointingSupplier<S> getNewStructPointerSupplier(Class<T> structClass) {
+        synchronized (classNewStructPointerMap) {
+            //noinspection unchecked
+            return (NewPointingSupplier<S>)classNewStructPointerMap.get(structClass);
         }
     }
 
