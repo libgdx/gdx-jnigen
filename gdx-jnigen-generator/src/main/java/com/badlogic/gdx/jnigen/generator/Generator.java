@@ -1,5 +1,8 @@
 package com.badlogic.gdx.jnigen.generator;
 
+import com.badlogic.gdx.jnigen.generator.types.ClosureType;
+import com.badlogic.gdx.jnigen.generator.types.NamedType;
+import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
 import com.badlogic.gdx.jnigen.generator.types.TypeKind;
 import com.github.javaparser.ast.CompilationUnit;
 import org.bytedeco.javacpp.BytePointer;
@@ -15,6 +18,7 @@ import org.bytedeco.llvm.clang.CXString;
 import org.bytedeco.llvm.clang.CXTranslationUnit;
 import org.bytedeco.llvm.clang.CXType;
 
+import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 
 import static org.bytedeco.llvm.global.clang.*;
@@ -26,7 +30,7 @@ public class Generator {
         CXIndex index = clang_createIndex(0,1);
         BytePointer file = new BytePointer("gdx-jnigen-generator/src/test/resources/definitions.h");
         // Determine sysroot dynamically
-        String[] parameter = new String[]{};
+        String[] parameter = new String[]{"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"};
         PointerPointer<BytePointer> argPointer = new PointerPointer<>(parameter);
         CXTranslationUnit translationUnit = clang_parseTranslationUnit(index, file, argPointer, parameter.length, null, 0,
                 CXTranslationUnit_SkipFunctionBodies | CXTranslationUnit_DetailedPreprocessingRecord | CXTranslationUnit_IncludeAttributedTypes);
@@ -49,12 +53,31 @@ public class Generator {
                 case CXCursor_FieldDecl:
                     if (parent.kind() == CXCursor_StructDecl) {
                         CXType type = clang_getCursorType(current);
-                        TypeKind kind = TypeKind.getTypeKind(type);
-                        Manager.getInstance().putStructField(clang_getCursorSpelling(parent).getString(), name, kind);
+                        NamedType namedType = new NamedType(TypeDefinition.getTypeDefinition(type), name);
+                        Manager.getInstance().putStructField(clang_getCursorSpelling(parent).getString(), namedType);
                     }
                     break;
+                case CXCursor_TypedefDecl:
+                    CXType typeDef = clang_getTypedefDeclUnderlyingType(current);
+                    if (typeDef.kind() == CXType_Pointer) {
+                        CXType funcType = clang_getPointeeType(typeDef);
+                        if (funcType.kind() == CXType_FunctionProto) {
+                            CXType returnType = clang_getResultType(funcType);
+                            TypeDefinition returnDefinition = TypeDefinition.getTypeDefinition(returnType);
+                            int numArgs = clang_getNumArgTypes(funcType);
+                            NamedType[] argTypes = new NamedType[numArgs];
+                            for (int i = 0; i < numArgs; i++) {
+                                CXType argType = clang_getArgType(funcType, i);
+                                // TODO: To retrieve the parameter name if available, we should utilise another visitor
+                                //  However, I decided that I don't care for the moment
+                                argTypes[i] = new NamedType(TypeDefinition.getTypeDefinition(argType), "arg" + i);
+                            }
+                            ClosureType closure = new ClosureType(name, returnDefinition, argTypes);
+                            Manager.getInstance().addClosure(closure);
+                        }
+                    }
                 default:
-                    System.out.println(name + " " +  current.kind());
+                    //System.out.println(name + " " +  current.kind());
                 }
 
                 return CXChildVisit_Recurse;
