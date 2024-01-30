@@ -8,6 +8,7 @@ import static org.bytedeco.llvm.global.clang.*;
 
 public enum TypeKind {
 
+    VOID(-2, false, CXType_Void),
     BOOLEAN(1, false, CXType_Bool),
     BYTE(1, true, CXType_Char_S, CXType_SChar),
     PROMOTED_BYTE(1, false, CXType_UChar, CXType_Char_U),
@@ -18,7 +19,9 @@ public enum TypeKind {
     LONG(8, true, CXType_Long, CXType_LongLong),
     PROMOTED_LONG(8, false, CXType_ULong, CXType_ULongLong),
     FLOAT(4, true, CXType_Float),
-    DOUBLE(8, true, CXType_Double, CXType_LongDouble);
+    DOUBLE(8, true, CXType_Double, CXType_LongDouble),
+    POINTER(8, false, CXType_Pointer),
+    STRUCT(-1, false, CXType_Record);
 
     private final int size;
     private final boolean signed;
@@ -39,7 +42,7 @@ public enum TypeKind {
         for (TypeKind typeKind : CACHE) {
             for (int k : typeKind.getKinds()) {
                 if (k == kind) {
-                    if (size != typeKind.getSize())
+                    if (size != typeKind.getSize() && size != -1)
                         throw new IllegalArgumentException("Kind: " + kind + " got identified as " + typeKind.name() + ", but has a size of " + size + " != " + typeKind.size);
                     return typeKind;
                 }

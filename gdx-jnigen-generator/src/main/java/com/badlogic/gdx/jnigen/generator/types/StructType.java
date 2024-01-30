@@ -4,8 +4,10 @@ import com.badlogic.gdx.jnigen.Global;
 import com.badlogic.gdx.jnigen.pointer.Struct;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
@@ -21,15 +23,19 @@ import java.util.List;
 public class StructType implements Emitable {
 
     private final String name;
-    private final List<StructField> fields = new ArrayList<>();
+    private final List<NamedType> fields = new ArrayList<>();
     private final String pointerName = "Pointer";
 
     public StructType(String name) {
         this.name = name;
     }
 
-    public void addField(String name, TypeKind kind) {
-        fields.add(new StructField(name, kind));
+    public void addField(NamedType type) {
+        fields.add(type);
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -61,8 +67,9 @@ public class StructType implements Emitable {
 
 
         // Pointer
-        ClassOrInterfaceDeclaration pointerClass = compilationUnit.addClass(pointerName, Keyword.PUBLIC, Keyword.STATIC, Keyword.FINAL);
-        pointerClass.addMember(pointerClass);
+        ClassOrInterfaceDeclaration pointerClass = new ClassOrInterfaceDeclaration(new NodeList<>(Modifier.publicModifier(), Modifier.staticModifier(), Modifier.finalModifier()), false, pointerName);
+
+        structClass.addMember(pointerClass);
         pointerClass.addExtendedType("StructPointer<" + name + ">");
         ConstructorDeclaration pointerConstructor = pointerClass.addConstructor(Keyword.PUBLIC);
         pointerConstructor.addParameter(new Parameter(PrimitiveType.longType(), "pointer"));
@@ -72,14 +79,5 @@ public class StructType implements Emitable {
         pointerConstructor.setBody(body);
         ConstructorDeclaration defaultConstructor = pointerClass.addConstructor(Keyword.PUBLIC);
         defaultConstructor.createBody().addStatement("super(__size);");
-    }
-    static class StructField {
-        private String name;
-        private TypeKind kind;
-
-        public StructField(String name, TypeKind kind) {
-            this.name = name;
-            this.kind = kind;
-        }
     }
 }
