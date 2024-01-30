@@ -76,6 +76,10 @@ public class Generator {
                             Manager.getInstance().addClosure(closure);
                         }
                     }
+                    break;
+                case CXCursor_FunctionDecl:
+
+                    break;
                 default:
                     //System.out.println(name + " " +  current.kind());
                 }

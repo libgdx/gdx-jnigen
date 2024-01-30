@@ -2,6 +2,7 @@ package com.badlogic.gdx.jnigen.generator.types;
 
 import org.bytedeco.llvm.clang.CXType;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import static org.bytedeco.llvm.global.clang.*;
@@ -21,7 +22,8 @@ public enum TypeKind {
     FLOAT(4, true, CXType_Float),
     DOUBLE(8, true, CXType_Double, CXType_LongDouble),
     POINTER(8, false, CXType_Pointer),
-    STRUCT(-1, false, CXType_Record);
+    STRUCT(-1, false, CXType_Record),
+    CLOSURE(8, false, CXType_FunctionProto);
 
     private final int size;
     private final boolean signed;
@@ -61,5 +63,12 @@ public enum TypeKind {
 
     public int[] getKinds() {
         return kinds;
+    }
+
+    public boolean isSpecial() {
+        return this == POINTER || this == STRUCT;
+    }
+    public boolean isPrimitive() {
+        return this != POINTER && this != STRUCT && this != VOID;
     }
 }
