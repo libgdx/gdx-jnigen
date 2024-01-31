@@ -28,6 +28,7 @@ public class Manager {
     }
 
     private final Map<String, StructType> structs = new HashMap<>();
+    private final ArrayList<String> knownCTypes = new ArrayList<>();
 
     private final Global global = new Global();
 
@@ -48,6 +49,11 @@ public class Manager {
         if (!structs.containsKey(structName))
             throw new IllegalArgumentException("Struct with name: " + structName + " does not exists.");
         return structs.get(structName);
+    }
+
+    public void recordCType(String name) {
+        if (!knownCTypes.contains(name))
+            knownCTypes.add(name);
     }
 
     public void addClosure(ClosureType closureType) {

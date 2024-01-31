@@ -3,6 +3,7 @@ package com.badlogic.gdx.jnigen.gc;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
+import com.badlogic.gdx.jnigen.pointer.CType;
 
 public class Closures {
 
@@ -20,7 +21,7 @@ public class Closures {
     }
 
     public interface CallbackNoReturnLongArg extends Closure {
-        void toCall(long arg);
+        void toCall(@CType("uint64_t") long arg);
 
         @Override
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
@@ -29,7 +30,7 @@ public class Closures {
     }
 
     public interface CallbackNoReturnIntArg extends Closure {
-        void toCall(int arg);
+        void toCall(@CType("uint32_t") int arg);
 
         @Override
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
@@ -39,7 +40,7 @@ public class Closures {
 
 
     public interface CallbackNoReturnShortArg extends Closure {
-        void toCall(short arg);
+        void toCall(@CType("uint16_t") short arg);
 
         @Override
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
@@ -47,8 +48,17 @@ public class Closures {
         }
     }
 
+    public interface CallbackNoReturnShortUpcastArg extends Closure {
+        void toCall(@CType("uint16_t") int arg);
+
+        @Override
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            toCall(parameters[0].asInt());
+        }
+    }
+
     public interface CallbackNoReturnByteArg extends Closure {
-        void toCall(byte arg);
+        void toCall(@CType("uint8_t") byte arg);
 
         @Override
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
@@ -57,7 +67,7 @@ public class Closures {
     }
 
     public interface CallbackNoReturnCharArg extends Closure {
-        void toCall(char arg);
+        void toCall(@CType("uint16_t") char arg);
 
         @Override
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
@@ -66,7 +76,7 @@ public class Closures {
     }
 
     public interface CallbackNoReturnBooleanArg extends Closure {
-        void toCall(boolean arg);
+        void toCall(@CType("uint8_t") boolean arg);
 
         @Override
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
@@ -75,7 +85,7 @@ public class Closures {
     }
 
     public interface CallbackNoReturnFloatArg extends Closure {
-        void toCall(float arg);
+        void toCall(@CType("float") float arg);
 
         @Override
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
@@ -84,7 +94,7 @@ public class Closures {
     }
 
     public interface CallbackNoReturnDoubleArg extends Closure {
-        void toCall(double arg);
+        void toCall(@CType("double") double arg);
 
         @Override
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
@@ -93,7 +103,9 @@ public class Closures {
     }
 
     public interface CallbackNoReturnAllArgs extends Closure {
-        void toCall(long arg1, int arg2, short arg3, byte arg4, char arg5, boolean arg6, float arg7, double arg8);
+        void toCall(@CType("uint64_t") long arg1, @CType("uint32_t") int arg2, @CType("uint16_t") short arg3,
+                @CType("uint8_t") byte arg4, @CType("uint16_t") char arg5, @CType("uint8_t") boolean arg6,
+                @CType("float") float arg7, @CType("double") double arg8);
 
         @Override
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
@@ -104,6 +116,7 @@ public class Closures {
     }
 
     public interface CallbackLongReturnNoArg extends Closure {
+        @CType("uint64_t")
         long toCall();
 
         @Override
@@ -113,6 +126,7 @@ public class Closures {
     }
 
     public interface CallbackIntReturnNoArg extends Closure {
+        @CType("uint32_t")
         int toCall();
 
         @Override
@@ -122,6 +136,7 @@ public class Closures {
     }
 
     public interface CallbackShortReturnNoArg extends Closure {
+        @CType("uint16_t")
         short toCall();
 
         @Override
@@ -131,6 +146,7 @@ public class Closures {
     }
 
     public interface CallbackCharReturnNoArg extends Closure {
+        @CType("uint16_t")
         char toCall();
 
         @Override
@@ -140,6 +156,7 @@ public class Closures {
     }
 
     public interface CallbackByteReturnNoArg extends Closure {
+        @CType("uint8_t")
         byte toCall();
 
         @Override
@@ -149,6 +166,7 @@ public class Closures {
     }
 
     public interface CallbackBooleanReturnNoArg extends Closure {
+        @CType("uint8_t")
         boolean toCall();
 
         @Override
@@ -158,6 +176,7 @@ public class Closures {
     }
 
     public interface CallbackFloatReturnNoArg extends Closure {
+        @CType("float")
         float toCall();
 
         @Override
@@ -167,6 +186,7 @@ public class Closures {
     }
 
     public interface CallbackDoubleReturnNoArg extends Closure {
+        @CType("double")
         double toCall();
 
         @Override
@@ -195,6 +215,11 @@ public class Closures {
 
     public static native void methodWithCallbackShortArg(long fnPtr);/*
         uint16_t arg = 5;
+        ((void (*)(uint16_t))fnPtr)(arg);
+    */
+
+    public static native void methodWithCallbackShortUpcastArg(long fnPtr);/*
+        uint16_t arg = 65535;
         ((void (*)(uint16_t))fnPtr)(arg);
     */
 
