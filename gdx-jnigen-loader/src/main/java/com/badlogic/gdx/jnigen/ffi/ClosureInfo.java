@@ -1,6 +1,7 @@
 package com.badlogic.gdx.jnigen.ffi;
 
 import com.badlogic.gdx.jnigen.Global;
+import com.badlogic.gdx.jnigen.pointer.CType;
 import com.badlogic.gdx.jnigen.pointer.Struct;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
@@ -25,6 +26,7 @@ public final class ClosureInfo<T extends Closure> {
     private JavaTypeWrapper[] cachedWrappers;
     private JavaTypeWrapper cachedReturnWrapper;
     private final WrappingPointingSupplier<? extends Pointing>[] pointingSuppliers;
+    private int[] realSize;
     private byte[] flags;
     private AtomicBoolean cacheLock = new AtomicBoolean(false);
 
@@ -35,15 +37,24 @@ public final class ClosureInfo<T extends Closure> {
         parameterTypes = new Class[parameters.length];
         pointingSuppliers = new WrappingPointingSupplier[parameters.length];
         flags = new byte[parameters.length];
+        realSize = new int[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
             Parameter parameter = parameters[i];
             parameterTypes[i] = parameter.getType();
+
             if (Pointing.class.isAssignableFrom(parameter.getType())) {
                 @SuppressWarnings("unchecked")
                 WrappingPointingSupplier<?> supplier = Global.getPointingSupplier((Class<? extends Pointing>)parameter.getType());
                 if (supplier == null)
                     throw new IllegalArgumentException("Class " + parameters[i].getName() + " has no registered supplier.");
                 pointingSuppliers[i] = supplier;
+            } else {
+                // If we are primitive
+                CType cType = parameter.getAnnotation(CType.class);
+                if (cType == null) {
+                    throw new IllegalArgumentException("CType annotation is missing on parameter: " + method.getDeclaringClass().getName() + "#" + method.getName() + "->" + parameter.getName());
+                }
+                realSize[i] = Global.getCTypeSize(cType.value());
             }
             Annotation[] annotations = parameter.getAnnotations();
             flags[i] = ParameterTypes.buildFlags(parameter.getType(), annotations);
@@ -87,27 +98,17 @@ public final class ClosureInfo<T extends Closure> {
             for (int i = 0; i < wrappers.length; i++) {
                 JavaTypeWrapper wrapper = wrappers[i];
                 Class<?> param = wrapper.getWrappingClass();
-                if (param == boolean.class) {
-                    wrapper.setValue(parameter.get());
+                int cSize = realSize[i];
+                if (cSize == 1) {
+                    wrapper.setValue(parameter.get() & 0xFFL);
                     parameter.position(parameter.position() + 7);
-                } else if (param == char.class) {
-                    wrapper.setValue(parameter.getChar());
+                } else if (cSize == 2) {
+                    wrapper.setValue(parameter.getShort() & 0xFFFFL);
                     parameter.position(parameter.position() + 6);
-                } else if (param == byte.class) {
-                    wrapper.setValue(parameter.get());
-                    parameter.position(parameter.position() + 7);
-                } else if (param == short.class) {
-                    wrapper.setValue(parameter.getShort());
-                    parameter.position(parameter.position() + 6);
-                } else if (param == int.class) {
-                    wrapper.setValue(parameter.getInt());
+                } if (cSize == 4) {
+                    wrapper.setValue(parameter.getInt() & 0xFFFFFFFFL);
                     parameter.position(parameter.position() + 4);
-                } else if (param == long.class) {
-                    wrapper.setValue(parameter.getLong());
-                } else if (param == float.class) {
-                    wrapper.setValue(parameter.getInt());
-                    parameter.position(parameter.position() + 4);
-                } else if (param == double.class) {
+                } else if (cSize == 8) {
                     wrapper.setValue(parameter.getLong());
                 } else if (Struct.class.isAssignableFrom(param)) {
                     wrapper.setValue(

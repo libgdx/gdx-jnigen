@@ -10,6 +10,12 @@ public class BaseTest {
     @BeforeAll
     public static void setUp() {
         Global.init();
+        Global.registerCTypeSize("uint8_t", 1);
+        Global.registerCTypeSize("uint16_t", 2);
+        Global.registerCTypeSize("uint32_t", 4);
+        Global.registerCTypeSize("uint64_t", 8);
+        Global.registerCTypeSize("float", 4);
+        Global.registerCTypeSize("double", 8);
     }
 
     @BeforeEach

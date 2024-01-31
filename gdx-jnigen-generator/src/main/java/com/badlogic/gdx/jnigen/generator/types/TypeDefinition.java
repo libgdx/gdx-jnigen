@@ -22,8 +22,10 @@ public class TypeDefinition {
         return typeName;
     }
 
-    public static TypeDefinition getTypeDefinition(CXType type) {
-        return new TypeDefinition(TypeKind.getTypeKind(type), clang.clang_getTypeSpelling(type).getString());
+    public static TypeDefinition createTypeDefinition(CXType type) {
+        String typeName = clang.clang_getTypeSpelling(type).getString();
+        Manager.getInstance().recordCType(typeName);
+        return new TypeDefinition(TypeKind.getTypeKind(type), typeName);
     }
 
     public String asCastExpression(String toCallOn) {

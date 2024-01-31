@@ -1,12 +1,14 @@
 package com.badlogic.gdx.jnigen.ffi;
 
 import com.badlogic.gdx.jnigen.Global;
+import com.badlogic.gdx.jnigen.pointer.CType;
+import com.badlogic.gdx.jnigen.pointer.Signed;
 import com.badlogic.gdx.jnigen.pointer.Struct;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
+import java.lang.reflect.AnnotatedElement;
 
 public class ParameterTypes {
 
@@ -68,6 +70,7 @@ public class ParameterTypes {
 
 
     public static final int PASS_AS_POINTER = 1 << 0;
+    public static final int SIGNED = 1 << 2;
 
 
     public static byte buildFlags(Class<?> toMap, Annotation[] annotations) {
@@ -75,33 +78,40 @@ public class ParameterTypes {
         if (StructPointer.class.isAssignableFrom(toMap))
             flags |= PASS_AS_POINTER;
         for (Annotation annotation : annotations) {
-
+            if (annotation.annotationType() == Signed.class)
+                flags |= SIGNED;
         }
         return flags;
     }
 
-    public static long mapObjectToID(Class<?> toMap, Annotation[] annotations) {
+    public static long mapObjectToID(Class<?> toMap, AnnotatedElement element) {
+        byte flags = buildFlags(toMap, element.getAnnotations());
+
         if (toMap == void.class)
             return ffi_type_void;
-        if (toMap == boolean.class)
-            return ffi_type_uint8;
-        if (toMap == char.class)
-            return ffi_type_uint16;
-        if (toMap == byte.class)
-            return ffi_type_uint8;
-        if (toMap == short.class)
-            return ffi_type_uint16;
-        if (toMap == int.class)
-            return ffi_type_uint32;
-        if (toMap == long.class)
-            return ffi_type_uint64;
         if (toMap == float.class)
             return ffi_type_float;
         if (toMap == double.class)
             return ffi_type_double;
 
+        if (toMap.isPrimitive()) {
+            CType type = element.getAnnotation(CType.class);
+            if (type == null)
+                throw new IllegalArgumentException("CType annotation is missing on annotatedElement" + element);
+            int size = Global.getCTypeSize(type.value());
+            // TODO: 31.01.2024 Respect signed
+            if (size == 1)
+                return ffi_type_uint8;
+            if (size == 2)
+                return ffi_type_uint16;
+            if (size == 4)
+                return ffi_type_uint32;
+            if (size == 8)
+                return ffi_type_uint64;
+            throw new IllegalArgumentException("Thats a biiiig type :o");
+        }
+
         if (Struct.class.isAssignableFrom(toMap)) {
-            byte flags = buildFlags(toMap, annotations);
             long type = Global.getStructFFIType((Class<? extends Struct>)toMap);
             if (type == 0)
                 throw new IllegalArgumentException("Class " + toMap.getName() + " does not got registered yet.");

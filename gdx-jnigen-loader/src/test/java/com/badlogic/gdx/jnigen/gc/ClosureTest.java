@@ -19,6 +19,7 @@ import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnIntArg;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnLongArg;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnNoArg;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnShortArg;
+import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnShortUpcastArg;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackShortReturnNoArg;
 import com.badlogic.gdx.jnigen.gc.TestStruct.CallbackNoReturnStructArg;
 import com.badlogic.gdx.jnigen.gc.TestStruct.CallbackNoReturnStructPointerArg;
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -74,6 +76,15 @@ public class ClosureTest extends BaseTest {
         ClosureObject<CallbackNoReturnShortArg> closureObject = ClosureObject.fromClosure(changed::put);
         Closures.methodWithCallbackShortArg(closureObject.getFnPtr());
         assertEquals(5, changed.get(0));
+        closureObject.free();
+    }
+
+    @Test
+    public void testCallbackShortUpcastArg() {
+        IntBuffer changed = IntBuffer.allocate(1);
+        ClosureObject<CallbackNoReturnShortUpcastArg> closureObject = ClosureObject.fromClosure(changed::put);
+        Closures.methodWithCallbackShortUpcastArg(closureObject.getFnPtr());
+        assertEquals(65535, changed.get(0));
         closureObject.free();
     }
 
