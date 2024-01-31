@@ -52,6 +52,8 @@ public class Global {
 
     private static final HashMap<Class<? extends Struct>, WrappingPointingSupplier<? extends StructPointer<?>>> classStructPointerMap = new HashMap<>();
 
+    private static final HashMap<String, Integer> cTypeSizeMap = new HashMap<>();
+
     /*JNI
     #include <stdlib.h>
     #include <string.h>
@@ -99,7 +101,7 @@ public class Global {
         if(rtype->type == FFI_TYPE_STRUCT) {
             memcpy(result, reinterpret_cast<void*>(ret), rtype->size);
         } else {
-            memcpy(result, &ret, rtype->size);
+            memcpy(result, &ret, rtype->size); // Why does that work? That should not work?
         }
         DETACH_ENV()
     }
@@ -124,6 +126,22 @@ public class Global {
             throw new RuntimeException(e);
         }
     }
+
+    public static int getCTypeSize(String name) {
+        synchronized (cTypeSizeMap) {
+            Integer size = cTypeSizeMap.get(name);
+            if (size == null)
+                throw new IllegalArgumentException("CType " + name + " is not registered.");
+            return size;
+        }
+    }
+
+    public static void registerCTypeSize(String name, int size) {
+        synchronized (cTypeSizeMap) {
+            cTypeSizeMap.put(name, size);
+        }
+    }
+
 
     public static <T extends Struct, S extends StructPointer<T>> void registerStructPointer(Class<T> structClass, WrappingPointingSupplier<S> pointerClass) {
         synchronized (classStructPointerMap) {
@@ -187,10 +205,7 @@ public class Global {
     */
 
     private static long generateFFICifForClass(Class<? extends Closure> closureClass) {
-        Method[] methods = closureClass.getDeclaredMethods();
-        if (methods.length != 1)
-            throw new IllegalArgumentException("Closures are only allowed to implement one function");
-        Method callingMethod = methods[0];
+        Method callingMethod = getMethodForClosure(closureClass);
         Class<?> returnType = callingMethod.getReturnType();
 
         Parameter[] parameters = callingMethod.getParameters();
@@ -199,10 +214,10 @@ public class Global {
         ByteBuffer mappedParameter = ByteBuffer.allocateDirect(parameters.length * 8);
         mappedParameter.order(ByteOrder.nativeOrder());
         for (Parameter parameter : parameters) {
-            mappedParameter.putLong(ParameterTypes.mapObjectToID(parameter.getType(), parameter.getAnnotations()));
+            mappedParameter.putLong(ParameterTypes.mapObjectToID(parameter.getType(), parameter));
         }
 
-        return nativeCreateCif(ParameterTypes.mapObjectToID(returnType, callingMethod.getAnnotations()), mappedParameter, parameters.length);
+        return nativeCreateCif(ParameterTypes.mapObjectToID(returnType, callingMethod), mappedParameter, parameters.length);
     }
 
     public static long getFFICifForClass(Class<? extends Closure> closureClass) {
@@ -211,11 +226,29 @@ public class Global {
         }
     }
 
+    private static Method getMethodForClosure(Class<? extends Closure> closureClass) {
+        Class<?>[] interfaces = closureClass.getInterfaces();
+        if (interfaces.length != 1)
+            throw new IllegalArgumentException("Closures are only allowed to implement one interface");
+
+        Class<?> superClass = interfaces[0];
+        Method[] methods = superClass.getDeclaredMethods();
+        if (methods.length != 2)
+            throw new IllegalArgumentException("Closures are only allowed to implement two methods");
+
+        if (!methods[0].isDefault())
+            return methods[0];
+        else
+            return methods[1];
+    }
+
     public static <T extends Closure> ClosureObject<T> createClosureForObject(T object) {
         long cif = getFFICifForClass(object.getClass());
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(8);
         byteBuffer.order(ByteOrder.nativeOrder());
-        ClosureInfo<T> closureInfo = new ClosureInfo<>(cif, object.getClass().getDeclaredMethods()[0], object);
+
+        Method closureMethod = getMethodForClosure(object.getClass());
+        ClosureInfo<T> closureInfo = new ClosureInfo<>(cif, closureMethod, object);
         long fnPtr = createClosureForObject(cif, closureInfo, byteBuffer);
         long closurePtr = byteBuffer.getLong();
 

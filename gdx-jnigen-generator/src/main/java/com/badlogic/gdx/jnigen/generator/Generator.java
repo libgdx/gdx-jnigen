@@ -3,8 +3,6 @@ package com.badlogic.gdx.jnigen.generator;
 import com.badlogic.gdx.jnigen.generator.types.ClosureType;
 import com.badlogic.gdx.jnigen.generator.types.NamedType;
 import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
-import com.badlogic.gdx.jnigen.generator.types.TypeKind;
-import com.github.javaparser.ast.CompilationUnit;
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.Pointer;
 import org.bytedeco.javacpp.PointerPointer;
@@ -14,11 +12,9 @@ import org.bytedeco.llvm.clang.CXCursor;
 import org.bytedeco.llvm.clang.CXCursorVisitor;
 import org.bytedeco.llvm.clang.CXIndex;
 import org.bytedeco.llvm.clang.CXSourceLocation;
-import org.bytedeco.llvm.clang.CXString;
 import org.bytedeco.llvm.clang.CXTranslationUnit;
 import org.bytedeco.llvm.clang.CXType;
 
-import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 
 import static org.bytedeco.llvm.global.clang.*;
@@ -53,7 +49,7 @@ public class Generator {
                 case CXCursor_FieldDecl:
                     if (parent.kind() == CXCursor_StructDecl) {
                         CXType type = clang_getCursorType(current);
-                        NamedType namedType = new NamedType(TypeDefinition.getTypeDefinition(type), name);
+                        NamedType namedType = new NamedType(TypeDefinition.createTypeDefinition(type), name);
                         Manager.getInstance().putStructField(clang_getCursorSpelling(parent).getString(), namedType);
                     }
                     break;
@@ -63,14 +59,14 @@ public class Generator {
                         CXType funcType = clang_getPointeeType(typeDef);
                         if (funcType.kind() == CXType_FunctionProto) {
                             CXType returnType = clang_getResultType(funcType);
-                            TypeDefinition returnDefinition = TypeDefinition.getTypeDefinition(returnType);
+                            TypeDefinition returnDefinition = TypeDefinition.createTypeDefinition(returnType);
                             int numArgs = clang_getNumArgTypes(funcType);
                             NamedType[] argTypes = new NamedType[numArgs];
                             for (int i = 0; i < numArgs; i++) {
                                 CXType argType = clang_getArgType(funcType, i);
                                 // TODO: To retrieve the parameter name if available, we should utilise another visitor
                                 //  However, I decided that I don't care for the moment
-                                argTypes[i] = new NamedType(TypeDefinition.getTypeDefinition(argType), "arg" + i);
+                                argTypes[i] = new NamedType(TypeDefinition.createTypeDefinition(argType), "arg" + i);
                             }
                             ClosureType closure = new ClosureType(name, returnDefinition, argTypes);
                             Manager.getInstance().addClosure(closure);
