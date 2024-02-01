@@ -25,7 +25,7 @@ import com.badlogic.gdx.jnigen.gc.TestStruct.CallbackNoReturnStructArg;
 import com.badlogic.gdx.jnigen.gc.TestStruct.CallbackNoReturnStructPointerArg;
 import com.badlogic.gdx.jnigen.gc.TestStruct.CallbackStructPointerReturnNoArg;
 import com.badlogic.gdx.jnigen.gc.TestStruct.CallbackStructReturnNoArg;
-import com.badlogic.gdx.jnigen.gc.TestStruct.TestStructPointer;
+import com.badlogic.gdx.jnigen.gc.TestStruct.Pointer;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import org.junit.jupiter.api.Test;
 
@@ -136,30 +136,30 @@ public class ClosureTest extends BaseTest {
     @Test
     public void testCallbackStructArg() {
         new TestStruct();
-        StructPointer<TestStruct> structPointer = new TestStructPointer();
+        StructPointer<TestStruct> structPointer = new TestStruct.Pointer();
         ClosureObject<CallbackNoReturnStructArg> closureObject = ClosureObject.fromClosure(structPointer::set);
         Closures.methodWithCallbackStructArg(closureObject.getFnPtr());
         TestStruct testStruct = structPointer.get();
-        assertEquals(1, testStruct.getField1());
-        assertEquals(2, testStruct.getField2());
-        assertEquals(3, testStruct.getField3());
-        assertEquals(4, testStruct.getField4());
+        assertEquals(1, testStruct.field1());
+        assertEquals(2, testStruct.field2());
+        assertEquals(3, testStruct.field3());
+        assertEquals(4, testStruct.field4());
         closureObject.free();
     }
 
     @Test
     public void testCallbackStructPointerArg() {
         new TestStruct();
-        new TestStructPointer();
+        new TestStruct.Pointer();
         AtomicReference<StructPointer<TestStruct>> ref = new AtomicReference<>();
         ClosureObject<CallbackNoReturnStructPointerArg> closureObject = ClosureObject.fromClosure(ref::set);
         Closures.methodWithCallbackStructPointerArg(closureObject.getFnPtr());
         StructPointer<TestStruct> structPointer = ref.get();
         TestStruct testStruct = structPointer.get();
-        assertEquals(1, testStruct.getField1());
-        assertEquals(2, testStruct.getField2());
-        assertEquals(3, testStruct.getField3());
-        assertEquals(4, testStruct.getField4());
+        assertEquals(1, testStruct.field1());
+        assertEquals(2, testStruct.field2());
+        assertEquals(3, testStruct.field3());
+        assertEquals(4, testStruct.field4());
         testStruct = null;
         closureObject.free();
         structPointer.free();
@@ -258,24 +258,24 @@ public class ClosureTest extends BaseTest {
     @Test
     public void testCallbackStructReturn() {
         TestStruct struct = new TestStruct();
-        struct.setField3((short)77);
+        struct.field3((short)77);
         ClosureObject<CallbackStructReturnNoArg> closureObject = ClosureObject.fromClosure(() -> struct);
         TestStruct ret = TestStruct.methodWithStructReturn(closureObject);
         assertNotEquals(struct.getPointer(), ret.getPointer());
-        assertEquals(77, struct.getField3());
-        assertEquals(77, ret.getField3());
+        assertEquals(77, struct.field3());
+        assertEquals(77, ret.field3());
         closureObject.free();
     }
 
     @Test
     public void testCallbackStructPointerReturn() {
-        StructPointer<TestStruct> structPointer = new TestStructPointer();
-        structPointer.asStruct().setField3((short)77);
+        StructPointer<TestStruct> structPointer = new TestStruct.Pointer();
+        structPointer.asStruct().field3((short)77);
         ClosureObject<CallbackStructPointerReturnNoArg> closureObject = ClosureObject.fromClosure(() -> structPointer);
         StructPointer<TestStruct> ret = TestStruct.methodWithStructPointerReturn(closureObject);
         assertEquals(structPointer.getPointer(), ret.getPointer());
-        assertEquals(77, structPointer.asStruct().getField3());
-        assertEquals(77, ret.asStruct().getField3());
+        assertEquals(77, structPointer.asStruct().field3());
+        assertEquals(77, ret.asStruct().field3());
         closureObject.free();
     }
 }
