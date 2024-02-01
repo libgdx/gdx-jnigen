@@ -45,11 +45,11 @@ public class TestStruct extends Struct {
     }
 
     public interface CallbackNoReturnStructPointerArg extends Closure {
-        void toCall(TestStruct.TestStructPointer arg);
+        void toCall(TestStruct.Pointer arg);
 
         @Override
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            toCall((TestStruct.TestStructPointer)parameters[0].asPointing());
+            toCall((TestStruct.Pointer)parameters[0].asPointing());
         }
     }
 
@@ -74,7 +74,7 @@ public class TestStruct extends Struct {
     public static StructPointer<TestStruct> methodWithStructPointerReturn(
             ClosureObject<CallbackStructPointerReturnNoArg> closure) {
         long peer = methodWithCallbackStructPointerReturn(closure.getFnPtr());
-        return new TestStructPointer(peer, false);
+        return new TestStruct.Pointer(peer, false);
     }
 
     public static TestStruct methodWithStructReturn(ClosureObject<CallbackStructReturnNoArg> closure) {
@@ -111,8 +111,8 @@ public class TestStruct extends Struct {
         *ret = str;
     */
 
-    public static TestStruct.TestStructPointer returnStructPointerTest() {
-        return new TestStructPointer(returnStructPointerTestN(), false);
+    public static TestStruct.Pointer returnStructPointerTest() {
+        return new TestStruct.Pointer(returnStructPointerTestN(), false);
     }
 
     private static native long returnStructPointerTestN();/*
@@ -128,8 +128,9 @@ public class TestStruct extends Struct {
         return (jlong)ptr;
     */
 
-    private static final long __size;
-    private static final long __ffi_type;
+    private final static long __size;
+
+    private final static long __ffi_type;
 
     static {
         __ffi_type = generateFFIType();
@@ -137,94 +138,87 @@ public class TestStruct extends Struct {
         __size = Global.getSizeFromFFIType(__ffi_type);
         Global.registerStructFFIType(TestStruct.class, __ffi_type);
         Global.registerPointingSupplier(TestStruct.class, TestStruct::new);
-        Global.registerNewStructPointerSupplier(TestStruct.class, TestStructPointer::new);
-        Global.registerStructPointer(TestStruct.class, TestStructPointer::new);
-        Global.registerPointingSupplier(TestStructPointer.class, TestStructPointer::new);
+        Global.registerNewStructPointerSupplier(TestStruct.class, TestStruct.Pointer::new);
+        Global.registerStructPointer(TestStruct.class, TestStruct.Pointer::new);
+        Global.registerPointingSupplier(TestStruct.Pointer.class, TestStruct.Pointer::new);
     }
 
-    private static native long generateFFIType();/*
-        ffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));
-        type->type = FFI_TYPE_STRUCT;
-        type->elements = (ffi_type**)malloc(sizeof(ffi_type*) * 5);
-        type->elements[0] = GET_FFI_TYPE(uint64_t);
-        type->elements[1] = GET_FFI_TYPE(uint32_t);
-        type->elements[2] = GET_FFI_TYPE(uint16_t);
-        type->elements[3] = GET_FFI_TYPE(uint8_t);
-        type->elements[4] = NULL;
-
-        return reinterpret_cast<jlong>(type);
+    public static native long generateFFIType();/*
+    	ffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));
+    	type->type = FFI_TYPE_STRUCT;
+    	type->elements = (ffi_type**)malloc(sizeof(ffi_type*) * 5);
+    	type->elements[0] = GET_FFI_TYPE(uint64_t);
+    	type->elements[1] = GET_FFI_TYPE(uint32_t);
+    	type->elements[2] = GET_FFI_TYPE(uint16_t);
+    	type->elements[3] = GET_FFI_TYPE(uint8_t);
+    	type->elements[4] = NULL;
+    	return reinterpret_cast<jlong>(type);
     */
 
-    protected TestStruct(long pointer, boolean freeOnGC) {
+    public TestStruct(long pointer, boolean freeOnGC) {
         super(pointer, freeOnGC);
     }
 
-    protected TestStruct() {
+    public TestStruct() {
         super(__size);
     }
 
-    @Override
     public long getSize() {
         return __size;
     }
 
-    @Override
     public long getFFIType() {
         return __ffi_type;
     }
 
-    public long getField1() {
-        return Global.getStructField(getPointer(), __ffi_type, 0);
+    public long field1() {
+        return (long) Global.getStructField(getPointer(), __ffi_type, 0);
     }
 
-    public void setField1(long value) {
-        Global.setStructField(getPointer(), __ffi_type, 0, value);
+    public void field1(long field1) {
+        Global.setStructField(getPointer(), __ffi_type, 0, field1);
     }
 
-    public int getField2() {
-        return (int)Global.getStructField(getPointer(), __ffi_type, 1);
+    public long field2() {
+        return (long) Global.getStructField(getPointer(), __ffi_type, 1);
     }
 
-    public void setField2(int value) {
-        Global.setStructField(getPointer(), __ffi_type, 1, value);
+    public void field2(long field2) {
+        Global.setStructField(getPointer(), __ffi_type, 1, field2);
     }
 
-    public short getField3() {
-        return (short) Global.getStructField(getPointer(), __ffi_type, 2);
+    public int field3() {
+        return (int) Global.getStructField(getPointer(), __ffi_type, 2);
     }
 
-    public void setField3(short value) {
-        Global.setStructField(getPointer(), __ffi_type, 2, value);
+    public void field3(int field3) {
+        Global.setStructField(getPointer(), __ffi_type, 2, field3);
     }
 
-
-    public byte getField4() {
-        return (byte)Global.getStructField(getPointer(), __ffi_type, 3);
+    public short field4() {
+        return (short) Global.getStructField(getPointer(), __ffi_type, 3);
     }
 
-    public void setField4(byte value) {
-        Global.setStructField(getPointer(), __ffi_type, 3, value);
+    public void field4(short field4) {
+        Global.setStructField(getPointer(), __ffi_type, 3, field4);
     }
 
+    public static final class Pointer extends StructPointer<TestStruct> {
 
-    public static final class TestStructPointer extends StructPointer<TestStruct> {
-
-        public TestStructPointer(long pointer, boolean freeOnGC) {
+        public Pointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);
         }
 
-        public TestStructPointer() {
+        public Pointer() {
             super(__size);
         }
 
-        @Override
-        public Class<TestStruct> getStructClass() {
-            return TestStruct.class;
-        }
-
-        @Override
         public long getSize() {
             return __size;
+        }
+
+        public Class<TestStruct> getStructClass() {
+            return TestStruct.class;
         }
     }
 }
