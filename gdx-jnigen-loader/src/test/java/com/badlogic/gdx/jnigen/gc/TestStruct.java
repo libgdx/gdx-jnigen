@@ -179,71 +179,38 @@ public class TestStruct extends Struct {
     }
 
     public long getField1() {
-        return getField(getPointer(), (byte)1);
+        return Global.getStructField(getPointer(), __ffi_type, 0);
     }
 
     public void setField1(long value) {
-        setField(getPointer(), value, (byte) 1);
+        Global.setStructField(getPointer(), __ffi_type, 0, value);
     }
 
     public int getField2() {
-        return (int)getField(getPointer(), (byte)2);
+        return (int)Global.getStructField(getPointer(), __ffi_type, 1);
     }
 
     public void setField2(int value) {
-        setField(getPointer(), value, (byte) 2);
+        Global.setStructField(getPointer(), __ffi_type, 1, value);
     }
 
     public short getField3() {
-        return (short)getField(getPointer(), (byte)3);
+        return (short) Global.getStructField(getPointer(), __ffi_type, 2);
     }
 
     public void setField3(short value) {
-        setField(getPointer(), value, (byte) 3);
+        Global.setStructField(getPointer(), __ffi_type, 2, value);
     }
 
 
     public byte getField4() {
-        return (byte)getField(getPointer(), (byte)4);
+        return (byte)Global.getStructField(getPointer(), __ffi_type, 3);
     }
 
     public void setField4(byte value) {
-        setField(getPointer(), value, (byte) 4);
+        Global.setStructField(getPointer(), __ffi_type, 3, value);
     }
 
-    private static native long getField(long pointer, byte field); /*
-        TestStruct* passedStruct = (TestStruct*) pointer;
-        switch (field) {
-            case 1:
-                return passedStruct->field1;
-            case 2:
-                return passedStruct->field2;
-            case 3:
-                return passedStruct->field3;
-            case 4:
-                return passedStruct->field4;
-            default:
-                return -1;
-        }
-    */
-
-    private static native void setField(long pointer, long value, byte field); /*
-        TestStruct* passedStruct = (TestStruct*) pointer;
-        switch (field) {
-            case 1:
-                passedStruct->field1 = value;
-                break;
-            case 2:
-                passedStruct->field2 = value;
-                break;
-            case 3:
-                passedStruct->field3 = value;
-                break;
-            case 4:
-                passedStruct->field4 = value;
-                break;
-        }
-    */
 
     public static final class TestStructPointer extends StructPointer<TestStruct> {
 

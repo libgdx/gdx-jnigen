@@ -265,6 +265,50 @@ public class Global {
         return reinterpret_cast<jlong>(fnPtr);
     */
 
+    /*JNI
+
+    size_t getOffsetForField(ffi_type* struct_type, uint32_t index) {
+        size_t offset = 0;
+
+        for (int i = 0; i <= index; i++) {
+            ffi_type* current_element = struct_type->elements[i];
+            size_t alignment = current_element->alignment;
+            if (offset % alignment != 0) {
+                offset += alignment - (offset % alignment);
+            }
+            if (i != index)
+                offset += current_element->size;
+        }
+
+        return offset;
+    }
+    */
+
+    public static native long getStructField(long pointer, long type_ptr, int index);/*
+        char* ptr = reinterpret_cast<char*>(pointer);
+        ffi_type* struct_type = reinterpret_cast<ffi_type*>(type_ptr);
+        uint32_t field = (uint32_t) index;
+
+        size_t offset = getOffsetForField(struct_type, field);
+
+        jlong ret = 0;
+        memcpy(&ret, ptr + offset, struct_type->elements[field]->size); // Why does that work? That should not work?
+        return ret;
+    */
+
+    public static native long setStructField(long pointer, long type_ptr, int index, long value);/*
+        char* ptr = reinterpret_cast<char*>(pointer);
+        ffi_type* struct_type = reinterpret_cast<ffi_type*>(type_ptr);
+        uint32_t field = (uint32_t) index;
+        uint64_t toSet = (uint64_t)value;
+
+        size_t offset = getOffsetForField(struct_type, field);
+
+        jlong ret = 0;
+        memcpy(ptr + offset, &toSet, struct_type->elements[field]->size); // Why does that work? That should not work?
+        return ret;
+    */
+
     public static native void freeClosure(long closurePtr);/*
         ffi_closure* closure = (ffi_closure*) closurePtr;
         env->DeleteGlobalRef((jobject)closure->user_data);
