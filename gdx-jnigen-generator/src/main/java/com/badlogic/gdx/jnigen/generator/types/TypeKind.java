@@ -14,7 +14,7 @@ public enum TypeKind {
     BYTE(1, true, CXType_Char_S, CXType_SChar),
     PROMOTED_BYTE(1, false, CXType_UChar, CXType_Char_U),
     SHORT(2, true, CXType_Short),
-    PROMOTED_SHORT(2, false, CXType_UShort),
+    CHAR(2, false, CXType_UShort),
     INT(4, true, CXType_Int),
     PROMOTED_INT(4, false, CXType_UInt),
     LONG(8, true, CXType_Long, CXType_LongLong),
