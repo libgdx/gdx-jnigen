@@ -2,12 +2,15 @@ package com.badlogic.gdx.jnigen.generator.types;
 
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
+import com.badlogic.gdx.jnigen.pointer.CType;
+import com.badlogic.gdx.jnigen.pointer.Signed;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
@@ -38,9 +41,17 @@ public class ClosureType {
         MethodDeclaration callMethod = closureClass.addMethod(name + "_call");
         callMethod.setBody(null);
         for (NamedType namedType : arguments) {
-            callMethod.addParameter(namedType.getDefinition().resolveJavaClass(), namedType.getName());
+            Parameter parameter =  callMethod.addAndGetParameter(namedType.getDefinition().resolveJavaClass(), namedType.getName());
+            parameter.addAndGetAnnotation(CType.class).addPair("value", "\"" + namedType.getDefinition().getTypeName() + "\"");
+            if (namedType.getDefinition().getTypeKind().isSigned())
+                parameter.addAnnotation(Signed.class);
         }
         callMethod.setType(returnType.resolveJavaClass());
+        if (returnType.getTypeKind() != TypeKind.VOID) {
+            callMethod.addAndGetAnnotation(CType.class).addPair("value", "\"" + returnType.getTypeName() + "\"");
+            if (returnType.getTypeKind().isSigned())
+                callMethod.addAnnotation(Signed.class);
+        }
 
         MethodDeclaration invokeMethod = closureClass.addMethod("invoke", Keyword.DEFAULT);
         invokeMethod.addParameter(JavaTypeWrapper[].class, "parameters");
