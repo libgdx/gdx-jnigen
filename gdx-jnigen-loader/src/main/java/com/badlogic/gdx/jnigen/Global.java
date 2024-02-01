@@ -309,6 +309,10 @@ public class Global {
         return ret;
     */
 
+    public static native long getSizeFromFFIType(long type);/*
+        return reinterpret_cast<ffi_type*>(type)->size;
+    */
+
     public static native void freeClosure(long closurePtr);/*
         ffi_closure* closure = (ffi_closure*) closurePtr;
         env->DeleteGlobalRef((jobject)closure->user_data);

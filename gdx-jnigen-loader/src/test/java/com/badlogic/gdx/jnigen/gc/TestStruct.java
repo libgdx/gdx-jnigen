@@ -132,8 +132,8 @@ public class TestStruct extends Struct {
     private static final long __ffi_type;
 
     static {
-        __size = calculateSize();
         __ffi_type = generateFFIType();
+        __size = Global.getSizeFromFFIType(__ffi_type);
         Global.registerStructFFIType(TestStruct.class, __ffi_type);
         Global.registerPointingSupplier(TestStruct.class, TestStruct::new);
         Global.registerNewStructPointerSupplier(TestStruct.class, TestStructPointer::new);
@@ -141,20 +141,16 @@ public class TestStruct extends Struct {
         Global.registerPointingSupplier(TestStructPointer.class, TestStructPointer::new);
     }
 
-    private static native long calculateSize();/*
-        return (jlong)sizeof(TestStruct);
-    */
-
     private static native long generateFFIType();/*
         ffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));
         type->type = FFI_TYPE_STRUCT;
         type->size = sizeof(TestStruct);
         type->alignment = alignof(TestStruct);
         type->elements = (ffi_type**)malloc(sizeof(ffi_type*) * 5);
-        type->elements[0] = &ffi_type_uint64;
-        type->elements[1] = &ffi_type_uint32;
-        type->elements[2] = &ffi_type_uint16;
-        type->elements[3] = &ffi_type_uint8;
+        type->elements[0] = GET_FFI_TYPE(uint64_t);
+        type->elements[1] = GET_FFI_TYPE(uint32_t);
+        type->elements[2] = GET_FFI_TYPE(uint16_t);
+        type->elements[3] = GET_FFI_TYPE(uint8_t);
         type->elements[4] = NULL;
 
         return reinterpret_cast<jlong>(type);
