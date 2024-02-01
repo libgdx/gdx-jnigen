@@ -43,11 +43,15 @@ public class Generator {
                 switch (current.kind()) {
                 case CXCursor_StructDecl:
                     // TODO: We don't care about TypeDef for the moment
-                    if (parent.kind() != CXCursor_TypedefDecl)
+                    if (parent.kind() != CXCursor_TypedefDecl) {
                         Manager.getInstance().startStruct(name);
+                        buffer.put(0, (byte)1);
+                    } else {
+                        buffer.put(0, (byte)0);
+                    }
                     break;
                 case CXCursor_FieldDecl:
-                    if (parent.kind() == CXCursor_StructDecl) {
+                    if (parent.kind() == CXCursor_StructDecl && buffer.get() == 1) {
                         CXType type = clang_getCursorType(current);
                         NamedType namedType = new NamedType(TypeDefinition.createTypeDefinition(type), name);
                         Manager.getInstance().putStructField(clang_getCursorSpelling(parent).getString(), namedType);
