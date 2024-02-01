@@ -9,6 +9,34 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StructMethodsTest extends BaseTest {
 
+
+    @Test
+    public void testReadField() {
+        TestStruct testStruct = new TestStruct();
+        testStruct.setField1(1);
+        testStruct.setField2(2);
+        testStruct.setField3((short)3);
+        testStruct.setField4((byte)4);
+        assertEquals(1, Global.getStructField(testStruct.getPointer(), testStruct.getFFIType(), 0));
+        assertEquals(2, Global.getStructField(testStruct.getPointer(), testStruct.getFFIType(), 1));
+        assertEquals(3, Global.getStructField(testStruct.getPointer(), testStruct.getFFIType(), 2));
+        assertEquals(4, Global.getStructField(testStruct.getPointer(), testStruct.getFFIType(), 3));
+    }
+
+    @Test
+    public void testWriteField() {
+        TestStruct testStruct = new TestStruct();
+        Global.setStructField(testStruct.getPointer(), testStruct.getFFIType(), 0, 1);
+        Global.setStructField(testStruct.getPointer(), testStruct.getFFIType(), 1, 2);
+        Global.setStructField(testStruct.getPointer(), testStruct.getFFIType(), 2, 3);
+        Global.setStructField(testStruct.getPointer(), testStruct.getFFIType(), 3, 4);
+
+        assertEquals(1, testStruct.getField1());
+        assertEquals(2, testStruct.getField2());
+        assertEquals(3, testStruct.getField3());
+        assertEquals(4, testStruct.getField4());
+    }
+
     @Test
     public void testPassByValue() {
         TestStruct testStruct = new TestStruct();
