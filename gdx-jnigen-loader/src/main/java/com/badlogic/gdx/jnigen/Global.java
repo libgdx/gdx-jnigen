@@ -313,6 +313,36 @@ public class Global {
         return reinterpret_cast<ffi_type*>(type)->size;
     */
 
+    // TODO: Add support for specific alignment
+    public static native void calculateAlignmentAndSizeForType(long type);/*
+        ffi_type* struct_type = reinterpret_cast<ffi_type*>(type);
+        int index = 0;
+        ffi_type* current_element = struct_type->elements[index];
+        size_t struct_size = 0;
+        size_t struct_alignment = 0;
+        while (current_element != NULL) {
+            size_t alignment = current_element->alignment;
+            if (alignment > struct_alignment)
+                struct_alignment = alignment;
+
+            if (struct_size % alignment != 0) {
+                struct_size += alignment - (struct_size % alignment);
+            }
+
+            struct_size += current_element->size;
+
+            index++;
+            current_element = struct_type->elements[index];
+        }
+
+        if (struct_size % struct_alignment != 0) {
+           struct_size += struct_alignment - (struct_size % struct_alignment);
+        }
+
+        struct_type->alignment = struct_alignment;
+        struct_type->size = struct_size;
+    */
+
     public static native void freeClosure(long closurePtr);/*
         ffi_closure* closure = (ffi_closure*) closurePtr;
         env->DeleteGlobalRef((jobject)closure->user_data);

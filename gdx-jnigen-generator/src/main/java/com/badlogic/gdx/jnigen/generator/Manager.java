@@ -62,10 +62,9 @@ public class Manager {
 
     public void emit() {
         structs.values().forEach(structType -> {
-            CompilationUnit cu = new CompilationUnit("test");
-            structType.write(cu);
+            String output = structType.write("test");
             try {
-                Files.write(Paths.get("gdx-jnigen-generator/src/test/java/test/" + structType.getName() + ".java"), cu.toString().getBytes(StandardCharsets.UTF_8));
+                Files.write(Paths.get("gdx-jnigen-generator/src/test/java/test/" + structType.getName() + ".java"), output.getBytes(StandardCharsets.UTF_8));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
