@@ -52,7 +52,8 @@ public class TypeDefinition {
             case SHORT:
             case PROMOTED_BYTE:
                 return short.class.getName();
-            case PROMOTED_SHORT:
+            case CHAR:
+                return char.class.getName();
             case INT:
                 return int.class.getName();
             case POINTER:
