@@ -133,6 +133,7 @@ public class TestStruct extends Struct {
 
     static {
         __ffi_type = generateFFIType();
+        Global.calculateAlignmentAndSizeForType(__ffi_type);
         __size = Global.getSizeFromFFIType(__ffi_type);
         Global.registerStructFFIType(TestStruct.class, __ffi_type);
         Global.registerPointingSupplier(TestStruct.class, TestStruct::new);
@@ -144,8 +145,6 @@ public class TestStruct extends Struct {
     private static native long generateFFIType();/*
         ffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));
         type->type = FFI_TYPE_STRUCT;
-        type->size = sizeof(TestStruct);
-        type->alignment = alignof(TestStruct);
         type->elements = (ffi_type**)malloc(sizeof(ffi_type*) * 5);
         type->elements[0] = GET_FFI_TYPE(uint64_t);
         type->elements[1] = GET_FFI_TYPE(uint32_t);
