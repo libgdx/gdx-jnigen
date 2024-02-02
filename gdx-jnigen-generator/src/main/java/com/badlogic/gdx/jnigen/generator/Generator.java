@@ -4,6 +4,8 @@ import com.badlogic.gdx.jnigen.generator.types.ClosureType;
 import com.badlogic.gdx.jnigen.generator.types.FunctionType;
 import com.badlogic.gdx.jnigen.generator.types.NamedType;
 import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
+import com.badlogic.gdx.utils.Os;
+import com.badlogic.gdx.utils.SharedLibraryLoader;
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.Pointer;
 import org.bytedeco.javacpp.PointerPointer;
@@ -27,7 +29,11 @@ public class Generator {
         CXIndex index = clang_createIndex(0,1);
         BytePointer file = new BytePointer("gdx-jnigen-generator/src/test/resources/definitions.h");
         // Determine sysroot dynamically
-        String[] parameter = new String[]{};
+        String[] parameter;
+        if (SharedLibraryLoader.os == Os.MacOsX)
+            parameter = new String[]{"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"};
+        else
+            parameter = new String[]{};
         PointerPointer<BytePointer> argPointer = new PointerPointer<>(parameter);
         CXTranslationUnit translationUnit = clang_parseTranslationUnit(index, file, argPointer, parameter.length, null, 0,
                 CXTranslationUnit_SkipFunctionBodies | CXTranslationUnit_DetailedPreprocessingRecord | CXTranslationUnit_IncludeAttributedTypes);
