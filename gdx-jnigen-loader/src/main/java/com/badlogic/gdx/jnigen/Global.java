@@ -310,17 +310,26 @@ public class Global {
         return ret;
     */
 
-    public static native long setStructField(long pointer, long type_ptr, int index, long value);/*
+    public static void setStructField(long pointer, long type_ptr, int index, long value) {
+        boolean res = setStructField_internal(pointer, type_ptr, index, value);
+        if (!res)
+            throw new IllegalArgumentException("Type " + value + " is out of valid bounds");
+    }
+
+    private static native boolean setStructField_internal(long pointer, long type_ptr, int index, long value);/*
         char* ptr = reinterpret_cast<char*>(pointer);
         ffi_type* struct_type = reinterpret_cast<ffi_type*>(type_ptr);
         uint32_t field = (uint32_t) index;
-        uint64_t toSet = (uint64_t)value;
+
+        bool valid_bounds = CHECK_BOUNDS_VALUE(struct_type->elements[field], value);
+        if(!valid_bounds) {
+            return false;
+        }
 
         size_t offset = getOffsetForField(struct_type, field);
 
-        jlong ret = 0;
-        memcpy(ptr + offset, &toSet, struct_type->elements[field]->size); // Why does that work? That should not work?
-        return ret;
+        memcpy(ptr + offset, &value, struct_type->elements[field]->size); // Why does that work? That should not work?
+        return true;
     */
 
     public static native long getSizeFromFFIType(long type);/*
