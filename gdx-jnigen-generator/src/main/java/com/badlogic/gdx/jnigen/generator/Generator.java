@@ -1,6 +1,7 @@
 package com.badlogic.gdx.jnigen.generator;
 
 import com.badlogic.gdx.jnigen.generator.types.ClosureType;
+import com.badlogic.gdx.jnigen.generator.types.FunctionType;
 import com.badlogic.gdx.jnigen.generator.types.NamedType;
 import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
 import org.bytedeco.javacpp.BytePointer;
@@ -26,7 +27,7 @@ public class Generator {
         CXIndex index = clang_createIndex(0,1);
         BytePointer file = new BytePointer("gdx-jnigen-generator/src/test/resources/definitions.h");
         // Determine sysroot dynamically
-        String[] parameter = new String[]{"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"};
+        String[] parameter = new String[]{};
         PointerPointer<BytePointer> argPointer = new PointerPointer<>(parameter);
         CXTranslationUnit translationUnit = clang_parseTranslationUnit(index, file, argPointer, parameter.length, null, 0,
                 CXTranslationUnit_SkipFunctionBodies | CXTranslationUnit_DetailedPreprocessingRecord | CXTranslationUnit_IncludeAttributedTypes);
@@ -78,7 +79,18 @@ public class Generator {
                     }
                     break;
                 case CXCursor_FunctionDecl:
-
+                    CXType funcType = clang_getCursorType(current);
+                    CXType returnType = clang_getResultType(funcType);
+                    TypeDefinition returnDefinition = TypeDefinition.createTypeDefinition(returnType);
+                    int numArgs = clang_getNumArgTypes(funcType);
+                    NamedType[] argTypes = new NamedType[numArgs];
+                    for (int i = 0; i < numArgs; i++) {
+                        CXType argType = clang_getArgType(funcType, i);
+                        // TODO: To retrieve the parameter name if available, we should utilise another visitor
+                        //  However, I decided that I don't care for the moment
+                        argTypes[i] = new NamedType(TypeDefinition.createTypeDefinition(argType), "arg" + i);
+                    }
+                    Manager.getInstance().addFunction(new FunctionType(name, argTypes, returnDefinition));
                     break;
                 default:
                     //System.out.println(name + " " +  current.kind());

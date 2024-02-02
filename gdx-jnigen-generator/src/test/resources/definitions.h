@@ -52,4 +52,6 @@ float call_methodWithCallbackFloatReturn(methodWithCallbackFloatReturn fnPtr);
 double call_methodWithCallbackDoubleReturn(methodWithCallbackDoubleReturn fnPtr);
 
 
-void test(void);
+void test1(void);
+void test2(int);
+int test3(void);

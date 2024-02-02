@@ -2,6 +2,7 @@ package com.badlogic.gdx.jnigen.generator;
 
 import com.badlogic.gdx.jnigen.Global;
 import com.badlogic.gdx.jnigen.generator.types.ClosureType;
+import com.badlogic.gdx.jnigen.generator.types.FunctionType;
 import com.badlogic.gdx.jnigen.generator.types.GlobalType;
 import com.badlogic.gdx.jnigen.generator.types.NamedType;
 import com.badlogic.gdx.jnigen.generator.types.StructType;
@@ -9,7 +10,12 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.printer.configuration.ConfigurationOption;
+import com.github.javaparser.printer.configuration.DefaultConfigurationOption;
+import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration;
+import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration.ConfigOption;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -63,9 +69,16 @@ public class Manager {
         globalType.addClosure(closureType);
     }
 
+    public void addFunction(FunctionType functionType) {
+        globalType.addFunction(functionType);
+    }
+
     public String patchMethodNative(MethodDeclaration method, String nativeCode, String classString) {
+        String methodString = method.toString(new DefaultPrinterConfiguration().removeOption(new DefaultConfigurationOption(
+                ConfigOption.PRINT_COMMENTS)));
+
         String lineToPatch = Arrays.stream(classString.split("\n"))
-                .filter(line -> line.contains(method.toString())).findFirst().orElse(null);
+                .filter(line -> line.contains(methodString)).findFirst().orElse(null);
         if (lineToPatch == null)
             throw new IllegalArgumentException("Failed to find native method: " + method.toString() + " in " + classString);
 
@@ -77,6 +90,14 @@ public class Manager {
 
         newLine += "\n" + offset + "*/";
         return classString.replace(lineToPatch, newLine);
+    }
+
+    private void addJNIComment(ClassOrInterfaceDeclaration toAddTo, String... content) {
+        StringBuilder result = new StringBuilder("JNI\n");
+        for (String line : content) {
+            result.append("\t\t").append(line).append("\n");
+        }
+        toAddTo.addOrphanComment(new BlockComment(result.toString()));
     }
 
     public void emit() {
@@ -97,14 +118,23 @@ public class Manager {
                         classContent.getBytes(StandardCharsets.UTF_8));
 
             }
+            HashMap<MethodDeclaration, String> patchGlobalMethods = new HashMap<>();
             CompilationUnit cu = new CompilationUnit("test");
-            globalType.write(cu);
-            Files.write(Paths.get("gdx-jnigen-generator/src/test/java/test/Global.java"), cu.toString().getBytes(StandardCharsets.UTF_8));
+            globalType.write(cu, patchGlobalMethods);
+            String globalFile = cu.toString();
+            for (Entry<MethodDeclaration, String> entry : patchGlobalMethods.entrySet()) {
+                MethodDeclaration methodDeclaration = entry.getKey();
+                String s = entry.getValue();
+                globalFile = patchMethodNative(methodDeclaration, s, globalFile);
+            }
+            Files.write(Paths.get("gdx-jnigen-generator/src/test/java/test/Global.java"), globalFile.getBytes(StandardCharsets.UTF_8));
 
             // FFI Type test
             CompilationUnit ffiTypeCU = new CompilationUnit("test");
             ffiTypeCU.addImport(Global.class);
             ClassOrInterfaceDeclaration ffiTypeClass = ffiTypeCU.addClass("FFITypes", Keyword.PUBLIC);
+            addJNIComment(ffiTypeClass, "#include \"definitions.h\"");
+
             MethodDeclaration getFFITypeMethod = ffiTypeClass.addMethod("getFFIType", Keyword.NATIVE, Keyword.PRIVATE, Keyword.STATIC);
             getFFITypeMethod.setBody(null).setType(long.class).addParameter(int.class, "id");
             StringBuilder nativeBody = new StringBuilder();
