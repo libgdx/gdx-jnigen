@@ -15,6 +15,14 @@ public class Utils {
         return Global.getCTypeSize(cType.value());
     }
 
+    public static long getFFITypeForElement(AnnotatedElement element) {
+        CType cType = element.getAnnotation(CType.class);
+        if (cType == null)
+            throw new IllegalArgumentException("CType annotation is missing on " + element);
+
+        return Global.getCTypeFFIType(cType.value());
+    }
+
     public static boolean checkBoundsForNumber(long value, long size, boolean signed) {
         if (size == 8)
             return true;
