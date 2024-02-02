@@ -2,9 +2,11 @@ package com.badlogic.gdx.jnigen.ffi;
 
 import com.badlogic.gdx.jnigen.Global;
 import com.badlogic.gdx.jnigen.pointer.CType;
+import com.badlogic.gdx.jnigen.pointer.Signed;
 import com.badlogic.gdx.jnigen.pointer.Struct;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
+import com.badlogic.gdx.jnigen.util.Utils;
 import com.badlogic.gdx.jnigen.util.WrappingPointingSupplier;
 
 import java.lang.annotation.Annotation;
@@ -22,13 +24,13 @@ public final class ClosureInfo<T extends Closure> {
     private final long cif;
     private final T toCallOn;
 
-    private Class<?>[] parameterTypes;
-    private JavaTypeWrapper[] cachedWrappers;
-    private JavaTypeWrapper cachedReturnWrapper;
+    private final Class<?>[] parameterTypes;
+    private final JavaTypeWrapper[] cachedWrappers;
+    private final JavaTypeWrapper cachedReturnWrapper;
     private final WrappingPointingSupplier<? extends Pointing>[] pointingSuppliers;
-    private int[] realSize;
-    private byte[] flags;
-    private AtomicBoolean cacheLock = new AtomicBoolean(false);
+    private final int[] realSize;
+    private final byte[] flags;
+    private final AtomicBoolean cacheLock = new AtomicBoolean(false);
 
     public ClosureInfo(long cif, Method method, T toCallOn) {
         this.cif = cif;
@@ -48,20 +50,24 @@ public final class ClosureInfo<T extends Closure> {
                 if (supplier == null)
                     throw new IllegalArgumentException("Class " + parameters[i].getName() + " has no registered supplier.");
                 pointingSuppliers[i] = supplier;
+                realSize[i] = Global.POINTER_SIZE;
             } else {
                 // If we are primitive
-                CType cType = parameter.getAnnotation(CType.class);
-                if (cType == null) {
-                    throw new IllegalArgumentException("CType annotation is missing on parameter: " + method.getDeclaringClass().getName() + "#" + method.getName() + "->" + parameter.getName());
-                }
-                realSize[i] = Global.getCTypeSize(cType.value());
+                realSize[i] = Utils.getSizeForAnnotatedElement(parameter);
             }
             Annotation[] annotations = parameter.getAnnotations();
             flags[i] = ParameterTypes.buildFlags(parameter.getType(), annotations);
         }
         cachedWrappers = createWrapper();
-        if (method.getReturnType() != void.class)
-            cachedReturnWrapper = new JavaTypeWrapper(method.getReturnType());
+        if (method.getReturnType() != void.class) {
+            int size = Global.POINTER_SIZE;
+            if (method.getReturnType().isPrimitive())
+                size = Utils.getSizeForAnnotatedElement(method);
+            cachedReturnWrapper = new JavaTypeWrapper(method.getReturnType(), size, method.isAnnotationPresent(
+                    Signed.class));
+        } else {
+            cachedReturnWrapper = null;
+        }
     }
 
     private JavaTypeWrapper[] createWrapper() {
@@ -70,7 +76,7 @@ public final class ClosureInfo<T extends Closure> {
         JavaTypeWrapper[] wrappers = new JavaTypeWrapper[parameterTypes.length];
         for (int i = 0; i < parameterTypes.length; i++) {
             Class<?> type = parameterTypes[i];
-            wrappers[i] = new JavaTypeWrapper(type);
+            wrappers[i] = new JavaTypeWrapper(type, realSize[i], (flags[i] & SIGNED) != 0);
         }
         return wrappers;
     }
@@ -78,7 +84,7 @@ public final class ClosureInfo<T extends Closure> {
     private JavaTypeWrapper createReturnWrapper() {
         if (cachedReturnWrapper == null)
             return null;
-        return new JavaTypeWrapper(cachedReturnWrapper.getWrappingClass());
+        return cachedReturnWrapper.newJavaTypeWrapper();
     }
 
     public long invoke(ByteBuffer parameter)
@@ -97,30 +103,32 @@ public final class ClosureInfo<T extends Closure> {
             parameter.order(ByteOrder.nativeOrder());
             for (int i = 0; i < wrappers.length; i++) {
                 JavaTypeWrapper wrapper = wrappers[i];
-                Class<?> param = wrapper.getWrappingClass();
                 int cSize = realSize[i];
-                if (cSize == 1) {
-                    wrapper.setValue(parameter.get() & 0xFFL);
+                WrappingPointingSupplier<?> pointingSupplier = pointingSuppliers[i];
+                if (pointingSupplier != null) {
+                    wrapper.setValue(
+                            pointingSuppliers[i].create(parameter.getLong(), (flags[i] & PASS_AS_POINTER) == 0));
+                } else if (cSize == 1) {
+                    wrapper.setValue(parameter.get());
                     parameter.position(parameter.position() + 7);
                 } else if (cSize == 2) {
-                    wrapper.setValue(parameter.getShort() & 0xFFFFL);
+                    wrapper.setValue(parameter.getShort());
                     parameter.position(parameter.position() + 6);
-                } if (cSize == 4) {
-                    wrapper.setValue(parameter.getInt() & 0xFFFFFFFFL);
+                } else if (cSize == 4) {
+                    wrapper.setValue(parameter.getInt());
                     parameter.position(parameter.position() + 4);
                 } else if (cSize == 8) {
                     wrapper.setValue(parameter.getLong());
-                } else if (Struct.class.isAssignableFrom(param)) {
-                    wrapper.setValue(
-                            pointingSuppliers[i].create(parameter.getLong(), (flags[i] & PASS_AS_POINTER) == 0));
-                } else if (Pointing.class.isAssignableFrom(param)) {
-                    wrapper.setValue(pointingSuppliers[i].create(parameter.getLong(), false));
                 }
             }
         }
 
         toCallOn.invoke(wrappers, returnWrapper);
-        long returnValue = returnWrapper == null ? 0 : returnWrapper.unwrapToLong();
+        long returnValue = 0;
+        if (returnWrapper != null) {
+            returnWrapper.assertBounds(); // TODO: Make opt in?
+            returnValue = returnWrapper.unwrapToLong();
+        }
         if (usedCachedWrapper)
             cacheLock.set(false);
         return returnValue;
