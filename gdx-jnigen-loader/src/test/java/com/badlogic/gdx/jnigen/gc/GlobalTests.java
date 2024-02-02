@@ -4,11 +4,12 @@ import com.badlogic.gdx.jnigen.Global;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnByteArg;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnIntArg;
+import com.badlogic.gdx.jnigen.util.Utils;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GlobalTests extends BaseTest {
 
@@ -22,5 +23,35 @@ public class GlobalTests extends BaseTest {
 
         assertEquals(Global.getFFICifForClass(cal1.getClass()), Global.getFFICifForClass(cal1.getClass()));
         assertEquals(Global.getFFICifForClass(cal1.getClass()), Global.getFFICifForClass(cal2.getClass()));
+    }
+
+    @Test
+    public void testBoundCheck() {
+        assertTrue(Utils.checkBoundsForNumber(0xFF, 1, false));
+        assertTrue(Utils.checkBoundsForNumber(0xFFFF, 2, false));
+        assertTrue(Utils.checkBoundsForNumber(0xFFFFFFFFL, 4, false));
+
+        assertTrue(Utils.checkBoundsForNumber(Byte.MAX_VALUE, 1, true));
+        assertTrue(Utils.checkBoundsForNumber(Short.MAX_VALUE, 2, true));
+        assertTrue(Utils.checkBoundsForNumber(Integer.MAX_VALUE, 4, true));
+
+        assertTrue(Utils.checkBoundsForNumber(Byte.MIN_VALUE, 1, true));
+        assertTrue(Utils.checkBoundsForNumber(Short.MIN_VALUE, 2, true));
+        assertTrue(Utils.checkBoundsForNumber(Integer.MIN_VALUE, 4, true));
+
+
+        assertFalse(Utils.checkBoundsForNumber(0xFF + 1, 1, false));
+        assertFalse(Utils.checkBoundsForNumber(0xFFFF + 1, 2, false));
+        assertFalse(Utils.checkBoundsForNumber(0xFFFFFFFFL + 1, 4, false));
+
+        assertFalse(Utils.checkBoundsForNumber(Byte.MAX_VALUE + 1, 1, true));
+        assertFalse(Utils.checkBoundsForNumber(Short.MAX_VALUE + 1, 2, true));
+        assertFalse(Utils.checkBoundsForNumber(Integer.MAX_VALUE + 1L, 4, true));
+
+        assertFalse(Utils.checkBoundsForNumber(Byte.MIN_VALUE - 1, 1, true));
+        assertFalse(Utils.checkBoundsForNumber(Short.MIN_VALUE - 1, 2, true));
+        assertFalse(Utils.checkBoundsForNumber(Integer.MIN_VALUE - 1L, 4, true));
+
+
     }
 }

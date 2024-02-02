@@ -1,11 +1,10 @@
 package com.badlogic.gdx.jnigen.ffi;
 
 import com.badlogic.gdx.jnigen.Global;
-import com.badlogic.gdx.jnigen.pointer.CType;
 import com.badlogic.gdx.jnigen.pointer.Signed;
 import com.badlogic.gdx.jnigen.pointer.Struct;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
-import com.badlogic.gdx.jnigen.pointer.StructPointer;
+import com.badlogic.gdx.jnigen.util.Utils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -75,7 +74,7 @@ public class ParameterTypes {
 
     public static byte buildFlags(Class<?> toMap, Annotation[] annotations) {
         byte flags = 0;
-        if (StructPointer.class.isAssignableFrom(toMap))
+        if (Pointing.class.isAssignableFrom(toMap) && !Struct.class.isAssignableFrom(toMap))
             flags |= PASS_AS_POINTER;
         for (Annotation annotation : annotations) {
             if (annotation.annotationType() == Signed.class)
@@ -84,7 +83,7 @@ public class ParameterTypes {
         return flags;
     }
 
-    public static long mapObjectToID(Class<?> toMap, AnnotatedElement element) {
+    public static long mapToFFIType(Class<?> toMap, AnnotatedElement element) {
         byte flags = buildFlags(toMap, element.getAnnotations());
 
         if (toMap == void.class)
@@ -95,10 +94,8 @@ public class ParameterTypes {
             return ffi_type_double;
 
         if (toMap.isPrimitive()) {
-            CType type = element.getAnnotation(CType.class);
-            if (type == null)
-                throw new IllegalArgumentException("CType annotation is missing on annotatedElement" + element);
-            int size = Global.getCTypeSize(type.value());
+
+            int size = Utils.getSizeForAnnotatedElement(element);
             // TODO: 31.01.2024 Respect signed
             if (size == 1)
                 return ffi_type_uint8;

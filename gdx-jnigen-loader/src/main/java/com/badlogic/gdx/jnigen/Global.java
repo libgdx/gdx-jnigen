@@ -195,7 +195,6 @@ public class Global {
     }
 
     private static native long nativeCreateCif(long returnType, ByteBuffer parameters, int size); /*
-        ffi_type** params = (ffi_type**) parameters;
         ffi_type** parameterFFITypes = (ffi_type**)malloc(sizeof(ffi_type*) * size);
         memcpy(parameterFFITypes, parameters, sizeof(ffi_type*) * size);
 
@@ -214,10 +213,10 @@ public class Global {
         ByteBuffer mappedParameter = ByteBuffer.allocateDirect(parameters.length * 8);
         mappedParameter.order(ByteOrder.nativeOrder());
         for (Parameter parameter : parameters) {
-            mappedParameter.putLong(ParameterTypes.mapObjectToID(parameter.getType(), parameter));
+            mappedParameter.putLong(ParameterTypes.mapToFFIType(parameter.getType(), parameter));
         }
 
-        return nativeCreateCif(ParameterTypes.mapObjectToID(returnType, callingMethod), mappedParameter, parameters.length);
+        return nativeCreateCif(ParameterTypes.mapToFFIType(returnType, callingMethod), mappedParameter, parameters.length);
     }
 
     public static long getFFICifForClass(Class<? extends Closure> closureClass) {
@@ -270,7 +269,7 @@ public class Global {
     size_t getOffsetForField(ffi_type* struct_type, uint32_t index) {
         size_t offset = 0;
 
-        for (int i = 0; i <= index; i++) {
+        for (size_t i = 0; i <= index; i++) {
             ffi_type* current_element = struct_type->elements[i];
             size_t alignment = current_element->alignment;
             if (offset % alignment != 0) {

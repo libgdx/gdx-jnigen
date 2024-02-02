@@ -1,6 +1,7 @@
 package com.badlogic.gdx.jnigen.ffi;
 
 import com.badlogic.gdx.jnigen.pointer.Pointing;
+import com.badlogic.gdx.jnigen.util.Utils;
 
 public final class JavaTypeWrapper {
 
@@ -8,8 +9,40 @@ public final class JavaTypeWrapper {
     private long wrappingType;
     private Pointing wrappingPointing;
 
-    public JavaTypeWrapper(Class<?> wrappingClass) {
+    private int size;
+    private boolean signed;
+
+    public JavaTypeWrapper(Class<?> wrappingClass, int size, boolean signed) {
         this.wrappingClass = wrappingClass;
+        this.size = size;
+        this.signed = signed;
+        if (wrappingClass == char.class && signed)
+            throw new IllegalArgumentException("A char can't be signed");
+    }
+
+    public void setValue(byte value) {
+        if (signed)
+            this.wrappingType = value;
+        else
+            this.wrappingType = value & 0xFF;
+    }
+
+    public void setValue(char value) {
+        this.wrappingType = value;
+    }
+
+    public void setValue(short value) {
+        if (signed)
+            this.wrappingType = value;
+        else
+            this.wrappingType = value & 0xFFFF;
+    }
+
+    public void setValue(int value) {
+        if (signed)
+            this.wrappingType = value;
+        else
+            this.wrappingType = value & 0xFFFFFFFFL;
     }
 
     public void setValue(long value) {
@@ -30,6 +63,10 @@ public final class JavaTypeWrapper {
 
     public Class<?> getWrappingClass() {
         return wrappingClass;
+    }
+
+    public JavaTypeWrapper newJavaTypeWrapper() {
+        return new JavaTypeWrapper(wrappingClass, size, signed);
     }
 
     public long unwrapToLong() {
@@ -90,5 +127,18 @@ public final class JavaTypeWrapper {
         if (!Pointing.class.isAssignableFrom(wrappingClass))
             throw new IllegalArgumentException();
         return wrappingPointing;
+    }
+
+    public void assertBounds() {
+        if (!Utils.checkBoundsForNumber(unwrapToLong(), size, signed))
+            throw new IllegalArgumentException("Number " + unwrapToLong() + " is out of bounds for " + size + " and sign: " + signed);
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public boolean isSigned() {
+        return signed;
     }
 }
