@@ -4,7 +4,7 @@ import com.badlogic.gdx.jnigen.Global;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StructMethodsTest extends BaseTest {
 
@@ -34,6 +34,21 @@ public class StructMethodsTest extends BaseTest {
         assertEquals(2, testStruct.field2());
         assertEquals(3, testStruct.field3());
         assertEquals(4, testStruct.field4());
+    }
+
+    @Test
+    public void testWriteOutOfBound() {
+        TestStruct testStruct = new TestStruct();
+        assertDoesNotThrow(() -> testStruct.field4((short)(0xFF)));
+        assertThrows(IllegalArgumentException.class, () -> testStruct.field4((short)(0xFF + 1)));
+
+        assertDoesNotThrow(() -> testStruct.field3(0xFFFF));
+        assertThrows(IllegalArgumentException.class, () -> testStruct.field3(0xFFFF + 1));
+
+        assertDoesNotThrow(() -> testStruct.field2(0xFFFFFFFFL));
+        assertThrows(IllegalArgumentException.class, () -> testStruct.field2(0xFFFFFFFFL + 1));
+
+        assertDoesNotThrow(() -> testStruct.field1(0xFFFFFFFFFFFFFFFFL));
     }
 
     @Test
