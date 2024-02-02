@@ -68,8 +68,8 @@ public class ParameterTypes {
     */
 
 
-    public static final int PASS_AS_POINTER = 1 << 0;
-    public static final int SIGNED = 1 << 2;
+    public static final byte PASS_AS_POINTER = 1 << 0;
+    public static final byte SIGNED = 1 << 2;
 
 
     public static byte buildFlags(Class<?> toMap, Annotation[] annotations) {
