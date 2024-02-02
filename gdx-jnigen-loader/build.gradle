@@ -122,6 +122,7 @@ jnigen {
         libraries += "${file("build/${combined}/lib/libffi.a").absolutePath}"
         cFlags += " -std=c11 "
         cppFlags += " -std=c++11 " // for using alignof
+        cppCompiler = "clang"
     }
 
     add(Linux, x64)
