@@ -20,6 +20,7 @@ import com.github.javaparser.ast.type.PrimitiveType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,8 +42,7 @@ public class StructType {
         return name;
     }
 
-    public String write(String packageName) {
-        CompilationUnit compilationUnit = new CompilationUnit(packageName);
+    public void write(CompilationUnit compilationUnit, HashMap<MethodDeclaration, String> patchMap) {
         String structPointerRef = name + "." + pointerName;
 
         compilationUnit.addImport(Global.class);
@@ -77,6 +77,9 @@ public class StructType {
         }
         generateFFIMethodBody.append("type->elements[").append(fields.size()).append("] = NULL;\n");
         generateFFIMethodBody.append("return reinterpret_cast<jlong>(type);\n");
+
+        patchMap.put(generateFFIMethod, generateFFIMethodBody.toString());
+
 
         // Constructors
         ConstructorDeclaration pointerTakingConstructor = structClass.addConstructor(Keyword.PUBLIC);
@@ -130,18 +133,5 @@ public class StructType {
         pointerClass.addMethod("getStructClass", Keyword.PUBLIC).setType("Class<" + name + ">")
                 .createBody().addStatement("return " + name + ".class;");
 
-        String compiledClass = compilationUnit.toString();
-
-        String lineToPatch = Arrays.stream(compiledClass.split("\n"))
-                .filter(line -> line.contains(generateFFIMethod.toString())).findFirst().get();
-
-        String offset = lineToPatch.replace(generateFFIMethod.toString(), "");
-        String newLine = lineToPatch + "/*\n";
-        newLine += Arrays.stream(generateFFIMethodBody.toString().split("\n"))
-                .map(s -> offset + "\t" + s)
-                .collect(Collectors.joining("\n"));
-
-        newLine += "\n" + offset + "*/";
-        return compiledClass.replace(lineToPatch, newLine);
     }
 }

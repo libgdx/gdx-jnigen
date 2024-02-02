@@ -16,11 +16,13 @@
         default: CONVERT_SIZE_TO_FFI_TYPE(type) \
     )
 
+#define IS_SIGNED_TYPE(type) (((type)-1) < 0)
+
 #define CONVERT_SIZE_TO_FFI_TYPE(type) \
-    ((sizeof(type) == 1) ? &ffi_type_uint8 : \
-    (sizeof(type) == 2) ? &ffi_type_uint16 : \
-    (sizeof(type) == 4) ? &ffi_type_uint32 : \
-    (sizeof(type) == 8) ? &ffi_type_uint64 : \
+    ((sizeof(type) == 1) ? (IS_SIGNED_TYPE(type) ? &ffi_type_sint8 : &ffi_type_uint8) : \
+    (sizeof(type) == 2) ? (IS_SIGNED_TYPE(type) ? &ffi_type_sint16 : &ffi_type_uint16) : \
+    (sizeof(type) == 4) ? (IS_SIGNED_TYPE(type) ? &ffi_type_sint32 : &ffi_type_uint32) : \
+    (sizeof(type) == 8) ? (IS_SIGNED_TYPE(type) ? &ffi_type_sint64 : &ffi_type_uint64) : \
     NULL)
 
 typedef struct TestStruct {

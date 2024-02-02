@@ -8,7 +8,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Global {
+public class GlobalType {
 
     private final List<ClosureType> closures = new ArrayList<>();
 
