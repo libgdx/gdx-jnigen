@@ -25,6 +25,14 @@
     (sizeof(type) == 8) ? (IS_SIGNED_TYPE(type) ? &ffi_type_sint64 : &ffi_type_uint64) : \
     NULL)
 
+#define CHECK_BOUNDS_VALUE(type, value) \
+    CHECK_BOUNDS_FOR_NUMBER(value, type->size, &ffi_type_sint8 == type || &ffi_type_sint16 == type || &ffi_type_sint32 == type || &ffi_type_sint64 == type);
+
+#define CHECK_BOUNDS_FOR_NUMBER(value, size, is_signed) \
+    ((size) == 8 ? true : \
+    (!(is_signed)) ? ((uint64_t)(value) < (1ULL << ((size) << 3))) : \
+    ((int64_t)(value) >= (-1LL << (((size) << 3) - 1)) && (int64_t)(value) <= ((1LL << (((size) << 3) - 1)) - 1)))
+
 typedef struct TestStruct {
     uint64_t field1;
     uint32_t field2;
