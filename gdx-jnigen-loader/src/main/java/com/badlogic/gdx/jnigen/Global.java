@@ -54,6 +54,8 @@ public class Global {
 
     private static final HashMap<String, Integer> cTypeSizeMap = new HashMap<>();
 
+    private static final HashMap<String, Long> cTypeFFITypeMap = new HashMap<>();
+
     /*JNI
     #include <stdlib.h>
     #include <string.h>
@@ -136,9 +138,22 @@ public class Global {
         }
     }
 
-    public static void registerCTypeSize(String name, int size) {
+    public static long getCTypeFFIType(String name) {
+        synchronized (cTypeFFITypeMap) {
+            Long pointer = cTypeFFITypeMap.get(name);
+            if (pointer == null)
+                throw new IllegalArgumentException("CType " + name + " is not registered.");
+            return pointer;
+        }
+    }
+
+    public static void registerCTypeFFIType(String name, long ffiType) {
+        synchronized (cTypeFFITypeMap) {
+            cTypeFFITypeMap.put(name, ffiType);
+        }
         synchronized (cTypeSizeMap) {
-            cTypeSizeMap.put(name, size);
+            // TODO: 02.02.2024 Fix me and don't cast me
+            cTypeSizeMap.put(name, (int)Global.getSizeFromFFIType(ffiType));
         }
     }
 
