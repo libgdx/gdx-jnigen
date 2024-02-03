@@ -6,7 +6,7 @@ public class FFITypes {
 
 
     /*JNI
-        #include "definitions.h"
+        #include <jnigen.h>
     */
 
     native private static long getFFIType(int id);/*
