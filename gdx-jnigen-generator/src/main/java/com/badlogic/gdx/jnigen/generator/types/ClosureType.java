@@ -76,4 +76,8 @@ public class ClosureType {
 
         wrappingClass.addMember(closureClass);
     }
+
+    public String getName() {
+        return name;
+    }
 }
