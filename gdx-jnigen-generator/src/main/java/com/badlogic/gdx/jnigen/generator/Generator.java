@@ -68,7 +68,7 @@ public class Generator {
                     CXType typeDef = clang_getTypedefDeclUnderlyingType(current);
                     if (typeDef.kind() == CXType_Pointer) {
                         CXType funcType = clang_getPointeeType(typeDef);
-                        if (funcType.kind() == CXType_FunctionProto) {
+                        if (funcType.kind() == CXType_FunctionProto || funcType.kind() == CXType_FunctionNoProto) {
                             CXType returnType = clang_getResultType(funcType);
                             TypeDefinition returnDefinition = TypeDefinition.createTypeDefinition(returnType);
                             int numArgs = clang_getNumArgTypes(funcType);
