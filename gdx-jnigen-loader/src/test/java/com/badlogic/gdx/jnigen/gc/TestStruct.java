@@ -11,6 +11,7 @@ public class TestStruct extends Struct {
 
     /*JNI
         #include "definitions.h"
+        #include <jnigen.h>
         #include <ffi.h>
     */
 
