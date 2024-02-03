@@ -1,6 +1,6 @@
 package com.badlogic.gdx.jnigen.ffi;
 
-import com.badlogic.gdx.jnigen.Global;
+import com.badlogic.gdx.jnigen.CHandler;
 
 public class FFITypes {
 
@@ -33,12 +33,12 @@ public class FFITypes {
     public static void init(){}
 
     static {
-        Global.registerCTypeFFIType("uint64_t", getFFIType(0));
-        Global.registerCTypeFFIType("uint32_t", getFFIType(1));
-        Global.registerCTypeFFIType("uint16_t", getFFIType(2));
-        Global.registerCTypeFFIType("uint8_t", getFFIType(3));
-        Global.registerCTypeFFIType("float", getFFIType(4));
-        Global.registerCTypeFFIType("double", getFFIType(5));
-        Global.registerCTypeFFIType("int", getFFIType(6));
+        CHandler.registerCTypeFFIType("uint64_t", getFFIType(0));
+        CHandler.registerCTypeFFIType("uint32_t", getFFIType(1));
+        CHandler.registerCTypeFFIType("uint16_t", getFFIType(2));
+        CHandler.registerCTypeFFIType("uint8_t", getFFIType(3));
+        CHandler.registerCTypeFFIType("float", getFFIType(4));
+        CHandler.registerCTypeFFIType("double", getFFIType(5));
+        CHandler.registerCTypeFFIType("int", getFFIType(6));
     }
 }

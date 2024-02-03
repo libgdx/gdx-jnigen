@@ -1,28 +1,23 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
-import com.badlogic.gdx.jnigen.Global;
+import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.pointer.Struct;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Modifier.Keyword;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.PrimitiveType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class StructType {
 
@@ -45,10 +40,11 @@ public class StructType {
     public void write(CompilationUnit compilationUnit, HashMap<MethodDeclaration, String> patchMap) {
         String structPointerRef = name + "." + pointerName;
 
-        compilationUnit.addImport(Global.class);
+        compilationUnit.addImport(CHandler.class);
         compilationUnit.addImport(Struct.class);
         compilationUnit.addImport(StructPointer.class);
         ClassOrInterfaceDeclaration structClass = compilationUnit.addClass(name, Keyword.PUBLIC, Keyword.FINAL);
+        structClass.addOrphanComment(new BlockComment("JNI\n#include <jnigen.h>\n"));
         structClass.addExtendedType(Struct.class);
         structClass.addField(long.class, "__size", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
         structClass.addField(long.class, "__ffi_type", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);

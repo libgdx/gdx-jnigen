@@ -1,8 +1,6 @@
 package com.badlogic.gdx.jnigen.gc;
 
-import com.badlogic.gdx.jnigen.Global;
-import com.badlogic.gdx.jnigen.closure.ClosureObject;
-import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnByteArg;
+import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnIntArg;
 import com.badlogic.gdx.jnigen.util.Utils;
 import org.junit.jupiter.api.Test;
@@ -11,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GlobalTests extends BaseTest {
+public class CHandlerTests extends BaseTest {
 
     //@Test
     public void diffClassSameCifTest() {
@@ -21,8 +19,8 @@ public class GlobalTests extends BaseTest {
         CallbackNoReturnIntArg cal1 = arg -> i1.set(arg);
         CallbackNoReturnIntArg cal2 = arg -> i2.set(arg);
 
-        assertEquals(Global.getFFICifForClass(cal1.getClass()), Global.getFFICifForClass(cal1.getClass()));
-        assertEquals(Global.getFFICifForClass(cal1.getClass()), Global.getFFICifForClass(cal2.getClass()));
+        assertEquals(CHandler.getFFICifForClass(cal1.getClass()), CHandler.getFFICifForClass(cal1.getClass()));
+        assertEquals(CHandler.getFFICifForClass(cal1.getClass()), CHandler.getFFICifForClass(cal2.getClass()));
     }
 
     @Test

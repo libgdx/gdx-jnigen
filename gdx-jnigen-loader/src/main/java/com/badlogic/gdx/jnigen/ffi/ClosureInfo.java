@@ -1,9 +1,7 @@
 package com.badlogic.gdx.jnigen.ffi;
 
-import com.badlogic.gdx.jnigen.Global;
-import com.badlogic.gdx.jnigen.pointer.CType;
+import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.pointer.Signed;
-import com.badlogic.gdx.jnigen.pointer.Struct;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
 import com.badlogic.gdx.jnigen.util.Utils;
@@ -46,11 +44,11 @@ public final class ClosureInfo<T extends Closure> {
 
             if (Pointing.class.isAssignableFrom(parameter.getType())) {
                 @SuppressWarnings("unchecked")
-                WrappingPointingSupplier<?> supplier = Global.getPointingSupplier((Class<? extends Pointing>)parameter.getType());
+                WrappingPointingSupplier<?> supplier = CHandler.getPointingSupplier((Class<? extends Pointing>)parameter.getType());
                 if (supplier == null)
                     throw new IllegalArgumentException("Class " + parameters[i].getName() + " has no registered supplier.");
                 pointingSuppliers[i] = supplier;
-                realSize[i] = Global.POINTER_SIZE;
+                realSize[i] = CHandler.POINTER_SIZE;
             } else {
                 // If we are primitive
                 realSize[i] = Utils.getSizeForAnnotatedElement(parameter);
@@ -60,7 +58,7 @@ public final class ClosureInfo<T extends Closure> {
         }
         cachedWrappers = createWrapper();
         if (method.getReturnType() != void.class) {
-            int size = Global.POINTER_SIZE;
+            int size = CHandler.POINTER_SIZE;
             if (method.getReturnType().isPrimitive())
                 size = Utils.getSizeForAnnotatedElement(method);
             cachedReturnWrapper = new JavaTypeWrapper(method.getReturnType(), size, method.isAnnotationPresent(

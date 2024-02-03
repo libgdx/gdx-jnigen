@@ -1,6 +1,6 @@
 package com.badlogic.gdx.jnigen.closure;
 
-import com.badlogic.gdx.jnigen.Global;
+import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
 
 public final class ClosureObject<T extends Closure> extends Pointing {
@@ -9,7 +9,7 @@ public final class ClosureObject<T extends Closure> extends Pointing {
 
 
     public static <T extends Closure> ClosureObject<T> fromClosure(T object) {
-        return Global.createClosureForObject(object);
+        return CHandler.createClosureForObject(object);
     }
 
     public ClosureObject(long fnPtr, long closurePtr, boolean freeOnGC) {
@@ -19,7 +19,7 @@ public final class ClosureObject<T extends Closure> extends Pointing {
 
     @Override
     public void free() {
-        Global.freeClosure(getPointer());
+        CHandler.freeClosure(getPointer());
     }
 
     public long getFnPtr() {

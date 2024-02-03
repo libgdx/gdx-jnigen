@@ -1,6 +1,6 @@
 package com.badlogic.gdx.jnigen.gc;
 
-import com.badlogic.gdx.jnigen.Global;
+import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
 
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -29,7 +29,7 @@ public class GCHandler {
                     AtomicInteger counter = countMap.get(releasedStructRef.getPointer());
                     int count = counter.decrementAndGet();
                     if (count <= 0)
-                        Global.free(releasedStructRef.getPointer());
+                        CHandler.free(releasedStructRef.getPointer());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

@@ -1,6 +1,6 @@
 package com.badlogic.gdx.jnigen.generator;
 
-import com.badlogic.gdx.jnigen.Global;
+import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.generator.types.ClosureType;
 import com.badlogic.gdx.jnigen.generator.types.FunctionType;
 import com.badlogic.gdx.jnigen.generator.types.GlobalType;
@@ -12,7 +12,6 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.printer.configuration.ConfigurationOption;
 import com.github.javaparser.printer.configuration.DefaultConfigurationOption;
 import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration;
 import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration.ConfigOption;
@@ -104,11 +103,13 @@ public class Manager {
         toAddTo.addOrphanComment(new BlockComment(result.toString()));
     }
 
-    public void emit() {
+    public void emit(String basePath, String basePackage) {
         try {
+            String packagePath = basePath + "/" + basePackage.replace(".", "/");
+            Files.createDirectories(Paths.get(packagePath + "/structs/"));
             for (StructType structType : structs.values()) {
                 HashMap<MethodDeclaration, String> toPatch = new HashMap<>();
-                CompilationUnit cu = new CompilationUnit("test");
+                CompilationUnit cu = new CompilationUnit(basePackage + ".structs");
                 structType.write(cu, toPatch);
 
                 String classContent = cu.toString();
@@ -118,12 +119,12 @@ public class Manager {
                     classContent = patchMethodNative(methodDeclaration, s, classContent);
                 }
 
-                Files.write(Paths.get("gdx-jnigen-generator/src/test/java/test/" + structType.getName() + ".java"),
+                Files.write(Paths.get(packagePath + "/structs/" + structType.getName() + ".java"),
                         classContent.getBytes(StandardCharsets.UTF_8));
 
             }
             HashMap<MethodDeclaration, String> patchGlobalMethods = new HashMap<>();
-            CompilationUnit cu = new CompilationUnit("test");
+            CompilationUnit cu = new CompilationUnit(basePackage);
             globalType.write(cu, patchGlobalMethods);
             String globalFile = cu.toString();
             for (Entry<MethodDeclaration, String> entry : patchGlobalMethods.entrySet()) {
@@ -131,13 +132,13 @@ public class Manager {
                 String s = entry.getValue();
                 globalFile = patchMethodNative(methodDeclaration, s, globalFile);
             }
-            Files.write(Paths.get("gdx-jnigen-generator/src/test/java/test/Global.java"), globalFile.getBytes(StandardCharsets.UTF_8));
+            Files.write(Paths.get(packagePath + "/Global.java"), globalFile.getBytes(StandardCharsets.UTF_8));
 
             // FFI Type test
-            CompilationUnit ffiTypeCU = new CompilationUnit("test");
-            ffiTypeCU.addImport(Global.class);
+            CompilationUnit ffiTypeCU = new CompilationUnit(basePackage);
+            ffiTypeCU.addImport(CHandler.class);
             ClassOrInterfaceDeclaration ffiTypeClass = ffiTypeCU.addClass("FFITypes", Keyword.PUBLIC);
-            addJNIComment(ffiTypeClass, "#include \"definitions.h\"");
+            addJNIComment(ffiTypeClass, "#include <jnigen.h>");
 
             MethodDeclaration getFFITypeMethod = ffiTypeClass.addMethod("getFFIType", Keyword.NATIVE, Keyword.PRIVATE, Keyword.STATIC);
             getFFITypeMethod.setBody(null).setType(long.class).addParameter(int.class, "id");
@@ -157,7 +158,7 @@ public class Manager {
             String ffiTypeString = ffiTypeCU.toString();
             ffiTypeString = patchMethodNative(getFFITypeMethod, nativeBody.toString(), ffiTypeString);
 
-            Files.write(Paths.get("gdx-jnigen-generator/src/test/java/test/FFITypes.java"),
+            Files.write(Paths.get(packagePath + "/FFITypes.java"),
                     ffiTypeString.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new RuntimeException(e);

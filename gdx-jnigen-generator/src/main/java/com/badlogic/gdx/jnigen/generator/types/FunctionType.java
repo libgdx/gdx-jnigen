@@ -37,7 +37,7 @@ public class FunctionType {
         nativeBody.append(name).append("(");
         for (NamedType namedType : arguments) {
             callMethod.addParameter(namedType.getDefinition().resolveJavaClass(), namedType.getName());
-            nativeBody.append(namedType.getName()).append(", ");
+            nativeBody.append("(").append(namedType.getDefinition().getTypeName()).append(")").append(namedType.getName()).append(", ");
             if (namedType.getDefinition().getTypeKind().isPrimitive()) {
                 nativeMethod.addParameter(namedType.getDefinition().resolveJavaClass(), namedType.getName());
                 callExpr.addArgument(namedType.getName());
@@ -55,7 +55,7 @@ public class FunctionType {
 
         BlockStmt body = new BlockStmt();
         if (returnType.getTypeKind() != TypeKind.VOID) {
-            nativeBody.insert(0, "return ");
+            nativeBody.insert(0, "return (j" + returnType.resolveJavaClass() + ")");
             body.addStatement(new ReturnStmt(callExpr));
         } else {
             body.addStatement(callExpr);

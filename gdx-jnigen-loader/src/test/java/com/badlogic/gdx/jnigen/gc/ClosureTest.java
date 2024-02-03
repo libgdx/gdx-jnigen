@@ -1,6 +1,5 @@
 package com.badlogic.gdx.jnigen.gc;
 
-import com.badlogic.gdx.jnigen.Global;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackBooleanReturnNoArg;
 import com.badlogic.gdx.jnigen.gc.Closures.CallbackByteReturnNoArg;
@@ -25,7 +24,6 @@ import com.badlogic.gdx.jnigen.gc.TestStruct.CallbackNoReturnStructArg;
 import com.badlogic.gdx.jnigen.gc.TestStruct.CallbackNoReturnStructPointerArg;
 import com.badlogic.gdx.jnigen.gc.TestStruct.CallbackStructPointerReturnNoArg;
 import com.badlogic.gdx.jnigen.gc.TestStruct.CallbackStructReturnNoArg;
-import com.badlogic.gdx.jnigen.gc.TestStruct.Pointer;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import org.junit.jupiter.api.Test;
 

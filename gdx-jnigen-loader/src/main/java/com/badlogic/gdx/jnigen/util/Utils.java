@@ -1,6 +1,6 @@
 package com.badlogic.gdx.jnigen.util;
 
-import com.badlogic.gdx.jnigen.Global;
+import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.pointer.CType;
 
 import java.lang.reflect.AnnotatedElement;
@@ -12,7 +12,7 @@ public class Utils {
         if (cType == null)
             throw new IllegalArgumentException("CType annotation is missing on " + element);
 
-        return Global.getCTypeSize(cType.value());
+        return CHandler.getCTypeSize(cType.value());
     }
 
     public static long getFFITypeForElement(AnnotatedElement element) {
@@ -20,7 +20,7 @@ public class Utils {
         if (cType == null)
             throw new IllegalArgumentException("CType annotation is missing on " + element);
 
-        return Global.getCTypeFFIType(cType.value());
+        return CHandler.getCTypeFFIType(cType.value());
     }
 
     public static boolean checkBoundsForNumber(long value, long size, boolean signed) {
