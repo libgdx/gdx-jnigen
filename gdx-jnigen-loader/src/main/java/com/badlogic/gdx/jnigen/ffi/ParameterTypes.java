@@ -1,6 +1,6 @@
 package com.badlogic.gdx.jnigen.ffi;
 
-import com.badlogic.gdx.jnigen.Global;
+import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.pointer.Signed;
 import com.badlogic.gdx.jnigen.pointer.Struct;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
@@ -64,7 +64,7 @@ public class ParameterTypes {
         }
 
         if (Struct.class.isAssignableFrom(toMap)) {
-            long type = Global.getStructFFIType((Class<? extends Struct>)toMap);
+            long type = CHandler.getStructFFIType((Class<? extends Struct>)toMap);
             if (type == 0)
                 throw new IllegalArgumentException("Class " + toMap.getName() + " does not got registered yet.");
             return type;

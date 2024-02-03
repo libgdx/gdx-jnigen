@@ -6,6 +6,7 @@ import com.badlogic.gdx.jnigen.pointer.Signed;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.comments.BlockComment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public class GlobalType {
         cu.addImport(Signed.class);
         cu.addImport(ClosureObject.class);
         ClassOrInterfaceDeclaration global = cu.addClass("Global");
-
+        global.addOrphanComment(new BlockComment("JNI\n#include <jnigen.h>\n"));
         for (FunctionType functionType : functions) {
             functionType.write(global, patchNativeMethods);
         }

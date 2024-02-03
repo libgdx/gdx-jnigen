@@ -38,7 +38,7 @@ void call_methodWithCallbackIntArg(methodWithCallbackIntArg fnPtr);
 void call_methodWithCallbackShortArg(methodWithCallbackShortArg fnPtr);
 void call_methodWithCallbackByteArg(methodWithCallbackByteArg fnPtr);
 void call_methodWithCallbackCharArg(methodWithCallbackCharArg fnPtr);
-void call_methodWithCallbackBooleanArg(methodWithCallbackBooleanArg fnPtr);
+//void call_methodWithCallbackBooleanArg(methodWithCallbackBooleanArg fnPtr);
 void call_methodWithCallbackFloatArg(methodWithCallbackFloatArg fnPtr);
 void call_methodWithCallbackDoubleArg(methodWithCallbackDoubleArg fnPtr);
 void call_methodWithCallbackAllArgs(methodWithCallbackAllArgs fnPtr);
@@ -50,8 +50,3 @@ uint8_t call_methodWithCallbackByteReturn(methodWithCallbackByteReturn fnPtr);
 bool call_methodWithCallbackBooleanReturn(methodWithCallbackBooleanReturn fnPtr);
 float call_methodWithCallbackFloatReturn(methodWithCallbackFloatReturn fnPtr);
 double call_methodWithCallbackDoubleReturn(methodWithCallbackDoubleReturn fnPtr);
-
-
-void test1(void);
-void test2(int);
-int test3(void);

@@ -1,6 +1,6 @@
 package com.badlogic.gdx.jnigen.gc;
 
-import com.badlogic.gdx.jnigen.Global;
+import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import org.junit.jupiter.api.Test;
 
@@ -16,19 +16,19 @@ public class StructMethodsTest extends BaseTest {
         testStruct.field2(2);
         testStruct.field3((short)3);
         testStruct.field4((byte)4);
-        assertEquals(1, Global.getStructField(testStruct.getPointer(), testStruct.getFFIType(), 0));
-        assertEquals(2, Global.getStructField(testStruct.getPointer(), testStruct.getFFIType(), 1));
-        assertEquals(3, Global.getStructField(testStruct.getPointer(), testStruct.getFFIType(), 2));
-        assertEquals(4, Global.getStructField(testStruct.getPointer(), testStruct.getFFIType(), 3));
+        assertEquals(1, CHandler.getStructField(testStruct.getPointer(), testStruct.getFFIType(), 0));
+        assertEquals(2, CHandler.getStructField(testStruct.getPointer(), testStruct.getFFIType(), 1));
+        assertEquals(3, CHandler.getStructField(testStruct.getPointer(), testStruct.getFFIType(), 2));
+        assertEquals(4, CHandler.getStructField(testStruct.getPointer(), testStruct.getFFIType(), 3));
     }
 
     @Test
     public void testWriteField() {
         TestStruct testStruct = new TestStruct();
-        Global.setStructField(testStruct.getPointer(), testStruct.getFFIType(), 0, 1);
-        Global.setStructField(testStruct.getPointer(), testStruct.getFFIType(), 1, 2);
-        Global.setStructField(testStruct.getPointer(), testStruct.getFFIType(), 2, 3);
-        Global.setStructField(testStruct.getPointer(), testStruct.getFFIType(), 3, 4);
+        CHandler.setStructField(testStruct.getPointer(), testStruct.getFFIType(), 0, 1);
+        CHandler.setStructField(testStruct.getPointer(), testStruct.getFFIType(), 1, 2);
+        CHandler.setStructField(testStruct.getPointer(), testStruct.getFFIType(), 2, 3);
+        CHandler.setStructField(testStruct.getPointer(), testStruct.getFFIType(), 3, 4);
 
         assertEquals(1, testStruct.field1());
         assertEquals(2, testStruct.field2());

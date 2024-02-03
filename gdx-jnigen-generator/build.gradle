@@ -15,8 +15,19 @@ dependencies {
     implementation project(':gdx-jnigen-loader')
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation fileTree(dir: project(':gdx-jnigen-loader').file("build/libs/"), include: '*natives-desktop.jar')
 }
 
+task generateTestClasses(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = "com.badlogic.gdx.jnigen.generator.Generator"
+    args file("src/test/java").absolutePath, "com.badlogic.jnigen.generated", file("src/test/resources/definitions.h").absolutePath
+}
+
+compileTestJava.dependsOn(generateTestClasses)
+
 test {
+    dependsOn(":gdx-jnigen-loader:jnigenBuild", ":gdx-jnigen-loader:jnigenJarNativesDesktop")
     useJUnitPlatform()
+    outputs.upToDateWhen {false}
 }

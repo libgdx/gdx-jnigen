@@ -24,10 +24,10 @@ import static org.bytedeco.llvm.global.clang.*;
 
 public class Generator {
 
-    public static void parse() {
+    public static void parse(String fileToParse) {
         // What does 0,1 mean? Who knows!
         CXIndex index = clang_createIndex(0,1);
-        BytePointer file = new BytePointer("gdx-jnigen-generator/src/test/resources/definitions.h");
+        BytePointer file = new BytePointer(fileToParse);
         // Determine sysroot dynamically
         String[] parameter;
         if (SharedLibraryLoader.os == Os.MacOsX)
@@ -113,12 +113,16 @@ public class Generator {
         clang_disposeIndex(index);
     }
 
-    public static void generateJavaCode() {
-        Manager.getInstance().emit();
+    public static void generateJavaCode(String path, String basePackage) {
+        Manager.getInstance().emit(path, basePackage);
+    }
+
+    public static void execute(String path, String basePackage, String fileToParse) {
+        parse(fileToParse);
+        generateJavaCode(path, basePackage);
     }
 
     public static void main(String[] args) {
-        parse();
-        generateJavaCode();
+        execute(args[0], args[1], args[2]);
     }
 }

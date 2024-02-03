@@ -1,7 +1,8 @@
-package com.badlogic.gdx.jnigen.gc;
+package com.badlogic.jnigen.tests;
 
 import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.ffi.FFITypes;
+import com.badlogic.gdx.jnigen.gc.GCHandler;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
