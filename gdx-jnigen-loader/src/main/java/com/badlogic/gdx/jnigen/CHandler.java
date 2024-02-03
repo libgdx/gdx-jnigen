@@ -18,13 +18,13 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 
-public class Global {
+public class CHandler {
 
     static {
-        new SharedLibraryLoader("build/libs/gdx-jnigen-loader-2.5.1-SNAPSHOT-natives-desktop.jar").load("jnigen-native");
+        new SharedLibraryLoader().load("jnigen-native");
         try {
             IllegalArgumentException boundCheckFailed = new IllegalArgumentException("A type bound check failed - this stacktrace is useless.");
-            boolean res = init(Global.class.getDeclaredMethod("dispatchCallback", ClosureInfo.class, ByteBuffer.class), boundCheckFailed);
+            boolean res = init(CHandler.class.getDeclaredMethod("dispatchCallback", ClosureInfo.class, ByteBuffer.class), boundCheckFailed);
             if (!res)
                 throw new RuntimeException("JNI initialization failed.");
         } catch (NoSuchMethodException e) {
@@ -61,7 +61,7 @@ public class Global {
     #include <stdlib.h>
     #include <string.h>
     #include <ffi.h>
-    #include "definitions.h"
+    #include <jnigen.h>
 
 
     #define ATTACH_ENV()                                                    \
@@ -121,7 +121,7 @@ public class Global {
             fprintf(stderr, "com.badlogic.gdx.jnigen.Global#dispatchCallback is not reachable via JNI\n");
             return JNI_FALSE;
         }
-        typeBoundCheckFailed = env->NewGlobalRef(e);
+        typeBoundCheckFailed = (jthrowable)env->NewGlobalRef(e);
         return JNI_TRUE;
     */
 
@@ -157,7 +157,7 @@ public class Global {
         }
         synchronized (cTypeSizeMap) {
             // TODO: 02.02.2024 Fix me and don't cast me
-            cTypeSizeMap.put(name, (int)Global.getSizeFromFFIType(ffiType));
+            cTypeSizeMap.put(name, (int)CHandler.getSizeFromFFIType(ffiType));
         }
     }
 
@@ -240,7 +240,7 @@ public class Global {
 
     public static long getFFICifForClass(Class<? extends Closure> closureClass) {
         synchronized (classCifMap) {
-            return classCifMap.computeIfAbsent(closureClass, Global::generateFFICifForClass);
+            return classCifMap.computeIfAbsent(closureClass, CHandler::generateFFICifForClass);
         }
     }
 

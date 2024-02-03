@@ -118,7 +118,7 @@ jnigen {
         def name = it.os.name().toLowerCase()
         def arch = it.architecture.name() + (it.architecture == x86 ? "_" : "") + it.bitness.toSuffix()
         def combined = name + "_" + arch
-        headerDirs += [file("build/${combined}/include/"), file("src/test/native/")]
+        headerDirs += [file("build/${combined}/include/"), file("src/test/native/"), file("src/main/resources/")]
         libraries += "${file("build/${combined}/lib/libffi.a").absolutePath}"
         cFlags += " -std=c11 "
         cppFlags += " -std=c++11 " // for using alignof

@@ -1,6 +1,6 @@
 package com.badlogic.gdx.jnigen.gc;
 
-import com.badlogic.gdx.jnigen.Global;
+import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
 import com.badlogic.gdx.jnigen.pointer.Struct;
@@ -134,13 +134,13 @@ public class TestStruct extends Struct {
 
     static {
         __ffi_type = generateFFIType();
-        Global.calculateAlignmentAndSizeForType(__ffi_type);
-        __size = Global.getSizeFromFFIType(__ffi_type);
-        Global.registerStructFFIType(TestStruct.class, __ffi_type);
-        Global.registerPointingSupplier(TestStruct.class, TestStruct::new);
-        Global.registerNewStructPointerSupplier(TestStruct.class, TestStruct.Pointer::new);
-        Global.registerStructPointer(TestStruct.class, TestStruct.Pointer::new);
-        Global.registerPointingSupplier(TestStruct.Pointer.class, TestStruct.Pointer::new);
+        CHandler.calculateAlignmentAndSizeForType(__ffi_type);
+        __size = CHandler.getSizeFromFFIType(__ffi_type);
+        CHandler.registerStructFFIType(TestStruct.class, __ffi_type);
+        CHandler.registerPointingSupplier(TestStruct.class, TestStruct::new);
+        CHandler.registerNewStructPointerSupplier(TestStruct.class, TestStruct.Pointer::new);
+        CHandler.registerStructPointer(TestStruct.class, TestStruct.Pointer::new);
+        CHandler.registerPointingSupplier(TestStruct.Pointer.class, TestStruct.Pointer::new);
     }
 
     public static native long generateFFIType();/*
@@ -172,35 +172,35 @@ public class TestStruct extends Struct {
     }
 
     public long field1() {
-        return (long) Global.getStructField(getPointer(), __ffi_type, 0);
+        return (long) CHandler.getStructField(getPointer(), __ffi_type, 0);
     }
 
     public void field1(long field1) {
-        Global.setStructField(getPointer(), __ffi_type, 0, field1);
+        CHandler.setStructField(getPointer(), __ffi_type, 0, field1);
     }
 
     public long field2() {
-        return (long) Global.getStructField(getPointer(), __ffi_type, 1);
+        return (long) CHandler.getStructField(getPointer(), __ffi_type, 1);
     }
 
     public void field2(long field2) {
-        Global.setStructField(getPointer(), __ffi_type, 1, field2);
+        CHandler.setStructField(getPointer(), __ffi_type, 1, field2);
     }
 
     public int field3() {
-        return (int) Global.getStructField(getPointer(), __ffi_type, 2);
+        return (int) CHandler.getStructField(getPointer(), __ffi_type, 2);
     }
 
     public void field3(int field3) {
-        Global.setStructField(getPointer(), __ffi_type, 2, field3);
+        CHandler.setStructField(getPointer(), __ffi_type, 2, field3);
     }
 
     public short field4() {
-        return (short) Global.getStructField(getPointer(), __ffi_type, 3);
+        return (short) CHandler.getStructField(getPointer(), __ffi_type, 3);
     }
 
     public void field4(short field4) {
-        Global.setStructField(getPointer(), __ffi_type, 3, field4);
+        CHandler.setStructField(getPointer(), __ffi_type, 3, field4);
     }
 
     public static final class Pointer extends StructPointer<TestStruct> {
