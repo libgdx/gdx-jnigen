@@ -23,7 +23,8 @@ public class Global {
     static {
         new SharedLibraryLoader("build/libs/gdx-jnigen-loader-2.5.1-SNAPSHOT-natives-desktop.jar").load("jnigen-native");
         try {
-            boolean res = init(Global.class.getDeclaredMethod("dispatchCallback", ClosureInfo.class, ByteBuffer.class));
+            IllegalArgumentException boundCheckFailed = new IllegalArgumentException("A type bound check failed - this stacktrace is useless.");
+            boolean res = init(Global.class.getDeclaredMethod("dispatchCallback", ClosureInfo.class, ByteBuffer.class), boundCheckFailed);
             if (!res)
                 throw new RuntimeException("JNI initialization failed.");
         } catch (NoSuchMethodException e) {
@@ -79,6 +80,8 @@ public class Global {
     jmethodID dispatchCallbackMethod = NULL;
     jclass globalClass = NULL;
     JavaVM* gJVM = NULL;
+    jthrowable typeBoundCheckFailed;
+    _Thread_local int error_code;
 
     void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
         ATTACH_ENV()
@@ -110,7 +113,7 @@ public class Global {
 
     */
 
-    private static native boolean init(Method dispatchCallbackReflectedMethod);/*
+    private static native boolean init(Method dispatchCallbackReflectedMethod, Throwable e);/*
         env->GetJavaVM(&gJVM);
         globalClass = (jclass)env->NewGlobalRef(clazz);
         dispatchCallbackMethod = env->FromReflectedMethod(dispatchCallbackReflectedMethod);
@@ -118,6 +121,7 @@ public class Global {
             fprintf(stderr, "com.badlogic.gdx.jnigen.Global#dispatchCallback is not reachable via JNI\n");
             return JNI_FALSE;
         }
+        typeBoundCheckFailed = env->NewGlobalRef(e);
         return JNI_TRUE;
     */
 
@@ -321,7 +325,7 @@ public class Global {
         ffi_type* struct_type = reinterpret_cast<ffi_type*>(type_ptr);
         uint32_t field = (uint32_t) index;
 
-        bool valid_bounds = CHECK_BOUNDS_VALUE(struct_type->elements[field], value);
+        bool valid_bounds = CHECK_BOUNDS_FFI_TYPE(struct_type->elements[field], value);
         if(!valid_bounds) {
             return false;
         }
