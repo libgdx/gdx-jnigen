@@ -25,8 +25,18 @@
     (sizeof(type) == 8) ? (IS_SIGNED_TYPE(type) ? &ffi_type_sint64 : &ffi_type_uint64) : \
     NULL)
 
-#define CHECK_BOUNDS_VALUE(type, value) \
+#define CHECK_BOUNDS_FFI_TYPE(type, value) \
     CHECK_BOUNDS_FOR_NUMBER(value, type->size, &ffi_type_sint8 == type || &ffi_type_sint16 == type || &ffi_type_sint32 == type || &ffi_type_sint64 == type);
+
+#define CHECK_AND_THROW_C_TYPE(type, value, set_error) \
+    bool _check = CHECK_BOUNDS_FOR_C_TYPE(type, value); \
+    if (!_check) { \
+        env->Throw(typeBoundCheckFailed); \
+        error_code = set_error; \
+    }
+
+#define CHECK_BOUNDS_FOR_C_TYPE(type, value) \
+    CHECK_BOUNDS_FOR_NUMBER(value, sizeof(type), IS_SIGNED_TYPE(type))
 
 #define CHECK_BOUNDS_FOR_NUMBER(value, size, is_signed) \
     ((size) == 8 ? true : \
