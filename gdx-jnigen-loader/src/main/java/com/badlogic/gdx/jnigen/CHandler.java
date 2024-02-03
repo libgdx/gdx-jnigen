@@ -106,7 +106,7 @@ public class CHandler {
         if(rtype->type == FFI_TYPE_STRUCT) {
             memcpy(result, reinterpret_cast<void*>(ret), rtype->size);
         } else {
-            memcpy(result, &ret, rtype->size); // Why does that work? That should not work?
+            memcpy(result, &ret, rtype->size); // Make it endian safe, I guess?
         }
         DETACH_ENV()
     }
@@ -310,7 +310,7 @@ public class CHandler {
         size_t offset = getOffsetForField(struct_type, field);
 
         jlong ret = 0;
-        memcpy(&ret, ptr + offset, struct_type->elements[field]->size); // Why does that work? That should not work?
+        memcpy(&ret, ptr + offset, struct_type->elements[field]->size);  // Make it endian safe, I guess?
         return ret;
     */
 
