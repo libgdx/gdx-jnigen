@@ -20,6 +20,10 @@ public final class JavaTypeWrapper {
             throw new IllegalArgumentException("A char can't be signed");
     }
 
+    public void setValue(boolean b) {
+        wrappingType = b ? 1 : 0;
+    }
+
     public void setValue(byte value) {
         if (signed)
             this.wrappingType = value;

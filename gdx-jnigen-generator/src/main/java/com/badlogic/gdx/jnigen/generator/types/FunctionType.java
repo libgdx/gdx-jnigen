@@ -1,5 +1,6 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
+import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -22,9 +23,7 @@ public class FunctionType {
     }
 
     public void write(ClassOrInterfaceDeclaration wrappingClass, HashMap<MethodDeclaration, String> patchNativeMethod) {
-        MethodDeclaration callMethod = wrappingClass.addMethod(name);
-
-
+        MethodDeclaration callMethod = wrappingClass.addMethod(name, Keyword.PUBLIC);
 
         MethodDeclaration nativeMethod = wrappingClass.addMethod(name + "_internal").setPrivate(true).setNative(true).setBody(null);
         callMethod.setType(returnType.resolveJavaClass());
