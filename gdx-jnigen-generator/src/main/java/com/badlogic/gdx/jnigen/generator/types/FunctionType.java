@@ -44,7 +44,10 @@ public class FunctionType {
                 callExpr.addArgument(namedType.getName());
             } else {
                 nativeMethod.addParameter(long.class, namedType.getName());
-                callExpr.addArgument(namedType.getName() + ".getPointer()");
+                if (namedType.getDefinition().getTypeKind() == TypeKind.CLOSURE)
+                    callExpr.addArgument(namedType.getName() + ".getFnPtr()");
+                else
+                    callExpr.addArgument(namedType.getName() + ".getPointer()");
             }
         }
         if (arguments.length != 0)

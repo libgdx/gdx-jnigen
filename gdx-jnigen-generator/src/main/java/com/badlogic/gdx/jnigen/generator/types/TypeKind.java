@@ -40,6 +40,9 @@ public enum TypeKind {
     public static TypeKind getTypeKind(CXType type) {
         type = clang_getCanonicalType(type);
         int kind = type.kind();
+        if (kind == CXType_Pointer && clang_getPointeeType(type).kind() == CXType_FunctionProto) {
+            return CLOSURE;
+        }
         long size = clang_Type_getSizeOf(type);
         for (TypeKind typeKind : CACHE) {
             for (int k : typeKind.getKinds()) {
@@ -66,9 +69,9 @@ public enum TypeKind {
     }
 
     public boolean isSpecial() {
-        return this == POINTER || this == STRUCT;
+        return this == POINTER || this == STRUCT || this == CLOSURE;
     }
     public boolean isPrimitive() {
-        return this != POINTER && this != STRUCT && this != VOID;
+        return this != POINTER && this != STRUCT && this != VOID && this != CLOSURE;
     }
 }

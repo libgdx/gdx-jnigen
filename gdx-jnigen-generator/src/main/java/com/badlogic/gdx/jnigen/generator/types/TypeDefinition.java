@@ -67,6 +67,8 @@ public class TypeDefinition {
                 return double.class.getName();
             case STRUCT:
                 return Manager.getInstance().getStruct(typeName).getName();
+            case CLOSURE:
+                return "ClosureObject<" + Manager.getInstance().getClosure(typeName).getName() + ">";
             default:
                 throw new IllegalArgumentException();
         }
