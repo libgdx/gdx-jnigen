@@ -60,6 +60,10 @@ public class Manager {
         return structs.get(structName);
     }
 
+    public ClosureType getClosure(String closureType) {
+        return globalType.getClosure(closureType);
+    }
+
     public void recordCType(String name) {
         if (!knownCTypes.contains(name) && !name.equals("void"))
             knownCTypes.add(name);
