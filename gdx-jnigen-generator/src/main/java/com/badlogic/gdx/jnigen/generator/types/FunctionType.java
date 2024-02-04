@@ -41,7 +41,11 @@ public class FunctionType {
         nativeBody.append(name).append("(");
         for (NamedType namedType : arguments) {
             callMethod.addParameter(namedType.getDefinition().getComplexJavaClass(), namedType.getName());
-            nativeBody.append("(").append(namedType.getDefinition().getTypeName()).append(")").append(namedType.getName()).append(", ");
+            if (namedType.getDefinition().getTypeKind() == TypeKind.STRUCT) {
+                nativeBody.append("*(").append(namedType.getDefinition().getTypeName()).append("*)").append(namedType.getName()).append(", ");
+            } else {
+                nativeBody.append("(").append(namedType.getDefinition().getTypeName()).append(")").append(namedType.getName()).append(", ");
+            }
             if (namedType.getDefinition().getTypeKind().isPrimitive()) {
                 nativeMethod.addParameter(namedType.getDefinition().getPrimitiveJavaClass(), namedType.getName());
                 callExpr.addArgument(namedType.getName());
