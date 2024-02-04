@@ -31,7 +31,7 @@ public class Generator {
         // Determine sysroot dynamically
         String[] parameter;
         if (SharedLibraryLoader.os == Os.MacOsX)
-            parameter = new String[]{"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"};
+            parameter = new String[]{"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk", "-I/Library/Developer/CommandLineTools/usr/lib/clang/15.0.0/include/"};
         else
             parameter = new String[]{};
         PointerPointer<BytePointer> argPointer = new PointerPointer<>(parameter);

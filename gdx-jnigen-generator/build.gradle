@@ -1,6 +1,20 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url("https://oss.sonatype.org/content/repositories/snapshots/") }
+    }
+
+    dependencies {
+        classpath "com.badlogicgames.gdx:gdx-jnigen-gradle:2.5.1"
+    }
+}
+
 plugins {
     id 'java'
 }
+
+apply plugin: "com.badlogicgames.gdx.gdx-jnigen"
 
 group = 'com.badlogicgames.gdx'
 version = '2.5.1'
@@ -30,4 +44,24 @@ test {
     dependsOn(":gdx-jnigen-loader:jnigenBuild", ":gdx-jnigen-loader:jnigenJarNativesDesktop")
     useJUnitPlatform()
     outputs.upToDateWhen {false}
+}
+
+jnigen {
+    sharedLibName = "test-natives"
+
+    nativeCodeGenerator {
+        it.sourceSet = sourceSets.named("test").get()
+    }
+
+    all {
+//        headerDirs += [file("build/${combined}/include/"), file("src/test/native/"), file("src/main/resources/")]
+//        libraries += "${file("build/${combined}/lib/libffi.a").absolutePath}"
+        cFlags += " -std=c11 "
+        cppFlags += " -std=c++11 "
+        linkerFlags += " -Wl,-undefined,dynamic_lookup "
+        cppCompiler = "clang"
+    }
+
+    add(Linux, x64)
+    add(MacOsX, x64, ARM)
 }

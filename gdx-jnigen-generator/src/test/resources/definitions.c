@@ -87,3 +87,66 @@ float call_methodWithCallbackFloatReturn(methodWithCallbackFloatReturn fnPtr) {
 double call_methodWithCallbackDoubleReturn(methodWithCallbackDoubleReturn fnPtr) {
     return fnPtr();
 }
+
+TestStruct call_methodWithCallbackTestStructReturn(methodWithCallbackTestStructReturn fnPtr) {
+    return fnPtr();
+}
+
+TestStruct* call_methodWithCallbackTestStructPointerReturn(methodWithCallbackTestStructPointerReturn fnPtr) {
+    return fnPtr();
+}
+
+void call_methodWithCallbackTestStructArg(methodWithCallbackTestStructArg fnPtr) {
+   TestStruct arg = {
+       .field1 = 1,
+       .field2 = 2,
+       .field3 = 3,
+       .field4 = 4
+   };
+   fnPtr(arg);
+}
+
+void call_methodWithCallbackTestStructPointerArg(methodWithCallbackTestStructPointerArg fnPtr) {
+    TestStruct str = {
+        .field1 = 1,
+        .field2 = 2,
+        .field3 = 3,
+        .field4 = 4
+    };
+    TestStruct* arg = (TestStruct*) malloc(sizeof(TestStruct));
+    *arg = str;
+    fnPtr(arg);
+}
+
+TestStruct* returnTestStructPointer() {
+    TestStruct* ptr = (TestStruct*)malloc(sizeof(TestStruct));
+    TestStruct str = {
+        .field1 = 1,
+        .field2 = 2,
+        .field3 = 3,
+        .field4 = 4
+    };
+
+    *ptr = str;
+    return ptr;
+}
+
+TestStruct returnTestStruct() {
+    TestStruct str = {
+        .field1 = 1,
+        .field2 = 2,
+        .field3 = 3,
+        .field4 = 4
+    };
+    return str;
+}
+
+uint32_t passByValue(TestStruct testStruct) {
+    testStruct.field4 = 0;
+    return testStruct.field2;
+}
+
+uint32_t passByPointer(TestStruct* testStruct) {
+    testStruct->field4 = 5;
+    return testStruct->field2;
+}
