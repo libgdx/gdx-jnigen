@@ -30,18 +30,24 @@ public class TypeDefinition {
 
     public String asCastExpression(String toCallOn) {
         switch (typeKind) {
+            case CLOSURE:
             case POINTER:
-                throw new IllegalArgumentException();
             case STRUCT:
-                return "(" + typeName + ")" +  toCallOn + ".asPointing()";
+                return "(" + Manager.getInstance().resolveCTypeMapping(typeName) + ")" +  toCallOn + ".asPointing()";
             default:
-                String name = resolveJavaClass();
+                String name = getPrimitiveJavaClass();
                 name = name.substring(0, 1).toUpperCase() + name.substring(1);
                 return toCallOn +  ".as" + name + "()";
         }
     }
 
-    public String resolveJavaClass() {
+    public String getComplexJavaClass() {
+        if (!typeKind.isSpecial())
+            return getPrimitiveJavaClass();
+        return Manager.getInstance().resolveCTypeMapping(typeName);
+    }
+
+    public String getPrimitiveJavaClass() {
         switch (typeKind) {
             case VOID:
                 return void.class.getName();
@@ -57,6 +63,8 @@ public class TypeDefinition {
             case INT:
                 return int.class.getName();
             case POINTER:
+            case CLOSURE:
+            case STRUCT:
             case LONG:
             case PROMOTED_INT:
             case PROMOTED_LONG:
@@ -65,10 +73,6 @@ public class TypeDefinition {
                 return float.class.getName();
             case DOUBLE:
                 return double.class.getName();
-            case STRUCT:
-                return Manager.getInstance().getStruct(typeName).getName();
-            case CLOSURE:
-                return "ClosureObject<" + Manager.getInstance().getClosure(typeName).getName() + ">";
             default:
                 throw new IllegalArgumentException();
         }

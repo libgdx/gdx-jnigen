@@ -47,7 +47,7 @@ public enum TypeKind {
         for (TypeKind typeKind : CACHE) {
             for (int k : typeKind.getKinds()) {
                 if (k == kind) {
-                    if (size != typeKind.getSize() && size != -1)
+                    if (size != typeKind.getSize() && typeKind.getSize() != -1)
                         throw new IllegalArgumentException("Kind: " + kind + " got identified as " + typeKind.name() + ", but has a size of " + size + " != " + typeKind.size);
                     return typeKind;
                 }
