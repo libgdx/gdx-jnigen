@@ -165,7 +165,7 @@ public class Manager {
 
             for (int i = 0; i < knownCTypes.size(); i++) {
                 String cType = knownCTypes.get(i);
-                staticInit.addStatement("Global.registerCTypeFFIType(\"" + cType + "\", getFFIType(" + i + "));");
+                staticInit.addStatement("CHandler.registerCTypeFFIType(\"" + cType + "\", getFFIType(" + i + "));");
                 nativeBody.append("\tcase ").append(i).append(":\n");
                 nativeBody.append("\t\treturn reinterpret_cast<jlong>(GET_FFI_TYPE(").append(cType).append("));\n");
             }
