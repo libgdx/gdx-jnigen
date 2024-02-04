@@ -52,13 +52,13 @@ public class StructType {
         // Static-Init
         BlockStmt staticInit = structClass.addStaticInitializer();
         staticInit.addStatement("__ffi_type = generateFFIType();");
-        staticInit.addStatement("Global.calculateAlignmentAndSizeForType(__ffi_type);");
-        staticInit.addStatement("__size = Global.getSizeFromFFIType(__ffi_type);");
-        staticInit.addStatement("Global.registerStructFFIType(" + name + ".class, __ffi_type);");
-        staticInit.addStatement("Global.registerPointingSupplier(" + name + ".class, " + name + "::new);");
-        staticInit.addStatement("Global.registerNewStructPointerSupplier(" + name + ".class, " + structPointerRef + "::new);");
-        staticInit.addStatement("Global.registerStructPointer(" + name + ".class, " + structPointerRef + "::new);");
-        staticInit.addStatement("Global.registerPointingSupplier(" + structPointerRef + ".class, " + structPointerRef + "::new);");
+        staticInit.addStatement("CHandler.calculateAlignmentAndSizeForType(__ffi_type);");
+        staticInit.addStatement("__size = CHandler.getSizeFromFFIType(__ffi_type);");
+        staticInit.addStatement("CHandler.registerStructFFIType(" + name + ".class, __ffi_type);");
+        staticInit.addStatement("CHandler.registerPointingSupplier(" + name + ".class, " + name + "::new);");
+        staticInit.addStatement("CHandler.registerNewStructPointerSupplier(" + name + ".class, " + structPointerRef + "::new);");
+        staticInit.addStatement("CHandler.registerStructPointer(" + name + ".class, " + structPointerRef + "::new);");
+        staticInit.addStatement("CHandler.registerPointingSupplier(" + structPointerRef + ".class, " + structPointerRef + "::new);");
 
         MethodDeclaration generateFFIMethod = structClass.addMethod("generateFFIType", Keyword.PUBLIC, Keyword.STATIC, Keyword.NATIVE).setType(long.class).setBody(null);
         StringBuilder generateFFIMethodBody = new StringBuilder();
@@ -100,13 +100,13 @@ public class StructType {
             MethodDeclaration getMethod = structClass.addMethod(field.getName(), Keyword.PUBLIC);
             getMethod.setType(field.getDefinition().getComplexJavaClass());
             BlockStmt getBody = new BlockStmt();
-            getBody.addStatement("return (" + getMethod.getTypeAsString() + ") Global.getStructField(getPointer(), __ffi_type, " + i + ");");
+            getBody.addStatement("return (" + getMethod.getTypeAsString() + ") CHandler.getStructField(getPointer(), __ffi_type, " + i + ");");
             getMethod.setBody(getBody);
 
             MethodDeclaration setMethod = structClass.addMethod(field.getName(), Keyword.PUBLIC);
             setMethod.addParameter(field.getDefinition().getComplexJavaClass(), field.getName());
             BlockStmt setBody = new BlockStmt();
-            setBody.addStatement("Global.setStructField(getPointer(), __ffi_type, " + i + ", " + field.getName() + ");");
+            setBody.addStatement("CHandler.setStructField(getPointer(), __ffi_type, " + i + ", " + field.getName() + ");");
             setMethod.setBody(setBody);
         }
 
