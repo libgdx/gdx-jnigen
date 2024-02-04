@@ -67,13 +67,22 @@ public class FunctionType {
                 nativeBody.insert(0, "return (j" + returnType.getPrimitiveJavaClass() + ")");
                 body.addStatement(new ReturnStmt(callExpr));
             } else {
-                nativeBody.insert(0, "return (jlong)");
-                boolean freeOnGC = returnType.getTypeKind() == TypeKind.STRUCT;
-                ObjectCreationExpr createObject = new ObjectCreationExpr();
-                createObject.setType(Manager.getInstance().resolveCTypeMapping(returnType.getTypeName()));
-                createObject.addArgument(callExpr);
-                createObject.addArgument(Boolean.toString(freeOnGC));
-                body.addStatement(new ReturnStmt(createObject));
+                if (returnType.getTypeKind() == TypeKind.STRUCT) {
+                    nativeMethod.addParameter(long.class, "_ret");
+                    nativeBody.insert(0, "*(" + returnType.getTypeName() + " *)_ret  = ");
+                    body.addStatement(returnType.getTypeName() + " _ret = new " + returnType.getTypeName() + "();");
+                    callExpr.addArgument("_ret.getPointer()");
+                    body.addStatement(callExpr);
+                    body.addStatement("return _ret;");
+                } else {
+                    nativeBody.insert(0, "return (jlong)");
+                    boolean freeOnGC = returnType.getTypeKind() == TypeKind.STRUCT;
+                    ObjectCreationExpr createObject = new ObjectCreationExpr();
+                    createObject.setType(Manager.getInstance().resolveCTypeMapping(returnType.getTypeName()));
+                    createObject.addArgument(callExpr);
+                    createObject.addArgument(Boolean.toString(freeOnGC));
+                    body.addStatement(new ReturnStmt(createObject));
+                }
             }
         } else {
             body.addStatement(callExpr);
