@@ -98,13 +98,13 @@ public class StructType {
         for (int i = 0; i < fields.size(); i++) {
             NamedType field = fields.get(i);
             MethodDeclaration getMethod = structClass.addMethod(field.getName(), Keyword.PUBLIC);
-            getMethod.setType(field.getDefinition().resolveJavaClass());
+            getMethod.setType(field.getDefinition().getComplexJavaClass());
             BlockStmt getBody = new BlockStmt();
             getBody.addStatement("return (" + getMethod.getTypeAsString() + ") Global.getStructField(getPointer(), __ffi_type, " + i + ");");
             getMethod.setBody(getBody);
 
             MethodDeclaration setMethod = structClass.addMethod(field.getName(), Keyword.PUBLIC);
-            setMethod.addParameter(field.getDefinition().resolveJavaClass(), field.getName());
+            setMethod.addParameter(field.getDefinition().getComplexJavaClass(), field.getName());
             BlockStmt setBody = new BlockStmt();
             setBody.addStatement("Global.setStructField(getPointer(), __ffi_type, " + i + ", " + field.getName() + ");");
             setMethod.setBody(setBody);

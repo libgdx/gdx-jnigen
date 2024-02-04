@@ -50,3 +50,18 @@ uint8_t call_methodWithCallbackByteReturn(methodWithCallbackByteReturn fnPtr);
 bool call_methodWithCallbackBooleanReturn(methodWithCallbackBooleanReturn fnPtr);
 float call_methodWithCallbackFloatReturn(methodWithCallbackFloatReturn fnPtr);
 double call_methodWithCallbackDoubleReturn(methodWithCallbackDoubleReturn fnPtr);
+
+TestStruct* returnTestStructPointer();
+TestStruct returnTestStruct();
+uint32_t passByValue(TestStruct testStruct);
+uint32_t passByPointer(TestStruct* testStruct);
+
+typedef TestStruct (*methodWithCallbackTestStructReturn)(void);
+typedef TestStruct* (*methodWithCallbackTestStructPointerReturn)(void);
+typedef void (*methodWithCallbackTestStructArg)(TestStruct);
+typedef void (*methodWithCallbackTestStructPointerArg)(TestStruct*);
+
+TestStruct call_methodWithCallbackTestStructReturn(methodWithCallbackTestStructReturn fnPtr);
+TestStruct* call_methodWithCallbackTestStructPointerReturn(methodWithCallbackTestStructPointerReturn fnPtr);
+void call_methodWithCallbackTestStructArg(methodWithCallbackTestStructArg fnPtr);
+void call_methodWithCallbackTestStructPointerArg(methodWithCallbackTestStructPointerArg fnPtr);

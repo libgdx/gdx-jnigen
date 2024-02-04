@@ -41,13 +41,15 @@ public class ClosureType {
         MethodDeclaration callMethod = closureClass.addMethod(name + "_call");
         callMethod.setBody(null);
         for (NamedType namedType : arguments) {
-            Parameter parameter =  callMethod.addAndGetParameter(namedType.getDefinition().resolveJavaClass(), namedType.getName());
-            parameter.addAndGetAnnotation(CType.class).addPair("value", "\"" + namedType.getDefinition().getTypeName() + "\"");
-            if (namedType.getDefinition().getTypeKind().isSigned())
-                parameter.addAnnotation(Signed.class);
+            Parameter parameter = callMethod.addAndGetParameter(namedType.getDefinition().getComplexJavaClass(), namedType.getName());
+            if (namedType.getDefinition().getTypeKind().isPrimitive()) {
+                parameter.addAndGetAnnotation(CType.class).addPair("value", "\"" + namedType.getDefinition().getTypeName() + "\"");
+                if (namedType.getDefinition().getTypeKind().isSigned())
+                    parameter.addAnnotation(Signed.class);
+            }
         }
-        callMethod.setType(returnType.resolveJavaClass());
-        if (returnType.getTypeKind() != TypeKind.VOID) {
+        callMethod.setType(returnType.getComplexJavaClass());
+        if (returnType.getTypeKind().isPrimitive()) {
             callMethod.addAndGetAnnotation(CType.class).addPair("value", "\"" + returnType.getTypeName() + "\"");
             if (returnType.getTypeKind().isSigned())
                 callMethod.addAnnotation(Signed.class);
