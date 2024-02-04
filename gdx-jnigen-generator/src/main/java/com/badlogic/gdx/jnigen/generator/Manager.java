@@ -38,12 +38,16 @@ public class Manager {
     private final Map<String, StructType> structs = new HashMap<>();
     private final ArrayList<String> knownCTypes = new ArrayList<>();
 
+    private final HashMap<String, String> cTypeToJavaStringMapper = new HashMap<>();
+
     private final GlobalType globalType = new GlobalType();
 
     public void startStruct(String name) {
         if (structs.containsKey(name))
             throw new IllegalArgumentException("Struct with name: " + name + " already exists.");
         structs.put(name, new StructType(name));
+        registerCTypeMapping(name, name);
+        registerCTypeMapping(name + " *", name + ".Pointer");
     }
 
     public void putStructField(String structName, NamedType type) {
@@ -68,8 +72,21 @@ public class Manager {
             knownCTypes.add(name);
     }
 
+    public void registerCTypeMapping(String name, String javaRepresentation) {
+        if (cTypeToJavaStringMapper.containsKey(name))
+            throw new IllegalArgumentException("Already registered type " + name);
+        cTypeToJavaStringMapper.put(name, javaRepresentation);
+    }
+
+    public String resolveCTypeMapping(String name) {
+        if (!cTypeToJavaStringMapper.containsKey(name))
+            throw new IllegalArgumentException("No registered type " + name);
+        return cTypeToJavaStringMapper.get(name);
+    }
+
     public void addClosure(ClosureType closureType) {
         globalType.addClosure(closureType);
+        registerCTypeMapping(closureType.getName(), "ClosureObject<" + closureType.getName() + ">");
     }
 
     public void addFunction(FunctionType functionType) {
