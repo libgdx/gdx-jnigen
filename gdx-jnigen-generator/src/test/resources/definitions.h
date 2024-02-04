@@ -38,7 +38,7 @@ void call_methodWithCallbackIntArg(methodWithCallbackIntArg fnPtr);
 void call_methodWithCallbackShortArg(methodWithCallbackShortArg fnPtr);
 void call_methodWithCallbackByteArg(methodWithCallbackByteArg fnPtr);
 void call_methodWithCallbackCharArg(methodWithCallbackCharArg fnPtr);
-//void call_methodWithCallbackBooleanArg(methodWithCallbackBooleanArg fnPtr);
+void call_methodWithCallbackBooleanArg(methodWithCallbackBooleanArg fnPtr);
 void call_methodWithCallbackFloatArg(methodWithCallbackFloatArg fnPtr);
 void call_methodWithCallbackDoubleArg(methodWithCallbackDoubleArg fnPtr);
 void call_methodWithCallbackAllArgs(methodWithCallbackAllArgs fnPtr);
