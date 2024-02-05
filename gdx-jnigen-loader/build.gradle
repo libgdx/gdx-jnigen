@@ -29,6 +29,7 @@ targetCompatibility = 1.8
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testRuntimeOnly fileTree(dir: file("build/libs/"), include: '*natives-desktop.jar')
 }
 
 tasks.register("fetchLibFFI", Download) {
