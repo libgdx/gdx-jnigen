@@ -37,7 +37,7 @@ public class TypeDefinition {
             case CLOSURE:
             case POINTER:
             case STRUCT:
-                return "(" + Manager.getInstance().resolveCTypeMapping(typeName).abstractType() + ")" +  toCallOn + ".asPointing()";
+                return "(" + Manager.getInstance().resolveCTypeMapping(typeName).instantiationType() + ")" +  toCallOn + ".asPointing()";
             default:
                 String name = getMappedType().abstractType();
                 name = name.substring(0, 1).toUpperCase() + name.substring(1);
