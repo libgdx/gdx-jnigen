@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class StructType {
+public class StructType implements MappedType {
 
     private final String name;
     private final List<NamedType> fields = new ArrayList<>();
@@ -98,13 +98,13 @@ public class StructType {
         for (int i = 0; i < fields.size(); i++) {
             NamedType field = fields.get(i);
             MethodDeclaration getMethod = structClass.addMethod(field.getName(), Keyword.PUBLIC);
-            getMethod.setType(field.getDefinition().getComplexJavaClass());
+            getMethod.setType(field.getDefinition().getMappedType().abstractType());
             BlockStmt getBody = new BlockStmt();
             getBody.addStatement("return (" + getMethod.getTypeAsString() + ") CHandler.getStructField(getPointer(), __ffi_type, " + i + ");");
             getMethod.setBody(getBody);
 
             MethodDeclaration setMethod = structClass.addMethod(field.getName(), Keyword.PUBLIC);
-            setMethod.addParameter(field.getDefinition().getComplexJavaClass(), field.getName());
+            setMethod.addParameter(field.getDefinition().getMappedType().abstractType(), field.getName());
             BlockStmt setBody = new BlockStmt();
             setBody.addStatement("CHandler.setStructField(getPointer(), __ffi_type, " + i + ", " + field.getName() + ");");
             setMethod.setBody(setBody);
@@ -129,5 +129,20 @@ public class StructType {
         pointerClass.addMethod("getStructClass", Keyword.PUBLIC).setType("Class<" + name + ">")
                 .createBody().addStatement("return " + name + ".class;");
 
+    }
+
+    @Override
+    public String instantiationType() {
+        return name;
+    }
+
+    @Override
+    public String abstractType() {
+        return name;
+    }
+
+    @Override
+    public String primitiveType() {
+        throw new IllegalArgumentException();
     }
 }

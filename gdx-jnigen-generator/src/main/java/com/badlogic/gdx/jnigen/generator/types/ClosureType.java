@@ -16,7 +16,7 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.printer.PrettyPrinter;
 
-public class ClosureType {
+public class ClosureType implements MappedType {
 
     private final String name;
     private final NamedType[] arguments;
@@ -41,14 +41,14 @@ public class ClosureType {
         MethodDeclaration callMethod = closureClass.addMethod(name + "_call");
         callMethod.setBody(null);
         for (NamedType namedType : arguments) {
-            Parameter parameter = callMethod.addAndGetParameter(namedType.getDefinition().getComplexJavaClass(), namedType.getName());
+            Parameter parameter = callMethod.addAndGetParameter(namedType.getDefinition().getMappedType().abstractType(), namedType.getName());
             if (namedType.getDefinition().getTypeKind().isPrimitive()) {
                 parameter.addAndGetAnnotation(CType.class).addPair("value", "\"" + namedType.getDefinition().getTypeName() + "\"");
                 if (namedType.getDefinition().getTypeKind().isSigned())
                     parameter.addAnnotation(Signed.class);
             }
         }
-        callMethod.setType(returnType.getComplexJavaClass());
+        callMethod.setType(returnType.getMappedType().abstractType());
         if (returnType.getTypeKind().isPrimitive()) {
             callMethod.addAndGetAnnotation(CType.class).addPair("value", "\"" + returnType.getTypeName() + "\"");
             if (returnType.getTypeKind().isSigned())
@@ -81,5 +81,15 @@ public class ClosureType {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String abstractType() {
+        return "ClosureObject<" + name + ">";
+    }
+
+    @Override
+    public String primitiveType() {
+        return long.class.getName();
     }
 }
