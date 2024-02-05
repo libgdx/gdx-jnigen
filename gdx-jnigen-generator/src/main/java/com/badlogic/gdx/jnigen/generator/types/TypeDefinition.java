@@ -24,6 +24,8 @@ public class TypeDefinition {
 
     public static TypeDefinition createTypeDefinition(CXType type) {
         String typeName = clang.clang_getTypeSpelling(type).getString();
+        if (typeName.equals("_Bool"))
+            typeName = "bool"; //TODO WHYYYY?????? Is it a typedef that gets resolved?
         TypeDefinition definition = new TypeDefinition(TypeKind.getTypeKind(type), typeName);
         if (!TypeKind.getTypeKind(type).isSpecial() && !Manager.getInstance().hasCTypeMapping(typeName)) {
             Manager.getInstance().recordCType(typeName);
@@ -37,7 +39,7 @@ public class TypeDefinition {
             case CLOSURE:
             case POINTER:
             case STRUCT:
-                return "(" + Manager.getInstance().resolveCTypeMapping(typeName).instantiationType() + ")" +  toCallOn + ".asPointing()";
+                return "(" + getMappedType().instantiationType() + ")" +  toCallOn + ".asPointing()";
             default:
                 String name = getMappedType().abstractType();
                 name = name.substring(0, 1).toUpperCase() + name.substring(1);
