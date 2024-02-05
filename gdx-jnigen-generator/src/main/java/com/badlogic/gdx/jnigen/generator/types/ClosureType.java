@@ -41,7 +41,7 @@ public class ClosureType implements MappedType {
         MethodDeclaration callMethod = closureClass.addMethod(name + "_call");
         callMethod.setBody(null);
         for (NamedType namedType : arguments) {
-            Parameter parameter = callMethod.addAndGetParameter(namedType.getDefinition().getMappedType().abstractType(), namedType.getName());
+            Parameter parameter = callMethod.addAndGetParameter(namedType.getDefinition().getMappedType().instantiationType(), namedType.getName());
             if (namedType.getDefinition().getTypeKind().isPrimitive()) {
                 parameter.addAndGetAnnotation(CType.class).addPair("value", "\"" + namedType.getDefinition().getTypeName() + "\"");
                 if (namedType.getDefinition().getTypeKind().isSigned())
