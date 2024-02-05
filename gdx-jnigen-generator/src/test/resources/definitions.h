@@ -3,6 +3,9 @@
 #include <stdbool.h>
 
 #define RANDOM_MACRO 5
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct TestStruct {
     uint64_t field1;
@@ -65,3 +68,6 @@ TestStruct call_methodWithCallbackTestStructReturn(methodWithCallbackTestStructR
 TestStruct* call_methodWithCallbackTestStructPointerReturn(methodWithCallbackTestStructPointerReturn fnPtr);
 void call_methodWithCallbackTestStructArg(methodWithCallbackTestStructArg fnPtr);
 void call_methodWithCallbackTestStructPointerArg(methodWithCallbackTestStructPointerArg fnPtr);
+#ifdef __cplusplus
+}
+#endif
