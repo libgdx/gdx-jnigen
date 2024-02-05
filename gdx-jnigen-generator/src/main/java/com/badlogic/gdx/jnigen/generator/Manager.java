@@ -11,6 +11,7 @@ import com.badlogic.gdx.jnigen.generator.types.PointerType;
 import com.badlogic.gdx.jnigen.generator.types.StructType;
 import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
 import com.badlogic.gdx.jnigen.generator.types.TypeKind;
+import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -164,6 +165,10 @@ public class Manager {
             }
             HashMap<MethodDeclaration, String> patchGlobalMethods = new HashMap<>();
             CompilationUnit cu = new CompilationUnit(basePackage);
+            //TODO: Massive hack, every mapped type should expose, how it gets imported. Than, when we emit the functions, everything used gets imported
+            structs.values().forEach(structType -> cu.addImport(basePackage + ".structs." + structType.getName()));
+            cu.addImport(StructPointer.class);
+
             globalType.write(cu, patchGlobalMethods);
             String globalFile = cu.toString();
             for (Entry<MethodDeclaration, String> entry : patchGlobalMethods.entrySet()) {
@@ -178,6 +183,7 @@ public class Manager {
             ffiTypeCU.addImport(CHandler.class);
             ClassOrInterfaceDeclaration ffiTypeClass = ffiTypeCU.addClass("FFITypes", Keyword.PUBLIC);
             addJNIComment(ffiTypeClass, "#include <jnigen.h>");
+            ffiTypeClass.addMethod("init", Keyword.PUBLIC, Keyword.STATIC);
 
             MethodDeclaration getFFITypeMethod = ffiTypeClass.addMethod("getFFIType", Keyword.NATIVE, Keyword.PRIVATE, Keyword.STATIC);
             getFFITypeMethod.setBody(null).setType(long.class).addParameter(int.class, "id");
