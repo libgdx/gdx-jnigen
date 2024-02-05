@@ -1,6 +1,7 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
+import com.badlogic.gdx.jnigen.generator.Manager;
 import com.badlogic.gdx.jnigen.pointer.CType;
 import com.badlogic.gdx.jnigen.pointer.Signed;
 import com.github.javaparser.ast.CompilationUnit;
@@ -40,7 +41,7 @@ public class GlobalType {
         cu.addImport(Signed.class);
         cu.addImport(ClosureObject.class);
         ClassOrInterfaceDeclaration global = cu.addClass("Global");
-        global.addOrphanComment(new BlockComment("JNI\n#include <jnigen.h>\n"));
+        global.addOrphanComment(new BlockComment("JNI\n#include <jnigen.h>\n#include <" + Manager.getInstance().getParsedCHeader() + ">\n"));
         for (FunctionType functionType : functions) {
             functionType.write(global, patchNativeMethods);
         }
