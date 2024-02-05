@@ -29,7 +29,8 @@ dependencies {
     implementation project(':gdx-jnigen-loader')
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    testImplementation fileTree(dir: project(':gdx-jnigen-loader').file("build/libs/"), include: '*natives-desktop.jar')
+    testRuntimeOnly fileTree(dir: project(':gdx-jnigen-loader').file("build/libs/"), include: '*natives-desktop.jar')
+    testRuntimeOnly fileTree(dir: file("build/libs/"), include: '*natives-desktop.jar')
 }
 
 task generateTestClasses(type: JavaExec) {
@@ -41,7 +42,7 @@ task generateTestClasses(type: JavaExec) {
 compileTestJava.dependsOn(generateTestClasses)
 
 test {
-    dependsOn(":gdx-jnigen-loader:jnigenBuild", ":gdx-jnigen-loader:jnigenJarNativesDesktop")
+    dependsOn(":gdx-jnigen-loader:jnigenBuild", ":gdx-jnigen-generator:jnigenBuild", ":gdx-jnigen-loader:jnigenJarNativesDesktop", ":gdx-jnigen-generator:jnigenJarNativesDesktop")
     useJUnitPlatform()
     outputs.upToDateWhen {false}
 }
@@ -54,14 +55,16 @@ jnigen {
     }
 
     all {
-//        headerDirs += [file("build/${combined}/include/"), file("src/test/native/"), file("src/main/resources/")]
-//        libraries += "${file("build/${combined}/lib/libffi.a").absolutePath}"
+        cIncludes += ["../src/test/resources/definitions.c"]
+        headerDirs += [project(":gdx-jnigen-loader").file("src/main/resources/").absolutePath, file("src/test/resources/").absolutePath]
         cFlags += " -std=c11 "
         cppFlags += " -std=c++11 "
-        linkerFlags += " -Wl,-undefined,dynamic_lookup "
+        libraries += " ${project(":gdx-jnigen-loader").file("libs/linux64/libjnigen-native64.so").absolutePath} "
         cppCompiler = "clang"
     }
 
     add(Linux, x64)
     add(MacOsX, x64, ARM)
 }
+
+jnigenJarNativesDesktop.mustRunAfter jnigenBuild
