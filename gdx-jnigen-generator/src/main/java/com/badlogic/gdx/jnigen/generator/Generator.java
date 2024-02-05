@@ -18,6 +18,7 @@ import org.bytedeco.llvm.clang.CXSourceLocation;
 import org.bytedeco.llvm.clang.CXTranslationUnit;
 import org.bytedeco.llvm.clang.CXType;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 
 import static org.bytedeco.llvm.global.clang.*;
@@ -118,6 +119,7 @@ public class Generator {
     }
 
     public static void execute(String path, String basePackage, String fileToParse) {
+        Manager.init(new File(fileToParse).getName());
         parse(fileToParse);
         generateJavaCode(path, basePackage);
     }
