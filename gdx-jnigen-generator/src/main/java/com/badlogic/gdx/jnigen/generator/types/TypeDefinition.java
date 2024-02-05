@@ -24,8 +24,12 @@ public class TypeDefinition {
 
     public static TypeDefinition createTypeDefinition(CXType type) {
         String typeName = clang.clang_getTypeSpelling(type).getString();
-        Manager.getInstance().recordCType(typeName);
-        return new TypeDefinition(TypeKind.getTypeKind(type), typeName);
+        TypeDefinition definition = new TypeDefinition(TypeKind.getTypeKind(type), typeName);
+        if (!TypeKind.getTypeKind(type).isSpecial() && !Manager.getInstance().hasCTypeMapping(typeName)) {
+            Manager.getInstance().recordCType(typeName);
+            Manager.getInstance().registerCTypeMapping(typeName, PrimitiveType.fromTypeDefinition(definition));
+        }
+        return definition;
     }
 
     public String asCastExpression(String toCallOn) {
@@ -33,48 +37,15 @@ public class TypeDefinition {
             case CLOSURE:
             case POINTER:
             case STRUCT:
-                return "(" + Manager.getInstance().resolveCTypeMapping(typeName) + ")" +  toCallOn + ".asPointing()";
+                return "(" + Manager.getInstance().resolveCTypeMapping(typeName).abstractType() + ")" +  toCallOn + ".asPointing()";
             default:
-                String name = getPrimitiveJavaClass();
+                String name = getMappedType().abstractType();
                 name = name.substring(0, 1).toUpperCase() + name.substring(1);
                 return toCallOn +  ".as" + name + "()";
         }
     }
 
-    public String getComplexJavaClass() {
-        if (!typeKind.isSpecial())
-            return getPrimitiveJavaClass();
+    public MappedType getMappedType() {
         return Manager.getInstance().resolveCTypeMapping(typeName);
-    }
-
-    public String getPrimitiveJavaClass() {
-        switch (typeKind) {
-            case VOID:
-                return void.class.getName();
-            case BOOLEAN:
-                return boolean.class.getName();
-            case BYTE:
-                return byte.class.getName();
-            case SHORT:
-            case PROMOTED_BYTE:
-                return short.class.getName();
-            case CHAR:
-                return char.class.getName();
-            case INT:
-                return int.class.getName();
-            case POINTER:
-            case CLOSURE:
-            case STRUCT:
-            case LONG:
-            case PROMOTED_INT:
-            case PROMOTED_LONG:
-                return long.class.getName();
-            case FLOAT:
-                return float.class.getName();
-            case DOUBLE:
-                return double.class.getName();
-            default:
-                throw new IllegalArgumentException();
-        }
     }
 }
