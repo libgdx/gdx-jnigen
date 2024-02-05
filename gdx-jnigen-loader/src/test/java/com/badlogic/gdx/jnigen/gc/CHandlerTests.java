@@ -1,18 +1,14 @@
 package com.badlogic.gdx.jnigen.gc;
 
-import com.badlogic.gdx.jnigen.CHandler;
-import com.badlogic.gdx.jnigen.gc.Closures.CallbackNoReturnIntArg;
 import com.badlogic.gdx.jnigen.util.Utils;
 import org.junit.jupiter.api.Test;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CHandlerTests extends BaseTest {
 
     //@Test
-    public void diffClassSameCifTest() {
+    /*public void diffClassSameCifTest() {
         AtomicInteger i1 = new AtomicInteger(0);
         AtomicInteger i2 = new AtomicInteger(0);
 
@@ -21,7 +17,7 @@ public class CHandlerTests extends BaseTest {
 
         assertEquals(CHandler.getFFICifForClass(cal1.getClass()), CHandler.getFFICifForClass(cal1.getClass()));
         assertEquals(CHandler.getFFICifForClass(cal1.getClass()), CHandler.getFFICifForClass(cal2.getClass()));
-    }
+    }*/
 
     @Test
     public void testBoundCheck() {
