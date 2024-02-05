@@ -34,10 +34,13 @@ import java.util.stream.Collectors;
 
 public class Manager {
 
-    private static final Manager instance;
+    private static Manager instance;
 
-    static {
-        instance = new Manager();
+
+    private final String parsedCHeader;
+
+    public static void init(String parsedCHeader) {
+        instance = new Manager(parsedCHeader);
     }
 
     private final Map<String, StructType> structs = new HashMap<>();
@@ -46,6 +49,11 @@ public class Manager {
     private final HashMap<String, MappedType> cTypeToJavaStringMapper = new HashMap<>();
 
     private final GlobalType globalType = new GlobalType();
+
+    public Manager(String parsedCHeader) {
+        this.parsedCHeader = parsedCHeader;
+    }
+
 
     public void startStruct(String name) {
         if (structs.containsKey(name))
@@ -101,6 +109,10 @@ public class Manager {
 
     public void addFunction(FunctionType functionType) {
         globalType.addFunction(functionType);
+    }
+
+    public String getParsedCHeader() {
+        return parsedCHeader;
     }
 
     public String patchMethodNative(MethodDeclaration method, String nativeCode, String classString) {
