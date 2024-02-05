@@ -39,8 +39,6 @@ task generateTestClasses(type: JavaExec) {
     args file("src/test/java").absolutePath, "com.badlogic.jnigen.generated", file("src/test/resources/definitions.h").absolutePath
 }
 
-compileTestJava.dependsOn(generateTestClasses)
-
 test {
     dependsOn(":gdx-jnigen-loader:jnigenBuild", ":gdx-jnigen-generator:jnigenBuild", ":gdx-jnigen-loader:jnigenJarNativesDesktop", ":gdx-jnigen-generator:jnigenJarNativesDesktop")
     useJUnitPlatform()
@@ -59,12 +57,14 @@ jnigen {
         headerDirs += [project(":gdx-jnigen-loader").file("src/main/resources/").absolutePath, file("src/test/resources/").absolutePath]
         cFlags += " -std=c11 "
         cppFlags += " -std=c++11 "
-        libraries += " ${project(":gdx-jnigen-loader").file("libs/linux64/libjnigen-native64.so").absolutePath} "
+        linkerFlags += " -undefined dynamic_lookup "
         cppCompiler = "clang"
     }
 
     add(Linux, x64)
     add(MacOsX, x64, ARM)
 }
+tasks.named("jnigen").get().dependsOn(compileTestJava)
+compileTestJava.dependsOn(generateTestClasses)
 
 jnigenJarNativesDesktop.mustRunAfter jnigenBuild
