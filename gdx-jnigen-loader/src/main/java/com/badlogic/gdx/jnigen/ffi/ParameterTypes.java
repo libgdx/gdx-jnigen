@@ -21,7 +21,6 @@ public class ParameterTypes {
 
     /*JNI
         #include <ffi.h>
-        #include "definitions.h"
     */
 
     private static native long fetchFFIType(int type);/*

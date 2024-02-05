@@ -9,7 +9,7 @@ buildscript {
 
     project.group = "THIS_IS_THE_DUMBEST_HACK"
     dependencies {
-        classpath "com.badlogicgames.gdx:gdx-jnigen-gradle:2.5.1-SNAPSHOT"
+        classpath "com.badlogicgames.gdx:gdx-jnigen-gradle:2.5.1"
     }
 }
 
@@ -110,15 +110,11 @@ test {
 jnigen {
     sharedLibName = "jnigen-native"
 
-    nativeCodeGenerator {
-        it.sourceDirs = [file("src/main/java"), file("src/test/java")]
-    }
-
     all {
         def name = it.os.name().toLowerCase()
         def arch = it.architecture.name() + (it.architecture == x86 ? "_" : "") + it.bitness.toSuffix()
         def combined = name + "_" + arch
-        headerDirs += [file("build/${combined}/include/"), file("src/test/native/"), file("src/main/resources/")]
+        headerDirs += [file("build/${combined}/include/"), file("src/main/resources/")]
         libraries += "${file("build/${combined}/lib/libffi.a").absolutePath}"
         cFlags += " -std=c11 "
         cppFlags += " -std=c++11 " // for using alignof
