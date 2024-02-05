@@ -1,11 +1,16 @@
 package com.badlogic.gdx.jnigen.generator;
 
 import com.badlogic.gdx.jnigen.CHandler;
+import com.badlogic.gdx.jnigen.ffi.FFITypes;
 import com.badlogic.gdx.jnigen.generator.types.ClosureType;
 import com.badlogic.gdx.jnigen.generator.types.FunctionType;
 import com.badlogic.gdx.jnigen.generator.types.GlobalType;
+import com.badlogic.gdx.jnigen.generator.types.MappedType;
 import com.badlogic.gdx.jnigen.generator.types.NamedType;
+import com.badlogic.gdx.jnigen.generator.types.PointerType;
 import com.badlogic.gdx.jnigen.generator.types.StructType;
+import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
+import com.badlogic.gdx.jnigen.generator.types.TypeKind;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -38,16 +43,17 @@ public class Manager {
     private final Map<String, StructType> structs = new HashMap<>();
     private final ArrayList<String> knownCTypes = new ArrayList<>();
 
-    private final HashMap<String, String> cTypeToJavaStringMapper = new HashMap<>();
+    private final HashMap<String, MappedType> cTypeToJavaStringMapper = new HashMap<>();
 
     private final GlobalType globalType = new GlobalType();
 
     public void startStruct(String name) {
         if (structs.containsKey(name))
             throw new IllegalArgumentException("Struct with name: " + name + " already exists.");
-        structs.put(name, new StructType(name));
-        registerCTypeMapping(name, name);
-        registerCTypeMapping(name + " *", name + ".Pointer");
+        StructType structType = new StructType(name);
+        structs.put(name, structType);
+        registerCTypeMapping(name, structType);
+        registerCTypeMapping(name + " *", new PointerType(name + ".Pointer", new TypeDefinition(TypeKind.POINTER, name + " *"), structType));
     }
 
     public void putStructField(String structName, NamedType type) {
@@ -72,21 +78,25 @@ public class Manager {
             knownCTypes.add(name);
     }
 
-    public void registerCTypeMapping(String name, String javaRepresentation) {
+    public void registerCTypeMapping(String name, MappedType javaRepresentation) {
         if (cTypeToJavaStringMapper.containsKey(name))
             throw new IllegalArgumentException("Already registered type " + name);
         cTypeToJavaStringMapper.put(name, javaRepresentation);
     }
 
-    public String resolveCTypeMapping(String name) {
+    public MappedType resolveCTypeMapping(String name) {
         if (!cTypeToJavaStringMapper.containsKey(name))
             throw new IllegalArgumentException("No registered type " + name);
         return cTypeToJavaStringMapper.get(name);
     }
 
+    public boolean hasCTypeMapping(String name) {
+        return cTypeToJavaStringMapper.containsKey(name);
+    }
+
     public void addClosure(ClosureType closureType) {
         globalType.addClosure(closureType);
-        registerCTypeMapping(closureType.getName(), "ClosureObject<" + closureType.getName() + ">");
+        registerCTypeMapping(closureType.getName(), closureType);
     }
 
     public void addFunction(FunctionType functionType) {
