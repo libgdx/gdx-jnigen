@@ -62,6 +62,7 @@ public class CHandler {
     #include <string.h>
     #include <ffi.h>
     #include <jnigen.h>
+    #include <dlfcn.h>
 
 
     #define ATTACH_ENV()                                                    \
@@ -123,6 +124,13 @@ public class CHandler {
         }
         typeBoundCheckFailed = (jthrowable)env->NewGlobalRef(e);
         return JNI_TRUE;
+    */
+
+    public static native boolean reExportSymbolsGlobally(String libPath);/*
+        void* handle = dlopen(libPath, RTLD_NOW | RTLD_GLOBAL);
+        if (handle == NULL)
+            printf("Error: %s\n", dlerror());
+        return handle != NULL;
     */
 
     public static <T extends Closure> long dispatchCallback(ClosureInfo<T> toCallOn, ByteBuffer parameter) {

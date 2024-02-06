@@ -16,6 +16,8 @@
 
 package com.badlogic.gdx.utils;
 
+import com.badlogic.gdx.jnigen.CHandler;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -364,7 +366,7 @@ public class SharedLibraryLoader {
 		// Fallback to java.library.path location, eg for applets.
 		file = new File(System.getProperty("java.library.path"), sourcePath);
 		if (file.exists()) {
-			System.load(file.getAbsolutePath());
+			loadFromAbsolutePath(file.getAbsolutePath());
 			return;
 		}
 
@@ -374,10 +376,17 @@ public class SharedLibraryLoader {
 	/** @return null if the file was extracted and loaded. */
 	private Throwable loadFile (String sourcePath, String sourceCrc, File extractedFile) {
 		try {
-			System.load(extractFile(sourcePath, sourceCrc, extractedFile).getAbsolutePath());
+			loadFromAbsolutePath(extractFile(sourcePath, sourceCrc, extractedFile).getAbsolutePath());
 			return null;
 		} catch (Throwable ex) {
 			return ex;
+		}
+	}
+
+	private void loadFromAbsolutePath(String path) {
+		System.load(path);
+		if (!CHandler.reExportSymbolsGlobally(path)) {
+			throw new SharedLibraryLoadRuntimeException("Unable to re-export loaded symbols.");
 		}
 	}
 
