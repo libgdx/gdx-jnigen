@@ -1,7 +1,9 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
 import com.badlogic.gdx.jnigen.closure.Closure;
+import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
+import com.badlogic.gdx.jnigen.generator.Manager;
 import com.badlogic.gdx.jnigen.pointer.CType;
 import com.badlogic.gdx.jnigen.pointer.Signed;
 import com.github.javaparser.StaticJavaParser;
@@ -28,7 +30,7 @@ public class ClosureType implements MappedType {
         this.arguments = arguments;
     }
 
-    public void write(ClassOrInterfaceDeclaration wrappingClass) {
+    public void write(CompilationUnit cu, ClassOrInterfaceDeclaration wrappingClass) {
 
         wrappingClass.tryAddImportToParentCompilationUnit(Closure.class);
         wrappingClass.tryAddImportToParentCompilationUnit(JavaTypeWrapper.class);
@@ -41,6 +43,7 @@ public class ClosureType implements MappedType {
         MethodDeclaration callMethod = closureClass.addMethod(name + "_call");
         callMethod.setBody(null);
         for (NamedType namedType : arguments) {
+            namedType.getDefinition().getMappedType().importType(cu);
             Parameter parameter = callMethod.addAndGetParameter(namedType.getDefinition().getMappedType().instantiationType(), namedType.getName());
             if (namedType.getDefinition().getTypeKind().isPrimitive()) {
                 parameter.addAndGetAnnotation(CType.class).addPair("value", "\"" + namedType.getDefinition().getTypeName() + "\"");
@@ -48,6 +51,7 @@ public class ClosureType implements MappedType {
                     parameter.addAnnotation(Signed.class);
             }
         }
+        returnType.getMappedType().importType(cu);
         callMethod.setType(returnType.getMappedType().abstractType());
         if (returnType.getTypeKind().isPrimitive()) {
             callMethod.addAndGetAnnotation(CType.class).addPair("value", "\"" + returnType.getTypeName() + "\"");
@@ -91,5 +95,16 @@ public class ClosureType implements MappedType {
     @Override
     public String primitiveType() {
         return long.class.getName();
+    }
+
+    @Override
+    public void importType(CompilationUnit cu) {
+        cu.addImport(ClosureObject.class);
+        cu.addImport(residingCU() + "." + name);
+    }
+
+    @Override
+    public String residingCU() {
+        return Manager.getInstance().getBasePackage() + "." + Manager.getInstance().getGlobalType().getGlobalName();
     }
 }

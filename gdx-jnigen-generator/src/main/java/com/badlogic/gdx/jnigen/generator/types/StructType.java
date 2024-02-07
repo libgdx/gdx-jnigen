@@ -1,6 +1,7 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
 import com.badlogic.gdx.jnigen.CHandler;
+import com.badlogic.gdx.jnigen.generator.Manager;
 import com.badlogic.gdx.jnigen.pointer.Struct;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import com.github.javaparser.ast.CompilationUnit;
@@ -144,5 +145,15 @@ public class StructType implements MappedType {
     @Override
     public String primitiveType() {
         throw new IllegalArgumentException();
+    }
+
+    @Override
+    public void importType(CompilationUnit cu) {
+        cu.addImport(residingCU());
+    }
+
+    @Override
+    public String residingCU() {
+        return Manager.getInstance().getBasePackage() + ".structs." + name;
     }
 }

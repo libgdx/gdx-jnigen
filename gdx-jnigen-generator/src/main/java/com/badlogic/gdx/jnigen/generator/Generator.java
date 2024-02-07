@@ -114,14 +114,16 @@ public class Generator {
         clang_disposeIndex(index);
     }
 
-    public static void generateJavaCode(String path, String basePackage) {
-        Manager.getInstance().emit(path, basePackage);
+    public static void generateJavaCode(String path) {
+        Manager.getInstance().emit(path);
     }
 
     public static void execute(String path, String basePackage, String fileToParse) {
-        Manager.init(new File(fileToParse).getName());
+        if (!path.endsWith("/"))
+            path += "/";
+        Manager.init(new File(fileToParse).getName(), basePackage);
         parse(fileToParse);
-        generateJavaCode(path, basePackage);
+        generateJavaCode(path);
     }
 
     public static void main(String[] args) {
