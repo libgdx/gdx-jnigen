@@ -36,6 +36,8 @@ public class TypeDefinition {
 
     public String asCastExpression(String toCallOn) {
         switch (typeKind) {
+            case ENUM:
+                return getMappedType().instantiationType() + ".getByIndex(" + toCallOn + ".asInt())";
             case CLOSURE:
             case POINTER:
             case STRUCT:

@@ -1,6 +1,7 @@
 package com.badlogic.gdx.jnigen.ffi;
 
 import com.badlogic.gdx.jnigen.CHandler;
+import com.badlogic.gdx.jnigen.pointer.CEnum;
 import com.badlogic.gdx.jnigen.pointer.Signed;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
@@ -49,6 +50,8 @@ public final class ClosureInfo<T extends Closure> {
                     throw new IllegalArgumentException("Class " + parameters[i].getName() + " has no registered supplier.");
                 pointingSuppliers[i] = supplier;
                 realSize[i] = CHandler.POINTER_SIZE;
+            } else if (CEnum.class.isAssignableFrom(parameter.getType())) {
+                realSize[i] = CHandler.getCTypeSize("int"); // TODO Converting to CType annotation on parameter?
             } else {
                 // If we are primitive
                 realSize[i] = Utils.getSizeForAnnotatedElement(parameter);

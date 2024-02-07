@@ -108,7 +108,7 @@ public final class JavaTypeWrapper {
     }
 
     public int asInt() {
-        if (wrappingClass != int.class)
+        if (wrappingClass != int.class && !CEnum.class.isAssignableFrom(wrappingClass)) // TODO: THis is shit. Remove checks?
             throw new IllegalArgumentException();
         return (int)wrappingType;
     }

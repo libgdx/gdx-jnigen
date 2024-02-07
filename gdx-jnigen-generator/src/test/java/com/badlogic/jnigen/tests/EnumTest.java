@@ -42,4 +42,13 @@ public class EnumTest extends BaseTest {
         assertEquals(toReturn.get(), TestData.call_methodWithCallbackTestEnumReturn(closure));
         closure.free();
     }
+
+    @Test
+    public void testArgEnumClosure() {
+        AtomicReference<TestEnum> returned = new AtomicReference<>();
+        ClosureObject<TestData.methodWithCallbackTestEnumArg> closure = ClosureObject.fromClosure(returned::set);
+        TestData.call_methodWithCallbackTestEnumArg(closure);
+        assertEquals(TestEnum.SECOND, returned.get());
+        closure.free();
+    }
 }
