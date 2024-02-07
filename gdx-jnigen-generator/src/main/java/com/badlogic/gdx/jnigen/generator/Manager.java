@@ -49,10 +49,11 @@ public class Manager {
 
     private final HashMap<String, MappedType> cTypeToJavaStringMapper = new HashMap<>();
 
-    private final GlobalType globalType = new GlobalType();
+    private final GlobalType globalType;
 
     public Manager(String parsedCHeader) {
         this.parsedCHeader = parsedCHeader;
+        globalType = new GlobalType(JavaUtils.javarizeName(parsedCHeader.split("\\.h")[0]));
     }
 
 
@@ -176,7 +177,7 @@ public class Manager {
                 String s = entry.getValue();
                 globalFile = patchMethodNative(methodDeclaration, s, globalFile);
             }
-            Files.write(Paths.get(packagePath + "/Global.java"), globalFile.getBytes(StandardCharsets.UTF_8));
+            Files.write(Paths.get(packagePath + "/" + globalType.getGlobalName() + ".java"), globalFile.getBytes(StandardCharsets.UTF_8));
 
             // FFI Type test
             CompilationUnit ffiTypeCU = new CompilationUnit(basePackage);
