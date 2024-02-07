@@ -1,4 +1,4 @@
-#include "definitions.h"
+#include "test_data.h"
 
 void call_methodWithCallback(methodWithCallback fnPtr) {
     fnPtr();
