@@ -17,7 +17,7 @@ typedef struct TestStruct {
 typedef enum TestEnum {
     FIRST,
     SECOND,
-    THIRD
+    THIRD = 4
 } TestEnum;
 
 // Typedefs
@@ -78,8 +78,8 @@ void call_methodWithCallbackTestStructPointerArg(methodWithCallbackTestStructPoi
 
 // TestEnum stuff
 int passTestEnum(TestEnum enumValue);
-//TestEnum returnTestEnum();
-//TestEnum passAndReturnTestEnum(TestEnum enumValue);
+TestEnum returnTestEnum();
+TestEnum passAndReturnTestEnum(TestEnum enumValue);
 
 #ifdef __cplusplus
 }

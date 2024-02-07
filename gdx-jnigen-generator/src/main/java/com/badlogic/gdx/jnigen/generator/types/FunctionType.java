@@ -6,6 +6,7 @@ import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
@@ -37,6 +38,8 @@ public class FunctionType {
             nativeMethod.setType(returnType.getMappedType().abstractType());
         else if (returnType.getTypeKind() == TypeKind.POINTER)
             nativeMethod.setType(long.class);
+        else if (returnType.getTypeKind() == TypeKind.ENUM)
+            nativeMethod.setType(int.class);
         MethodCallExpr callExpr = new MethodCallExpr(nativeMethod.getNameAsString());
 
         StringBuilder nativeBody = new StringBuilder();
@@ -78,13 +81,17 @@ public class FunctionType {
                     callExpr.addArgument("_ret.getPointer()");
                     body.addStatement(callExpr);
                     body.addStatement("return _ret;");
+                } else if (returnType.getTypeKind() == TypeKind.ENUM) {
+                    nativeBody.insert(0, "return (jint)");
+                    MethodCallExpr callByIndex = new MethodCallExpr("getByIndex", callExpr);
+                    callByIndex.setScope(new NameExpr(returnType.getMappedType().instantiationType()));
+                    body.addStatement(new ReturnStmt(callByIndex));
                 } else {
                     nativeBody.insert(0, "return (jlong)");
-                    boolean freeOnGC = returnType.getTypeKind() == TypeKind.STRUCT;
                     ObjectCreationExpr createObject = new ObjectCreationExpr();
-                    createObject.setType(Manager.getInstance().resolveCTypeMapping(returnType.getTypeName()).instantiationType());
+                    createObject.setType(returnType.getMappedType().instantiationType());
                     createObject.addArgument(callExpr);
-                    createObject.addArgument(Boolean.toString(freeOnGC));
+                    createObject.addArgument("false");
                     body.addStatement(new ReturnStmt(createObject));
                 }
             }

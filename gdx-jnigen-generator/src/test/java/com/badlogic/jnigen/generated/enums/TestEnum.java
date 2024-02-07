@@ -4,7 +4,7 @@ import com.badlogic.gdx.jnigen.pointer.CEnum;
 
 public enum TestEnum implements CEnum {
 
-    FIRST(0), SECOND(1), THIRD(2);
+    FIRST(0), SECOND(1), THIRD(4);
 
     private final int index;
 
@@ -15,4 +15,10 @@ public enum TestEnum implements CEnum {
     public int getIndex() {
         return index;
     }
+
+    public static TestEnum getByIndex(int index) {
+        return _values[index];
+    }
+
+    private final static TestEnum[] _values = { FIRST, SECOND, null, null, THIRD };
 }
