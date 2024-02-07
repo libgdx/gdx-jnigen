@@ -149,11 +149,16 @@ public class StructType implements MappedType {
 
     @Override
     public void importType(CompilationUnit cu) {
-        cu.addImport(residingCU());
+        cu.addImport(classFile());
     }
 
     @Override
-    public String residingCU() {
-        return Manager.getInstance().getBasePackage() + ".structs." + name;
+    public String classFile() {
+        return packageName() + "." + name;
+    }
+
+    @Override
+    public String packageName() {
+        return Manager.getInstance().getBasePackage() + ".structs";
     }
 }

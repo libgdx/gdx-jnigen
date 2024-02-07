@@ -59,7 +59,12 @@ public class PrimitiveType implements MappedType {
     }
 
     @Override
-    public String residingCU() {
+    public String classFile() {
+        throw new IllegalArgumentException();
+    }
+
+    @Override
+    public String packageName() {
         throw new IllegalArgumentException();
     }
 }
