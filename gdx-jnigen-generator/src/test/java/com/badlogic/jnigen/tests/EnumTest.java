@@ -14,4 +14,16 @@ public class EnumTest extends BaseTest {
         assertEquals(0, TestData.passTestEnum(TestEnum.FIRST));
         assertEquals(0, TestData.passTestEnum(TestEnum.THIRD));
     }
+
+    @Test
+    public void testReturnEnum() {
+        assertEquals(TestEnum.THIRD, TestData.returnTestEnum());
+    }
+
+    @Test
+    public void testPassAndReturnEnum() {
+        assertEquals(TestEnum.FIRST, TestData.passAndReturnTestEnum(TestEnum.FIRST));
+        assertEquals(TestEnum.SECOND, TestData.passAndReturnTestEnum(TestEnum.SECOND));
+        assertEquals(TestEnum.THIRD, TestData.passAndReturnTestEnum(TestEnum.THIRD));
+    }
 }
