@@ -28,6 +28,7 @@ import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructPointe
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructArg;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructPointerArg;
 import com.badlogic.jnigen.generated.enums.TestEnum;
+import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumReturn;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
 
@@ -273,6 +274,14 @@ public class TestData {
     	return (jint)passAndReturnTestEnum((TestEnum)arg0);
     */
 
+    public static TestEnum call_methodWithCallbackTestEnumReturn(ClosureObject<methodWithCallbackTestEnumReturn> arg0) {
+        return TestEnum.getByIndex(call_methodWithCallbackTestEnumReturn_internal(arg0.getFnPtr()));
+    }
+
+    static private native int call_methodWithCallbackTestEnumReturn_internal(long arg0);/*
+    	return (jint)call_methodWithCallbackTestEnumReturn((methodWithCallbackTestEnumReturn)arg0);
+    */
+
     public interface methodWithCallbackAllArgs extends Closure {
 
         void methodWithCallbackAllArgs_call(@CType(value = "uint64_t") long arg0, @CType(value = "int") @Signed() int arg1, @CType(value = "short") @Signed() short arg2, @CType(value = "char") @Signed() byte arg3, @CType(value = "uint16_t") char arg4, @CType(value = "bool") boolean arg5, @CType(value = "float") @Signed() float arg6, @CType(value = "double") @Signed() double arg7);
@@ -470,6 +479,15 @@ public class TestData {
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
             returnType.setValue(methodWithCallbackTestStructReturn_call());
+        }
+    }
+
+    public interface methodWithCallbackTestEnumReturn extends Closure {
+
+        TestEnum methodWithCallbackTestEnumReturn_call();
+
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            returnType.setValue(methodWithCallbackTestEnumReturn_call());
         }
     }
 

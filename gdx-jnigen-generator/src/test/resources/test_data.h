@@ -81,6 +81,12 @@ int passTestEnum(TestEnum enumValue);
 TestEnum returnTestEnum();
 TestEnum passAndReturnTestEnum(TestEnum enumValue);
 
+typedef TestEnum (*methodWithCallbackTestEnumReturn)(void);
+//typedef void (*methodWithCallbackTestEnumArg)(TestEnum);
+
+TestEnum call_methodWithCallbackTestEnumReturn(methodWithCallbackTestEnumReturn fnPtr);
+//void call_methodWithCallbackTestEnumArg(methodWithCallbackTestEnumArg fnPtr);
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,5 +1,6 @@
 package com.badlogic.gdx.jnigen.ffi;
 
+import com.badlogic.gdx.jnigen.pointer.CEnum;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
 import com.badlogic.gdx.jnigen.util.Utils;
 
@@ -61,8 +62,13 @@ public final class JavaTypeWrapper {
         this.wrappingType = Float.floatToIntBits(value);
     }
 
+    public void setValue(CEnum cEnum) {
+        this.wrappingType = cEnum.getIndex();
+    }
+
     public void setValue(Pointing wrappingPointing) {
         this.wrappingPointing = wrappingPointing;
+        wrappingType = wrappingPointing.getPointer();
     }
 
     public Class<?> getWrappingClass() {
@@ -74,9 +80,7 @@ public final class JavaTypeWrapper {
     }
 
     public long unwrapToLong() {
-        if (wrappingClass.isPrimitive())
-            return wrappingType;
-        return wrappingPointing.getPointer();
+        return wrappingType;
     }
 
     public boolean asBoolean() {
