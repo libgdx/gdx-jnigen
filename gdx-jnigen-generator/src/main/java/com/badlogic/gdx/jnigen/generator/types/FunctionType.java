@@ -49,13 +49,14 @@ public class FunctionType {
             } else {
                 nativeBody.append("(").append(namedType.getDefinition().getTypeName()).append(")").append(namedType.getName()).append(", ");
             }
+            nativeMethod.addParameter(namedType.getDefinition().getMappedType().primitiveType(), namedType.getName());
             if (namedType.getDefinition().getTypeKind().isPrimitive()) {
-                nativeMethod.addParameter(namedType.getDefinition().getMappedType().primitiveType(), namedType.getName());
                 callExpr.addArgument(namedType.getName());
             } else {
-                nativeMethod.addParameter(long.class, namedType.getName());
                 if (namedType.getDefinition().getTypeKind() == TypeKind.CLOSURE)
                     callExpr.addArgument(namedType.getName() + ".getFnPtr()");
+                else if (namedType.getDefinition().getTypeKind() == TypeKind.ENUM)
+                    callExpr.addArgument(namedType.getName() + ".getIndex()");
                 else
                     callExpr.addArgument(namedType.getName() + ".getPointer()");
             }

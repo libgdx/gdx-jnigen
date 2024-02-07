@@ -14,6 +14,12 @@ typedef struct TestStruct {
     uint8_t field4;
 } TestStruct;
 
+typedef enum TestEnum {
+    FIRST,
+    SECOND,
+    THIRD
+} TestEnum;
+
 // Typedefs
 typedef void (*methodWithCallback)(void);
 typedef void (*methodWithCallbackLongArg)(uint64_t);
@@ -54,6 +60,7 @@ bool call_methodWithCallbackBooleanReturn(methodWithCallbackBooleanReturn fnPtr)
 float call_methodWithCallbackFloatReturn(methodWithCallbackFloatReturn fnPtr);
 double call_methodWithCallbackDoubleReturn(methodWithCallbackDoubleReturn fnPtr);
 
+// TestStruct stuff
 TestStruct* returnTestStructPointer();
 TestStruct returnTestStruct();
 uint32_t passByValue(TestStruct testStruct);
@@ -68,6 +75,12 @@ TestStruct call_methodWithCallbackTestStructReturn(methodWithCallbackTestStructR
 TestStruct* call_methodWithCallbackTestStructPointerReturn(methodWithCallbackTestStructPointerReturn fnPtr);
 void call_methodWithCallbackTestStructArg(methodWithCallbackTestStructArg fnPtr);
 void call_methodWithCallbackTestStructPointerArg(methodWithCallbackTestStructPointerArg fnPtr);
+
+// TestEnum stuff
+int passTestEnum(TestEnum enumValue);
+//TestEnum returnTestEnum();
+//TestEnum passAndReturnTestEnum(TestEnum enumValue);
+
 #ifdef __cplusplus
 }
 #endif

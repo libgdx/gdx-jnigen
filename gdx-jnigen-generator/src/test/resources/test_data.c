@@ -150,3 +150,7 @@ uint32_t passByPointer(TestStruct* testStruct) {
     testStruct->field4 = 5;
     return testStruct->field2;
 }
+
+int passTestEnum(TestEnum enumValue) {
+    return enumValue == SECOND;
+}
