@@ -29,6 +29,7 @@ import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructArg;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructPointerArg;
 import com.badlogic.jnigen.generated.enums.TestEnum;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumReturn;
+import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumArg;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
 
@@ -282,6 +283,14 @@ public class TestData {
     	return (jint)call_methodWithCallbackTestEnumReturn((methodWithCallbackTestEnumReturn)arg0);
     */
 
+    public static void call_methodWithCallbackTestEnumArg(ClosureObject<methodWithCallbackTestEnumArg> arg0) {
+        call_methodWithCallbackTestEnumArg_internal(arg0.getFnPtr());
+    }
+
+    static private native void call_methodWithCallbackTestEnumArg_internal(long arg0);/*
+    	call_methodWithCallbackTestEnumArg((methodWithCallbackTestEnumArg)arg0);
+    */
+
     public interface methodWithCallbackAllArgs extends Closure {
 
         void methodWithCallbackAllArgs_call(@CType(value = "uint64_t") long arg0, @CType(value = "int") @Signed() int arg1, @CType(value = "short") @Signed() short arg2, @CType(value = "char") @Signed() byte arg3, @CType(value = "uint16_t") char arg4, @CType(value = "bool") boolean arg5, @CType(value = "float") @Signed() float arg6, @CType(value = "double") @Signed() double arg7);
@@ -421,6 +430,15 @@ public class TestData {
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
             returnType.setValue(methodWithCallbackIntReturn_call());
+        }
+    }
+
+    public interface methodWithCallbackTestEnumArg extends Closure {
+
+        void methodWithCallbackTestEnumArg_call(TestEnum arg0);
+
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            methodWithCallbackTestEnumArg_call(TestEnum.getByIndex(parameters[0].asInt()));
         }
     }
 
