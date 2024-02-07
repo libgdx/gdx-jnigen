@@ -144,7 +144,7 @@ public class StructType implements MappedType {
 
     @Override
     public String primitiveType() {
-        throw new IllegalArgumentException();
+        return long.class.getName();
     }
 
     @Override
