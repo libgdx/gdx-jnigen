@@ -8,7 +8,7 @@ import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
 
-public class Global {
+public class TestData {
 
     /*JNI
 #include <jnigen.h>

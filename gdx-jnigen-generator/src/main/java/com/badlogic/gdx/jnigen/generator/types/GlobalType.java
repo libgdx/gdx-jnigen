@@ -18,6 +18,12 @@ public class GlobalType {
     private final HashMap<String, ClosureType> closures = new HashMap<>();
     private final List<FunctionType> functions = new ArrayList<>();
 
+    private final String globalName;
+
+    public GlobalType(String globalName) {
+        this.globalName = globalName;
+    }
+
     public void addClosure(ClosureType closureType) {
         if (closures.containsKey(closureType.getName()))
             throw new IllegalArgumentException("Closure with name: " + closureType.getName() + " already exists.");
@@ -40,7 +46,7 @@ public class GlobalType {
         cu.addImport(CType.class);
         cu.addImport(Signed.class);
         cu.addImport(ClosureObject.class);
-        ClassOrInterfaceDeclaration global = cu.addClass("Global");
+        ClassOrInterfaceDeclaration global = cu.addClass(globalName);
         global.addOrphanComment(new BlockComment("JNI\n#include <jnigen.h>\n#include <" + Manager.getInstance().getParsedCHeader() + ">\n"));
         for (FunctionType functionType : functions) {
             functionType.write(global, patchNativeMethods);
@@ -49,5 +55,9 @@ public class GlobalType {
         for (ClosureType closureType : closures.values()) {
             closureType.write(global);
         }
+    }
+
+    public String getGlobalName() {
+        return globalName;
     }
 }
