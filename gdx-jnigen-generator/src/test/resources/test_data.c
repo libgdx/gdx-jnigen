@@ -162,3 +162,11 @@ TestEnum returnTestEnum() {
 TestEnum passAndReturnTestEnum(TestEnum enumValue) {
     return enumValue;
 }
+
+TestEnum call_methodWithCallbackTestEnumReturn(methodWithCallbackTestEnumReturn fnPtr) {
+    return fnPtr();
+}
+
+/*void call_methodWithCallbackTestEnumArg(methodWithCallbackTestEnumArg fnPtr) {
+    fnPtr(SECOND);
+}*/

@@ -1,6 +1,7 @@
 package com.badlogic.gdx.jnigen.ffi;
 
 import com.badlogic.gdx.jnigen.CHandler;
+import com.badlogic.gdx.jnigen.pointer.CEnum;
 import com.badlogic.gdx.jnigen.pointer.Signed;
 import com.badlogic.gdx.jnigen.pointer.Struct;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
@@ -58,9 +59,11 @@ public class ParameterTypes {
         if (toMap == void.class)
             return ffi_type_void;
 
-        if (toMap.isPrimitive()) {
+        if (toMap.isPrimitive())
             return Utils.getFFITypeForElement(element);
-        }
+
+        if (CEnum.class.isAssignableFrom(toMap))
+            return CHandler.getCTypeFFIType("int"); // TODO Converting to CType annotation on parameter?
 
         if (Struct.class.isAssignableFrom(toMap)) {
             long type = CHandler.getStructFFIType((Class<? extends Struct>)toMap);
