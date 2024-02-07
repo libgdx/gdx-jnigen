@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.badlogic.jnigen.generated.Global.*;
+import static com.badlogic.jnigen.generated.TestData.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ClosureTest extends BaseTest {
