@@ -2,7 +2,7 @@ package com.badlogic.jnigen.tests;
 
 import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
-import com.badlogic.jnigen.generated.Global;
+import com.badlogic.jnigen.generated.TestData;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 import org.junit.jupiter.api.Test;
 
@@ -56,7 +56,7 @@ public class StructMethodsTest extends BaseTest {
     public void testPassByValue() {
         TestStruct testStruct = new TestStruct();
         testStruct.field2(7);
-        assertEquals(7, Global.passByValue(testStruct));
+        assertEquals(7, TestData.passByValue(testStruct));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class StructMethodsTest extends BaseTest {
         TestStruct testStruct = new TestStruct();
         testStruct.field2(7);
         pointer.set(testStruct);
-        assertEquals(7, Global.passByPointer(pointer));
+        assertEquals(7, TestData.passByPointer(pointer));
 
         assertEquals(7, testStruct.field2());
         assertEquals(0, testStruct.field4());
@@ -81,7 +81,7 @@ public class StructMethodsTest extends BaseTest {
         testStruct.field2(7);
 
         StructPointer<TestStruct> pointer = testStruct.asPointer();
-        assertEquals(7, Global.passByPointer(pointer));
+        assertEquals(7, TestData.passByPointer(pointer));
 
         assertEquals(7, testStruct.field2());
         assertEquals(5, testStruct.field4());
@@ -93,7 +93,7 @@ public class StructMethodsTest extends BaseTest {
 
     @Test
     public void returnStructTest() {
-        TestStruct testStruct = Global.returnTestStruct();
+        TestStruct testStruct = TestData.returnTestStruct();
         assertEquals(1, testStruct.field1());
         assertEquals(2, testStruct.field2());
         assertEquals(3, testStruct.field3());
@@ -102,7 +102,7 @@ public class StructMethodsTest extends BaseTest {
 
     @Test
     public void returnStructPointerTest() {
-        StructPointer<TestStruct> testStructPtr = Global.returnTestStructPointer();
+        StructPointer<TestStruct> testStructPtr = TestData.returnTestStructPointer();
         TestStruct testStruct = testStructPtr.get();
         testStructPtr.free();
 
@@ -114,7 +114,7 @@ public class StructMethodsTest extends BaseTest {
 
     @Test
     public void structPointerAsStrutTest() {
-        StructPointer<TestStruct> testStructPtr = Global.returnTestStructPointer();
+        StructPointer<TestStruct> testStructPtr = TestData.returnTestStructPointer();
         TestStruct testStruct = testStructPtr.asStruct();
 
         assertEquals(1, testStruct.field1());
