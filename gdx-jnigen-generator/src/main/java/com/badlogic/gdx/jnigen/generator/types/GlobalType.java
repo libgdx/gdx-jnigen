@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class GlobalType {
+public class GlobalType implements MappedType {
 
     private final HashMap<String, ClosureType> closures = new HashMap<>();
     private final List<FunctionType> functions = new ArrayList<>();
@@ -45,19 +45,43 @@ public class GlobalType {
     public void write(CompilationUnit cu, HashMap<MethodDeclaration, String> patchNativeMethods) {
         cu.addImport(CType.class);
         cu.addImport(Signed.class);
-        cu.addImport(ClosureObject.class);
         ClassOrInterfaceDeclaration global = cu.addClass(globalName);
         global.addOrphanComment(new BlockComment("JNI\n#include <jnigen.h>\n#include <" + Manager.getInstance().getParsedCHeader() + ">\n"));
         for (FunctionType functionType : functions) {
-            functionType.write(global, patchNativeMethods);
+            functionType.write(cu, global, patchNativeMethods);
         }
 
         for (ClosureType closureType : closures.values()) {
-            closureType.write(global);
+            closureType.write(cu, global);
         }
     }
 
     public String getGlobalName() {
         return globalName;
+    }
+
+    @Override
+    public void importType(CompilationUnit cu) {
+        cu.addImport(residingCU());
+    }
+
+    @Override
+    public String instantiationType() {
+        throw new IllegalArgumentException();
+    }
+
+    @Override
+    public String abstractType() {
+        return globalName;
+    }
+
+    @Override
+    public String primitiveType() {
+        throw new IllegalArgumentException();
+    }
+
+    @Override
+    public String residingCU() {
+        return Manager.getInstance().getBasePackage() + "." + globalName;
     }
 }

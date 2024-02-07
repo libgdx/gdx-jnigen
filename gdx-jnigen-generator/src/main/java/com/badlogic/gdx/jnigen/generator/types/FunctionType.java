@@ -1,6 +1,7 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
 import com.badlogic.gdx.jnigen.generator.Manager;
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -26,11 +27,12 @@ public class FunctionType {
         this.returnType = returnType;
     }
 
-    public void write(ClassOrInterfaceDeclaration wrappingClass, HashMap<MethodDeclaration, String> patchNativeMethod) {
+    public void write(CompilationUnit cu, ClassOrInterfaceDeclaration wrappingClass, HashMap<MethodDeclaration, String> patchNativeMethod) {
         MethodDeclaration callMethod = wrappingClass.addMethod(name, Keyword.PUBLIC, Keyword.STATIC);
 
         MethodDeclaration nativeMethod = wrappingClass.addMethod(name + "_internal").setStatic(true).setPrivate(true).setNative(true).setBody(null);
         callMethod.setType(returnType.getMappedType().abstractType());
+        returnType.getMappedType().importType(cu);
         if (returnType.getTypeKind().isPrimitive())
             nativeMethod.setType(returnType.getMappedType().abstractType());
         else if (returnType.getTypeKind() == TypeKind.POINTER)
@@ -40,6 +42,7 @@ public class FunctionType {
         StringBuilder nativeBody = new StringBuilder();
         nativeBody.append(name).append("(");
         for (NamedType namedType : arguments) {
+            namedType.getDefinition().getMappedType().importType(cu);
             callMethod.addParameter(namedType.getDefinition().getMappedType().abstractType(), namedType.getName());
             if (namedType.getDefinition().getTypeKind() == TypeKind.STRUCT) {
                 nativeBody.append("*(").append(namedType.getDefinition().getTypeName()).append("*)").append(namedType.getName()).append(", ");
