@@ -23,8 +23,13 @@ public class PointerType implements MappedType {
     }
 
     @Override
-    public String residingCU() {
-        return pointingTo.residingCU();
+    public String classFile() {
+        return pointingTo.classFile();
+    }
+
+    @Override
+    public String packageName() {
+        return pointingTo.packageName();
     }
 
     @Override

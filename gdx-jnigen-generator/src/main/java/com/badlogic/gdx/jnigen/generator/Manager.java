@@ -1,7 +1,6 @@
 package com.badlogic.gdx.jnigen.generator;
 
 import com.badlogic.gdx.jnigen.CHandler;
-import com.badlogic.gdx.jnigen.ffi.FFITypes;
 import com.badlogic.gdx.jnigen.generator.types.ClosureType;
 import com.badlogic.gdx.jnigen.generator.types.FunctionType;
 import com.badlogic.gdx.jnigen.generator.types.GlobalType;
@@ -11,7 +10,6 @@ import com.badlogic.gdx.jnigen.generator.types.PointerType;
 import com.badlogic.gdx.jnigen.generator.types.StructType;
 import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
 import com.badlogic.gdx.jnigen.generator.types.TypeKind;
-import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -159,7 +157,7 @@ public class Manager {
         try {
             for (StructType structType : structs.values()) {
                 HashMap<MethodDeclaration, String> toPatch = new HashMap<>();
-                CompilationUnit cu = new CompilationUnit(basePackage + ".structs");
+                CompilationUnit cu = new CompilationUnit(structType.packageName());
                 structType.write(cu, toPatch);
 
                 String classContent = cu.toString();
@@ -169,22 +167,22 @@ public class Manager {
                     classContent = patchMethodNative(methodDeclaration, s, classContent);
                 }
 
-                String fullPath = basePath + structType.residingCU().replace(".", "/") + ".java";
+                String fullPath = basePath + structType.classFile().replace(".", "/") + ".java";
                 Path structPath = Paths.get(fullPath);
                 structPath.getParent().toFile().mkdirs();
                 Files.write(structPath, classContent.getBytes(StandardCharsets.UTF_8));
             }
             HashMap<MethodDeclaration, String> patchGlobalMethods = new HashMap<>();
-            CompilationUnit cu = new CompilationUnit(basePackage);
+            CompilationUnit globalCU = new CompilationUnit(globalType.packageName());
 
-            globalType.write(cu, patchGlobalMethods);
-            String globalFile = cu.toString();
+            globalType.write(globalCU, patchGlobalMethods);
+            String globalFile = globalCU.toString();
             for (Entry<MethodDeclaration, String> entry : patchGlobalMethods.entrySet()) {
                 MethodDeclaration methodDeclaration = entry.getKey();
                 String s = entry.getValue();
                 globalFile = patchMethodNative(methodDeclaration, s, globalFile);
             }
-            Files.write(Paths.get(basePath + globalType.residingCU().replace(".", "/") + ".java"), globalFile.getBytes(StandardCharsets.UTF_8));
+            Files.write(Paths.get(basePath + globalType.classFile().replace(".", "/") + ".java"), globalFile.getBytes(StandardCharsets.UTF_8));
 
             // FFI Type test
             CompilationUnit ffiTypeCU = new CompilationUnit(basePackage);
