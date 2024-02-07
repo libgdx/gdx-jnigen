@@ -82,10 +82,10 @@ TestEnum returnTestEnum();
 TestEnum passAndReturnTestEnum(TestEnum enumValue);
 
 typedef TestEnum (*methodWithCallbackTestEnumReturn)(void);
-//typedef void (*methodWithCallbackTestEnumArg)(TestEnum);
+typedef void (*methodWithCallbackTestEnumArg)(TestEnum);
 
 TestEnum call_methodWithCallbackTestEnumReturn(methodWithCallbackTestEnumReturn fnPtr);
-//void call_methodWithCallbackTestEnumArg(methodWithCallbackTestEnumArg fnPtr);
+void call_methodWithCallbackTestEnumArg(methodWithCallbackTestEnumArg fnPtr);
 
 #ifdef __cplusplus
 }

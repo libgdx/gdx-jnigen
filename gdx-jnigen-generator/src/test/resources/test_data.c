@@ -167,6 +167,6 @@ TestEnum call_methodWithCallbackTestEnumReturn(methodWithCallbackTestEnumReturn 
     return fnPtr();
 }
 
-/*void call_methodWithCallbackTestEnumArg(methodWithCallbackTestEnumArg fnPtr) {
+void call_methodWithCallbackTestEnumArg(methodWithCallbackTestEnumArg fnPtr) {
     fnPtr(SECOND);
-}*/
+}
