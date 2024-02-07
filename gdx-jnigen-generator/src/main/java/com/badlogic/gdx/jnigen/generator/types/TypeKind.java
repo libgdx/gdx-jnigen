@@ -23,7 +23,8 @@ public enum TypeKind {
     DOUBLE(8, true, CXType_Double, CXType_LongDouble),
     POINTER(8, false, CXType_Pointer),
     STRUCT(-1, false, CXType_Record),
-    CLOSURE(8, false, CXType_FunctionProto);
+    CLOSURE(8, false, CXType_FunctionProto),
+    ENUM(4, true, CXType_Enum);
 
     private final int size;
     private final boolean signed;
@@ -69,9 +70,9 @@ public enum TypeKind {
     }
 
     public boolean isSpecial() {
-        return this == POINTER || this == STRUCT || this == CLOSURE;
+        return this == POINTER || this == STRUCT || this == CLOSURE || this == ENUM;
     }
     public boolean isPrimitive() {
-        return this != POINTER && this != STRUCT && this != VOID && this != CLOSURE;
+        return !isSpecial() && this != VOID;
     }
 }

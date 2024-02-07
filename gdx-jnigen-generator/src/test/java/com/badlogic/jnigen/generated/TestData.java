@@ -1,5 +1,6 @@
 package com.badlogic.jnigen.generated;
 
+import com.badlogic.jnigen.generated.enums.TestEnum;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import com.badlogic.gdx.jnigen.pointer.CType;
@@ -224,6 +225,14 @@ public class TestData {
 
     static private native void call_methodWithCallbackTestStructPointerArg_internal(long arg0);/*
     	call_methodWithCallbackTestStructPointerArg((methodWithCallbackTestStructPointerArg)arg0);
+    */
+
+    public static int passTestEnum(TestEnum arg0) {
+        return passTestEnum_internal(arg0.getIndex());
+    }
+
+    static private native int passTestEnum_internal(int arg0);/*
+    	return (jint)passTestEnum((TestEnum)arg0);
     */
 
     public interface methodWithCallbackAllArgs extends Closure {

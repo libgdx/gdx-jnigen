@@ -2,6 +2,7 @@ package com.badlogic.gdx.jnigen.generator;
 
 import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.generator.types.ClosureType;
+import com.badlogic.gdx.jnigen.generator.types.EnumType;
 import com.badlogic.gdx.jnigen.generator.types.FunctionType;
 import com.badlogic.gdx.jnigen.generator.types.GlobalType;
 import com.badlogic.gdx.jnigen.generator.types.MappedType;
@@ -45,6 +46,7 @@ public class Manager {
     }
 
     private final Map<String, StructType> structs = new HashMap<>();
+    private final Map<String, EnumType> enums = new HashMap<>();
     private final ArrayList<String> knownCTypes = new ArrayList<>();
 
     private final HashMap<String, MappedType> cTypeToJavaStringMapper = new HashMap<>();
@@ -56,7 +58,6 @@ public class Manager {
         this.basePackage = basePackage;
         globalType = new GlobalType(JavaUtils.javarizeName(parsedCHeader.split("\\.h")[0]));
     }
-
 
     public void startStruct(String name) {
         if (structs.containsKey(name))
@@ -78,6 +79,20 @@ public class Manager {
         if (!structs.containsKey(structName))
             throw new IllegalArgumentException("Struct with name: " + structName + " does not exists.");
         return structs.get(structName);
+    }
+
+    public void startEnum(String name) {
+        if (enums.containsKey(name))
+            throw new IllegalArgumentException("Enum with name: " + name + " already exists.");
+        EnumType enumType = new EnumType(name);
+        enums.put(name, enumType);
+        registerCTypeMapping(name, enumType);
+    }
+
+    public void addEnumConstant(String enumName, String constantName, int index) {
+        if (!enums.containsKey(enumName))
+            throw new IllegalArgumentException("Enum with name: " + enumName + " does not exist.");
+        enums.get(enumName).registerConstant(constantName, index);
     }
 
     public ClosureType getClosure(String closureType) {
@@ -172,6 +187,16 @@ public class Manager {
                 structPath.getParent().toFile().mkdirs();
                 Files.write(structPath, classContent.getBytes(StandardCharsets.UTF_8));
             }
+
+            for (EnumType enumType : enums.values()) {
+                CompilationUnit cu = new CompilationUnit(enumType.packageName());
+                enumType.write(cu);
+                String fullPath = basePath + enumType.classFile().replace(".", "/") + ".java";
+                Path structPath = Paths.get(fullPath);
+                structPath.getParent().toFile().mkdirs();
+                Files.write(structPath, cu.toString().getBytes(StandardCharsets.UTF_8));
+            }
+
             HashMap<MethodDeclaration, String> patchGlobalMethods = new HashMap<>();
             CompilationUnit globalCU = new CompilationUnit(globalType.packageName());
 

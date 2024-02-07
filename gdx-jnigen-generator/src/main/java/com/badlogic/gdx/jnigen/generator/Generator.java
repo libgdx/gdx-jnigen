@@ -59,10 +59,29 @@ public class Generator {
                     }
                     break;
                 case CXCursor_FieldDecl:
-                    if (parent.kind() == CXCursor_StructDecl && buffer.get() == 1) {
+                    if (parent.kind() == CXCursor_StructDecl && buffer.get(0) == 1) {
                         CXType type = clang_getCursorType(current);
                         NamedType namedType = new NamedType(TypeDefinition.createTypeDefinition(type), name);
                         Manager.getInstance().putStructField(clang_getCursorSpelling(parent).getString(), namedType);
+                    }
+                    break;
+                case CXCursor_EnumDecl:
+                    // TODO: We don't care about TypeDef for the moment
+                    if (parent.kind() != CXCursor_TypedefDecl) {
+                        Manager.getInstance().startEnum(name);
+                        buffer.put(1, (byte)1);
+                    } else {
+                        buffer.put(1, (byte)0);
+                    }
+                    break;
+                case CXCursor_EnumConstantDecl:
+                    if (parent.kind() == CXCursor_EnumDecl && buffer.get(1) == 1) {
+                        String enumName = clang_getCursorSpelling(parent).getString();
+                        String constantName = name;
+                        long constantValue = clang_getEnumConstantDeclValue(current);
+                        if (constantValue > Integer.MAX_VALUE)
+                            throw new IllegalArgumentException("Why is the enum " + enumName + " so biiig? Please open a issue in the gdx-jnigen repo");
+                        Manager.getInstance().addEnumConstant(enumName, constantName, (int)constantValue);
                     }
                     break;
                 case CXCursor_TypedefDecl:
@@ -106,7 +125,7 @@ public class Generator {
                 return CXChildVisit_Recurse;
             }
         };
-        CXClientData cxClientData = new CXClientData(Pointer.malloc(1));
+        CXClientData cxClientData = new CXClientData(Pointer.malloc(2));
         clang_visitChildren(clang_getTranslationUnitCursor(translationUnit), visitor, cxClientData);
         argPointer.close();
         file.close();
