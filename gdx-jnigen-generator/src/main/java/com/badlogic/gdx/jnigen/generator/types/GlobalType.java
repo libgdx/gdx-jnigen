@@ -1,6 +1,5 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
-import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.generator.Manager;
 import com.badlogic.gdx.jnigen.pointer.CType;
 import com.badlogic.gdx.jnigen.pointer.Signed;
@@ -62,7 +61,7 @@ public class GlobalType implements MappedType {
 
     @Override
     public void importType(CompilationUnit cu) {
-        cu.addImport(residingCU());
+        cu.addImport(classFile());
     }
 
     @Override
@@ -81,7 +80,12 @@ public class GlobalType implements MappedType {
     }
 
     @Override
-    public String residingCU() {
+    public String classFile() {
         return Manager.getInstance().getBasePackage() + "." + globalName;
+    }
+
+    @Override
+    public String packageName() {
+        return Manager.getInstance().getBasePackage();
     }
 }

@@ -6,17 +6,13 @@ import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
 import com.badlogic.gdx.jnigen.generator.Manager;
 import com.badlogic.gdx.jnigen.pointer.CType;
 import com.badlogic.gdx.jnigen.pointer.Signed;
-import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
-import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.printer.PrettyPrinter;
 
 public class ClosureType implements MappedType {
 
@@ -100,11 +96,16 @@ public class ClosureType implements MappedType {
     @Override
     public void importType(CompilationUnit cu) {
         cu.addImport(ClosureObject.class);
-        cu.addImport(residingCU() + "." + name);
+        cu.addImport(classFile() + "." + name);
     }
 
     @Override
-    public String residingCU() {
-        return Manager.getInstance().getBasePackage() + "." + Manager.getInstance().getGlobalType().getGlobalName();
+    public String classFile() {
+        return Manager.getInstance().getGlobalType().classFile();
+    }
+
+    @Override
+    public String packageName() {
+        return Manager.getInstance().getBasePackage();
     }
 }

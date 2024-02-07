@@ -1,6 +1,5 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
-import com.badlogic.gdx.jnigen.generator.Manager;
 import com.github.javaparser.ast.CompilationUnit;
 
 public interface MappedType {
@@ -9,7 +8,9 @@ public interface MappedType {
         throw new IllegalArgumentException();
     }
 
-    String residingCU();
+    String classFile();
+
+    String packageName();
 
     default String instantiationType() {
         return abstractType();
