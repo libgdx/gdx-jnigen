@@ -12,7 +12,7 @@ public class Global {
 
     /*JNI
 #include <jnigen.h>
-#include <definitions.h>
+#include <test_data.h>
 */
     public static void call_methodWithCallback(ClosureObject<methodWithCallback> arg0) {
         call_methodWithCallback_internal(arg0.getFnPtr());
