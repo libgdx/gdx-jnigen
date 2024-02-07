@@ -25,6 +25,7 @@ import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration.C
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,9 +40,10 @@ public class Manager {
 
 
     private final String parsedCHeader;
+    private final String basePackage;
 
-    public static void init(String parsedCHeader) {
-        instance = new Manager(parsedCHeader);
+    public static void init(String parsedCHeader, String basePackage) {
+        instance = new Manager(parsedCHeader, basePackage);
     }
 
     private final Map<String, StructType> structs = new HashMap<>();
@@ -51,8 +53,9 @@ public class Manager {
 
     private final GlobalType globalType;
 
-    public Manager(String parsedCHeader) {
+    public Manager(String parsedCHeader, String basePackage) {
         this.parsedCHeader = parsedCHeader;
+        this.basePackage = basePackage;
         globalType = new GlobalType(JavaUtils.javarizeName(parsedCHeader.split("\\.h")[0]));
     }
 
@@ -113,8 +116,16 @@ public class Manager {
         globalType.addFunction(functionType);
     }
 
+    public GlobalType getGlobalType() {
+        return globalType;
+    }
+
     public String getParsedCHeader() {
         return parsedCHeader;
+    }
+
+    public String getBasePackage() {
+        return basePackage;
     }
 
     public String patchMethodNative(MethodDeclaration method, String nativeCode, String classString) {
@@ -144,10 +155,8 @@ public class Manager {
         toAddTo.addOrphanComment(new BlockComment(result.toString()));
     }
 
-    public void emit(String basePath, String basePackage) {
+    public void emit(String basePath) {
         try {
-            String packagePath = basePath + "/" + basePackage.replace(".", "/");
-            Files.createDirectories(Paths.get(packagePath + "/structs/"));
             for (StructType structType : structs.values()) {
                 HashMap<MethodDeclaration, String> toPatch = new HashMap<>();
                 CompilationUnit cu = new CompilationUnit(basePackage + ".structs");
@@ -160,15 +169,13 @@ public class Manager {
                     classContent = patchMethodNative(methodDeclaration, s, classContent);
                 }
 
-                Files.write(Paths.get(packagePath + "/structs/" + structType.getName() + ".java"),
-                        classContent.getBytes(StandardCharsets.UTF_8));
-
+                String fullPath = basePath + structType.residingCU().replace(".", "/") + ".java";
+                Path structPath = Paths.get(fullPath);
+                structPath.getParent().toFile().mkdirs();
+                Files.write(structPath, classContent.getBytes(StandardCharsets.UTF_8));
             }
             HashMap<MethodDeclaration, String> patchGlobalMethods = new HashMap<>();
             CompilationUnit cu = new CompilationUnit(basePackage);
-            //TODO: Massive hack, every mapped type should expose, how it gets imported. Than, when we emit the functions, everything used gets imported
-            structs.values().forEach(structType -> cu.addImport(basePackage + ".structs." + structType.getName()));
-            cu.addImport(StructPointer.class);
 
             globalType.write(cu, patchGlobalMethods);
             String globalFile = cu.toString();
@@ -177,7 +184,7 @@ public class Manager {
                 String s = entry.getValue();
                 globalFile = patchMethodNative(methodDeclaration, s, globalFile);
             }
-            Files.write(Paths.get(packagePath + "/" + globalType.getGlobalName() + ".java"), globalFile.getBytes(StandardCharsets.UTF_8));
+            Files.write(Paths.get(basePath + globalType.residingCU().replace(".", "/") + ".java"), globalFile.getBytes(StandardCharsets.UTF_8));
 
             // FFI Type test
             CompilationUnit ffiTypeCU = new CompilationUnit(basePackage);
@@ -204,7 +211,7 @@ public class Manager {
             String ffiTypeString = ffiTypeCU.toString();
             ffiTypeString = patchMethodNative(getFFITypeMethod, nativeBody.toString(), ffiTypeString);
 
-            Files.write(Paths.get(packagePath + "/FFITypes.java"),
+            Files.write(Paths.get(basePath + basePackage.replace(".", "/") + "/FFITypes.java"),
                     ffiTypeString.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new RuntimeException(e);

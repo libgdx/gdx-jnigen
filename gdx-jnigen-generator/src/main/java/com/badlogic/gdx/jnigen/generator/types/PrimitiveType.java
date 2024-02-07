@@ -1,5 +1,7 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
+import com.github.javaparser.ast.CompilationUnit;
+
 public class PrimitiveType implements MappedType {
 
     private Class<?> javaRepresentation;
@@ -49,5 +51,15 @@ public class PrimitiveType implements MappedType {
     @Override
     public String primitiveType() {
         return javaRepresentation.getName();
+    }
+
+    @Override
+    public void importType(CompilationUnit cu) {
+        // Unimportable
+    }
+
+    @Override
+    public String residingCU() {
+        throw new IllegalArgumentException();
     }
 }
