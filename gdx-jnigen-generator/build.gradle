@@ -36,7 +36,12 @@ dependencies {
 task generateTestClasses(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = "com.badlogic.gdx.jnigen.generator.Generator"
-    args file("src/test/java").absolutePath, "com.badlogic.jnigen.generated", file("src/test/resources/definitions.h").absolutePath
+    args file("src/test/java").absolutePath, "com.badlogic.jnigen.generated", file("src/test/resources/test_data.h").absolutePath
+}
+
+task copyTestFiles(type: Copy) {
+    from("src/test/resources/")
+    into("jni/")
 }
 
 test {
@@ -53,7 +58,6 @@ jnigen {
     }
 
     all {
-        cIncludes += ["../src/test/resources/definitions.c"]
         headerDirs += [project(":gdx-jnigen-loader").file("src/main/resources/").absolutePath, file("src/test/resources/").absolutePath]
         cFlags += " -std=c11 "
         cppFlags += " -std=c++11 "
@@ -65,6 +69,7 @@ jnigen {
     add(MacOsX, x64, ARM)
 }
 tasks.named("jnigen").get().dependsOn(compileTestJava)
+tasks.named("jnigen").get().dependsOn(copyTestFiles)
 compileTestJava.dependsOn(generateTestClasses)
 
 jnigenJarNativesDesktop.mustRunAfter jnigenBuild
