@@ -154,3 +154,11 @@ uint32_t passByPointer(TestStruct* testStruct) {
 int passTestEnum(TestEnum enumValue) {
     return enumValue == SECOND;
 }
+
+TestEnum returnTestEnum() {
+    return THIRD;
+}
+
+TestEnum passAndReturnTestEnum(TestEnum enumValue) {
+    return enumValue;
+}
