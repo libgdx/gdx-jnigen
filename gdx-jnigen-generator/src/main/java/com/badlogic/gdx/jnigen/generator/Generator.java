@@ -43,7 +43,7 @@ public class Generator {
             @Override
             public int call(@ByVal CXCursor current, @ByVal CXCursor parent, CXClientData cxClientData) {
                 CXSourceLocation location = clang_getCursorLocation(current);
-                if (clang_Location_isFromMainFile(location) == 0)
+                if (clang_Location_isInSystemHeader(location) != 0)
                     return CXChildVisit_Continue;
 
                 ByteBuffer buffer = cxClientData.asByteBuffer();
