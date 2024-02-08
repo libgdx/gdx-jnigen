@@ -34,8 +34,12 @@ public class EnumType implements MappedType {
     public void registerConstant(String constantName, int index) {
         if (constants.containsValue(constantName))
             throw new IllegalArgumentException("Enum " + name + " already has constant with name: " + constantName);
-        if (constants.containsKey(index))
-            throw new IllegalArgumentException("Enum " + name + " already has constant with id: " + index);
+        if (constants.containsKey(index)) {
+            // This is valid... Why shouldn't it.... Urgh, this breaks my whole enum assumption
+            constants.computeIfPresent(index, (integer, s) -> s + "_" + constantName);
+            return;
+        }
+
         constants.put(index, constantName);
         if (index > highestConstantID)
             highestConstantID = index;
