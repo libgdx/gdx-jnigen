@@ -1,7 +1,7 @@
 package com.badlogic.gdx.jnigen.util;
 
 import com.badlogic.gdx.jnigen.CHandler;
-import com.badlogic.gdx.jnigen.pointer.CType;
+import com.badlogic.gdx.jnigen.c.CType;
 
 import java.lang.reflect.AnnotatedElement;
 
@@ -26,6 +26,8 @@ public class Utils {
     public static boolean checkBoundsForNumber(long value, long size, boolean signed) {
         if (size == 8)
             return true;
+        if (value < 0 && !signed)
+            return false;
 
         if (!signed) {
             return value < (1L << (size << 3));
