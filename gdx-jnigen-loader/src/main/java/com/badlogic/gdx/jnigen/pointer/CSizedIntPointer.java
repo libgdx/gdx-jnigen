@@ -3,9 +3,9 @@ package com.badlogic.gdx.jnigen.pointer;
 import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.c.CTypeInfo;
 
-public class CSizedIntPointer extends Pointing {
+public final class CSizedIntPointer extends Pointing {
 
-    private CTypeInfo cTypeInfo;
+    private final CTypeInfo cTypeInfo;
 
     public CSizedIntPointer(long pointer, boolean freeOnGC, String cTypeInfo) {
         super(pointer, freeOnGC);
