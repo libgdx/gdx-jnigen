@@ -168,7 +168,7 @@ public class CHandler {
     }
 
     public static void registerCTypeFFIType(String name, long ffiType) {
-        CTypeInfo cTypeInfo = new CTypeInfo(ffiType, (int)CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType));
+        CTypeInfo cTypeInfo = new CTypeInfo(name, ffiType, (int)CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType));
         synchronized (cTypeInfoMap) {
             cTypeInfoMap.put(name, cTypeInfo);
         }
