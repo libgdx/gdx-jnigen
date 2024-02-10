@@ -1,8 +1,8 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
 import com.badlogic.gdx.jnigen.generator.Manager;
-import com.badlogic.gdx.jnigen.pointer.CType;
-import com.badlogic.gdx.jnigen.pointer.Signed;
+import com.badlogic.gdx.jnigen.c.CType;
+import com.badlogic.gdx.jnigen.c.Signed;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;

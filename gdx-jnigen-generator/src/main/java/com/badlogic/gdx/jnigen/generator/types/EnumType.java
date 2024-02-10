@@ -1,7 +1,7 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
 import com.badlogic.gdx.jnigen.generator.Manager;
-import com.badlogic.gdx.jnigen.pointer.CEnum;
+import com.badlogic.gdx.jnigen.c.CEnum;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.NodeList;
@@ -17,7 +17,6 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map.Entry;
 
 public class EnumType implements MappedType {
