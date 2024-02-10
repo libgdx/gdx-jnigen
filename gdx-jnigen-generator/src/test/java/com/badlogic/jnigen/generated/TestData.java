@@ -1,35 +1,11 @@
 package com.badlogic.jnigen.generated;
 
-import com.badlogic.gdx.jnigen.pointer.CType;
-import com.badlogic.gdx.jnigen.pointer.Signed;
+import com.badlogic.gdx.jnigen.c.CType;
+import com.badlogic.gdx.jnigen.c.Signed;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
-import com.badlogic.jnigen.generated.TestData.methodWithCallback;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackLongArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackShortArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackByteArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackCharArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackBooleanArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackFloatArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackDoubleArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackAllArgs;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackLongReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackShortReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackCharReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackByteReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackBooleanReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackFloatReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackDoubleReturn;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import com.badlogic.jnigen.generated.structs.TestStruct;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructPointerReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructPointerArg;
 import com.badlogic.jnigen.generated.enums.TestEnum;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumArg;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
 
