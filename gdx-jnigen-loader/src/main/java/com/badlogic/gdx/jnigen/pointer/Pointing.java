@@ -6,7 +6,7 @@ import com.badlogic.gdx.jnigen.gc.GCHandler;
 public class Pointing {
     private final long pointer;
     private boolean freed;
-    private boolean freeOnGC;
+    private final boolean freeOnGC;
 
     public Pointing(long pointer, boolean freeOnGC) {
         this.pointer = pointer;
