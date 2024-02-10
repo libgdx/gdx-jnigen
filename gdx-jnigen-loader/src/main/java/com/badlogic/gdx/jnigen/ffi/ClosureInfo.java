@@ -64,6 +64,8 @@ public final class ClosureInfo<T extends Closure> {
             CTypeInfo cTypeInfo;
             if (method.getReturnType().isPrimitive())
                 cTypeInfo = Utils.getCTypeForAnnotatedElement(method);
+            else if (CEnum.class.isAssignableFrom(method.getReturnType()))
+                cTypeInfo = CHandler.getCTypeInfo("int");
             else
                 cTypeInfo = CHandler.getCTypeInfo("void*");
             cachedReturnWrapper = new JavaTypeWrapper(method.getReturnType(), cTypeInfo);
