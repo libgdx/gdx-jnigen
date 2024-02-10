@@ -1,6 +1,6 @@
 package com.badlogic.gdx.jnigen.ffi;
 
-import com.badlogic.gdx.jnigen.pointer.CEnum;
+import com.badlogic.gdx.jnigen.c.CEnum;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
 import com.badlogic.gdx.jnigen.util.Utils;
 
