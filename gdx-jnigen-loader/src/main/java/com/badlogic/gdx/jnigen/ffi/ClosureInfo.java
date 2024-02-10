@@ -1,8 +1,8 @@
 package com.badlogic.gdx.jnigen.ffi;
 
 import com.badlogic.gdx.jnigen.CHandler;
-import com.badlogic.gdx.jnigen.pointer.CEnum;
-import com.badlogic.gdx.jnigen.pointer.Signed;
+import com.badlogic.gdx.jnigen.c.CEnum;
+import com.badlogic.gdx.jnigen.c.Signed;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
 import com.badlogic.gdx.jnigen.util.Utils;

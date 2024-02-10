@@ -1,5 +1,6 @@
 package com.badlogic.gdx.jnigen;
 
+import com.badlogic.gdx.jnigen.c.CTypeInfo;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.ffi.ClosureInfo;
@@ -53,9 +54,7 @@ public class CHandler {
 
     private static final HashMap<Class<? extends Struct>, WrappingPointingSupplier<? extends StructPointer<?>>> classStructPointerMap = new HashMap<>();
 
-    private static final HashMap<String, Integer> cTypeSizeMap = new HashMap<>();
-
-    private static final HashMap<String, Long> cTypeFFITypeMap = new HashMap<>();
+    private static final HashMap<String, CTypeInfo> cTypeInfoMap = new HashMap<>();
 
     /*JNI
     #include <stdlib.h>
@@ -142,30 +141,36 @@ public class CHandler {
     }
 
     public static int getCTypeSize(String name) {
-        synchronized (cTypeSizeMap) {
-            Integer size = cTypeSizeMap.get(name);
-            if (size == null)
+        synchronized (cTypeInfoMap) {
+            CTypeInfo cTypeInfo = cTypeInfoMap.get(name);
+            if (cTypeInfo == null)
                 throw new IllegalArgumentException("CType " + name + " is not registered.");
-            return size;
+            return cTypeInfo.getSize();
         }
     }
 
     public static long getCTypeFFIType(String name) {
-        synchronized (cTypeFFITypeMap) {
-            Long pointer = cTypeFFITypeMap.get(name);
-            if (pointer == null)
+        synchronized (cTypeInfoMap) {
+            CTypeInfo cTypeInfo = cTypeInfoMap.get(name);
+            if (cTypeInfo == null)
                 throw new IllegalArgumentException("CType " + name + " is not registered.");
-            return pointer;
+            return cTypeInfo.getFfiType();
+        }
+    }
+
+    public static CTypeInfo getCTypeInfo(String name) {
+        synchronized (cTypeInfoMap) {
+            CTypeInfo cTypeInfo = cTypeInfoMap.get(name);
+            if (cTypeInfo == null)
+                throw new IllegalArgumentException("CType " + name + " is not registered.");
+            return cTypeInfo;
         }
     }
 
     public static void registerCTypeFFIType(String name, long ffiType) {
-        synchronized (cTypeFFITypeMap) {
-            cTypeFFITypeMap.put(name, ffiType);
-        }
-        synchronized (cTypeSizeMap) {
-            // TODO: 02.02.2024 Fix me and don't cast me
-            cTypeSizeMap.put(name, (int)CHandler.getSizeFromFFIType(ffiType));
+        CTypeInfo cTypeInfo = new CTypeInfo(ffiType, (int)CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType));
+        synchronized (cTypeInfoMap) {
+            cTypeInfoMap.put(name, cTypeInfo);
         }
     }
 
@@ -344,8 +349,24 @@ public class CHandler {
         return true;
     */
 
+    public static native long getPointerPart(long pointer, int size, int offset);/*
+        char* ptr = reinterpret_cast<char*>(pointer);
+        jlong ret = 0;
+        memcpy(&ret, ptr + offset, size);  // Make it endian safe, I guess?
+        return ret;
+    */
+
+    public static native void setPointerPart(long pointer, int size, int offset, long value);/*
+        char* ptr = reinterpret_cast<char*>(pointer);
+        memcpy(ptr + offset, &value, size);  // Make it endian safe, I guess?
+    */
+
     public static native long getSizeFromFFIType(long type);/*
         return reinterpret_cast<ffi_type*>(type)->size;
+    */
+
+    public static native boolean getSignFromFFIType(long type);/*
+        return (jboolean)(GET_FFI_TYPE_SIGN((ffi_type*)type));
     */
 
     // TODO: Add support for specific alignment

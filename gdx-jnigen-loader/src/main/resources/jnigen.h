@@ -17,8 +17,11 @@
     (sizeof(type) == 8) ? (IS_SIGNED_TYPE(type) ? &ffi_type_sint64 : &ffi_type_uint64) : \
     NULL)
 
+#define GET_FFI_TYPE_SIGN(type) \
+    &ffi_type_sint8 == type || &ffi_type_sint16 == type || &ffi_type_sint32 == type || &ffi_type_sint64 == type || &ffi_type_double == type || &ffi_type_float == type
+
 #define CHECK_BOUNDS_FFI_TYPE(type, value) \
-    CHECK_BOUNDS_FOR_NUMBER(value, type->size, &ffi_type_sint8 == type || &ffi_type_sint16 == type || &ffi_type_sint32 == type || &ffi_type_sint64 == type);
+    CHECK_BOUNDS_FOR_NUMBER(value, type->size, GET_FFI_TYPE_SIGN(type));
 
 #define IS_SIGNED_TYPE(type) (((type)-1) < 0)
 
