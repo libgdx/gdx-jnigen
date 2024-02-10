@@ -1,6 +1,7 @@
 package com.badlogic.gdx.jnigen.ffi;
 
 import com.badlogic.gdx.jnigen.c.CEnum;
+import com.badlogic.gdx.jnigen.c.CTypeInfo;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
 import com.badlogic.gdx.jnigen.util.Utils;
 
@@ -10,14 +11,12 @@ public final class JavaTypeWrapper {
     private long wrappingType;
     private Pointing wrappingPointing;
 
-    private int size;
-    private boolean signed;
+    private CTypeInfo cTypeInfo;
 
-    public JavaTypeWrapper(Class<?> wrappingClass, int size, boolean signed) {
+    public JavaTypeWrapper(Class<?> wrappingClass, CTypeInfo cTypeInfo) {
         this.wrappingClass = wrappingClass;
-        this.size = size;
-        this.signed = signed;
-        if (wrappingClass == char.class && signed)
+        this.cTypeInfo = cTypeInfo;
+        if (wrappingClass == char.class && cTypeInfo.isSigned())
             throw new IllegalArgumentException("A char can't be signed");
     }
 
@@ -26,7 +25,7 @@ public final class JavaTypeWrapper {
     }
 
     public void setValue(byte value) {
-        if (signed)
+        if (cTypeInfo.isSigned())
             this.wrappingType = value;
         else
             this.wrappingType = value & 0xFF;
@@ -37,14 +36,14 @@ public final class JavaTypeWrapper {
     }
 
     public void setValue(short value) {
-        if (signed)
+        if (cTypeInfo.isSigned())
             this.wrappingType = value;
         else
             this.wrappingType = value & 0xFFFF;
     }
 
     public void setValue(int value) {
-        if (signed)
+        if (cTypeInfo.isSigned())
             this.wrappingType = value;
         else
             this.wrappingType = value & 0xFFFFFFFFL;
@@ -76,7 +75,7 @@ public final class JavaTypeWrapper {
     }
 
     public JavaTypeWrapper newJavaTypeWrapper() {
-        return new JavaTypeWrapper(wrappingClass, size, signed);
+        return new JavaTypeWrapper(wrappingClass, cTypeInfo);
     }
 
     public long unwrapToLong() {
@@ -138,15 +137,6 @@ public final class JavaTypeWrapper {
     }
 
     public void assertBounds() {
-        if (!Utils.checkBoundsForNumber(unwrapToLong(), size, signed))
-            throw new IllegalArgumentException("Number " + unwrapToLong() + " is out of bounds for " + size + " and sign: " + signed);
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public boolean isSigned() {
-        return signed;
+        cTypeInfo.assertBounds(unwrapToLong());
     }
 }

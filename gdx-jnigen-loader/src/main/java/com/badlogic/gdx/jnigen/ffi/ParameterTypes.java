@@ -2,7 +2,6 @@ package com.badlogic.gdx.jnigen.ffi;
 
 import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.c.CEnum;
-import com.badlogic.gdx.jnigen.c.Signed;
 import com.badlogic.gdx.jnigen.pointer.Struct;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
 import com.badlogic.gdx.jnigen.util.Utils;
@@ -39,16 +38,13 @@ public class ParameterTypes {
 
 
     public static final byte PASS_AS_POINTER = 1 << 0;
-    public static final byte SIGNED = 1 << 2;
-
 
     public static byte buildFlags(Class<?> toMap, Annotation[] annotations) {
         byte flags = 0;
         if (Pointing.class.isAssignableFrom(toMap) && !Struct.class.isAssignableFrom(toMap))
             flags |= PASS_AS_POINTER;
         for (Annotation annotation : annotations) {
-            if (annotation.annotationType() == Signed.class)
-                flags |= SIGNED;
+
         }
         return flags;
     }

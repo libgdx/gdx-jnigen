@@ -2,10 +2,19 @@ package com.badlogic.gdx.jnigen.util;
 
 import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.c.CType;
+import com.badlogic.gdx.jnigen.c.CTypeInfo;
 
 import java.lang.reflect.AnnotatedElement;
 
 public class Utils {
+
+    public static CTypeInfo getCTypeForAnnotatedElement(AnnotatedElement element) {
+        CType cType = element.getAnnotation(CType.class);
+        if (cType == null)
+            throw new IllegalArgumentException("CType annotation is missing on " + element);
+
+        return CHandler.getCTypeInfo(cType.value());
+    }
 
     public static int getSizeForAnnotatedElement(AnnotatedElement element) {
         CType cType = element.getAnnotation(CType.class);
@@ -21,6 +30,10 @@ public class Utils {
             throw new IllegalArgumentException("CType annotation is missing on " + element);
 
         return CHandler.getCTypeFFIType(cType.value());
+    }
+
+    public static boolean checkBoundsForNumber(long value, CTypeInfo cTypeInfo) {
+        return checkBoundsForNumber(value, cTypeInfo.getSize(), cTypeInfo.isSigned());
     }
 
     public static boolean checkBoundsForNumber(long value, long size, boolean signed) {

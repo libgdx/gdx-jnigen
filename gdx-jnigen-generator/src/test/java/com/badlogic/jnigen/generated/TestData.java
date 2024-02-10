@@ -1,7 +1,6 @@
 package com.badlogic.jnigen.generated;
 
 import com.badlogic.gdx.jnigen.c.CType;
-import com.badlogic.gdx.jnigen.c.Signed;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import com.badlogic.jnigen.generated.structs.TestStruct;
@@ -269,7 +268,7 @@ public class TestData {
 
     public interface methodWithCallbackAllArgs extends Closure {
 
-        void methodWithCallbackAllArgs_call(@CType(value = "uint64_t") long arg0, @CType(value = "int") @Signed() int arg1, @CType(value = "short") @Signed() short arg2, @CType(value = "char") @Signed() byte arg3, @CType(value = "uint16_t") char arg4, @CType(value = "bool") boolean arg5, @CType(value = "float") @Signed() float arg6, @CType(value = "double") @Signed() double arg7);
+        void methodWithCallbackAllArgs_call(@CType(value = "uint64_t") long arg0, @CType(value = "int") int arg1, @CType(value = "short") short arg2, @CType(value = "char") byte arg3, @CType(value = "uint16_t") char arg4, @CType(value = "bool") boolean arg5, @CType(value = "float") float arg6, @CType(value = "double") double arg7);
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
             methodWithCallbackAllArgs_call(parameters[0].asLong(), parameters[1].asInt(), parameters[2].asShort(), parameters[3].asByte(), parameters[4].asChar(), parameters[5].asBoolean(), parameters[6].asFloat(), parameters[7].asDouble());
@@ -297,7 +296,6 @@ public class TestData {
     public interface methodWithCallbackDoubleReturn extends Closure {
 
         @CType(value = "double")
-        @Signed()
         double methodWithCallbackDoubleReturn_call();
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
@@ -307,7 +305,7 @@ public class TestData {
 
     public interface methodWithCallbackIntArg extends Closure {
 
-        void methodWithCallbackIntArg_call(@CType(value = "int") @Signed() int arg0);
+        void methodWithCallbackIntArg_call(@CType(value = "int") int arg0);
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
             methodWithCallbackIntArg_call(parameters[0].asInt());
@@ -316,7 +314,7 @@ public class TestData {
 
     public interface methodWithCallbackShortArg extends Closure {
 
-        void methodWithCallbackShortArg_call(@CType(value = "short") @Signed() short arg0);
+        void methodWithCallbackShortArg_call(@CType(value = "short") short arg0);
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
             methodWithCallbackShortArg_call(parameters[0].asShort());
@@ -334,7 +332,7 @@ public class TestData {
 
     public interface methodWithCallbackByteArg extends Closure {
 
-        void methodWithCallbackByteArg_call(@CType(value = "char") @Signed() byte arg0);
+        void methodWithCallbackByteArg_call(@CType(value = "char") byte arg0);
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
             methodWithCallbackByteArg_call(parameters[0].asByte());
@@ -344,7 +342,6 @@ public class TestData {
     public interface methodWithCallbackShortReturn extends Closure {
 
         @CType(value = "short")
-        @Signed()
         short methodWithCallbackShortReturn_call();
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
@@ -382,7 +379,7 @@ public class TestData {
 
     public interface methodWithCallbackFloatArg extends Closure {
 
-        void methodWithCallbackFloatArg_call(@CType(value = "float") @Signed() float arg0);
+        void methodWithCallbackFloatArg_call(@CType(value = "float") float arg0);
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
             methodWithCallbackFloatArg_call(parameters[0].asFloat());
@@ -391,7 +388,7 @@ public class TestData {
 
     public interface methodWithCallbackDoubleArg extends Closure {
 
-        void methodWithCallbackDoubleArg_call(@CType(value = "double") @Signed() double arg0);
+        void methodWithCallbackDoubleArg_call(@CType(value = "double") double arg0);
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
             methodWithCallbackDoubleArg_call(parameters[0].asDouble());
@@ -401,7 +398,6 @@ public class TestData {
     public interface methodWithCallbackIntReturn extends Closure {
 
         @CType(value = "int")
-        @Signed()
         int methodWithCallbackIntReturn_call();
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
@@ -449,7 +445,6 @@ public class TestData {
     public interface methodWithCallbackByteReturn extends Closure {
 
         @CType(value = "char")
-        @Signed()
         byte methodWithCallbackByteReturn_call();
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
@@ -488,7 +483,6 @@ public class TestData {
     public interface methodWithCallbackFloatReturn extends Closure {
 
         @CType(value = "float")
-        @Signed()
         float methodWithCallbackFloatReturn_call();
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {

@@ -2,7 +2,7 @@ package com.badlogic.gdx.jnigen.ffi;
 
 import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.c.CEnum;
-import com.badlogic.gdx.jnigen.c.Signed;
+import com.badlogic.gdx.jnigen.c.CTypeInfo;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
 import com.badlogic.gdx.jnigen.util.Utils;
@@ -27,7 +27,7 @@ public final class ClosureInfo<T extends Closure> {
     private final JavaTypeWrapper[] cachedWrappers;
     private final JavaTypeWrapper cachedReturnWrapper;
     private final WrappingPointingSupplier<? extends Pointing>[] pointingSuppliers;
-    private final int[] realSize;
+    private final CTypeInfo[] cTypes;
     private final byte[] flags;
     private final AtomicBoolean cacheLock = new AtomicBoolean(false);
 
@@ -38,7 +38,7 @@ public final class ClosureInfo<T extends Closure> {
         parameterTypes = new Class[parameters.length];
         pointingSuppliers = new WrappingPointingSupplier[parameters.length];
         flags = new byte[parameters.length];
-        realSize = new int[parameters.length];
+        cTypes = new CTypeInfo[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
             Parameter parameter = parameters[i];
             parameterTypes[i] = parameter.getType();
@@ -49,23 +49,24 @@ public final class ClosureInfo<T extends Closure> {
                 if (supplier == null)
                     throw new IllegalArgumentException("Class " + parameters[i].getName() + " has no registered supplier.");
                 pointingSuppliers[i] = supplier;
-                realSize[i] = CHandler.POINTER_SIZE;
+                cTypes[i] = CHandler.getCTypeInfo("void*");
             } else if (CEnum.class.isAssignableFrom(parameter.getType())) {
-                realSize[i] = CHandler.getCTypeSize("int"); // TODO Converting to CType annotation on parameter?
+                cTypes[i] = CHandler.getCTypeInfo("int"); // TODO Converting to CType annotation on parameter?
             } else {
                 // If we are primitive
-                realSize[i] = Utils.getSizeForAnnotatedElement(parameter);
+                cTypes[i] = Utils.getCTypeForAnnotatedElement(parameter);
             }
             Annotation[] annotations = parameter.getAnnotations();
             flags[i] = ParameterTypes.buildFlags(parameter.getType(), annotations);
         }
         cachedWrappers = createWrapper();
         if (method.getReturnType() != void.class) {
-            int size = CHandler.POINTER_SIZE;
+            CTypeInfo cTypeInfo;
             if (method.getReturnType().isPrimitive())
-                size = Utils.getSizeForAnnotatedElement(method);
-            cachedReturnWrapper = new JavaTypeWrapper(method.getReturnType(), size, method.isAnnotationPresent(
-                    Signed.class));
+                cTypeInfo = Utils.getCTypeForAnnotatedElement(method);
+            else
+                cTypeInfo = CHandler.getCTypeInfo("void*");
+            cachedReturnWrapper = new JavaTypeWrapper(method.getReturnType(), cTypeInfo);
         } else {
             cachedReturnWrapper = null;
         }
@@ -77,7 +78,7 @@ public final class ClosureInfo<T extends Closure> {
         JavaTypeWrapper[] wrappers = new JavaTypeWrapper[parameterTypes.length];
         for (int i = 0; i < parameterTypes.length; i++) {
             Class<?> type = parameterTypes[i];
-            wrappers[i] = new JavaTypeWrapper(type, realSize[i], (flags[i] & SIGNED) != 0);
+            wrappers[i] = new JavaTypeWrapper(type, cTypes[i]);
         }
         return wrappers;
     }
@@ -104,7 +105,7 @@ public final class ClosureInfo<T extends Closure> {
             parameter.order(ByteOrder.nativeOrder());
             for (int i = 0; i < wrappers.length; i++) {
                 JavaTypeWrapper wrapper = wrappers[i];
-                int cSize = realSize[i];
+                int cSize = cTypes[i].getSize();
                 WrappingPointingSupplier<?> pointingSupplier = pointingSuppliers[i];
                 if (pointingSupplier != null) {
                     wrapper.setValue(
