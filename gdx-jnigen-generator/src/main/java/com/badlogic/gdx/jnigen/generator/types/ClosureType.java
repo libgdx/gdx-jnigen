@@ -5,7 +5,6 @@ import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
 import com.badlogic.gdx.jnigen.generator.Manager;
 import com.badlogic.gdx.jnigen.c.CType;
-import com.badlogic.gdx.jnigen.c.Signed;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -43,16 +42,12 @@ public class ClosureType implements MappedType {
             Parameter parameter = callMethod.addAndGetParameter(namedType.getDefinition().getMappedType().instantiationType(), namedType.getName());
             if (namedType.getDefinition().getTypeKind().isPrimitive()) {
                 parameter.addAndGetAnnotation(CType.class).addPair("value", "\"" + namedType.getDefinition().getTypeName() + "\"");
-                if (namedType.getDefinition().getTypeKind().isSigned())
-                    parameter.addAnnotation(Signed.class);
             }
         }
         returnType.getMappedType().importType(cu);
         callMethod.setType(returnType.getMappedType().abstractType());
         if (returnType.getTypeKind().isPrimitive()) {
             callMethod.addAndGetAnnotation(CType.class).addPair("value", "\"" + returnType.getTypeName() + "\"");
-            if (returnType.getTypeKind().isSigned())
-                callMethod.addAnnotation(Signed.class);
         }
 
         MethodDeclaration invokeMethod = closureClass.addMethod("invoke", Keyword.DEFAULT);
