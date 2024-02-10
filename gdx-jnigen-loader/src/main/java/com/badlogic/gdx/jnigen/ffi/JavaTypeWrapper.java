@@ -11,7 +11,7 @@ public final class JavaTypeWrapper {
     private long wrappingType;
     private Pointing wrappingPointing;
 
-    private CTypeInfo cTypeInfo;
+    private final CTypeInfo cTypeInfo;
 
     public JavaTypeWrapper(Class<?> wrappingClass, CTypeInfo cTypeInfo) {
         this.wrappingClass = wrappingClass;
