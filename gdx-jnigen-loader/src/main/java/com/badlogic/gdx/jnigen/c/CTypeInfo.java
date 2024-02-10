@@ -4,7 +4,7 @@ import com.badlogic.gdx.jnigen.util.Utils;
 
 public final class CTypeInfo {
 
-    private String name;
+    private final String name;
     private final long ffiType;
     private final int size;
     private final boolean signed;
