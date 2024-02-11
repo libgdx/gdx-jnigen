@@ -19,7 +19,10 @@ public final class ClosureObject<T extends Closure> extends Pointing {
 
     @Override
     public void free() {
-        CHandler.freeClosure(getPointer());
+        if (isFreed())
+            throw new IllegalArgumentException("Closure already freed");
+        CHandler.freeClosure(this);
+        freed = true;
     }
 
     public long getFnPtr() {
