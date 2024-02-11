@@ -14,6 +14,8 @@ import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 
 import java.util.Comparator;
@@ -72,10 +74,14 @@ public class EnumType implements MappedType {
             }
             ArrayInitializerExpr initializerExpr = new ArrayInitializerExpr(expressions);
             declaration.addFieldWithInitializer(name + "[]", "_values", initializerExpr, Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
-
         } else {
-            // TODO: 07.02.24 Add HashMap based caching probably
-            throw new IllegalArgumentException("Highest id is " + highestConstantID + ", no resolution strategy is yet implemented.");
+            cu.addImport(HashMap.class);
+            ObjectCreationExpr createHashMap = new ObjectCreationExpr();
+            createHashMap.setType(HashMap.class);
+            declaration.addFieldWithInitializer("HashMap<Integer, " + name + ">", "_values", createHashMap, Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
+            BlockStmt staticInit = declaration.addStaticInitializer();
+            staticInit.addStatement("for (" + name + " _val : values()) _values.put(_val.index, _val);");
+            getByIndex.createBody().addStatement("return _values.get(index);");
         }
     }
 
