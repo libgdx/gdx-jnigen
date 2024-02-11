@@ -6,6 +6,7 @@ public class FFITypes {
 
     /*JNI
 		#include <jnigen.h>
+		#include <test_data.h>
 */
     public static void init() {
     }

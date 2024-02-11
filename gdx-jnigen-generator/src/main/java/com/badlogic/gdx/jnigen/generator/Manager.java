@@ -237,7 +237,7 @@ public class Manager {
             CompilationUnit ffiTypeCU = new CompilationUnit(basePackage);
             ffiTypeCU.addImport(CHandler.class);
             ClassOrInterfaceDeclaration ffiTypeClass = ffiTypeCU.addClass("FFITypes", Keyword.PUBLIC);
-            addJNIComment(ffiTypeClass, "#include <jnigen.h>");
+            addJNIComment(ffiTypeClass, "#include <jnigen.h>", "#include <" + parsedCHeader + ">");
             ffiTypeClass.addMethod("init", Keyword.PUBLIC, Keyword.STATIC);
 
             BlockComment getFFITypeNativeMethod = new BlockComment();
