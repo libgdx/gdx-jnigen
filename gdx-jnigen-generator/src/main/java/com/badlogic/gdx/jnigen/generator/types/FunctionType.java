@@ -36,10 +36,8 @@ public class FunctionType {
         returnType.getMappedType().importType(cu);
         if (returnType.getTypeKind().isPrimitive())
             nativeMethod.setType(returnType.getMappedType().abstractType());
-        else if (returnType.getTypeKind() == TypeKind.POINTER)
-            nativeMethod.setType(long.class);
-        else if (returnType.getTypeKind() == TypeKind.ENUM)
-            nativeMethod.setType(int.class);
+        else if (returnType.getTypeKind().isSpecial())
+            nativeMethod.setType(returnType.getMappedType().primitiveType());
         MethodCallExpr callExpr = new MethodCallExpr(nativeMethod.getNameAsString());
 
         StringBuilder nativeBody = new StringBuilder();
@@ -75,16 +73,13 @@ public class FunctionType {
                 body.addStatement(new ReturnStmt(callExpr));
             } else {
                 if (returnType.getTypeKind() == TypeKind.STRUCT) {
-                    nativeMethod.addParameter(long.class, "_ret");
-                    nativeBody.insert(0, "*(" + returnType.getTypeName() + " *)_ret  = ");
-                    body.addStatement(returnType.getTypeName() + " _ret = new " + returnType.getTypeName() + "();");
-                    callExpr.addArgument("_ret.getPointer()");
-                    body.addStatement(callExpr);
-                    body.addStatement("return _ret;");
+                    nativeBody.insert(0, "*_ret = ");
+                    nativeBody.insert(0, returnType.getTypeName() + "* _ret = (" + returnType.getTypeName() + "*)malloc(sizeof(" + returnType.getTypeName() + "));\n");
+                    nativeBody.append("\nreturn (jlong)_ret;");
                 } else {
                     nativeBody.insert(0, "return (j" + returnType.getMappedType().primitiveType() + ")");
-                    body.addStatement(new ReturnStmt(returnType.getMappedType().fromC(callExpr)));
                 }
+                body.addStatement(new ReturnStmt(returnType.getMappedType().fromC(callExpr)));
             }
         } else {
             body.addStatement(callExpr);

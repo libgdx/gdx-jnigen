@@ -192,13 +192,13 @@ public class TestData {
     */
 
     public static TestStruct returnTestStruct() {
-        TestStruct _ret = new TestStruct();
-        returnTestStruct_internal(_ret.getPointer());
-        return _ret;
+        return new TestStruct(returnTestStruct_internal(), true);
     }
 
-    static private native void returnTestStruct_internal(long _ret);/*
-    	*(TestStruct *)_ret  = returnTestStruct();
+    static private native long returnTestStruct_internal();/*
+    	TestStruct* _ret = (TestStruct*)malloc(sizeof(TestStruct));
+    	*_ret = returnTestStruct();
+    	return (jlong)_ret;
     */
 
     public static long passByValue(TestStruct arg0) {
@@ -218,13 +218,13 @@ public class TestData {
     */
 
     public static TestStruct call_methodWithCallbackTestStructReturn(ClosureObject<methodWithCallbackTestStructReturn> arg0) {
-        TestStruct _ret = new TestStruct();
-        call_methodWithCallbackTestStructReturn_internal(arg0.getFnPtr(), _ret.getPointer());
-        return _ret;
+        return new TestStruct(call_methodWithCallbackTestStructReturn_internal(arg0.getFnPtr()), true);
     }
 
-    static private native void call_methodWithCallbackTestStructReturn_internal(long arg0, long _ret);/*
-    	*(TestStruct *)_ret  = call_methodWithCallbackTestStructReturn((methodWithCallbackTestStructReturn)arg0);
+    static private native long call_methodWithCallbackTestStructReturn_internal(long arg0);/*
+    	TestStruct* _ret = (TestStruct*)malloc(sizeof(TestStruct));
+    	*_ret = call_methodWithCallbackTestStructReturn((methodWithCallbackTestStructReturn)arg0);
+    	return (jlong)_ret;
     */
 
     public static StructPointer<TestStruct> call_methodWithCallbackTestStructPointerReturn(ClosureObject<methodWithCallbackTestStructPointerReturn> arg0) {
