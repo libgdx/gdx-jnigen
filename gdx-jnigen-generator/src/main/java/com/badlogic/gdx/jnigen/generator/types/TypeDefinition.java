@@ -9,13 +9,18 @@ public class TypeDefinition {
     private final TypeKind typeKind;
     private final String typeName;
     private TypeDefinition nestedDefinition;
+    private boolean constMarked = false;
 
     public TypeDefinition(TypeKind typeKind, String typeName) {
         this.typeKind = typeKind;
-        if (typeKind == TypeKind.STRUCT)
-            this.typeName = typeName.replace("struct ", "");
-        else
+        if (typeKind.isPrimitive())
+            Manager.getInstance().recordCType(typeName);
+        if (typeName.startsWith("const ")) {
+            this.typeName = typeName.replace("const ", "");
+            constMarked = true;
+        } else {
             this.typeName = typeName;
+        }
     }
 
     public TypeKind getTypeKind() {
@@ -31,10 +36,6 @@ public class TypeDefinition {
         if (typeName.equals("_Bool"))
             typeName = "bool"; //TODO WHYYYY?????? Is it a typedef that gets resolved?
         TypeDefinition definition = new TypeDefinition(TypeKind.getTypeKind(type), typeName);
-        if (!definition.getTypeKind().isSpecial() && !Manager.getInstance().hasCTypeMapping(typeName)) {
-            Manager.getInstance().recordCType(typeName);
-            Manager.getInstance().registerCTypeMapping(typeName, PrimitiveType.fromTypeDefinition(definition));
-        }
         if (definition.getTypeKind() == TypeKind.POINTER) {
             CXType pointee = clang.clang_getPointeeType(type);
             definition.nestedDefinition = createTypeDefinition(pointee);
@@ -60,6 +61,9 @@ public class TypeDefinition {
     public MappedType getMappedType() {
         if (nestedDefinition != null)
             return nestedDefinition.getMappedType().asPointer();
+        if (typeKind.isPrimitive() || typeKind == TypeKind.VOID) // TODO: Is this correct with void?
+            return PrimitiveType.fromTypeDefinition(this);
+
         return Manager.getInstance().resolveCTypeMapping(typeName);
     }
 }

@@ -64,13 +64,13 @@ public class Generator {
                     if (parent.kind() == CXCursor_StructDecl && buffer.get(0) == 1) {
                         CXType type = clang_getCursorType(current);
                         NamedType namedType = new NamedType(TypeDefinition.createTypeDefinition(type), name);
-                        Manager.getInstance().putStructField(clang_getCursorSpelling(parent).getString(), namedType);
+                        Manager.getInstance().putStructField(clang_getTypeSpelling(clang_getCursorType(parent)).getString(), namedType);
                     }
                     break;
                 case CXCursor_EnumDecl:
                     // TODO: We don't care about TypeDef for the moment
                     if (parent.kind() != CXCursor_TypedefDecl) {
-                        Manager.getInstance().startEnum(name);
+                        Manager.getInstance().startEnum(TypeDefinition.createTypeDefinition(clang_getCursorType(current)));
                         buffer.put(1, (byte)1);
                     } else {
                         buffer.put(1, (byte)0);
@@ -78,7 +78,7 @@ public class Generator {
                     break;
                 case CXCursor_EnumConstantDecl:
                     if (parent.kind() == CXCursor_EnumDecl && buffer.get(1) == 1) {
-                        String enumName = clang_getCursorSpelling(parent).getString();
+                        String enumName = clang_getTypeSpelling(clang_getCursorType(parent)).getString();
                         String constantName = name;
                         long constantValue = clang_getEnumConstantDeclValue(current);
                         if (constantValue > Integer.MAX_VALUE)
@@ -88,22 +88,23 @@ public class Generator {
                     break;
                 case CXCursor_TypedefDecl:
                     CXType typeDef = clang_getTypedefDeclUnderlyingType(current);
+                    Manager.getInstance().registerTypeDef(name, clang_getTypeSpelling(typeDef).getString());
                     if (typeDef.kind() == CXType_Pointer) {
-                        CXType funcType = clang_getPointeeType(typeDef);
-                        if (funcType.kind() == CXType_FunctionProto || funcType.kind() == CXType_FunctionNoProto) {
-                            CXType returnType = clang_getResultType(funcType);
-                            TypeDefinition returnDefinition = TypeDefinition.createTypeDefinition(returnType);
-                            int numArgs = clang_getNumArgTypes(funcType);
-                            NamedType[] argTypes = new NamedType[numArgs];
-                            for (int i = 0; i < numArgs; i++) {
-                                CXType argType = clang_getArgType(funcType, i);
-                                // TODO: To retrieve the parameter name if available, we should utilise another visitor
-                                //  However, I decided that I don't care for the moment
-                                argTypes[i] = new NamedType(TypeDefinition.createTypeDefinition(argType), "arg" + i);
-                            }
-                            ClosureType closure = new ClosureType(name, returnDefinition, argTypes);
-                            Manager.getInstance().addClosure(closure);
+                        typeDef = clang_getPointeeType(typeDef);
+                    }
+                    if (typeDef.kind() == CXType_FunctionProto || typeDef.kind() == CXType_FunctionNoProto) {
+                        CXType returnType = clang_getResultType(typeDef);
+                        TypeDefinition returnDefinition = TypeDefinition.createTypeDefinition(returnType);
+                        int numArgs = clang_getNumArgTypes(typeDef);
+                        NamedType[] argTypes = new NamedType[numArgs];
+                        for (int i = 0; i < numArgs; i++) {
+                            CXType argType = clang_getArgType(typeDef, i);
+                            // TODO: To retrieve the parameter name if available, we should utilise another visitor
+                            //  However, I decided that I don't care for the moment
+                            argTypes[i] = new NamedType(TypeDefinition.createTypeDefinition(argType), "arg" + i);
                         }
+                        ClosureType closure = new ClosureType(name, returnDefinition, argTypes);
+                        Manager.getInstance().addClosure(closure);
                     }
                     break;
                 case CXCursor_FunctionDecl:
