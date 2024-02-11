@@ -143,12 +143,16 @@ public class StructType implements MappedType {
         generateFFIMethodBody.append("\t\ttype->elements = (ffi_type**)malloc(sizeof(ffi_type*) * ").append(fields.size() + 1).append(");\n");
         for (int i = 0; i < fields.size(); i++) {
             NamedType field = fields.get(i);
-            if (field.getDefinition().getTypeKind() == TypeKind.STRUCT) {
+            if (field.getDefinition().getTypeKind() == TypeKind.POINTER || field.getDefinition().getTypeKind() == TypeKind.CLOSURE) {
+                generateFFIMethodBody.append("\t\ttype->elements[").append(i).append("] = &ffi_type_pointer;\n");
+            } else if (field.getDefinition().getTypeKind() == TypeKind.STRUCT) {
                 int fieldStructID = Manager.getInstance().getStructID((StructType)field.getDefinition().getMappedType());
                 generateFFIMethodBody.append("\t\ttype->elements[").append(i).append("] = ")
                         .append(ffiResolveFunctionName).append("(")
                         .append(fieldStructID)
                         .append(");\n");
+            } else if (field.getDefinition().getTypeKind() == TypeKind.ENUM) {
+                generateFFIMethodBody.append("\t\ttype->elements[").append(i).append("] = GET_FFI_TYPE(int);\n");
             } else {
                 generateFFIMethodBody.append("\t\ttype->elements[").append(i).append("] = GET_FFI_TYPE(")
                         .append(field.getDefinition().getTypeName())
