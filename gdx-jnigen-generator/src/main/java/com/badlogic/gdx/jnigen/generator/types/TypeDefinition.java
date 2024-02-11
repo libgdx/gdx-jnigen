@@ -8,10 +8,14 @@ public class TypeDefinition {
 
     private final TypeKind typeKind;
     private final String typeName;
+    private TypeDefinition nestedDefinition;
 
     public TypeDefinition(TypeKind typeKind, String typeName) {
         this.typeKind = typeKind;
-        this.typeName = typeName;
+        if (typeKind == TypeKind.STRUCT)
+            this.typeName = typeName.replace("struct ", "");
+        else
+            this.typeName = typeName;
     }
 
     public TypeKind getTypeKind() {
@@ -27,9 +31,13 @@ public class TypeDefinition {
         if (typeName.equals("_Bool"))
             typeName = "bool"; //TODO WHYYYY?????? Is it a typedef that gets resolved?
         TypeDefinition definition = new TypeDefinition(TypeKind.getTypeKind(type), typeName);
-        if (!TypeKind.getTypeKind(type).isSpecial() && !Manager.getInstance().hasCTypeMapping(typeName)) {
+        if (!definition.getTypeKind().isSpecial() && !Manager.getInstance().hasCTypeMapping(typeName)) {
             Manager.getInstance().recordCType(typeName);
             Manager.getInstance().registerCTypeMapping(typeName, PrimitiveType.fromTypeDefinition(definition));
+        }
+        if (definition.getTypeKind() == TypeKind.POINTER) {
+            CXType pointee = clang.clang_getPointeeType(type);
+            definition.nestedDefinition = createTypeDefinition(pointee);
         }
         return definition;
     }
@@ -50,6 +58,8 @@ public class TypeDefinition {
     }
 
     public MappedType getMappedType() {
+        if (nestedDefinition != null)
+            return nestedDefinition.getMappedType().asPointer();
         return Manager.getInstance().resolveCTypeMapping(typeName);
     }
 }
