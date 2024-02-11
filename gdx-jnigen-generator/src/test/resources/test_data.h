@@ -89,6 +89,7 @@ void call_methodWithCallbackTestEnumArg(methodWithCallbackTestEnumArg fnPtr);
 
 // Pointer stuff
 int passIntPointer(int*);
+int* returnIntPointer(int);
 
 
 #ifdef __cplusplus

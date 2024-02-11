@@ -13,6 +13,7 @@ import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.comments.BlockComment;
+import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.PrimitiveType;
 
@@ -158,5 +159,10 @@ public class StructType implements MappedType {
     @Override
     public MappedType asPointer() {
         return new PointerType(definition);
+    }
+
+    @Override
+    public Expression fromC(Expression cRetrieved) {
+        throw new IllegalArgumentException("This is not how we unpack a struct from C");
     }
 }

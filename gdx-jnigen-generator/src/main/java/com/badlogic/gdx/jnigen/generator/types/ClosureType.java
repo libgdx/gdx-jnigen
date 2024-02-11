@@ -10,6 +10,7 @@ import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
@@ -106,6 +107,11 @@ public class ClosureType implements MappedType {
 
     @Override
     public MappedType asPointer() {
+        throw new IllegalArgumentException("To implement");
+    }
+
+    @Override
+    public Expression fromC(Expression cRetrieved) {
         throw new IllegalArgumentException("To implement");
     }
 }
