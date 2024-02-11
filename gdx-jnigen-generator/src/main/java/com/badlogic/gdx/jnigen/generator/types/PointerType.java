@@ -5,6 +5,9 @@ import com.badlogic.gdx.jnigen.pointer.DoublePointer;
 import com.badlogic.gdx.jnigen.pointer.FloatPointer;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
 
 public class PointerType implements MappedType {
 
@@ -15,19 +18,19 @@ public class PointerType implements MappedType {
         this.pointingTo = pointingTo;
     }
 
-    private boolean isStructPointer() {
+    public boolean isStructPointer() {
         return pointingTo.getTypeKind() == TypeKind.STRUCT;
     }
 
-    private boolean isDoublePointer() {
+    public boolean isDoublePointer() {
         return pointingTo.getTypeKind() == TypeKind.DOUBLE;
     }
 
-    private boolean isFloatPointer() {
+    public boolean isFloatPointer() {
         return pointingTo.getTypeKind() == TypeKind.FLOAT;
     }
 
-    private boolean isIntPointer() {
+    public boolean isIntPointer() {
         return pointingTo.getTypeKind().isPrimitive() && !isFloatPointer() && !isDoublePointer();
     }
 
@@ -86,5 +89,16 @@ public class PointerType implements MappedType {
     @Override
     public MappedType asPointer() {
         throw new IllegalArgumentException("Not yet implemented");
+    }
+
+    @Override
+    public Expression fromC(Expression cRetrieved) {
+        ObjectCreationExpr createObject = new ObjectCreationExpr();
+        createObject.setType(instantiationType());
+        createObject.addArgument(cRetrieved);
+        createObject.addArgument("false");
+        if (isIntPointer())
+            createObject.addArgument(new StringLiteralExpr(pointingTo.getTypeName()));
+        return createObject;
     }
 }

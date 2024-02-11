@@ -81,18 +81,9 @@ public class FunctionType {
                     callExpr.addArgument("_ret.getPointer()");
                     body.addStatement(callExpr);
                     body.addStatement("return _ret;");
-                } else if (returnType.getTypeKind() == TypeKind.ENUM) {
-                    nativeBody.insert(0, "return (jint)");
-                    MethodCallExpr callByIndex = new MethodCallExpr("getByIndex", callExpr);
-                    callByIndex.setScope(new NameExpr(returnType.getMappedType().instantiationType()));
-                    body.addStatement(new ReturnStmt(callByIndex));
                 } else {
-                    nativeBody.insert(0, "return (jlong)");
-                    ObjectCreationExpr createObject = new ObjectCreationExpr();
-                    createObject.setType(returnType.getMappedType().instantiationType());
-                    createObject.addArgument(callExpr);
-                    createObject.addArgument("false");
-                    body.addStatement(new ReturnStmt(createObject));
+                    nativeBody.insert(0, "return (j" + returnType.getMappedType().primitiveType() + ")");
+                    body.addStatement(new ReturnStmt(returnType.getMappedType().fromC(callExpr)));
                 }
             }
         } else {

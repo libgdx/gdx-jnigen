@@ -299,6 +299,14 @@ public class TestData {
     	return (jint)passIntPointer((int *)arg0);
     */
 
+    public static CSizedIntPointer returnIntPointer(int arg0) {
+        return new CSizedIntPointer(returnIntPointer_internal(arg0), false, "int");
+    }
+
+    static private native long returnIntPointer_internal(int arg0);/*
+    	return (jlong)returnIntPointer((int)arg0);
+    */
+
     public interface methodWithCallbackAllArgs extends Closure {
 
         void methodWithCallbackAllArgs_call(@CType(value = "uint64_t") long arg0, @CType(value = "int") int arg1, @CType(value = "short") short arg2, @CType(value = "char") byte arg3, @CType(value = "uint16_t") char arg4, @CType(value = "bool") boolean arg5, @CType(value = "float") float arg6, @CType(value = "double") double arg7);

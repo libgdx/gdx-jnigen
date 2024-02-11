@@ -6,6 +6,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.comments.BlockComment;
+import com.github.javaparser.ast.expr.Expression;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,6 +90,11 @@ public class GlobalType implements MappedType {
 
     @Override
     public MappedType asPointer() {
+        throw new IllegalArgumentException("Should not reach");
+    }
+
+    @Override
+    public Expression fromC(Expression cRetrieved) {
         throw new IllegalArgumentException("Should not reach");
     }
 }
