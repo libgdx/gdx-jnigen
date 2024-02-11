@@ -21,9 +21,47 @@ public final class CSizedIntPointer extends Pointing {
         this.cTypeInfo = info;
     }
 
+    public boolean getBoolean(int index) {
+        cTypeInfo.assertCanHoldByte(); // Assuming boolean is represented as a byte
+        return CHandler.getPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize()) != 0;
+    }
+
+    public void setBoolean(boolean value, int index) {
+        CHandler.setPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize(), value ? 1 : 0);
+    }
+
+    public byte getByte(int index) {
+        cTypeInfo.assertCanHoldByte();
+        return (byte)CHandler.getPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize());
+    }
+
+    public void setByte(byte value, int index) {
+        cTypeInfo.assertBounds(value);
+        CHandler.setPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize(), value);
+    }
+
+    public short getShort(int index) {
+        cTypeInfo.assertCanHoldShort();
+        return (short)CHandler.getPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize());
+    }
+
+    public void setShort(short value, int index) {
+        cTypeInfo.assertBounds(value);
+        CHandler.setPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize(), value);
+    }
+
+    public char getChar(int index) {
+        cTypeInfo.assertCanHoldChar();
+        return (char)CHandler.getPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize());
+    }
+
+    public void setChar(char value, int index) {
+        cTypeInfo.assertBounds(value);
+        CHandler.setPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize(), value);
+    }
+
     public int getInt(int index) {
-        if (cTypeInfo.getSize() > 4 || !cTypeInfo.isSigned() && cTypeInfo.getSize() == 4)
-            throw new IllegalArgumentException("Java int exceeds size of backed type");
+        cTypeInfo.assertCanHoldInt();
         return (int)CHandler.getPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize());
     }
 
@@ -31,6 +69,16 @@ public final class CSizedIntPointer extends Pointing {
         cTypeInfo.assertBounds(value);
         CHandler.setPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize(), value);
     }
+
+    public long getLong(int index) {
+        return CHandler.getPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize());
+    }
+
+    public void setLong(long value, int index) {
+        cTypeInfo.assertBounds(value);
+        CHandler.setPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize(), value);
+    }
+
 
 
     public CSizedIntPointer recast(String newCType) {
