@@ -87,6 +87,10 @@ typedef void (*methodWithCallbackTestEnumArg)(TestEnum);
 TestEnum call_methodWithCallbackTestEnumReturn(methodWithCallbackTestEnumReturn fnPtr);
 void call_methodWithCallbackTestEnumArg(methodWithCallbackTestEnumArg fnPtr);
 
+// Pointer stuff
+int passIntPointer(int*);
+
+
 #ifdef __cplusplus
 }
 #endif
