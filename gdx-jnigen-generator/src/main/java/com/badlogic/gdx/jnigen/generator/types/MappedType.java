@@ -20,4 +20,6 @@ public interface MappedType {
 
     String primitiveType();
 
+    MappedType asPointer();
+
 }

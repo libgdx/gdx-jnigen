@@ -59,13 +59,13 @@ public class Manager {
         globalType = new GlobalType(JavaUtils.javarizeName(parsedCHeader.split("\\.h")[0]));
     }
 
-    public void startStruct(String name) {
+    public void startStruct(TypeDefinition definition) {
+        String name = definition.getTypeName();
         if (structs.containsKey(name))
             throw new IllegalArgumentException("Struct with name: " + name + " already exists.");
-        StructType structType = new StructType(name);
+        StructType structType = new StructType(definition);
         structs.put(name, structType);
         registerCTypeMapping(name, structType);
-        registerCTypeMapping(name + " *", new PointerType(name + ".Pointer", new TypeDefinition(TypeKind.POINTER, name + " *"), structType));
     }
 
     public void putStructField(String structName, NamedType type) {

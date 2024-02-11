@@ -103,4 +103,9 @@ public class ClosureType implements MappedType {
     public String packageName() {
         return Manager.getInstance().getBasePackage();
     }
+
+    @Override
+    public MappedType asPointer() {
+        throw new IllegalArgumentException("To implement");
+    }
 }

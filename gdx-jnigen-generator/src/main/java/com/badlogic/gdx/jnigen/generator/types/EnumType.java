@@ -102,4 +102,9 @@ public class EnumType implements MappedType {
     public String primitiveType() {
         return int.class.getName(); // Should be able to hold it
     }
+
+    @Override
+    public MappedType asPointer() {
+        throw new IllegalArgumentException("To implement");
+    }
 }
