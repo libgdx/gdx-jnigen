@@ -21,6 +21,26 @@ public final class CTypeInfo {
             throw new IllegalArgumentException("Value " + value + " exceeds bounds " + size + " with signess " + signed);
     }
 
+    public void assertCanHoldByte() {
+        if (size > 1 || !signed)
+            throw new IllegalArgumentException("CType " + name + " would overflow byte");
+    }
+
+    public void assertCanHoldShort() {
+        if (size > 2 || !signed && size == 2)
+            throw new IllegalArgumentException("CType " + name + " would overflow an short");
+    }
+
+    public void assertCanHoldChar() {
+        if (size > 2 || signed)
+            throw new IllegalArgumentException("CType " + name + " would overflow a char");
+    }
+
+    public void assertCanHoldInt() {
+        if (size > 4 || !signed && size == 4)
+            throw new IllegalArgumentException("CType " + name + " would overflow an int");
+    }
+
     public String getName() {
         return name;
     }
