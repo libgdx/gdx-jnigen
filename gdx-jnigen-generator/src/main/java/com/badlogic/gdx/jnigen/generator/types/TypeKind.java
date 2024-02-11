@@ -24,7 +24,8 @@ public enum TypeKind {
     POINTER(8, false, CXType_Pointer),
     STRUCT(-1, false, CXType_Record),
     CLOSURE(8, false, CXType_FunctionProto),
-    ENUM(4, true, CXType_Enum);
+    ENUM(4, true, CXType_Enum),
+    FIXED_SIZE_ARRAY(-1, false, CXType_ConstantArray);
 
     private final int size;
     private final boolean signed;
@@ -70,7 +71,7 @@ public enum TypeKind {
     }
 
     public boolean isSpecial() {
-        return this == POINTER || this == STRUCT || this == CLOSURE || this == ENUM;
+        return this == POINTER || this == STRUCT || this == CLOSURE || this == ENUM || this == FIXED_SIZE_ARRAY;
     }
     public boolean isPrimitive() {
         return !isSpecial() && this != VOID;
