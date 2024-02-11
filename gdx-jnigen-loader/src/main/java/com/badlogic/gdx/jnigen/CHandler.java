@@ -314,6 +314,13 @@ public class CHandler {
         return offset;
     }
     */
+    public static float getStructFieldFloat(long pointer, long type_ptr, int index) {
+        return Float.intBitsToFloat((int)getStructField(pointer, type_ptr, index));
+    }
+
+    public static double getStructFieldDouble(long pointer, long type_ptr, int index) {
+        return Double.longBitsToDouble(getStructField(pointer, type_ptr, index));
+    }
 
     public static native long getStructField(long pointer, long type_ptr, int index);/*
         char* ptr = reinterpret_cast<char*>(pointer);
@@ -326,6 +333,14 @@ public class CHandler {
         memcpy(&ret, ptr + offset, struct_type->elements[field]->size);  // Make it endian safe, I guess?
         return ret;
     */
+
+    public static void setStructField(long pointer, long type_ptr, int index, float value) {
+        setStructField_internal(pointer, type_ptr, index, Float.floatToIntBits(value));
+    }
+
+    public static void setStructField(long pointer, long type_ptr, int index, double value) {
+        setStructField_internal(pointer, type_ptr, index, Double.doubleToLongBits(value));
+    }
 
     public static void setStructField(long pointer, long type_ptr, int index, long value) {
         boolean res = setStructField_internal(pointer, type_ptr, index, value);
