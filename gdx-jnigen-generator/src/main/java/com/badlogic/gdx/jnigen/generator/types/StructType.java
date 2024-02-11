@@ -4,6 +4,7 @@ import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.generator.Manager;
 import com.badlogic.gdx.jnigen.pointer.Struct;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Modifier.Keyword;
@@ -14,8 +15,11 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.PrimitiveType;
 
 import java.util.ArrayList;
@@ -98,16 +102,30 @@ public class StructType implements MappedType {
         // Fields
         for (int i = 0; i < fields.size(); i++) {
             NamedType field = fields.get(i);
+            field.getDefinition().getMappedType().importType(compilationUnit);
             MethodDeclaration getMethod = structClass.addMethod(field.getName(), Keyword.PUBLIC);
             getMethod.setType(field.getDefinition().getMappedType().abstractType());
             BlockStmt getBody = new BlockStmt();
-            getBody.addStatement("return (" + getMethod.getTypeAsString() + ") CHandler.getStructField(getPointer(), __ffi_type, " + i + ");");
+            String appendix = "";
+            if (field.getDefinition().getTypeKind() == TypeKind.FLOAT)
+                appendix = "Float";
+            else if (field.getDefinition().getTypeKind() == TypeKind.DOUBLE)
+                appendix = "Double";
+            Expression expression = StaticJavaParser.parseExpression("CHandler.getStructField" + appendix + "(getPointer(), __ffi_type, " + i + ")");
+            getBody.addStatement(new ReturnStmt(field.getDefinition().getMappedType().fromC(expression)));
             getMethod.setBody(getBody);
 
             MethodDeclaration setMethod = structClass.addMethod(field.getName(), Keyword.PUBLIC);
             setMethod.addParameter(field.getDefinition().getMappedType().abstractType(), field.getName());
             BlockStmt setBody = new BlockStmt();
-            setBody.addStatement("CHandler.setStructField(getPointer(), __ffi_type, " + i + ", " + field.getName() + ");");
+
+            MethodCallExpr callSetStruct = new MethodCallExpr("setStructField");
+            callSetStruct.setScope(new NameExpr("CHandler"));
+            callSetStruct.addArgument("getPointer()");
+            callSetStruct.addArgument("__ffi_type");
+            callSetStruct.addArgument(String.valueOf(i));
+            callSetStruct.addArgument(field.getDefinition().getMappedType().toC(new NameExpr(field.getName())));
+            setBody.addStatement(callSetStruct);
             setMethod.setBody(setBody);
         }
 
@@ -169,5 +187,12 @@ public class StructType implements MappedType {
         createObject.addArgument(cRetrieved);
         createObject.addArgument("true");
         return createObject;
+    }
+
+    @Override
+    public Expression toC(Expression cSend) {
+        MethodCallExpr methodCallExpr = new MethodCallExpr("getPointer");
+        methodCallExpr.setScope(cSend);
+        return methodCallExpr;
     }
 }

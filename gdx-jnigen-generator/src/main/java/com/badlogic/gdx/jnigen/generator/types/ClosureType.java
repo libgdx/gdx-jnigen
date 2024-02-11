@@ -12,6 +12,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
 public class ClosureType implements MappedType {
@@ -112,6 +113,15 @@ public class ClosureType implements MappedType {
 
     @Override
     public Expression fromC(Expression cRetrieved) {
-        throw new IllegalArgumentException("To implement");
+        // TODO: 11.02.2024 Fix Badlyyy
+        return new NameExpr("int");
+        //throw new IllegalArgumentException("To implement");
+    }
+
+    @Override
+    public Expression toC(Expression cSend) {
+        MethodCallExpr methodCallExpr = new MethodCallExpr("getFnPtr");
+        methodCallExpr.setScope(cSend);
+        return methodCallExpr;
     }
 }

@@ -9,6 +9,7 @@ import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.ArrayInitializerExpr;
+import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -117,8 +118,18 @@ public class EnumType implements MappedType {
 
     @Override
     public Expression fromC(Expression cRetrieved) {
-        MethodCallExpr callByIndex = new MethodCallExpr("getByIndex", cRetrieved);
+        CastExpr intCast = new CastExpr();
+        intCast.setType(int.class);
+        intCast.setExpression(cRetrieved);
+        MethodCallExpr callByIndex = new MethodCallExpr("getByIndex", intCast);
         callByIndex.setScope(new NameExpr(instantiationType()));
         return callByIndex;
+    }
+
+    @Override
+    public Expression toC(Expression cSend) {
+        MethodCallExpr methodCallExpr = new MethodCallExpr("getIndex");
+        methodCallExpr.setScope(cSend);
+        return methodCallExpr;
     }
 }
