@@ -97,10 +97,6 @@ public class PrimitiveType implements MappedType {
 
     @Override
     public Expression toC(Expression cSend) {
-        if (javaRepresentation == boolean.class) {
-            return new ConditionalExpr(cSend, new IntegerLiteralExpr("1"), new IntegerLiteralExpr("0"));
-        } else {
-            return cSend;
-        }
+        return cSend;
     }
 }
