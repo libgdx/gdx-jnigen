@@ -54,7 +54,7 @@ public class Generator {
                 case CXCursor_StructDecl:
                     // TODO: We don't care about TypeDef for the moment
                     if (parent.kind() != CXCursor_TypedefDecl) {
-                        Manager.getInstance().startStruct(name);
+                        Manager.getInstance().startStruct(TypeDefinition.createTypeDefinition(clang_getCursorType(current)));
                         buffer.put(0, (byte)1);
                     } else {
                         buffer.put(0, (byte)0);

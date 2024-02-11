@@ -22,23 +22,21 @@ import java.util.List;
 
 public class StructType implements MappedType {
 
-    private final String name;
+
+    private final TypeDefinition definition;
     private final List<NamedType> fields = new ArrayList<>();
     private final String pointerName = "Pointer";
 
-    public StructType(String name) {
-        this.name = name;
+    public StructType(TypeDefinition definition) {
+        this.definition = definition;
     }
 
     public void addField(NamedType type) {
         fields.add(type);
     }
 
-    public String getName() {
-        return name;
-    }
-
     public void write(CompilationUnit compilationUnit, HashMap<MethodDeclaration, String> patchMap) {
+        String name = definition.getTypeName();
         String structPointerRef = name + "." + pointerName;
 
         compilationUnit.addImport(CHandler.class);
@@ -133,13 +131,8 @@ public class StructType implements MappedType {
     }
 
     @Override
-    public String instantiationType() {
-        return name;
-    }
-
-    @Override
     public String abstractType() {
-        return name;
+        return definition.getTypeName();
     }
 
     @Override
@@ -154,11 +147,16 @@ public class StructType implements MappedType {
 
     @Override
     public String classFile() {
-        return packageName() + "." + name;
+        return packageName() + "." + definition.getTypeName();
     }
 
     @Override
     public String packageName() {
         return Manager.getInstance().getBasePackage() + ".structs";
+    }
+
+    @Override
+    public MappedType asPointer() {
+        return new PointerType(definition);
     }
 }
