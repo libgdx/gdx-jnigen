@@ -347,6 +347,10 @@ public class CHandler {
         return ret;
     */
 
+    public static void setStructField(long pointer, long type_ptr, int index, boolean value) {
+        setStructField_internal(pointer, type_ptr, index, value ? 1 : 0);
+    }
+
     public static void setStructField(long pointer, long type_ptr, int index, float value) {
         setStructField_internal(pointer, type_ptr, index, Float.floatToIntBits(value));
     }
