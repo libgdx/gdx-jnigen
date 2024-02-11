@@ -23,32 +23,29 @@ public final class ClosureInfo<T extends Closure> {
     private final long cif;
     private final T toCallOn;
 
-    private final Class<?>[] parameterTypes;
     private final JavaTypeWrapper[] cachedWrappers;
     private final JavaTypeWrapper cachedReturnWrapper;
-    private final CTypeInfo[] cTypes;
     private final AtomicBoolean cacheLock = new AtomicBoolean(false);
 
     public ClosureInfo(long cif, Method method, T toCallOn) {
         this.cif = cif;
         this.toCallOn = toCallOn;
         Parameter[] parameters = method.getParameters();
-        parameterTypes = new Class[parameters.length];
-        cTypes = new CTypeInfo[parameters.length];
+        cachedWrappers = new JavaTypeWrapper[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
             Parameter parameter = parameters[i];
-            parameterTypes[i] = parameter.getType();
+            CTypeInfo cTypeInfo;
 
             if (Pointing.class.isAssignableFrom(parameter.getType())) {
-                cTypes[i] = CHandler.getCTypeInfo("void*");
+                cTypeInfo = CHandler.getCTypeInfo("void*");
             } else if (CEnum.class.isAssignableFrom(parameter.getType())) {
-                cTypes[i] = CHandler.getCTypeInfo("int"); // TODO Converting to CType annotation on parameter?
+                cTypeInfo = CHandler.getCTypeInfo("int"); // TODO Converting to CType annotation on parameter?
             } else {
                 // If we are primitive
-                cTypes[i] = Utils.getCTypeForAnnotatedElement(parameter);
+                cTypeInfo = Utils.getCTypeForAnnotatedElement(parameter);
             }
+            cachedWrappers[i] = new JavaTypeWrapper(parameter.getType(), cTypeInfo);
         }
-        cachedWrappers = createWrapper();
         if (method.getReturnType() != void.class) {
             CTypeInfo cTypeInfo;
             if (method.getReturnType().isPrimitive())
@@ -64,12 +61,11 @@ public final class ClosureInfo<T extends Closure> {
     }
 
     private JavaTypeWrapper[] createWrapper() {
-        if (parameterTypes.length == 0)
-            return null;
-        JavaTypeWrapper[] wrappers = new JavaTypeWrapper[parameterTypes.length];
-        for (int i = 0; i < parameterTypes.length; i++) {
-            Class<?> type = parameterTypes[i];
-            wrappers[i] = new JavaTypeWrapper(type, cTypes[i]);
+        if (cachedWrappers.length == 0)
+            return cachedWrappers;
+        JavaTypeWrapper[] wrappers = new JavaTypeWrapper[cachedWrappers.length];
+        for (int i = 0; i < cachedWrappers.length; i++) {
+            wrappers[i] = cachedWrappers[i].newJavaTypeWrapper();
         }
         return wrappers;
     }
@@ -94,9 +90,8 @@ public final class ClosureInfo<T extends Closure> {
 
         if (parameter != null) {
             parameter.order(ByteOrder.nativeOrder());
-            for (int i = 0; i < wrappers.length; i++) {
-                JavaTypeWrapper wrapper = wrappers[i];
-                int cSize = cTypes[i].getSize();
+            for (JavaTypeWrapper wrapper : wrappers) {
+                int cSize = wrapper.getSize();
                 if (cSize == 1) {
                     wrapper.setValue(parameter.get());
                     parameter.position(parameter.position() + 7);
