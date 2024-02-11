@@ -1,6 +1,7 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.expr.Expression;
 
 public class PrimitiveType implements MappedType {
 
@@ -71,5 +72,10 @@ public class PrimitiveType implements MappedType {
     @Override
     public String packageName() {
         throw new IllegalArgumentException();
+    }
+
+    @Override
+    public Expression fromC(Expression cRetrieved) {
+        throw new IllegalArgumentException("Should not reach");
     }
 }

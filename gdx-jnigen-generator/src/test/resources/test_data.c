@@ -176,3 +176,9 @@ int passIntPointer(int* ptr) {
     return *ptr;
 }
 
+int* returnIntPointer(int i) {
+    int* ret = malloc(sizeof(int));
+    *ret = i;
+    return ret;
+}
+

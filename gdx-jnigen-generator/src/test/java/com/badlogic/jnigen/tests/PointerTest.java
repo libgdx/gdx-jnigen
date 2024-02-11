@@ -16,4 +16,13 @@ public class PointerTest extends BaseTest {
             assertEquals(i, TestData.passIntPointer(pointer));
         }
     }
+
+    @Test
+    public void testReturnPointer() {
+        for (int i = -10; i < 10; i++) {
+            CSizedIntPointer pointer = TestData.returnIntPointer(i);
+            assertEquals(i, pointer.getInt(0));
+            pointer.free();
+        }
+    }
 }

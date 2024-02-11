@@ -11,6 +11,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.ArrayInitializerExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.stmt.ReturnStmt;
@@ -106,5 +107,12 @@ public class EnumType implements MappedType {
     @Override
     public MappedType asPointer() {
         throw new IllegalArgumentException("To implement");
+    }
+
+    @Override
+    public Expression fromC(Expression cRetrieved) {
+        MethodCallExpr callByIndex = new MethodCallExpr("getByIndex", cRetrieved);
+        callByIndex.setScope(new NameExpr(instantiationType()));
+        return callByIndex;
     }
 }
