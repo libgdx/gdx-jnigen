@@ -260,7 +260,7 @@ public class TestData {
     */
 
     public static TestEnum returnTestEnum() {
-        return TestEnum.getByIndex(returnTestEnum_internal());
+        return TestEnum.getByIndex((int) returnTestEnum_internal());
     }
 
     static private native int returnTestEnum_internal();/*
@@ -268,7 +268,7 @@ public class TestData {
     */
 
     public static TestEnum passAndReturnTestEnum(TestEnum arg0) {
-        return TestEnum.getByIndex(passAndReturnTestEnum_internal(arg0.getIndex()));
+        return TestEnum.getByIndex((int) passAndReturnTestEnum_internal(arg0.getIndex()));
     }
 
     static private native int passAndReturnTestEnum_internal(int arg0);/*
@@ -276,7 +276,7 @@ public class TestData {
     */
 
     public static TestEnum call_methodWithCallbackTestEnumReturn(ClosureObject<methodWithCallbackTestEnumReturn> arg0) {
-        return TestEnum.getByIndex(call_methodWithCallbackTestEnumReturn_internal(arg0.getFnPtr()));
+        return TestEnum.getByIndex((int) call_methodWithCallbackTestEnumReturn_internal(arg0.getFnPtr()));
     }
 
     static private native int call_methodWithCallbackTestEnumReturn_internal(long arg0);/*
