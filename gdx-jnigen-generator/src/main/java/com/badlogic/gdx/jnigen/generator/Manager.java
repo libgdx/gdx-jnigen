@@ -51,6 +51,8 @@ public class Manager {
 
     private final HashMap<String, MappedType> cTypeToJavaStringMapper = new HashMap<>();
 
+    private final Map<String, String> typedefs = new HashMap<>();
+
     private final GlobalType globalType;
 
     public Manager(String parsedCHeader, String basePackage) {
@@ -81,10 +83,11 @@ public class Manager {
         return structs.get(structName);
     }
 
-    public void startEnum(String name) {
+    public void startEnum(TypeDefinition definition) {
+        String name = definition.getTypeName();
         if (enums.containsKey(name))
             throw new IllegalArgumentException("Enum with name: " + name + " already exists.");
-        EnumType enumType = new EnumType(name);
+        EnumType enumType = new EnumType(definition);
         enums.put(name, enumType);
         registerCTypeMapping(name, enumType);
     }
@@ -100,7 +103,7 @@ public class Manager {
     }
 
     public void recordCType(String name) {
-        if (!knownCTypes.contains(name) && !name.equals("void"))
+        if (!knownCTypes.contains(name))
             knownCTypes.add(name);
     }
 
@@ -110,19 +113,36 @@ public class Manager {
         cTypeToJavaStringMapper.put(name, javaRepresentation);
     }
 
+    private MappedType getCTypeMapping(String name) {
+        if (cTypeToJavaStringMapper.containsKey(name))
+            return cTypeToJavaStringMapper.get(name);
+        if (typedefs.containsKey(name))
+            return getCTypeMapping(typedefs.get(name));
+        return null;
+    }
+
     public MappedType resolveCTypeMapping(String name) {
-        if (!cTypeToJavaStringMapper.containsKey(name))
+        if (!hasCTypeMapping(name))
             throw new IllegalArgumentException("No registered type " + name);
-        return cTypeToJavaStringMapper.get(name);
+        return getCTypeMapping(name);
     }
 
     public boolean hasCTypeMapping(String name) {
-        return cTypeToJavaStringMapper.containsKey(name);
+        return getCTypeMapping(name) != null;
     }
 
     public void addClosure(ClosureType closureType) {
         globalType.addClosure(closureType);
         registerCTypeMapping(closureType.getName(), closureType);
+        registerCTypeMapping(closureType.getName() + " *", closureType); // TODO: Make better
+    }
+
+    public void registerTypeDef(String typedef, String name) {
+        if (typedefs.containsKey(typedef)) {
+            if (!typedefs.get(typedef).equals(name))
+                throw new IllegalArgumentException("Typedef " + typedef + " already exists");
+        }
+        typedefs.put(typedef, name);
     }
 
     public void addFunction(FunctionType functionType) {
