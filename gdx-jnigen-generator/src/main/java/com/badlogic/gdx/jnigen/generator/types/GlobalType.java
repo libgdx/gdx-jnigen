@@ -97,4 +97,10 @@ public class GlobalType implements MappedType {
     public Expression fromC(Expression cRetrieved) {
         throw new IllegalArgumentException("Should not reach");
     }
+
+    @Override
+    public Expression toC(Expression cSend) {
+        throw new IllegalArgumentException("Should not reach");
+    }
+
 }

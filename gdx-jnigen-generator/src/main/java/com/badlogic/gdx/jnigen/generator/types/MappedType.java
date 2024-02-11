@@ -25,4 +25,6 @@ public interface MappedType {
 
     Expression fromC(Expression cRetrieved);
 
+    Expression toC(Expression cSend);
+
 }

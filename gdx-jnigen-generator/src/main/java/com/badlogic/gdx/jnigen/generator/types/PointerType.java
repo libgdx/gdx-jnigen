@@ -7,6 +7,7 @@ import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import com.badlogic.gdx.jnigen.pointer.VoidPointer;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 
@@ -109,5 +110,12 @@ public class PointerType implements MappedType {
         if (isIntPointer())
             createObject.addArgument(new StringLiteralExpr(pointingTo.getTypeName()));
         return createObject;
+    }
+
+    @Override
+    public Expression toC(Expression cSend) {
+        MethodCallExpr methodCallExpr = new MethodCallExpr("getPointer");
+        methodCallExpr.setScope(cSend);
+        return methodCallExpr;
     }
 }
