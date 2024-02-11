@@ -26,9 +26,7 @@ public final class ClosureInfo<T extends Closure> {
     private final Class<?>[] parameterTypes;
     private final JavaTypeWrapper[] cachedWrappers;
     private final JavaTypeWrapper cachedReturnWrapper;
-    private final WrappingPointingSupplier<? extends Pointing>[] pointingSuppliers;
     private final CTypeInfo[] cTypes;
-    private final byte[] flags;
     private final AtomicBoolean cacheLock = new AtomicBoolean(false);
 
     public ClosureInfo(long cif, Method method, T toCallOn) {
@@ -36,19 +34,12 @@ public final class ClosureInfo<T extends Closure> {
         this.toCallOn = toCallOn;
         Parameter[] parameters = method.getParameters();
         parameterTypes = new Class[parameters.length];
-        pointingSuppliers = new WrappingPointingSupplier[parameters.length];
-        flags = new byte[parameters.length];
         cTypes = new CTypeInfo[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
             Parameter parameter = parameters[i];
             parameterTypes[i] = parameter.getType();
 
             if (Pointing.class.isAssignableFrom(parameter.getType())) {
-                @SuppressWarnings("unchecked")
-                WrappingPointingSupplier<?> supplier = CHandler.getPointingSupplier((Class<? extends Pointing>)parameter.getType());
-                if (supplier == null)
-                    throw new IllegalArgumentException("Class " + parameters[i].getName() + " has no registered supplier.");
-                pointingSuppliers[i] = supplier;
                 cTypes[i] = CHandler.getCTypeInfo("void*");
             } else if (CEnum.class.isAssignableFrom(parameter.getType())) {
                 cTypes[i] = CHandler.getCTypeInfo("int"); // TODO Converting to CType annotation on parameter?
@@ -56,8 +47,6 @@ public final class ClosureInfo<T extends Closure> {
                 // If we are primitive
                 cTypes[i] = Utils.getCTypeForAnnotatedElement(parameter);
             }
-            Annotation[] annotations = parameter.getAnnotations();
-            flags[i] = ParameterTypes.buildFlags(parameter.getType(), annotations);
         }
         cachedWrappers = createWrapper();
         if (method.getReturnType() != void.class) {
@@ -108,11 +97,7 @@ public final class ClosureInfo<T extends Closure> {
             for (int i = 0; i < wrappers.length; i++) {
                 JavaTypeWrapper wrapper = wrappers[i];
                 int cSize = cTypes[i].getSize();
-                WrappingPointingSupplier<?> pointingSupplier = pointingSuppliers[i];
-                if (pointingSupplier != null) {
-                    wrapper.setValue(
-                            pointingSuppliers[i].create(parameter.getLong(), (flags[i] & PASS_AS_POINTER) == 0));
-                } else if (cSize == 1) {
+                if (cSize == 1) {
                     wrapper.setValue(parameter.get());
                     parameter.position(parameter.position() + 7);
                 } else if (cSize == 2) {

@@ -1,5 +1,6 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
+import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.generator.Manager;
 import com.badlogic.gdx.jnigen.c.CType;
 import com.github.javaparser.ast.CompilationUnit;
@@ -43,6 +44,7 @@ public class GlobalType implements MappedType {
 
     public void write(CompilationUnit cu, HashMap<MethodDeclaration, String> patchNativeMethods) {
         cu.addImport(CType.class);
+        cu.addImport(CHandler.class);
         ClassOrInterfaceDeclaration global = cu.addClass(globalName);
         global.addOrphanComment(new BlockComment("JNI\n#include <jnigen.h>\n#include <" + Manager.getInstance().getParsedCHeader() + ">\n"));
         for (FunctionType functionType : functions) {
