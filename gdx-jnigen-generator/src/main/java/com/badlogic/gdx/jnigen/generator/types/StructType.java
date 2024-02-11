@@ -40,7 +40,14 @@ public class StructType implements MappedType {
     }
 
     public void addField(NamedType type) {
-        fields.add(type);
+        // TODO: THIS IS SO SHIT, DO BETTER!!
+        if (type.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
+            for (int i = 0; i < type.getDefinition().getCount(); i++) {
+                fields.add(new NamedType(type.getDefinition().getNestedDefinition(), type.getName() + "_" + i));
+            }
+        } else {
+            fields.add(type);
+        }
     }
 
     public void write(CompilationUnit compilationUnit, HashMap<MethodDeclaration, String> patchMap) {

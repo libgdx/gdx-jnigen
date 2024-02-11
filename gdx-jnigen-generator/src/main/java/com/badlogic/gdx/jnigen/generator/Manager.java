@@ -248,7 +248,7 @@ public class Manager {
             MethodDeclaration getFFITypeMethod = ffiTypeClass.addMethod(nativeGetFFIMethodName, Keyword.PUBLIC, Keyword.NATIVE, Keyword.STATIC);
             getFFITypeMethod.setBody(null).setType(long.class).addParameter(int.class, "id");
             StringBuilder ffiTypeNativeBody = new StringBuilder("JNI\n");
-            ffiTypeNativeBody.append("ffi_type* ").append(nativeGetFFIMethodName).append("(int id) {\n");
+            ffiTypeNativeBody.append("static ffi_type* ").append(nativeGetFFIMethodName).append("(int id) {\n");
             ffiTypeNativeBody.append("switch(id) {\n");
             BlockStmt staticInit = ffiTypeClass.addStaticInitializer();
 
