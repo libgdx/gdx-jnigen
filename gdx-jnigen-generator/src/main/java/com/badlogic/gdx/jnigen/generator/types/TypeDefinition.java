@@ -55,21 +55,6 @@ public class TypeDefinition {
         return definition;
     }
 
-    public String asCastExpression(String toCallOn) {
-        switch (typeKind) {
-            case ENUM:
-                return getMappedType().instantiationType() + ".getByIndex(" + toCallOn + ".asInt())";
-            case CLOSURE:
-            case POINTER:
-            case STRUCT:
-                return "(" + getMappedType().instantiationType() + ")" +  toCallOn + ".asPointing()";
-            default:
-                String name = getMappedType().abstractType();
-                name = name.substring(0, 1).toUpperCase() + name.substring(1);
-                return toCallOn +  ".as" + name + "()";
-        }
-    }
-
     public MappedType getMappedType() {
         if (typeKind == TypeKind.FIXED_SIZE_ARRAY)
             throw new IllegalArgumentException();
