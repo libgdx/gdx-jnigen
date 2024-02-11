@@ -9,8 +9,6 @@ public final class JavaTypeWrapper {
 
     private final Class<?> wrappingClass;
     private long wrappingType;
-    private Pointing wrappingPointing;
-
     private final CTypeInfo cTypeInfo;
 
     public JavaTypeWrapper(Class<?> wrappingClass, CTypeInfo cTypeInfo) {
@@ -66,13 +64,9 @@ public final class JavaTypeWrapper {
     }
 
     public void setValue(Pointing wrappingPointing) {
-        this.wrappingPointing = wrappingPointing;
         wrappingType = wrappingPointing.getPointer();
     }
 
-    public Class<?> getWrappingClass() {
-        return wrappingClass;
-    }
 
     public JavaTypeWrapper newJavaTypeWrapper() {
         return new JavaTypeWrapper(wrappingClass, cTypeInfo);
@@ -82,39 +76,7 @@ public final class JavaTypeWrapper {
         return wrappingType;
     }
 
-    public boolean asBoolean() {
-        if (wrappingClass != boolean.class)
-            throw new IllegalArgumentException();
-        return wrappingType != 0;
-    }
-
-    public byte asByte() {
-        if (wrappingClass != byte.class)
-            throw new IllegalArgumentException();
-        return (byte)wrappingType;
-    }
-
-    public char asChar() {
-        if (wrappingClass != char.class)
-            throw new IllegalArgumentException();
-        return (char)wrappingType;
-    }
-
-    public short asShort() {
-        if (wrappingClass != short.class)
-            throw new IllegalArgumentException();
-        return (short)wrappingType;
-    }
-
-    public int asInt() {
-        if (wrappingClass != int.class && !CEnum.class.isAssignableFrom(wrappingClass)) // TODO: THis is shit. Remove checks?
-            throw new IllegalArgumentException();
-        return (int)wrappingType;
-    }
-
     public long asLong() {
-        if (wrappingClass != long.class)
-            throw new IllegalArgumentException();
         return wrappingType;
     }
 
@@ -130,13 +92,8 @@ public final class JavaTypeWrapper {
         return Double.longBitsToDouble(wrappingType);
     }
 
-    public Pointing asPointing() {
-        if (!Pointing.class.isAssignableFrom(wrappingClass))
-            throw new IllegalArgumentException();
-        return wrappingPointing;
-    }
-
     public void assertBounds() {
-        cTypeInfo.assertBounds(unwrapToLong());
+        if (wrappingClass != float.class && wrappingClass != double.class)
+            cTypeInfo.assertBounds(unwrapToLong());
     }
 }

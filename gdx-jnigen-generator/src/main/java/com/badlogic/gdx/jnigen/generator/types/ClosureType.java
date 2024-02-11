@@ -10,7 +10,9 @@ import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.expr.ArrayAccessExpr;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
@@ -60,7 +62,15 @@ public class ClosureType implements MappedType {
         for (int i = 0; i < arguments.length; i++) {
             NamedType type = arguments[i];
             TypeDefinition definition = type.getDefinition();
-            callExpr.addArgument(definition.asCastExpression("parameters[" + i + "]"));
+            ArrayAccessExpr arrayAccessExpr = new ArrayAccessExpr(new NameExpr("parameters"), new IntegerLiteralExpr(String.valueOf(i)));
+            String methodName = "asLong";
+            if (type.getDefinition().getTypeKind() == TypeKind.FLOAT)
+                methodName = "asFloat";
+            else if (type.getDefinition().getTypeKind() == TypeKind.DOUBLE)
+                methodName = "asDouble";
+            MethodCallExpr methodCallExpr = new MethodCallExpr(methodName);
+            methodCallExpr.setScope(arrayAccessExpr);
+            callExpr.addArgument(definition.getMappedType().fromC(methodCallExpr));
         }
 
         if (returnType.getTypeKind() == TypeKind.VOID) {

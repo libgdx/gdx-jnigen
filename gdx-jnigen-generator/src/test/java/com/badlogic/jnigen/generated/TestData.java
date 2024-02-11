@@ -1,6 +1,7 @@
 package com.badlogic.jnigen.generated;
 
 import com.badlogic.gdx.jnigen.c.CType;
+import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.jnigen.generated.TestData.methodWithCallback;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackLongArg;
@@ -312,7 +313,7 @@ public class TestData {
         void methodWithCallbackAllArgs_call(@CType(value = "uint64_t") long arg0, @CType(value = "int") int arg1, @CType(value = "short") short arg2, @CType(value = "char") byte arg3, @CType(value = "uint16_t") char arg4, @CType(value = "bool") boolean arg5, @CType(value = "float") float arg6, @CType(value = "double") double arg7);
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackAllArgs_call(parameters[0].asLong(), parameters[1].asInt(), parameters[2].asShort(), parameters[3].asByte(), parameters[4].asChar(), parameters[5].asBoolean(), parameters[6].asFloat(), parameters[7].asDouble());
+            methodWithCallbackAllArgs_call((long) parameters[0].asLong(), (int) parameters[1].asLong(), (short) parameters[2].asLong(), (byte) parameters[3].asLong(), (char) parameters[4].asLong(), parameters[5].asLong() != 0, (float) parameters[6].asFloat(), (double) parameters[7].asDouble());
         }
     }
 
@@ -330,7 +331,7 @@ public class TestData {
         void methodWithCallbackBooleanArg_call(@CType(value = "bool") boolean arg0);
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackBooleanArg_call(parameters[0].asBoolean());
+            methodWithCallbackBooleanArg_call(parameters[0].asLong() != 0);
         }
     }
 
@@ -349,7 +350,7 @@ public class TestData {
         void methodWithCallbackIntArg_call(@CType(value = "int") int arg0);
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackIntArg_call(parameters[0].asInt());
+            methodWithCallbackIntArg_call((int) parameters[0].asLong());
         }
     }
 
@@ -358,7 +359,7 @@ public class TestData {
         void methodWithCallbackShortArg_call(@CType(value = "short") short arg0);
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackShortArg_call(parameters[0].asShort());
+            methodWithCallbackShortArg_call((short) parameters[0].asLong());
         }
     }
 
@@ -376,7 +377,7 @@ public class TestData {
         void methodWithCallbackByteArg_call(@CType(value = "char") byte arg0);
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackByteArg_call(parameters[0].asByte());
+            methodWithCallbackByteArg_call((byte) parameters[0].asLong());
         }
     }
 
@@ -405,7 +406,7 @@ public class TestData {
         void methodWithCallbackTestStructArg_call(TestStruct arg0);
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackTestStructArg_call((TestStruct) parameters[0].asPointing());
+            methodWithCallbackTestStructArg_call(new TestStruct(parameters[0].asLong(), true));
         }
     }
 
@@ -414,7 +415,7 @@ public class TestData {
         void methodWithCallbackLongArg_call(@CType(value = "uint64_t") long arg0);
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackLongArg_call(parameters[0].asLong());
+            methodWithCallbackLongArg_call((long) parameters[0].asLong());
         }
     }
 
@@ -423,7 +424,7 @@ public class TestData {
         void methodWithCallbackFloatArg_call(@CType(value = "float") float arg0);
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackFloatArg_call(parameters[0].asFloat());
+            methodWithCallbackFloatArg_call((float) parameters[0].asFloat());
         }
     }
 
@@ -432,7 +433,7 @@ public class TestData {
         void methodWithCallbackDoubleArg_call(@CType(value = "double") double arg0);
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackDoubleArg_call(parameters[0].asDouble());
+            methodWithCallbackDoubleArg_call((double) parameters[0].asDouble());
         }
     }
 
@@ -451,7 +452,7 @@ public class TestData {
         void methodWithCallbackTestEnumArg_call(TestEnum arg0);
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackTestEnumArg_call(TestEnum.getByIndex(parameters[0].asInt()));
+            methodWithCallbackTestEnumArg_call(TestEnum.getByIndex((int) parameters[0].asLong()));
         }
     }
 
@@ -470,7 +471,7 @@ public class TestData {
         void methodWithCallbackTestStructPointerArg_call(TestStruct.Pointer arg0);
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackTestStructPointerArg_call((TestStruct.Pointer) parameters[0].asPointing());
+            methodWithCallbackTestStructPointerArg_call(new TestStruct.Pointer(parameters[0].asLong(), false));
         }
     }
 
@@ -479,7 +480,7 @@ public class TestData {
         void methodWithCallbackCharArg_call(@CType(value = "uint16_t") char arg0);
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackCharArg_call(parameters[0].asChar());
+            methodWithCallbackCharArg_call((char) parameters[0].asLong());
         }
     }
 
