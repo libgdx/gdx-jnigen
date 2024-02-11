@@ -7,10 +7,8 @@ import com.badlogic.gdx.jnigen.generator.types.FunctionType;
 import com.badlogic.gdx.jnigen.generator.types.GlobalType;
 import com.badlogic.gdx.jnigen.generator.types.MappedType;
 import com.badlogic.gdx.jnigen.generator.types.NamedType;
-import com.badlogic.gdx.jnigen.generator.types.PointerType;
 import com.badlogic.gdx.jnigen.generator.types.StructType;
 import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
-import com.badlogic.gdx.jnigen.generator.types.TypeKind;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -46,6 +44,7 @@ public class Manager {
     }
 
     private final Map<String, StructType> structs = new HashMap<>();
+    private final ArrayList<StructType> orderedStructs = new ArrayList<>();
     private final Map<String, EnumType> enums = new HashMap<>();
     private final ArrayList<String> knownCTypes = new ArrayList<>();
 
@@ -67,6 +66,7 @@ public class Manager {
             throw new IllegalArgumentException("Struct with name: " + name + " already exists.");
         StructType structType = new StructType(definition);
         structs.put(name, structType);
+        orderedStructs.add(structType);
         registerCTypeMapping(name, structType);
     }
 
@@ -81,6 +81,10 @@ public class Manager {
         if (!structs.containsKey(structName))
             throw new IllegalArgumentException("Struct with name: " + structName + " does not exists.");
         return structs.get(structName);
+    }
+
+    public int getStructID(StructType structType) {
+        return orderedStructs.indexOf(structType) + knownCTypes.size();
     }
 
     public void startEnum(TypeDefinition definition) {
@@ -236,23 +240,38 @@ public class Manager {
             addJNIComment(ffiTypeClass, "#include <jnigen.h>");
             ffiTypeClass.addMethod("init", Keyword.PUBLIC, Keyword.STATIC);
 
-            MethodDeclaration getFFITypeMethod = ffiTypeClass.addMethod("getFFIType", Keyword.NATIVE, Keyword.PRIVATE, Keyword.STATIC);
+            BlockComment getFFITypeNativeMethod = new BlockComment();
+            ffiTypeClass.addOrphanComment(getFFITypeNativeMethod);
+
+            String nativeGetFFIMethodName = "getFFIType";
+
+            MethodDeclaration getFFITypeMethod = ffiTypeClass.addMethod(nativeGetFFIMethodName, Keyword.PUBLIC, Keyword.NATIVE, Keyword.STATIC);
             getFFITypeMethod.setBody(null).setType(long.class).addParameter(int.class, "id");
-            StringBuilder nativeBody = new StringBuilder();
-            nativeBody.append("switch(id) {\n");
+            StringBuilder ffiTypeNativeBody = new StringBuilder("JNI\n");
+            ffiTypeNativeBody.append("ffi_type* ").append(nativeGetFFIMethodName).append("(int id) {\n");
+            ffiTypeNativeBody.append("switch(id) {\n");
             BlockStmt staticInit = ffiTypeClass.addStaticInitializer();
 
             for (int i = 0; i < knownCTypes.size(); i++) {
                 String cType = knownCTypes.get(i);
                 staticInit.addStatement("CHandler.registerCTypeFFIType(\"" + cType + "\", getFFIType(" + i + "));");
-                nativeBody.append("\tcase ").append(i).append(":\n");
-                nativeBody.append("\t\treturn reinterpret_cast<jlong>(GET_FFI_TYPE(").append(cType).append("));\n");
+                ffiTypeNativeBody.append("\tcase ").append(i).append(":\n");
+                ffiTypeNativeBody.append("\t\treturn GET_FFI_TYPE(").append(cType).append(");\n");
             }
-            nativeBody.append("\tdefault:\n\t\treturn -1;\n");
-            nativeBody.append("}\n");
+            for (int i = 0; i < orderedStructs.size(); i++) {
+                int id = i + knownCTypes.size();
+                StructType structType = orderedStructs.get(i);
+                ffiTypeNativeBody.append("\tcase ").append(id).append(":\n");
+                ffiTypeNativeBody.append(structType.getFFITypeBody(nativeGetFFIMethodName));
+            }
+            ffiTypeNativeBody.append("\tdefault:\n\t\treturn NULL;\n");
+            ffiTypeNativeBody.append("\t}\n}\n");
+            getFFITypeNativeMethod.setContent(ffiTypeNativeBody.toString());
+
+            String jniMethodBody = "return reinterpret_cast<jlong>(" + nativeGetFFIMethodName + "(id));\n";
 
             String ffiTypeString = ffiTypeCU.toString();
-            ffiTypeString = patchMethodNative(getFFITypeMethod, nativeBody.toString(), ffiTypeString);
+            ffiTypeString = patchMethodNative(getFFITypeMethod, jniMethodBody, ffiTypeString);
 
             Files.write(Paths.get(basePath + basePackage.replace(".", "/") + "/FFITypes.java"),
                     ffiTypeString.getBytes(StandardCharsets.UTF_8));
