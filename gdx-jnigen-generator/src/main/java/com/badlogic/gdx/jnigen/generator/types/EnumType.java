@@ -25,18 +25,19 @@ import java.util.Map.Entry;
 
 public class EnumType implements MappedType {
 
-    private final String name;
+    private final TypeDefinition definition;
+    private final String javaName;
     private final HashMap<Integer, String> constants = new HashMap<>();
-
     private int highestConstantID = 0;
 
-    public EnumType(String name) {
-        this.name = name;
+    public EnumType(TypeDefinition definition) {
+        this.definition = definition;
+        this.javaName = definition.getTypeName().replace("enum ", "");
     }
 
     public void registerConstant(String constantName, int index) {
         if (constants.containsValue(constantName))
-            throw new IllegalArgumentException("Enum " + name + " already has constant with name: " + constantName);
+            throw new IllegalArgumentException("Enum " + javaName + " already has constant with name: " + constantName);
         if (constants.containsKey(index)) {
             // This is valid... Why shouldn't it.... Urgh, this breaks my whole enum assumption
             constants.computeIfPresent(index, (integer, s) -> s + "_" + constantName);
@@ -49,7 +50,7 @@ public class EnumType implements MappedType {
     }
 
     public void write(CompilationUnit cu) {
-        EnumDeclaration declaration = cu.addEnum(name);
+        EnumDeclaration declaration = cu.addEnum(javaName);
         declaration.addImplementedType(CEnum.class);
         constants.entrySet().stream()
                 .sorted(Comparator.comparingInt(Entry::getKey))
@@ -65,7 +66,7 @@ public class EnumType implements MappedType {
 
         MethodDeclaration getByIndex = declaration.addMethod("getByIndex", Keyword.PUBLIC, Keyword.STATIC);
         getByIndex.addParameter(int.class, "index");
-        getByIndex.setType(name);
+        getByIndex.setType(javaName);
         if (highestConstantID <= 16) {
             getByIndex.createBody().addStatement("return _values[index];");
             NodeList<Expression> expressions = new NodeList<>();
@@ -74,14 +75,14 @@ public class EnumType implements MappedType {
                 expressions.add(name == null ? new NullLiteralExpr() : new NameExpr(name));
             }
             ArrayInitializerExpr initializerExpr = new ArrayInitializerExpr(expressions);
-            declaration.addFieldWithInitializer(name + "[]", "_values", initializerExpr, Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
+            declaration.addFieldWithInitializer(javaName + "[]", "_values", initializerExpr, Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
         } else {
             cu.addImport(HashMap.class);
             ObjectCreationExpr createHashMap = new ObjectCreationExpr();
             createHashMap.setType(HashMap.class);
-            declaration.addFieldWithInitializer("HashMap<Integer, " + name + ">", "_values", createHashMap, Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
+            declaration.addFieldWithInitializer("HashMap<Integer, " + javaName + ">", "_values", createHashMap, Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
             BlockStmt staticInit = declaration.addStaticInitializer();
-            staticInit.addStatement("for (" + name + " _val : values()) _values.put(_val.index, _val);");
+            staticInit.addStatement("for (" + javaName + " _val : values()) _values.put(_val.index, _val);");
             getByIndex.createBody().addStatement("return _values.get(index);");
         }
     }
@@ -93,7 +94,7 @@ public class EnumType implements MappedType {
 
     @Override
     public String classFile() {
-        return packageName() + "." + name;
+        return packageName() + "." + javaName;
     }
 
     @Override
@@ -103,7 +104,7 @@ public class EnumType implements MappedType {
 
     @Override
     public String abstractType() {
-        return name;
+        return javaName;
     }
 
     @Override
