@@ -4,6 +4,7 @@ import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
 import com.badlogic.gdx.jnigen.pointer.DoublePointer;
 import com.badlogic.gdx.jnigen.pointer.FloatPointer;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
+import com.badlogic.gdx.jnigen.pointer.VoidPointer;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
@@ -34,6 +35,10 @@ public class PointerType implements MappedType {
         return pointingTo.getTypeKind().isPrimitive() && !isFloatPointer() && !isDoublePointer();
     }
 
+    public boolean isVoidPointer() {
+        return pointingTo.getTypeKind() == TypeKind.VOID;
+    }
+
     @Override
     public void importType(CompilationUnit cu) {
         if (isStructPointer())
@@ -44,6 +49,8 @@ public class PointerType implements MappedType {
             cu.addImport(FloatPointer.class);
         else if (isIntPointer())
             cu.addImport(CSizedIntPointer.class);
+        else if (isVoidPointer())
+            cu.addImport(VoidPointer.class);
         else
             throw new IllegalArgumentException("Type " + pointingTo.getTypeKind() + " can't be pointerized");
         pointingTo.getMappedType().importType(cu);
@@ -75,10 +82,12 @@ public class PointerType implements MappedType {
             return FloatPointer.class.getSimpleName();
         if (isDoublePointer())
             return DoublePointer.class.getSimpleName();
-        else if (isStructPointer())
+        if (isVoidPointer())
+            return VoidPointer.class.getSimpleName();
+        if (isStructPointer())
             return "StructPointer<" + pointingTo.getMappedType().abstractType() + ">";
-        else
-            throw new IllegalArgumentException();
+
+        throw new IllegalArgumentException();
     }
 
     @Override
