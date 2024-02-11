@@ -56,6 +56,8 @@ public class CHandler {
 
     private static final HashMap<String, CTypeInfo> cTypeInfoMap = new HashMap<>();
 
+    private static final HashMap<Long, ClosureObject<?>> fnPtrClosureMap = new HashMap<>();
+
     /*JNI
     #include <stdlib.h>
     #include <string.h>
@@ -283,7 +285,11 @@ public class CHandler {
         long fnPtr = createClosureForObject(cif, closureInfo, byteBuffer);
         long closurePtr = byteBuffer.getLong();
 
-        return new ClosureObject<>(fnPtr, closurePtr, false);
+        ClosureObject<T> closureObject = new ClosureObject<>(fnPtr, closurePtr, false);
+        synchronized (fnPtrClosureMap) {
+            fnPtrClosureMap.put(fnPtr, closureObject);
+        }
+        return closureObject;
     }
 
     public static native <T extends Closure> long createClosureForObject(long cif, ClosureInfo<T> object, ByteBuffer closureRet);/*
@@ -295,6 +301,13 @@ public class CHandler {
         *((ffi_closure**) closureRet) = closure;
         return reinterpret_cast<jlong>(fnPtr);
     */
+
+    public static <T extends Closure> ClosureObject<T> getClosureObject(long fnPtr) {
+        synchronized (fnPtrClosureMap) {
+            //noinspection unchecked
+            return (ClosureObject<T>)fnPtrClosureMap.get(fnPtr);
+        }
+    }
 
     /*JNI
 
@@ -414,7 +427,15 @@ public class CHandler {
         struct_type->size = struct_size;
     */
 
-    public static native void freeClosure(long closurePtr);/*
+    public static void freeClosure(ClosureObject<?> closureObject) {
+        synchronized (fnPtrClosureMap) {
+            fnPtrClosureMap.remove(closureObject.getFnPtr());
+        }
+        freeClosure(closureObject.getPointer());
+    }
+
+
+    private static native void freeClosure(long closurePtr);/*
         ffi_closure* closure = (ffi_closure*) closurePtr;
         env->DeleteGlobalRef((jobject)closure->user_data);
         ffi_closure_free(closure);

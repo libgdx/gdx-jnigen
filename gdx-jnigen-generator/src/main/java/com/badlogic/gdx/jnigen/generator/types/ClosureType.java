@@ -113,9 +113,10 @@ public class ClosureType implements MappedType {
 
     @Override
     public Expression fromC(Expression cRetrieved) {
-        // TODO: 11.02.2024 Fix Badlyyy
-        return new NameExpr("int");
-        //throw new IllegalArgumentException("To implement");
+        MethodCallExpr methodCallExpr = new MethodCallExpr("getClosureObject");
+        methodCallExpr.setScope(new NameExpr("CHandler"));
+        methodCallExpr.addArgument(cRetrieved);
+        return methodCallExpr;
     }
 
     @Override
