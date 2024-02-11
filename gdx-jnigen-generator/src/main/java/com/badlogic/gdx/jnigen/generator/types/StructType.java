@@ -50,14 +50,14 @@ public class StructType implements MappedType {
         compilationUnit.addImport(Struct.class);
         compilationUnit.addImport(StructPointer.class);
         ClassOrInterfaceDeclaration structClass = compilationUnit.addClass(javaTypeName, Keyword.PUBLIC, Keyword.FINAL);
-        structClass.addOrphanComment(new BlockComment("JNI\n#include <jnigen.h>\n"));
+        structClass.addOrphanComment(new BlockComment("JNI\n#include <jnigen.h>\n#include <" + Manager.getInstance().getParsedCHeader() + ">\n"));
         structClass.addExtendedType(Struct.class);
         structClass.addField(long.class, "__size", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
         structClass.addField(long.class, "__ffi_type", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
 
         // Static-Init
         BlockStmt staticInit = structClass.addStaticInitializer();
-        staticInit.addStatement("__ffi_type = generateFFIType();");
+        staticInit.addStatement("__ffi_type = FFITypes.getFFIType(" + Manager.getInstance().getStructID(this) + ");");
         staticInit.addStatement("CHandler.calculateAlignmentAndSizeForType(__ffi_type);");
         staticInit.addStatement("__size = CHandler.getSizeFromFFIType(__ffi_type);");
         staticInit.addStatement("CHandler.registerStructFFIType(" + javaTypeName + ".class, __ffi_type);");
@@ -66,22 +66,7 @@ public class StructType implements MappedType {
         staticInit.addStatement("CHandler.registerStructPointer(" + javaTypeName + ".class, " + structPointerRef + "::new);");
         staticInit.addStatement("CHandler.registerPointingSupplier(" + structPointerRef + ".class, " + structPointerRef + "::new);");
 
-        MethodDeclaration generateFFIMethod = structClass.addMethod("generateFFIType", Keyword.PUBLIC, Keyword.STATIC, Keyword.NATIVE).setType(long.class).setBody(null);
-        StringBuilder generateFFIMethodBody = new StringBuilder();
-        generateFFIMethodBody.append("ffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));\n");
-        generateFFIMethodBody.append("type->type = FFI_TYPE_STRUCT;\n");
-        generateFFIMethodBody.append("type->elements = (ffi_type**)malloc(sizeof(ffi_type*) * ").append(fields.size() + 1).append(");\n");
-        for (int i = 0; i < fields.size(); i++) {
-            NamedType field = fields.get(i);
-            generateFFIMethodBody.append("type->elements[").append(i).append("] = GET_FFI_TYPE(")
-                    .append(field.getDefinition().getTypeName())
-                    .append(");\n");
-        }
-        generateFFIMethodBody.append("type->elements[").append(fields.size()).append("] = NULL;\n");
-        generateFFIMethodBody.append("return reinterpret_cast<jlong>(type);\n");
-
-        patchMap.put(generateFFIMethod, generateFFIMethodBody.toString());
-
+        compilationUnit.addImport(Manager.getInstance().getBasePackage() + ".FFITypes");
 
         // Constructors
         ConstructorDeclaration pointerTakingConstructor = structClass.addConstructor(Keyword.PUBLIC);
@@ -149,6 +134,31 @@ public class StructType implements MappedType {
         pointerClass.addMethod("getStructClass", Keyword.PUBLIC).setType("Class<" + javaTypeName + ">")
                 .createBody().addStatement("return " + javaTypeName + ".class;");
 
+    }
+
+    public String getFFITypeBody(String ffiResolveFunctionName) {
+        StringBuilder generateFFIMethodBody = new StringBuilder();
+        generateFFIMethodBody.append("\t{\n\t\tffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));\n");
+        generateFFIMethodBody.append("\t\ttype->type = FFI_TYPE_STRUCT;\n");
+        generateFFIMethodBody.append("\t\ttype->elements = (ffi_type**)malloc(sizeof(ffi_type*) * ").append(fields.size() + 1).append(");\n");
+        for (int i = 0; i < fields.size(); i++) {
+            NamedType field = fields.get(i);
+            if (field.getDefinition().getTypeKind() == TypeKind.STRUCT) {
+                int fieldStructID = Manager.getInstance().getStructID((StructType)field.getDefinition().getMappedType());
+                generateFFIMethodBody.append("\t\ttype->elements[").append(i).append("] = ")
+                        .append(ffiResolveFunctionName).append("(")
+                        .append(fieldStructID)
+                        .append(");\n");
+            } else {
+                generateFFIMethodBody.append("\t\ttype->elements[").append(i).append("] = GET_FFI_TYPE(")
+                        .append(field.getDefinition().getTypeName())
+                        .append(");\n");
+            }
+        }
+        generateFFIMethodBody.append("\t\ttype->elements[").append(fields.size()).append("] = NULL;\n");
+        generateFFIMethodBody.append("\t\treturn type;\n\t}\n");
+
+        return generateFFIMethodBody.toString();
     }
 
     @Override
