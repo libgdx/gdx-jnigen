@@ -1,7 +1,12 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.BinaryExpr.Operator;
+import com.github.javaparser.ast.expr.CastExpr;
+import com.github.javaparser.ast.expr.ConditionalExpr;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 
 public class PrimitiveType implements MappedType {
 
@@ -76,6 +81,26 @@ public class PrimitiveType implements MappedType {
 
     @Override
     public Expression fromC(Expression cRetrieved) {
-        throw new IllegalArgumentException("Should not reach");
+        if (javaRepresentation == boolean.class) {
+            BinaryExpr compare = new BinaryExpr();
+            compare.setLeft(cRetrieved);
+            compare.setOperator(Operator.NOT_EQUALS);
+            compare.setRight(new IntegerLiteralExpr("0"));
+            return compare;
+        } else {
+            CastExpr castExpr = new CastExpr();
+            castExpr.setType(javaRepresentation);
+            castExpr.setExpression(cRetrieved);
+            return castExpr;
+        }
+    }
+
+    @Override
+    public Expression toC(Expression cSend) {
+        if (javaRepresentation == boolean.class) {
+            return new ConditionalExpr(cSend, new IntegerLiteralExpr("1"), new IntegerLiteralExpr("0"));
+        } else {
+            return cSend;
+        }
     }
 }
