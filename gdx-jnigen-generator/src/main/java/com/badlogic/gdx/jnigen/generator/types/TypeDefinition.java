@@ -10,6 +10,7 @@ public class TypeDefinition {
     private final String typeName;
     private TypeDefinition nestedDefinition;
     private boolean constMarked = false;
+    private int count;
 
     public TypeDefinition(TypeKind typeKind, String typeName) {
         this.typeKind = typeKind;
@@ -31,6 +32,14 @@ public class TypeDefinition {
         return typeName;
     }
 
+    public int getCount() {
+        return count;
+    }
+
+    public TypeDefinition getNestedDefinition() {
+        return nestedDefinition;
+    }
+
     public static TypeDefinition createTypeDefinition(CXType type) {
         String typeName = clang.clang_getTypeSpelling(type).getString();
         if (typeName.equals("_Bool"))
@@ -39,6 +48,9 @@ public class TypeDefinition {
         if (definition.getTypeKind() == TypeKind.POINTER) {
             CXType pointee = clang.clang_getPointeeType(type);
             definition.nestedDefinition = createTypeDefinition(pointee);
+        } else if (definition.getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
+            definition.count = (int)clang.clang_getArraySize(type);
+            definition.nestedDefinition = createTypeDefinition(clang.clang_getArrayElementType(type));
         }
         return definition;
     }
@@ -59,6 +71,8 @@ public class TypeDefinition {
     }
 
     public MappedType getMappedType() {
+        if (typeKind == TypeKind.FIXED_SIZE_ARRAY)
+            throw new IllegalArgumentException();
         if (nestedDefinition != null)
             return nestedDefinition.getMappedType().asPointer();
         if (typeKind.isPrimitive() || typeKind == TypeKind.VOID) // TODO: Is this correct with void?

@@ -12,7 +12,7 @@ public class FFITypes {
     }
 
     /*JNI
-ffi_type* getFFIType(int id) {
+static ffi_type* getFFIType(int id) {
 switch(id) {
 	case 0:
 		return GET_FFI_TYPE(uint64_t);
