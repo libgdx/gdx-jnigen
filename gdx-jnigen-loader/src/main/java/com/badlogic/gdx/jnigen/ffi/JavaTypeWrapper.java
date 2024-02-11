@@ -18,6 +18,10 @@ public final class JavaTypeWrapper {
             throw new IllegalArgumentException("A char can't be signed");
     }
 
+    public int getSize() {
+        return cTypeInfo.getSize();
+    }
+
     public void setValue(boolean b) {
         wrappingType = b ? 1 : 0;
     }
