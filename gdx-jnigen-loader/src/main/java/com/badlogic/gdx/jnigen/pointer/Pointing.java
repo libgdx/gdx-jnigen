@@ -8,6 +8,11 @@ public class Pointing {
     protected boolean freed;
     private final boolean freeOnGC;
 
+    /**
+     * This is just a hint to an implementor of Pointing to respect a bound, but it doesn't have too
+     */
+    private long sizeGuard = -1;
+
     public Pointing(long pointer, boolean freeOnGC) {
         this.pointer = pointer;
         this.freeOnGC = freeOnGC;
@@ -17,6 +22,20 @@ public class Pointing {
 
     public Pointing(long size) {
         this(CHandler.calloc(size), true);
+        guard(size);
+    }
+
+    public void guard(long size) {
+        this.sizeGuard = size;
+    }
+
+    public long getSizeGuard() {
+        return sizeGuard;
+    }
+
+    public void assertBounds(long index) {
+        if (sizeGuard != -1 && index >= sizeGuard)
+            throw new IllegalArgumentException("Byte " + index + " overshoots guard " + sizeGuard);
     }
 
     public void free() {

@@ -15,10 +15,14 @@ public final class FloatPointer extends Pointing {
     }
 
     public float getFloat(int index) {
-        return Float.intBitsToFloat((int)CHandler.getPointerPart(getPointer(), __float_size, index * __float_size));
+        int offset = index * __float_size;
+        assertBounds(offset);
+        return Float.intBitsToFloat((int)CHandler.getPointerPart(getPointer(), __float_size, offset));
     }
 
     public void setFloat(float value, int index) {
-        CHandler.setPointerPart(getPointer(), __float_size, index * __float_size, Float.floatToIntBits(value));
+        int offset = index * __float_size;
+        assertBounds(offset);
+        CHandler.setPointerPart(getPointer(), __float_size, offset, Float.floatToIntBits(value));
     }
 }

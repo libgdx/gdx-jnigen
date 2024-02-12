@@ -20,68 +20,74 @@ public final class CSizedIntPointer extends Pointing {
         super(info.getSize() * size);
         this.cTypeInfo = info;
     }
+    
+    private int calculateOffset(int index) {
+        int offset = index * cTypeInfo.getSize();
+        assertBounds(offset);
+        return offset;
+    }
 
     public boolean getBoolean(int index) {
         cTypeInfo.assertCanHoldByte(); // Assuming boolean is represented as a byte
-        return CHandler.getPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize()) != 0;
+        return CHandler.getPointerPart(getPointer(), cTypeInfo.getSize(), calculateOffset(index)) != 0;
     }
 
     public void setBoolean(boolean value, int index) {
-        CHandler.setPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize(), value ? 1 : 0);
+        CHandler.setPointerPart(getPointer(), cTypeInfo.getSize(), calculateOffset(index), value ? 1 : 0);
     }
 
     public byte getByte(int index) {
         cTypeInfo.assertCanHoldByte();
-        return (byte)CHandler.getPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize());
+        return (byte)CHandler.getPointerPart(getPointer(), cTypeInfo.getSize(), calculateOffset(index));
     }
 
     public void setByte(byte value, int index) {
         cTypeInfo.assertBounds(value);
-        CHandler.setPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize(), value);
+        CHandler.setPointerPart(getPointer(), cTypeInfo.getSize(), calculateOffset(index), value);
     }
 
     public short getShort(int index) {
         cTypeInfo.assertCanHoldShort();
-        return (short)CHandler.getPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize());
+        return (short)CHandler.getPointerPart(getPointer(), cTypeInfo.getSize(), calculateOffset(index));
     }
 
     public void setShort(short value, int index) {
         cTypeInfo.assertBounds(value);
-        CHandler.setPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize(), value);
+        CHandler.setPointerPart(getPointer(), cTypeInfo.getSize(), calculateOffset(index), value);
     }
 
     public char getChar(int index) {
         cTypeInfo.assertCanHoldChar();
-        return (char)CHandler.getPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize());
+        return (char)CHandler.getPointerPart(getPointer(), cTypeInfo.getSize(), calculateOffset(index));
     }
 
     public void setChar(char value, int index) {
         cTypeInfo.assertBounds(value);
-        CHandler.setPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize(), value);
+        CHandler.setPointerPart(getPointer(), cTypeInfo.getSize(), calculateOffset(index), value);
     }
 
     public int getInt(int index) {
         cTypeInfo.assertCanHoldInt();
-        return (int)CHandler.getPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize());
+        return (int)CHandler.getPointerPart(getPointer(), cTypeInfo.getSize(), calculateOffset(index));
     }
 
     public void setInt(int value, int index) {
         cTypeInfo.assertBounds(value);
-        CHandler.setPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize(), value);
+        CHandler.setPointerPart(getPointer(), cTypeInfo.getSize(), calculateOffset(index), value);
     }
 
     public long getLong(int index) {
-        return CHandler.getPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize());
+        return CHandler.getPointerPart(getPointer(), cTypeInfo.getSize(), calculateOffset(index));
     }
 
     public void setLong(long value, int index) {
         cTypeInfo.assertBounds(value);
-        CHandler.setPointerPart(getPointer(), cTypeInfo.getSize(), index * cTypeInfo.getSize(), value);
+        CHandler.setPointerPart(getPointer(), cTypeInfo.getSize(), calculateOffset(index), value);
     }
 
-
-
     public CSizedIntPointer recast(String newCType) {
-        return new CSizedIntPointer(getPointer(), getsGCFreed(), newCType);
+        CSizedIntPointer tmp = new CSizedIntPointer(getPointer(), getsGCFreed(), newCType);
+        tmp.guard(getSizeGuard());
+        return tmp;
     }
 }
