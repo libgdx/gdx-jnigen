@@ -15,10 +15,14 @@ public final class DoublePointer extends Pointing {
     }
 
     public double getDouble(int index) {
-        return Double.longBitsToDouble(CHandler.getPointerPart(getPointer(), __double_size, index * __double_size));
+        int offset = index * __double_size;
+        assertBounds(offset);
+        return Double.longBitsToDouble(CHandler.getPointerPart(getPointer(), __double_size, offset));
     }
 
     public void setDouble(double value, int index) {
-        CHandler.setPointerPart(getPointer(), __double_size, index * __double_size, Double.doubleToLongBits(value));
+        int offset = index * __double_size;
+        assertBounds(offset);
+        CHandler.setPointerPart(getPointer(), __double_size, offset, Double.doubleToLongBits(value));
     }
 }

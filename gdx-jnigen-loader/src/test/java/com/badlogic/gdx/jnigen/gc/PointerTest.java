@@ -53,4 +53,11 @@ public class PointerTest extends BaseTest {
         assertEquals(1.1, doublePointer.getDouble(0));
         assertEquals(1.2, doublePointer.getDouble(1));
     }
+
+    @Test
+    public void testPointerBoundCheck() {
+        CSizedIntPointer cSizedIntPointer = new CSizedIntPointer("int", 4);
+        assertDoesNotThrow(() -> cSizedIntPointer.getInt(3));
+        assertThrows(IllegalArgumentException.class, () -> cSizedIntPointer.getInt(4));
+    }
 }
