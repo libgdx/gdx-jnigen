@@ -195,16 +195,10 @@ public class Manager {
     public void emit(String basePath) {
         try {
             for (StructType structType : structs.values()) {
-                HashMap<MethodDeclaration, String> toPatch = new HashMap<>();
                 CompilationUnit cu = new CompilationUnit(structType.packageName());
-                structType.write(cu, toPatch);
+                structType.write(cu);
 
                 String classContent = cu.toString();
-                for (Entry<MethodDeclaration, String> entry : toPatch.entrySet()) {
-                    MethodDeclaration methodDeclaration = entry.getKey();
-                    String s = entry.getValue();
-                    classContent = patchMethodNative(methodDeclaration, s, classContent);
-                }
 
                 String fullPath = basePath + structType.classFile().replace(".", "/") + ".java";
                 Path structPath = Paths.get(fullPath);
