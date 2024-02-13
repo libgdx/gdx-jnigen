@@ -10,6 +10,10 @@ public final class FloatPointer extends Pointing {
         super(pointer, freeOnGC);
     }
 
+    public FloatPointer() {
+        this(1);
+    }
+
     public FloatPointer(int size) {
         this(size, true, true);
     }
@@ -23,10 +27,18 @@ public final class FloatPointer extends Pointing {
         return this;
     }
 
+    public float getFloat() {
+        return getFloat(0);
+    }
+
     public float getFloat(int index) {
         int offset = index * __float_size;
         assertBounds(offset);
         return Float.intBitsToFloat((int)CHandler.getPointerPart(getPointer(), __float_size, offset));
+    }
+
+    public void setFloat(float value) {
+        setFloat(value, 0);
     }
 
     public void setFloat(float value, int index) {
