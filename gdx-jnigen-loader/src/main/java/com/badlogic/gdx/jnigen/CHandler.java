@@ -125,11 +125,7 @@ public class CHandler {
     */
 
     public static <T extends Closure> long dispatchCallback(ClosureInfo<T> toCallOn, ByteBuffer parameter) {
-        try {
-            return toCallOn.invoke(parameter);
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        return toCallOn.invoke(parameter);
     }
 
     public static int getCTypeSize(String name) {
