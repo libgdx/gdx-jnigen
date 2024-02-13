@@ -310,8 +310,7 @@ public class CHandler {
     }
 
     /*JNI
-
-    size_t getOffsetForField(ffi_type* struct_type, uint32_t index) {
+    static size_t getOffsetForField(ffi_type* struct_type, uint32_t index) {
         size_t offset = 0;
 
         for (size_t i = 0; i <= index; i++) {
@@ -327,6 +326,11 @@ public class CHandler {
         return offset;
     }
     */
+
+    public static native int getOffsetForField(long type_ptr, int index);/*
+        return getOffsetForField(reinterpret_cast<ffi_type*>(type_ptr), (uint32_t) index);
+    */
+
     public static float getStructFieldFloat(long pointer, long type_ptr, int index) {
         return Float.intBitsToFloat((int)getStructField(pointer, type_ptr, index));
     }
