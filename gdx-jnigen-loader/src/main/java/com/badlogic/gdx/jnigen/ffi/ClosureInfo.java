@@ -6,7 +6,6 @@ import com.badlogic.gdx.jnigen.c.CTypeInfo;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
 import com.badlogic.gdx.jnigen.util.Utils;
-import com.badlogic.gdx.jnigen.util.WrappingPointingSupplier;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;

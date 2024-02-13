@@ -184,8 +184,8 @@ public class TestData {
     	return (jdouble)call_methodWithCallbackDoubleReturn((methodWithCallbackDoubleReturn)arg0);
     */
 
-    public static StructPointer<TestStruct> returnTestStructPointer() {
-        return new TestStruct.Pointer(returnTestStructPointer_internal(), false);
+    public static TestStruct.TestStructPointer returnTestStructPointer() {
+        return new TestStruct.TestStructPointer(returnTestStructPointer_internal(), false);
     }
 
     static private native long returnTestStructPointer_internal();/*
@@ -210,7 +210,7 @@ public class TestData {
     	return (jlong)passByValue(*(TestStruct*)arg0);
     */
 
-    public static long passByPointer(StructPointer<TestStruct> arg0) {
+    public static long passByPointer(TestStruct.TestStructPointer arg0) {
         return passByPointer_internal(arg0.getPointer());
     }
 
@@ -228,8 +228,8 @@ public class TestData {
     	return (jlong)_ret;
     */
 
-    public static StructPointer<TestStruct> call_methodWithCallbackTestStructPointerReturn(ClosureObject<methodWithCallbackTestStructPointerReturn> arg0) {
-        return new TestStruct.Pointer(call_methodWithCallbackTestStructPointerReturn_internal(arg0.getFnPtr()), false);
+    public static TestStruct.TestStructPointer call_methodWithCallbackTestStructPointerReturn(ClosureObject<methodWithCallbackTestStructPointerReturn> arg0) {
+        return new TestStruct.TestStructPointer(call_methodWithCallbackTestStructPointerReturn_internal(arg0.getFnPtr()), false);
     }
 
     static private native long call_methodWithCallbackTestStructPointerReturn_internal(long arg0);/*
@@ -365,7 +365,7 @@ public class TestData {
 
     public interface methodWithCallbackTestStructPointerReturn extends Closure {
 
-        StructPointer<TestStruct> methodWithCallbackTestStructPointerReturn_call();
+        TestStruct.TestStructPointer methodWithCallbackTestStructPointerReturn_call();
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
             returnType.setValue(methodWithCallbackTestStructPointerReturn_call());
@@ -468,10 +468,10 @@ public class TestData {
 
     public interface methodWithCallbackTestStructPointerArg extends Closure {
 
-        void methodWithCallbackTestStructPointerArg_call(TestStruct.Pointer arg0);
+        void methodWithCallbackTestStructPointerArg_call(TestStruct.TestStructPointer arg0);
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackTestStructPointerArg_call(new TestStruct.Pointer(parameters[0].asLong(), false));
+            methodWithCallbackTestStructPointerArg_call(new TestStruct.TestStructPointer(parameters[0].asLong(), false));
         }
     }
 

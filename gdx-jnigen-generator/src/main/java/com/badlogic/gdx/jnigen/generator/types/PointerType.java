@@ -68,14 +68,6 @@ public class PointerType implements MappedType {
     }
 
     @Override
-    public String instantiationType() {
-        if (isStructPointer())
-            return pointingTo.getMappedType().abstractType() + ".Pointer";
-        else
-            return abstractType();
-    }
-
-    @Override
     public String abstractType() {
         if (isIntPointer())
             return CSizedIntPointer.class.getSimpleName();
@@ -86,7 +78,7 @@ public class PointerType implements MappedType {
         if (isVoidPointer())
             return VoidPointer.class.getSimpleName();
         if (isStructPointer())
-            return "StructPointer<" + pointingTo.getMappedType().abstractType() + ">";
+            return pointingTo.getMappedType().abstractType() + "." + pointingTo.getMappedType().abstractType() + "Pointer";
 
         throw new IllegalArgumentException();
     }

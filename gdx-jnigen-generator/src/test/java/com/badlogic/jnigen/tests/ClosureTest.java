@@ -3,6 +3,7 @@ package com.badlogic.jnigen.tests;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import com.badlogic.jnigen.generated.structs.TestStruct;
+import com.badlogic.jnigen.generated.structs.TestStruct.TestStructPointer;
 import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
@@ -103,8 +104,7 @@ public class ClosureTest extends BaseTest {
 
     @Test
     public void testCallbackStructArg() {
-        new TestStruct();
-        StructPointer<TestStruct> structPointer = new TestStruct.Pointer();
+        StructPointer<TestStruct> structPointer = new TestStructPointer();
         ClosureObject<methodWithCallbackTestStructArg> closureObject = ClosureObject.fromClosure(structPointer::set);
         call_methodWithCallbackTestStructArg(closureObject);
         TestStruct testStruct = structPointer.get();
@@ -118,7 +118,6 @@ public class ClosureTest extends BaseTest {
     @Test
     public void testCallbackStructPointerArg() {
         new TestStruct();
-        new TestStruct.Pointer();
         AtomicReference<StructPointer<TestStruct>> ref = new AtomicReference<>();
         ClosureObject<methodWithCallbackTestStructPointerArg> closureObject = ClosureObject.fromClosure(ref::set);
         call_methodWithCallbackTestStructPointerArg(closureObject);
@@ -237,7 +236,7 @@ public class ClosureTest extends BaseTest {
 
     @Test
     public void testCallbackStructPointerReturn() {
-        StructPointer<TestStruct> structPointer = new TestStruct.Pointer();
+        TestStructPointer structPointer = new TestStructPointer();
         structPointer.asStruct().field3((char)77);
         ClosureObject<methodWithCallbackTestStructPointerReturn> closureObject = ClosureObject.fromClosure(() -> structPointer);
         StructPointer<TestStruct> ret = call_methodWithCallbackTestStructPointerReturn(closureObject);
