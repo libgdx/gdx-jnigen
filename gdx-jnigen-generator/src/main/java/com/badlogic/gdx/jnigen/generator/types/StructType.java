@@ -59,7 +59,7 @@ public class StructType implements MappedType {
         ClassOrInterfaceDeclaration structClass = compilationUnit.addClass(javaTypeName, Keyword.PUBLIC, Keyword.FINAL);
         structClass.addOrphanComment(new BlockComment("JNI\n#include <jnigen.h>\n"));
         structClass.addExtendedType(Struct.class);
-        structClass.addField(long.class, "__size", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
+        structClass.addField(int.class, "__size", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
         structClass.addField(long.class, "__ffi_type", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
 
         // Static-Init

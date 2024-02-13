@@ -12,15 +12,24 @@ public final class CSizedIntPointer extends Pointing {
         this.cTypeInfo = CHandler.getCTypeInfo(cTypeInfo);
     }
 
-    public CSizedIntPointer(String cType, long size) {
-        this(CHandler.getCTypeInfo(cType), size);
+    public CSizedIntPointer(String cType, int size) {
+        this(cType, size, true, true);
     }
 
-    private CSizedIntPointer(CTypeInfo info, long size) {
-        super(info.getSize() * size);
+    public CSizedIntPointer(String cType, int size, boolean freeOnGC, boolean guard) {
+        this(CHandler.getCTypeInfo(cType), size, freeOnGC, guard);
+    }
+
+    private CSizedIntPointer(CTypeInfo info, int size, boolean freeOnGC, boolean guard) {
+        super(info.getSize() * size, freeOnGC, guard);
         this.cTypeInfo = info;
     }
-    
+
+    public CSizedIntPointer guardCount(long count) {
+        super.guardBytes(count * cTypeInfo.getSize());
+        return this;
+    }
+
     private int calculateOffset(int index) {
         int offset = index * cTypeInfo.getSize();
         assertBounds(offset);
@@ -87,7 +96,7 @@ public final class CSizedIntPointer extends Pointing {
 
     public CSizedIntPointer recast(String newCType) {
         CSizedIntPointer tmp = new CSizedIntPointer(getPointer(), getsGCFreed(), newCType);
-        tmp.guard(getSizeGuard());
+        tmp.guardBytes(getSizeGuard());
         return tmp;
     }
 }
