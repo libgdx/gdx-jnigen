@@ -14,6 +14,8 @@ import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.comments.BlockComment;
+import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.BinaryExpr.Operator;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -40,14 +42,7 @@ public class StructType implements MappedType {
     }
 
     public void addField(NamedType type) {
-        // TODO: THIS IS SO SHIT, DO BETTER!!
-        if (type.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
-            for (int i = 0; i < type.getDefinition().getCount(); i++) {
-                fields.add(new NamedType(type.getDefinition().getNestedDefinition(), type.getName() + "_" + i));
-            }
-        } else {
-            fields.add(type);
-        }
+        fields.add(type);
     }
 
     public void write(CompilationUnit compilationUnit, HashMap<MethodDeclaration, String> patchMap) {
@@ -93,18 +88,40 @@ public class StructType implements MappedType {
                 .createBody().addStatement("return __ffi_type;");
 
         // Fields
-        for (int i = 0; i < fields.size(); i++) {
-            NamedType field = fields.get(i);
+        int index = 0;
+        for (NamedType field : fields) {
             field.getDefinition().getMappedType().importType(compilationUnit);
             MethodDeclaration getMethod = structClass.addMethod(field.getName(), Keyword.PUBLIC);
             getMethod.setType(field.getDefinition().getMappedType().abstractType());
             BlockStmt getBody = new BlockStmt();
+            if (field.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
+                MethodCallExpr getOffsetExpr = new MethodCallExpr("getOffsetForField");
+                getOffsetExpr.setScope(new NameExpr("CHandler"));
+                getOffsetExpr.addArgument("__ffi_type");
+                getOffsetExpr.addArgument(index + "");
+                structClass.addFieldWithInitializer(int.class, "__" + field.getName() + "_offset", getOffsetExpr,
+                        Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
+
+                MethodCallExpr getPointer = new MethodCallExpr("getPointer");
+                BinaryExpr addPointerOffset = new BinaryExpr(getPointer,
+                        new NameExpr("__" + field.getName() + "_offset"), Operator.PLUS);
+                MethodCallExpr guardPointer = new MethodCallExpr("guardCount");
+                guardPointer.setScope(field.getDefinition().getMappedType().fromC(addPointerOffset));
+                guardPointer.addArgument(field.getDefinition().getCount() + "");
+                structClass.addFieldWithInitializer(field.getDefinition().getMappedType().abstractType(),
+                        "__" + field.getName(), guardPointer,
+                        Keyword.PRIVATE, Keyword.FINAL);
+                getBody.addStatement("return __" + field.getName() + ";");
+                getMethod.setBody(getBody);
+                index += field.getDefinition().getCount();
+                continue;
+            }
+
             String appendix = "";
-            if (field.getDefinition().getTypeKind() == TypeKind.FLOAT)
-                appendix = "Float";
-            else if (field.getDefinition().getTypeKind() == TypeKind.DOUBLE)
-                appendix = "Double";
-            Expression expression = StaticJavaParser.parseExpression("CHandler.getStructField" + appendix + "(getPointer(), __ffi_type, " + i + ")");
+            if (field.getDefinition().getTypeKind() == TypeKind.FLOAT) appendix = "Float";
+            else if (field.getDefinition().getTypeKind() == TypeKind.DOUBLE) appendix = "Double";
+            Expression expression = StaticJavaParser.parseExpression(
+                    "CHandler.getStructField" + appendix + "(getPointer(), __ffi_type, " + index + ")");
             getBody.addStatement(new ReturnStmt(field.getDefinition().getMappedType().fromC(expression)));
             getMethod.setBody(getBody);
 
@@ -116,10 +133,11 @@ public class StructType implements MappedType {
             callSetStruct.setScope(new NameExpr("CHandler"));
             callSetStruct.addArgument("getPointer()");
             callSetStruct.addArgument("__ffi_type");
-            callSetStruct.addArgument(String.valueOf(i));
+            callSetStruct.addArgument(String.valueOf(index));
             callSetStruct.addArgument(field.getDefinition().getMappedType().toC(new NameExpr(field.getName())));
             setBody.addStatement(callSetStruct);
             setMethod.setBody(setBody);
+            index++;
         }
 
 
@@ -148,8 +166,18 @@ public class StructType implements MappedType {
         generateFFIMethodBody.append("\t{\n\t\tffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));\n");
         generateFFIMethodBody.append("\t\ttype->type = FFI_TYPE_STRUCT;\n");
         generateFFIMethodBody.append("\t\ttype->elements = (ffi_type**)malloc(sizeof(ffi_type*) * ").append(fields.size() + 1).append(");\n");
-        for (int i = 0; i < fields.size(); i++) {
-            NamedType field = fields.get(i);
+        ArrayList<NamedType> unwrappedFields = new ArrayList<>();
+        for (NamedType field : fields) {
+            if (field.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
+                for (int i = 0; i < field.getDefinition().getCount(); i++) {
+                    unwrappedFields.add(new NamedType(field.getDefinition().getNestedDefinition(), field.getName() + "_" + i));
+                }
+            } else {
+                unwrappedFields.add(field);
+            }
+        }
+        for (int i = 0; i < unwrappedFields.size(); i++) {
+            NamedType field = unwrappedFields.get(i);
             if (field.getDefinition().getTypeKind() == TypeKind.POINTER || field.getDefinition().getTypeKind() == TypeKind.CLOSURE) {
                 generateFFIMethodBody.append("\t\ttype->elements[").append(i).append("] = &ffi_type_pointer;\n");
             } else if (field.getDefinition().getTypeKind() == TypeKind.STRUCT) {

@@ -56,8 +56,6 @@ public class TypeDefinition {
     }
 
     public MappedType getMappedType() {
-        if (typeKind == TypeKind.FIXED_SIZE_ARRAY)
-            throw new IllegalArgumentException();
         if (nestedDefinition != null)
             return nestedDefinition.getMappedType().asPointer();
         if (typeKind.isPrimitive() || typeKind == TypeKind.VOID) // TODO: Is this correct with void?
