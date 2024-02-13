@@ -10,8 +10,17 @@ public final class DoublePointer extends Pointing {
         super(pointer, freeOnGC);
     }
 
-    public DoublePointer(long size) {
-        super(__double_size * size);
+    public DoublePointer(int size) {
+        this(size, true, true);
+    }
+
+    public DoublePointer(int size, boolean freeOnGC, boolean guard) {
+        super(__double_size * size, freeOnGC, guard);
+    }
+
+    public DoublePointer guardCount(long count) {
+        super.guardBytes(count * __double_size);
+        return this;
     }
 
     public double getDouble(int index) {

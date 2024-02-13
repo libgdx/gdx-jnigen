@@ -393,7 +393,7 @@ public class CHandler {
         memcpy(ptr + offset, &value, size);  // Make it endian safe, I guess?
     */
 
-    public static native long getSizeFromFFIType(long type);/*
+    public static native int getSizeFromFFIType(long type);/*
         return reinterpret_cast<ffi_type*>(type)->size;
     */
 

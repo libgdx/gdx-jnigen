@@ -8,8 +8,8 @@ public abstract class Struct extends Pointing {
         super(pointer, freeOnGC);
     }
 
-    protected Struct(long size) {
-        super(size);
+    protected Struct(int size) {
+        super(size, true, true);
     }
 
     public <T extends Struct> StructPointer<T> asPointer() {

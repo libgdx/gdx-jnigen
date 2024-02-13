@@ -6,25 +6,29 @@ public final class VoidPointer extends Pointing {
         super(pointer, freeOnGC);
     }
 
-    public VoidPointer(long size) {
-        super(size);
+    public VoidPointer(int size) {
+        this(size, true, true);
+    }
+
+    public VoidPointer(int size, boolean freeOnGC, boolean guard) {
+        super(size, freeOnGC, guard);
     }
 
     public CSizedIntPointer recastToInt(String cType) {
         CSizedIntPointer tmp = new CSizedIntPointer(getPointer(), getsGCFreed(), cType);
-        tmp.guard(getSizeGuard());
+        tmp.guardBytes(getSizeGuard());
         return tmp;
     }
 
     public FloatPointer recastToFloat() {
         FloatPointer tmp = new FloatPointer(getPointer(), getsGCFreed());
-        tmp.guard(getSizeGuard());
+        tmp.guardBytes(getSizeGuard());
         return tmp;
     }
 
     public DoublePointer recastToDouble() {
         DoublePointer tmp = new DoublePointer(getPointer(), getsGCFreed());
-        tmp.guard(getSizeGuard());
+        tmp.guardBytes(getSizeGuard());
         return tmp;
     }
 }
