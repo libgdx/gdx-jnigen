@@ -46,7 +46,7 @@ public class StructType implements MappedType {
         fields.add(type);
     }
 
-    public void write(CompilationUnit compilationUnit, HashMap<MethodDeclaration, String> patchMap) {
+    public void write(CompilationUnit compilationUnit) {
         String structPointerRef = javaTypeName + "." + pointerName;
 
         compilationUnit.addImport(CHandler.class);
