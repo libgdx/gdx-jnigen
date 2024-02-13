@@ -10,6 +10,10 @@ public final class DoublePointer extends Pointing {
         super(pointer, freeOnGC);
     }
 
+    public DoublePointer() {
+        this(1);
+    }
+
     public DoublePointer(int size) {
         this(size, true, true);
     }
@@ -23,10 +27,18 @@ public final class DoublePointer extends Pointing {
         return this;
     }
 
+    public double getDouble() {
+        return getDouble(0);
+    }
+
     public double getDouble(int index) {
         int offset = index * __double_size;
         assertBounds(offset);
         return Double.longBitsToDouble(CHandler.getPointerPart(getPointer(), __double_size, offset));
+    }
+
+    public void setDouble(double value) {
+        setDouble(value, 0);
     }
 
     public void setDouble(double value, int index) {
