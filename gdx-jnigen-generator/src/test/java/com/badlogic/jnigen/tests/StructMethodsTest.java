@@ -1,8 +1,11 @@
 package com.badlogic.jnigen.tests;
 
 import com.badlogic.gdx.jnigen.CHandler;
+import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
+import com.badlogic.gdx.jnigen.pointer.FloatPointer;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import com.badlogic.jnigen.generated.TestData;
+import com.badlogic.jnigen.generated.structs.SpecialStruct;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 import com.badlogic.jnigen.generated.structs.TestStruct.TestStructPointer;
 import org.junit.jupiter.api.Test;
@@ -11,6 +14,47 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class StructMethodsTest extends BaseTest {
 
+    @Test
+    public void pointerInStructTest() {
+        SpecialStruct struct = new SpecialStruct();
+        FloatPointer floatPointer = new FloatPointer();
+        floatPointer.setFloat(3.3f);
+        struct.floatPtrField(floatPointer);
+        assertEquals(3.3f, TestData.getFloatPtrFieldValue(struct));
+        TestData.setFloatPtrFieldValue(struct, 1.1f);
+        assertEquals(1.1f, TestData.getFloatPtrFieldValue(struct));
+
+        CSizedIntPointer cSizedIntPointer = new CSizedIntPointer("int");
+        cSizedIntPointer.setInt(30);
+        struct.intPtrField(cSizedIntPointer);
+        assertEquals(30, TestData.getIntPtrFieldValue(struct));
+        TestData.setIntPtrFieldValue(struct, 20);
+        assertEquals(20, TestData.getIntPtrFieldValue(struct));
+    }
+
+    @Test
+    public void fixedSizeArrayInStructTest() {
+        SpecialStruct struct = new SpecialStruct();
+        //noinspection EqualsWithItself
+        assertEquals(struct.arrayField(), struct.arrayField());
+        CSizedIntPointer arrayField = struct.arrayField();
+        for (int i = 0; i < 5; i++) {
+            arrayField.setInt(i + 1, i);
+        }
+
+        assertThrows(IllegalArgumentException.class, () -> arrayField.setInt(3,5));
+        for (int i = 0; i < 5; i++) {
+            assertEquals(i + 1, TestData.getFixedSizeArrayFieldValue(struct, i));
+        }
+
+        for (int i = 0; i < 5; i++) {
+            TestData.setFixedSizeArrayFieldValue(struct.asPointer(), i, i + 50);
+        }
+
+        for (int i = 0; i < 5; i++) {
+            assertEquals(i + 50, arrayField.getInt(i));
+        }
+    }
 
     @Test
     public void testReadField() {
