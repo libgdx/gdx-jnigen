@@ -10,7 +10,7 @@ public final class TestStruct extends Struct {
     /*JNI
 #include <jnigen.h>
 */
-    private final static long __size;
+    private final static int __size;
 
     private final static long __ffi_type;
 
@@ -19,10 +19,6 @@ public final class TestStruct extends Struct {
         CHandler.calculateAlignmentAndSizeForType(__ffi_type);
         __size = CHandler.getSizeFromFFIType(__ffi_type);
         CHandler.registerStructFFIType(TestStruct.class, __ffi_type);
-        CHandler.registerPointingSupplier(TestStruct.class, TestStruct::new);
-        CHandler.registerNewStructPointerSupplier(TestStruct.class, TestStruct.Pointer::new);
-        CHandler.registerStructPointer(TestStruct.class, TestStruct.Pointer::new);
-        CHandler.registerPointingSupplier(TestStruct.Pointer.class, TestStruct.Pointer::new);
     }
 
     public TestStruct(long pointer, boolean freeOnGC) {
@@ -39,6 +35,10 @@ public final class TestStruct extends Struct {
 
     public long getFFIType() {
         return __ffi_type;
+    }
+
+    public TestStruct.TestStructPointer asPointer() {
+        return new TestStruct.TestStructPointer(getPointer(), getsGCFreed());
     }
 
     public long field1() {
@@ -73,22 +73,35 @@ public final class TestStruct extends Struct {
         CHandler.setStructField(getPointer(), __ffi_type, 3, field4);
     }
 
-    public static final class Pointer extends StructPointer<TestStruct> {
+    public static final class TestStructPointer extends StructPointer<TestStruct> {
 
-        public Pointer(long pointer, boolean freeOnGC) {
+        public TestStructPointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);
         }
 
-        public Pointer() {
-            super(__size);
+        public TestStructPointer() {
+            this(1, true, true);
         }
 
-        public long getSize() {
+        public TestStructPointer(int count, boolean freeOnGC, boolean guard) {
+            super(__size, count, freeOnGC, guard);
+        }
+
+        public TestStruct.TestStructPointer guardCount(long count) {
+            super.guardCount(count);
+            return this;
+        }
+
+        public int getSize() {
             return __size;
         }
 
         public Class<TestStruct> getStructClass() {
             return TestStruct.class;
+        }
+
+        protected TestStruct createStruct(long ptr, boolean freeOnGC) {
+            return new TestStruct(ptr, freeOnGC);
         }
     }
 }
