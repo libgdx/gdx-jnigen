@@ -31,6 +31,7 @@ import com.badlogic.jnigen.generated.enums.TestEnum;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumArg;
 import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
+import com.badlogic.jnigen.generated.structs.SpecialStruct;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
 
@@ -306,6 +307,54 @@ public class TestData {
 
     static private native long returnIntPointer_internal(int arg0);/*
     	return (jlong)returnIntPointer((int)arg0);
+    */
+
+    public static float getFloatPtrFieldValue(SpecialStruct arg0) {
+        return getFloatPtrFieldValue_internal(arg0.getPointer());
+    }
+
+    static private native float getFloatPtrFieldValue_internal(long arg0);/*
+    	return (jfloat)getFloatPtrFieldValue(*(SpecialStruct*)arg0);
+    */
+
+    public static int getFixedSizeArrayFieldValue(SpecialStruct arg0, int arg1) {
+        return getFixedSizeArrayFieldValue_internal(arg0.getPointer(), arg1);
+    }
+
+    static private native int getFixedSizeArrayFieldValue_internal(long arg0, int arg1);/*
+    	return (jint)getFixedSizeArrayFieldValue(*(SpecialStruct*)arg0, (int)arg1);
+    */
+
+    public static int getIntPtrFieldValue(SpecialStruct arg0) {
+        return getIntPtrFieldValue_internal(arg0.getPointer());
+    }
+
+    static private native int getIntPtrFieldValue_internal(long arg0);/*
+    	return (jint)getIntPtrFieldValue(*(SpecialStruct*)arg0);
+    */
+
+    public static void setFloatPtrFieldValue(SpecialStruct arg0, float arg1) {
+        setFloatPtrFieldValue_internal(arg0.getPointer(), arg1);
+    }
+
+    static private native void setFloatPtrFieldValue_internal(long arg0, float arg1);/*
+    	setFloatPtrFieldValue(*(SpecialStruct*)arg0, (float)arg1);
+    */
+
+    public static void setFixedSizeArrayFieldValue(SpecialStruct.SpecialStructPointer arg0, int arg1, int arg2) {
+        setFixedSizeArrayFieldValue_internal(arg0.getPointer(), arg1, arg2);
+    }
+
+    static private native void setFixedSizeArrayFieldValue_internal(long arg0, int arg1, int arg2);/*
+    	setFixedSizeArrayFieldValue((SpecialStruct *)arg0, (int)arg1, (int)arg2);
+    */
+
+    public static void setIntPtrFieldValue(SpecialStruct arg0, int arg1) {
+        setIntPtrFieldValue_internal(arg0.getPointer(), arg1);
+    }
+
+    static private native void setIntPtrFieldValue_internal(long arg0, int arg1);/*
+    	setIntPtrFieldValue(*(SpecialStruct*)arg0, (int)arg1);
     */
 
     public interface methodWithCallbackAllArgs extends Closure {

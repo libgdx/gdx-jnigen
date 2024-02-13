@@ -182,3 +182,28 @@ int* returnIntPointer(int i) {
     return ret;
 }
 
+void setFloatPtrFieldValue(SpecialStruct specialStruct, float value) {
+    *(specialStruct.floatPtrField) = value;
+}
+
+void setFixedSizeArrayFieldValue(SpecialStruct* specialStruct, int index, int value) {
+    specialStruct->arrayField[index] = value;
+}
+
+void setIntPtrFieldValue(SpecialStruct specialStruct, int value) {
+    *(specialStruct.intPtrField) = value;
+}
+
+float getFloatPtrFieldValue(SpecialStruct specialStruct) {
+    return *(specialStruct.floatPtrField);
+}
+
+int getFixedSizeArrayFieldValue(SpecialStruct specialStruct, int index) {
+    return specialStruct.arrayField[index];
+}
+
+int getIntPtrFieldValue(SpecialStruct specialStruct) {
+    return *(specialStruct.intPtrField);
+}
+
+

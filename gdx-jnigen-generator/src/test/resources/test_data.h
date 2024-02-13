@@ -14,6 +14,12 @@ typedef struct TestStruct {
     uint8_t field4;
 } TestStruct;
 
+typedef struct SpecialStruct {
+    float* floatPtrField;
+    int arrayField[5];
+    int* intPtrField;
+} SpecialStruct;
+
 typedef enum TestEnum {
     FIRST,
     SECOND,
@@ -91,6 +97,13 @@ void call_methodWithCallbackTestEnumArg(methodWithCallbackTestEnumArg fnPtr);
 int passIntPointer(int*);
 int* returnIntPointer(int);
 
+float getFloatPtrFieldValue(SpecialStruct specialStruct);
+int getFixedSizeArrayFieldValue(SpecialStruct specialStruct, int index);
+int getIntPtrFieldValue(SpecialStruct specialStruct);
+
+void setFloatPtrFieldValue(SpecialStruct specialStruct, float value);
+void setFixedSizeArrayFieldValue(SpecialStruct* specialStruct, int index, int value);
+void setIntPtrFieldValue(SpecialStruct specialStruct, int value);
 
 #ifdef __cplusplus
 }
