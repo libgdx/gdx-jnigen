@@ -10,8 +10,17 @@ public final class FloatPointer extends Pointing {
         super(pointer, freeOnGC);
     }
 
-    public FloatPointer(long size) {
-        super(__float_size * size);
+    public FloatPointer(int size) {
+        this(size, true, true);
+    }
+
+    public FloatPointer(int size, boolean freeOnGC, boolean guard) {
+        super(__float_size * size, freeOnGC, guard);
+    }
+
+    public FloatPointer guardCount(long count) {
+        super.guardBytes(count * __float_size);
+        return this;
     }
 
     public float getFloat(int index) {

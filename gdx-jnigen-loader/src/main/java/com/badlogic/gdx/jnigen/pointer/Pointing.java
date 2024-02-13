@@ -20,12 +20,17 @@ public class Pointing {
             GCHandler.enqueuePointer(this);
     }
 
-    public Pointing(long size) {
-        this(CHandler.calloc(size), true);
-        guard(size);
+    public Pointing(int size) {
+        this(size, true, true);
     }
 
-    public void guard(long size) {
+    public Pointing(int size, boolean freeOnGC, boolean guard) {
+        this(CHandler.calloc(size), freeOnGC);
+        if (guard)
+            guardBytes(size);
+    }
+
+    public void guardBytes(long size) {
         this.sizeGuard = size;
     }
 

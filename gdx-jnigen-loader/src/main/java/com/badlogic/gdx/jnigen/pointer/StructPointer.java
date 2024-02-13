@@ -12,8 +12,12 @@ public abstract class StructPointer<T extends Struct> extends Pointing {
         this.supplier = CHandler.getPointingSupplier(getStructClass());
     }
 
-    public StructPointer(long size) {
-        super(size);
+    public StructPointer(int size) {
+        this(size, true, true);
+    }
+
+    public StructPointer(int size, boolean freeOnGC, boolean guard) {
+        super(size, freeOnGC, guard);
         this.supplier = CHandler.getPointingSupplier(getStructClass());
     }
 
