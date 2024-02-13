@@ -4,6 +4,7 @@ import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import com.badlogic.jnigen.generated.TestData;
 import com.badlogic.jnigen.generated.structs.TestStruct;
+import com.badlogic.jnigen.generated.structs.TestStruct.TestStructPointer;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -61,7 +62,7 @@ public class StructMethodsTest extends BaseTest {
 
     @Test
     public void testPassPointer() {
-        StructPointer<TestStruct> pointer = new TestStruct.Pointer();
+        TestStructPointer pointer = new TestStructPointer();
         TestStruct testStruct = new TestStruct();
         testStruct.field2(7);
         pointer.set(testStruct);
@@ -80,7 +81,7 @@ public class StructMethodsTest extends BaseTest {
         TestStruct testStruct = new TestStruct();
         testStruct.field2(7);
 
-        StructPointer<TestStruct> pointer = testStruct.asPointer();
+        TestStructPointer pointer = testStruct.asPointer();
         assertEquals(7, TestData.passByPointer(pointer));
 
         assertEquals(7, testStruct.field2());

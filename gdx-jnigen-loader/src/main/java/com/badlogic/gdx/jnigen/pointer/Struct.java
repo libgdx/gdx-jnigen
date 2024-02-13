@@ -1,7 +1,5 @@
 package com.badlogic.gdx.jnigen.pointer;
 
-import com.badlogic.gdx.jnigen.CHandler;
-
 public abstract class Struct extends Pointing {
 
     protected Struct(long pointer, boolean freeOnGC) {
@@ -12,10 +10,7 @@ public abstract class Struct extends Pointing {
         super(size, true, true);
     }
 
-    public <T extends Struct> StructPointer<T> asPointer() {
-        //noinspection unchecked
-        return (StructPointer<T>)CHandler.getStructPointer(getClass()).create(getPointer(), getsGCFreed());
-    }
+    public abstract StructPointer<?> asPointer();
 
     public abstract long getSize();
 

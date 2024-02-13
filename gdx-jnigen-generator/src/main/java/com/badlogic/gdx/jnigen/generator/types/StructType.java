@@ -33,12 +33,13 @@ public class StructType implements MappedType {
 
     private final TypeDefinition definition;
     private final List<NamedType> fields = new ArrayList<>();
-    private final String pointerName = "Pointer";
+    private final String pointerName;
     private final String javaTypeName;
 
     public StructType(TypeDefinition definition) {
         this.definition = definition;
         this.javaTypeName = definition.getTypeName().replace("struct ", "");
+        pointerName = javaTypeName + "Pointer";
     }
 
     public void addField(NamedType type) {
@@ -63,10 +64,6 @@ public class StructType implements MappedType {
         staticInit.addStatement("CHandler.calculateAlignmentAndSizeForType(__ffi_type);");
         staticInit.addStatement("__size = CHandler.getSizeFromFFIType(__ffi_type);");
         staticInit.addStatement("CHandler.registerStructFFIType(" + javaTypeName + ".class, __ffi_type);");
-        staticInit.addStatement("CHandler.registerPointingSupplier(" + javaTypeName + ".class, " + javaTypeName + "::new);");
-        staticInit.addStatement("CHandler.registerNewStructPointerSupplier(" + javaTypeName + ".class, " + structPointerRef + "::new);");
-        staticInit.addStatement("CHandler.registerStructPointer(" + javaTypeName + ".class, " + structPointerRef + "::new);");
-        staticInit.addStatement("CHandler.registerPointingSupplier(" + structPointerRef + ".class, " + structPointerRef + "::new);");
 
         compilationUnit.addImport(Manager.getInstance().getBasePackage() + ".FFITypes");
 
@@ -86,6 +83,9 @@ public class StructType implements MappedType {
 
         structClass.addMethod("getFFIType", Keyword.PUBLIC).setType(long.class)
                 .createBody().addStatement("return __ffi_type;");
+
+        structClass.addMethod("asPointer", Keyword.PUBLIC).setType(structPointerRef)
+                .createBody().addStatement("return new " + structPointerRef + "(getPointer(), getsGCFreed());");
 
         // Fields
         int index = 0;
@@ -152,13 +152,28 @@ public class StructType implements MappedType {
         BlockStmt body = new BlockStmt();
         body.addStatement("super(pointer, freeOnGC);");
         pointerConstructor.setBody(body);
-        ConstructorDeclaration defaultConstructorPointer = pointerClass.addConstructor(Keyword.PUBLIC);
-        defaultConstructorPointer.createBody().addStatement("super(__size);");
 
-        pointerClass.addMethod("getSize", Keyword.PUBLIC).setType(long.class).createBody().addStatement("return __size;");
+        pointerClass.addConstructor(Keyword.PUBLIC).getBody().addStatement("this(1, true, true);");
+
+        ConstructorDeclaration defaultConstructorPointer = pointerClass.addConstructor(Keyword.PUBLIC);
+        defaultConstructorPointer.addParameter(int.class, "count");
+        defaultConstructorPointer.addParameter(boolean.class, "freeOnGC");
+        defaultConstructorPointer.addParameter(boolean.class, "guard");
+        defaultConstructorPointer.createBody().addStatement("super(__size, count, freeOnGC, guard);");
+
+        pointerClass.addMethod("guardCount", Keyword.PUBLIC).setType(structPointerRef)
+                .addParameter(long.class, "count")
+                .createBody()
+                .addStatement("super.guardCount(count);")
+                .addStatement("return this;");
+
+        pointerClass.addMethod("getSize", Keyword.PUBLIC).setType(int.class).createBody().addStatement("return __size;");
         pointerClass.addMethod("getStructClass", Keyword.PUBLIC).setType("Class<" + javaTypeName + ">")
                 .createBody().addStatement("return " + javaTypeName + ".class;");
-
+        pointerClass.addMethod("createStruct", Keyword.PROTECTED).setType(javaTypeName)
+                .addParameter(long.class, "ptr")
+                .addParameter(boolean.class, "freeOnGC")
+                .createBody().addStatement("return new " + javaTypeName + "(ptr, freeOnGC);");
     }
 
     public String getFFITypeBody(String ffiResolveFunctionName) {

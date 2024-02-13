@@ -5,11 +5,7 @@ import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.ffi.ClosureInfo;
 import com.badlogic.gdx.jnigen.ffi.ParameterTypes;
-import com.badlogic.gdx.jnigen.pointer.Pointing;
 import com.badlogic.gdx.jnigen.pointer.Struct;
-import com.badlogic.gdx.jnigen.pointer.StructPointer;
-import com.badlogic.gdx.jnigen.util.NewPointingSupplier;
-import com.badlogic.gdx.jnigen.util.WrappingPointingSupplier;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 
 import java.lang.reflect.InvocationTargetException;
@@ -47,12 +43,6 @@ public class CHandler {
     private static final HashMap<Class<? extends Closure>, Long> classCifMap = new HashMap<>();
 
     private static final HashMap<Class<? extends Struct>, Long> classStructFFITypeMap = new HashMap<>();
-
-    private static final HashMap<Class<? extends Struct>, NewPointingSupplier<? extends StructPointer<?>>> classNewStructPointerMap = new HashMap<>();
-
-    private static final HashMap<Class<? extends Pointing>, WrappingPointingSupplier<? extends Pointing>> classPointingSupplierMap = new HashMap<>();
-
-    private static final HashMap<Class<? extends Struct>, WrappingPointingSupplier<? extends StructPointer<?>>> classStructPointerMap = new HashMap<>();
 
     private static final HashMap<String, CTypeInfo> cTypeInfoMap = new HashMap<>();
 
@@ -176,20 +166,6 @@ public class CHandler {
         }
     }
 
-
-    public static <T extends Struct, S extends StructPointer<T>> void registerStructPointer(Class<T> structClass, WrappingPointingSupplier<S> pointerClass) {
-        synchronized (classStructPointerMap) {
-            classStructPointerMap.put(structClass, pointerClass);
-        }
-    }
-
-    public static <T extends Struct, S extends StructPointer<T>> WrappingPointingSupplier<S> getStructPointer(Class<T> structClass) {
-        synchronized (classStructPointerMap) {
-            //noinspection unchecked
-            return (WrappingPointingSupplier<S>)classStructPointerMap.get(structClass);
-        }
-    }
-
     public static void registerStructFFIType(Class<? extends Struct> structClass, long ffiType) {
         synchronized (classStructFFITypeMap) {
             classStructFFITypeMap.put(structClass, ffiType);
@@ -199,32 +175,6 @@ public class CHandler {
     public static long getStructFFIType(Class<? extends Struct> structClass) {
         synchronized (classStructFFITypeMap) {
             return classStructFFITypeMap.getOrDefault(structClass, 0L);
-        }
-    }
-
-    public static <T extends Struct, S extends StructPointer<T>> void registerNewStructPointerSupplier(Class<T> structClass, NewPointingSupplier<S> supplier) {
-        synchronized (classNewStructPointerMap) {
-            classNewStructPointerMap.put(structClass, supplier);
-        }
-    }
-
-    public static <T extends Struct, S extends StructPointer<T>> NewPointingSupplier<S> getNewStructPointerSupplier(Class<T> structClass) {
-        synchronized (classNewStructPointerMap) {
-            //noinspection unchecked
-            return (NewPointingSupplier<S>)classNewStructPointerMap.get(structClass);
-        }
-    }
-
-    public static <T extends Pointing> void registerPointingSupplier(Class<T> toRegister, WrappingPointingSupplier<T> supplier) {
-        synchronized (classPointingSupplierMap) {
-            classPointingSupplierMap.put(toRegister, supplier);
-        }
-    }
-
-    public static <T extends Pointing> WrappingPointingSupplier<T> getPointingSupplier(Class<T> toGet) {
-        synchronized (classPointingSupplierMap) {
-            //noinspection unchecked
-            return (WrappingPointingSupplier<T>)classPointingSupplierMap.get(toGet);
         }
     }
 
