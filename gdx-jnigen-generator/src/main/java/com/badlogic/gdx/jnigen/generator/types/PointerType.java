@@ -13,7 +13,7 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 
 public class PointerType implements MappedType {
 
-    private TypeDefinition pointingTo;
+    private final TypeDefinition pointingTo;
 
 
     public PointerType(TypeDefinition pointingTo) {
