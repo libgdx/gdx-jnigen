@@ -177,10 +177,6 @@ public class StructType implements MappedType {
     }
 
     public String getFFITypeBody(String ffiResolveFunctionName) {
-        StringBuilder generateFFIMethodBody = new StringBuilder();
-        generateFFIMethodBody.append("\t{\n\t\tffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));\n");
-        generateFFIMethodBody.append("\t\ttype->type = FFI_TYPE_STRUCT;\n");
-        generateFFIMethodBody.append("\t\ttype->elements = (ffi_type**)malloc(sizeof(ffi_type*) * ").append(fields.size() + 1).append(");\n");
         ArrayList<NamedType> unwrappedFields = new ArrayList<>();
         for (NamedType field : fields) {
             if (field.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
@@ -191,6 +187,12 @@ public class StructType implements MappedType {
                 unwrappedFields.add(field);
             }
         }
+
+        StringBuilder generateFFIMethodBody = new StringBuilder();
+        generateFFIMethodBody.append("\t{\n\t\tffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));\n");
+        generateFFIMethodBody.append("\t\ttype->type = FFI_TYPE_STRUCT;\n");
+        generateFFIMethodBody.append("\t\ttype->elements = (ffi_type**)malloc(sizeof(ffi_type*) * ").append(unwrappedFields.size() + 1).append(");\n");
+
         for (int i = 0; i < unwrappedFields.size(); i++) {
             NamedType field = unwrappedFields.get(i);
             if (field.getDefinition().getTypeKind() == TypeKind.POINTER || field.getDefinition().getTypeKind() == TypeKind.CLOSURE) {
@@ -209,7 +211,7 @@ public class StructType implements MappedType {
                         .append(");\n");
             }
         }
-        generateFFIMethodBody.append("\t\ttype->elements[").append(fields.size()).append("] = NULL;\n");
+        generateFFIMethodBody.append("\t\ttype->elements[").append(unwrappedFields.size()).append("] = NULL;\n");
         generateFFIMethodBody.append("\t\treturn type;\n\t}\n");
 
         return generateFFIMethodBody.toString();
