@@ -75,8 +75,7 @@ public final class ClosureInfo<T extends Closure> {
         return cachedReturnWrapper.newJavaTypeWrapper();
     }
 
-    public long invoke(ByteBuffer parameter)
-            throws InvocationTargetException, IllegalAccessException {
+    public long invoke(ByteBuffer parameter) {
 
         JavaTypeWrapper[] wrappers = cachedWrappers;
         JavaTypeWrapper returnWrapper = cachedReturnWrapper;
