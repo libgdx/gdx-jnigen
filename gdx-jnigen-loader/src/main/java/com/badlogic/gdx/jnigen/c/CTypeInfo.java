@@ -8,18 +8,20 @@ public final class CTypeInfo {
     private final long ffiType;
     private final int size;
     private final boolean signed;
+    private final boolean struct;
 
-    // Add isStruct/double/float?
+    // Add isStruct/isVoid/double/float?
 
-    public CTypeInfo(String name, long ffiType, int size, boolean signed) {
+    public CTypeInfo(String name, long ffiType, int size, boolean signed, boolean struct) {
         this.name = name;
         this.ffiType = ffiType;
         this.size = size;
         this.signed = signed;
+        this.struct = struct;
     }
 
     public void assertBounds(long value) {
-        if (!Utils.checkBoundsForNumber(value, size, signed))
+        if (!isStruct() && !Utils.checkBoundsForNumber(value, size, signed))
             throw new IllegalArgumentException("Value " + value + " exceeds bounds " + size + " with signess " + signed);
     }
 
@@ -44,6 +46,8 @@ public final class CTypeInfo {
     }
 
     public String getName() {
+        if (name == null)
+            return "unnamed";
         return name;
     }
 
@@ -57,5 +61,9 @@ public final class CTypeInfo {
 
     public boolean isSigned() {
         return signed;
+    }
+
+    public boolean isStruct() {
+        return struct;
     }
 }

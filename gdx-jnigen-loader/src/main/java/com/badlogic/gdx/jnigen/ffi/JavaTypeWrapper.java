@@ -1,5 +1,6 @@
 package com.badlogic.gdx.jnigen.ffi;
 
+import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.c.CEnum;
 import com.badlogic.gdx.jnigen.c.CTypeInfo;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
@@ -15,6 +16,9 @@ public final class JavaTypeWrapper {
     }
 
     public int getSize() {
+        // TODO: 16.02.24 Handling void too?
+        if (cTypeInfo.isStruct())
+            return CHandler.POINTER_SIZE;
         return cTypeInfo.getSize();
     }
 
