@@ -25,7 +25,6 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.PrimitiveType;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class StructType implements MappedType {

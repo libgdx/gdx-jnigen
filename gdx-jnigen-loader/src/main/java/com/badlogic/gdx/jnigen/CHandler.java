@@ -4,13 +4,9 @@ import com.badlogic.gdx.jnigen.c.CTypeInfo;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.ffi.ClosureInfo;
-import com.badlogic.gdx.jnigen.ffi.ParameterTypes;
-import com.badlogic.gdx.jnigen.pointer.Struct;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.HashMap;

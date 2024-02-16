@@ -1,7 +1,5 @@
 package com.badlogic.gdx.jnigen.util;
 
-import com.badlogic.gdx.jnigen.c.CTypeInfo;
-
 public class Utils {
 
     public static boolean checkBoundsForNumber(long value, long size, boolean signed) {
