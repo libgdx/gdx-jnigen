@@ -1,21 +1,11 @@
 package com.badlogic.gdx.jnigen.ffi;
 
-import com.badlogic.gdx.jnigen.CHandler;
-import com.badlogic.gdx.jnigen.c.CEnum;
 import com.badlogic.gdx.jnigen.c.CTypeInfo;
 import com.badlogic.gdx.jnigen.closure.Closure;
-import com.badlogic.gdx.jnigen.pointer.Pointing;
-import com.badlogic.gdx.jnigen.util.Utils;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static com.badlogic.gdx.jnigen.ffi.ParameterTypes.*;
 
 public final class ClosureInfo<T extends Closure> {
 

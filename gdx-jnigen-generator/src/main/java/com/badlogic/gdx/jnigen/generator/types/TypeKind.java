@@ -2,9 +2,6 @@ package com.badlogic.gdx.jnigen.generator.types;
 
 import org.bytedeco.llvm.clang.CXType;
 
-import java.io.Serializable;
-import java.util.Arrays;
-
 import static org.bytedeco.llvm.global.clang.*;
 
 public enum TypeKind {
