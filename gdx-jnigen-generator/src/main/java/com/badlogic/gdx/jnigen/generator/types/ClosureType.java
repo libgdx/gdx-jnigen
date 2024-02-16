@@ -4,13 +4,15 @@ import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
 import com.badlogic.gdx.jnigen.generator.Manager;
-import com.badlogic.gdx.jnigen.c.CType;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.ArrayAccessExpr;
+import com.github.javaparser.ast.expr.ArrayCreationExpr;
+import com.github.javaparser.ast.expr.ArrayInitializerExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -30,29 +32,42 @@ public class ClosureType implements MappedType {
     }
 
     public void write(CompilationUnit cu, ClassOrInterfaceDeclaration wrappingClass) {
-
-        wrappingClass.tryAddImportToParentCompilationUnit(Closure.class);
-        wrappingClass.tryAddImportToParentCompilationUnit(JavaTypeWrapper.class);
+        cu.addImport(Closure.class);
+        cu.addImport(JavaTypeWrapper.class);
         ClassOrInterfaceDeclaration closureClass = new ClassOrInterfaceDeclaration()
                 .setInterface(true)
                 .addExtendedType(Closure.class)
                 .setModifier(Keyword.PUBLIC, true)
                 .setName(name);
 
+        NodeList<Expression> arrayInitializerExpr = new NodeList<>();
+        ArrayCreationExpr arrayCreationExpr = new ArrayCreationExpr();
+        arrayCreationExpr.setElementType(long[].class);
+        arrayCreationExpr.setInitializer(new ArrayInitializerExpr(arrayInitializerExpr));
+
+        closureClass.addFieldWithInitializer(long[].class, "__ffi_cache", arrayCreationExpr);
+
         MethodDeclaration callMethod = closureClass.addMethod(name + "_call");
         callMethod.setBody(null);
         for (NamedType namedType : arguments) {
             namedType.getDefinition().getMappedType().importType(cu);
-            Parameter parameter = callMethod.addAndGetParameter(namedType.getDefinition().getMappedType().instantiationType(), namedType.getName());
-            if (namedType.getDefinition().getTypeKind().isPrimitive()) {
-                parameter.addAndGetAnnotation(CType.class).addPair("value", "\"" + namedType.getDefinition().getTypeName() + "\"");
-            }
+            callMethod.addAndGetParameter(namedType.getDefinition().getMappedType().instantiationType(), namedType.getName());
+            MethodCallExpr getTypeID = new MethodCallExpr("getFFIType");
+            getTypeID.setScope(new NameExpr("FFITypes"));
+            getTypeID.addArgument(new IntegerLiteralExpr(String.valueOf(namedType.getDefinition().getMappedType().typeID())));
+            arrayInitializerExpr.add(getTypeID);
         }
         returnType.getMappedType().importType(cu);
         callMethod.setType(returnType.getMappedType().abstractType());
-        if (returnType.getTypeKind().isPrimitive()) {
-            callMethod.addAndGetAnnotation(CType.class).addPair("value", "\"" + returnType.getTypeName() + "\"");
-        }
+
+        MethodCallExpr getTypeID = new MethodCallExpr("getFFIType");
+        getTypeID.setScope(new NameExpr("FFITypes"));
+        getTypeID.addArgument(new IntegerLiteralExpr(String.valueOf(returnType.getMappedType().typeID())));
+        arrayInitializerExpr.add(0, getTypeID);
+
+        closureClass.addMethod("functionSignature", Keyword.DEFAULT)
+                .setType(long[].class)
+                .createBody().addStatement("return __ffi_cache;");
 
         MethodDeclaration invokeMethod = closureClass.addMethod("invoke", Keyword.DEFAULT);
         invokeMethod.addParameter(JavaTypeWrapper[].class, "parameters");
@@ -134,5 +149,10 @@ public class ClosureType implements MappedType {
         MethodCallExpr methodCallExpr = new MethodCallExpr("getFnPtr");
         methodCallExpr.setScope(cSend);
         return methodCallExpr;
+    }
+
+    @Override
+    public int typeID() {
+        return Manager.POINTER_FFI_ID;
     }
 }

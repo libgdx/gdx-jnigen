@@ -1,5 +1,6 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
+import com.badlogic.gdx.jnigen.generator.Manager;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.BinaryExpr.Operator;
@@ -98,5 +99,13 @@ public class PrimitiveType implements MappedType {
     @Override
     public Expression toC(Expression cSend) {
         return cSend;
+    }
+
+    @Override
+    public int typeID() {
+        if (definition.getTypeKind() == TypeKind.VOID)
+            return Manager.VOID_FFI_ID;
+        else
+            return Manager.getInstance().getCTypeID(definition.getTypeName());
     }
 }

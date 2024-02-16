@@ -7,15 +7,11 @@ import com.badlogic.gdx.jnigen.util.Utils;
 
 public final class JavaTypeWrapper {
 
-    private final Class<?> wrappingClass;
     private long wrappingType;
     private final CTypeInfo cTypeInfo;
 
-    public JavaTypeWrapper(Class<?> wrappingClass, CTypeInfo cTypeInfo) {
-        this.wrappingClass = wrappingClass;
+    public JavaTypeWrapper(CTypeInfo cTypeInfo) {
         this.cTypeInfo = cTypeInfo;
-        if (wrappingClass == char.class && cTypeInfo.isSigned())
-            throw new IllegalArgumentException("A char can't be signed");
     }
 
     public int getSize() {
@@ -73,7 +69,7 @@ public final class JavaTypeWrapper {
 
 
     public JavaTypeWrapper newJavaTypeWrapper() {
-        return new JavaTypeWrapper(wrappingClass, cTypeInfo);
+        return new JavaTypeWrapper(cTypeInfo);
     }
 
     public long unwrapToLong() {
@@ -85,19 +81,14 @@ public final class JavaTypeWrapper {
     }
 
     public float asFloat() {
-        if (wrappingClass != float.class)
-            throw new IllegalArgumentException();
         return Float.intBitsToFloat((int)wrappingType);
     }
 
     public double asDouble() {
-        if (wrappingClass != double.class)
-            throw new IllegalArgumentException();
         return Double.longBitsToDouble(wrappingType);
     }
 
     public void assertBounds() {
-        if (wrappingClass != float.class && wrappingClass != double.class)
-            cTypeInfo.assertBounds(unwrapToLong());
+        cTypeInfo.assertBounds(unwrapToLong());
     }
 }

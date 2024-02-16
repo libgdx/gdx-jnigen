@@ -133,4 +133,9 @@ public class EnumType implements MappedType {
         methodCallExpr.setScope(cSend);
         return methodCallExpr;
     }
+
+    @Override
+    public int typeID() {
+        return Manager.getInstance().getCTypeID("int");
+    }
 }
