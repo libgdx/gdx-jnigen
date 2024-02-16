@@ -20,7 +20,6 @@ public final class SpecialStruct extends Struct {
         __ffi_type = FFITypes.getFFIType(11);
         CHandler.calculateAlignmentAndSizeForType(__ffi_type);
         __size = CHandler.getSizeFromFFIType(__ffi_type);
-        CHandler.registerStructFFIType(SpecialStruct.class, __ffi_type);
     }
 
     public SpecialStruct(long pointer, boolean freeOnGC) {

@@ -4,6 +4,8 @@ import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
 
 public interface Closure {
 
+    long[] functionSignature();
+
     void invoke(JavaTypeWrapper[] parameter, JavaTypeWrapper returnType);
 
 }

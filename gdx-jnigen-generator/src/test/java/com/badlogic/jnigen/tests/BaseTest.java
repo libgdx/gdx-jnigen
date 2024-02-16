@@ -19,7 +19,6 @@ public class BaseTest {
     }
 
     @BeforeEach
-    @AfterEach
     public void emptyGC() {
         while (GCHandler.nativeObjectCount() != 0)
             System.gc();

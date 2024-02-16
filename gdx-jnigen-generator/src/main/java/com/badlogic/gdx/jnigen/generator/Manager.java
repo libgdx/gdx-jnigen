@@ -9,6 +9,7 @@ import com.badlogic.gdx.jnigen.generator.types.MappedType;
 import com.badlogic.gdx.jnigen.generator.types.NamedType;
 import com.badlogic.gdx.jnigen.generator.types.StructType;
 import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -33,8 +34,10 @@ import java.util.stream.Collectors;
 
 public class Manager {
 
-    private static Manager instance;
+    public static final int VOID_FFI_ID = -2;
+    public static final int POINTER_FFI_ID = -1;
 
+    private static Manager instance;
 
     private final String parsedCHeader;
     private final String basePackage;
@@ -63,7 +66,7 @@ public class Manager {
     public void startStruct(TypeDefinition definition) {
         String name = definition.getTypeName();
         if (structs.containsKey(name))
-            throw new IllegalArgumentException("Struct with name: " + name + " already exists.");
+            return;
         StructType structType = new StructType(definition);
         structs.put(name, structType);
         orderedStructs.add(structType);
@@ -109,6 +112,12 @@ public class Manager {
     public void recordCType(String name) {
         if (!knownCTypes.contains(name))
             knownCTypes.add(name);
+    }
+
+    public int getCTypeID(String name) {
+        if (!knownCTypes.contains(name))
+            throw new IllegalArgumentException("CType " + name + " is not registered.");
+        return knownCTypes.indexOf(name);
     }
 
     public void registerCTypeMapping(String name, MappedType javaRepresentation) {
@@ -234,26 +243,44 @@ public class Manager {
             addJNIComment(ffiTypeClass, "#include <jnigen.h>", "#include <" + parsedCHeader + ">");
             ffiTypeClass.addMethod("init", Keyword.PUBLIC, Keyword.STATIC);
 
+            ffiTypeCU.addImport(HashMap.class);
+            ffiTypeClass.addFieldWithInitializer("HashMap<Integer, Long>", "ffiIdMap", StaticJavaParser.parseExpression("new HashMap<>()"), Keyword.FINAL, Keyword.STATIC);
+
+            ffiTypeClass.addMethod("getFFIType", Keyword.PUBLIC, Keyword.STATIC)
+                    .setType(long.class)
+                    .addParameter(int.class, "id")
+                    .createBody().addStatement("return ffiIdMap.get(id);");
+
             BlockComment getFFITypeNativeMethod = new BlockComment();
             ffiTypeClass.addOrphanComment(getFFITypeNativeMethod);
 
             String nativeGetFFIMethodName = "getFFIType";
 
-            MethodDeclaration getFFITypeMethod = ffiTypeClass.addMethod(nativeGetFFIMethodName, Keyword.PUBLIC, Keyword.NATIVE, Keyword.STATIC);
+            MethodDeclaration getFFITypeMethod = ffiTypeClass.addMethod("getFFITypeNative", Keyword.PRIVATE, Keyword.NATIVE, Keyword.STATIC);
             getFFITypeMethod.setBody(null).setType(long.class).addParameter(int.class, "id");
             StringBuilder ffiTypeNativeBody = new StringBuilder("JNI\n");
             ffiTypeNativeBody.append("static ffi_type* ").append(nativeGetFFIMethodName).append("(int id) {\n");
             ffiTypeNativeBody.append("switch(id) {\n");
             BlockStmt staticInit = ffiTypeClass.addStaticInitializer();
 
+            // ptr and void
+            ffiTypeNativeBody.append("\tcase ").append(VOID_FFI_ID).append(":\n").append("\t\treturn &ffi_type_void;\n");
+            staticInit.addStatement("ffiIdMap.put(" + VOID_FFI_ID + ", getFFITypeNative(" + VOID_FFI_ID + "));");
+            ffiTypeNativeBody.append("\tcase ").append(POINTER_FFI_ID).append(":\n").append("\t\treturn &ffi_type_pointer;\n");
+            staticInit.addStatement("ffiIdMap.put(" + POINTER_FFI_ID + ", getFFITypeNative(" + POINTER_FFI_ID + "));");
+            staticInit.addStatement("CHandler.registerCTypeFFIType(\"void*\", ffiIdMap.get(" + POINTER_FFI_ID + "));");
+
             for (int i = 0; i < knownCTypes.size(); i++) {
                 String cType = knownCTypes.get(i);
-                staticInit.addStatement("CHandler.registerCTypeFFIType(\"" + cType + "\", getFFIType(" + i + "));");
+                staticInit.addStatement("ffiIdMap.put(" + i + ", getFFITypeNative(" + i + "));");
+                staticInit.addStatement("CHandler.registerCTypeFFIType(\"" + cType + "\", ffiIdMap.get(" + i + "));");
                 ffiTypeNativeBody.append("\tcase ").append(i).append(":\n");
                 ffiTypeNativeBody.append("\t\treturn GET_FFI_TYPE(").append(cType).append(");\n");
             }
             for (int i = 0; i < orderedStructs.size(); i++) {
                 int id = i + knownCTypes.size();
+                staticInit.addStatement("ffiIdMap.put(" + id + ", getFFITypeNative(" + id + "));");
+                staticInit.addStatement("CHandler.registerFFITypeCType(ffiIdMap.get(" + id + "), CHandler.getCTypeInfo(\"void*\"));");
                 StructType structType = orderedStructs.get(i);
                 ffiTypeNativeBody.append("\tcase ").append(id).append(":\n");
                 ffiTypeNativeBody.append(structType.getFFITypeBody(nativeGetFFIMethodName));

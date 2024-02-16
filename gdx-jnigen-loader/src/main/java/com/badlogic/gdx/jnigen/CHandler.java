@@ -40,9 +40,9 @@ public class CHandler {
         return sizeof(void*);
     */
 
-    private static final HashMap<Class<? extends Closure>, Long> classCifMap = new HashMap<>();
+    private static final HashMap<long[], Long> classCifMap = new HashMap<>();
 
-    private static final HashMap<Class<? extends Struct>, Long> classStructFFITypeMap = new HashMap<>();
+    private static final HashMap<Long, CTypeInfo> ffiTypeCTypeInfoMap = new HashMap<>();
 
     private static final HashMap<String, CTypeInfo> cTypeInfoMap = new HashMap<>();
 
@@ -128,24 +128,6 @@ public class CHandler {
         return toCallOn.invoke(parameter);
     }
 
-    public static int getCTypeSize(String name) {
-        synchronized (cTypeInfoMap) {
-            CTypeInfo cTypeInfo = cTypeInfoMap.get(name);
-            if (cTypeInfo == null)
-                throw new IllegalArgumentException("CType " + name + " is not registered.");
-            return cTypeInfo.getSize();
-        }
-    }
-
-    public static long getCTypeFFIType(String name) {
-        synchronized (cTypeInfoMap) {
-            CTypeInfo cTypeInfo = cTypeInfoMap.get(name);
-            if (cTypeInfo == null)
-                throw new IllegalArgumentException("CType " + name + " is not registered.");
-            return cTypeInfo.getFfiType();
-        }
-    }
-
     public static CTypeInfo getCTypeInfo(String name) {
         synchronized (cTypeInfoMap) {
             CTypeInfo cTypeInfo = cTypeInfoMap.get(name);
@@ -160,17 +142,19 @@ public class CHandler {
         synchronized (cTypeInfoMap) {
             cTypeInfoMap.put(name, cTypeInfo);
         }
+        registerFFITypeCType(ffiType, cTypeInfo);
     }
 
-    public static void registerStructFFIType(Class<? extends Struct> structClass, long ffiType) {
-        synchronized (classStructFFITypeMap) {
-            classStructFFITypeMap.put(structClass, ffiType);
+
+    public static void registerFFITypeCType(long ffiType, CTypeInfo cTypeInfo) {
+        synchronized (ffiTypeCTypeInfoMap) {
+            ffiTypeCTypeInfoMap.put(ffiType, cTypeInfo);
         }
     }
 
-    public static long getStructFFIType(Class<? extends Struct> structClass) {
-        synchronized (classStructFFITypeMap) {
-            return classStructFFITypeMap.getOrDefault(structClass, 0L);
+    public static CTypeInfo getFFITypeCType(long ffiType) {
+        synchronized (ffiTypeCTypeInfoMap) {
+            return ffiTypeCTypeInfoMap.get(ffiType);
         }
     }
 
@@ -183,25 +167,20 @@ public class CHandler {
         return reinterpret_cast<jlong>(cif);
     */
 
-    private static long generateFFICifForClass(Class<? extends Closure> closureClass) {
-        Method callingMethod = getMethodForClosure(closureClass);
-        Class<?> returnType = callingMethod.getReturnType();
+    private static long generateFFICifForSignature(long[] signature) {
 
-        Parameter[] parameters = callingMethod.getParameters();
-
+        int parameterCount = signature.length - 1;
         // Yes, I'm extremely lazy and don't want to deal with JNI array handling
-        ByteBuffer mappedParameter = ByteBuffer.allocateDirect(parameters.length * 8);
+        ByteBuffer mappedParameter = ByteBuffer.allocateDirect(parameterCount * 8);
         mappedParameter.order(ByteOrder.nativeOrder());
-        for (Parameter parameter : parameters) {
-            mappedParameter.putLong(ParameterTypes.mapToFFIType(parameter.getType(), parameter));
-        }
+        mappedParameter.asLongBuffer().put(signature, 1, parameterCount);
 
-        return nativeCreateCif(ParameterTypes.mapToFFIType(returnType, callingMethod), mappedParameter, parameters.length);
+        return nativeCreateCif(signature[0], mappedParameter, parameterCount);
     }
 
-    public static long getFFICifForClass(Class<? extends Closure> closureClass) {
+    public static long getFFICifForSignature(long[] signature) {
         synchronized (classCifMap) {
-            return classCifMap.computeIfAbsent(closureClass, CHandler::generateFFICifForClass);
+            return classCifMap.computeIfAbsent(signature, CHandler::generateFFICifForSignature);
         }
     }
 
@@ -222,12 +201,11 @@ public class CHandler {
     }
 
     public static <T extends Closure> ClosureObject<T> createClosureForObject(T object) {
-        long cif = getFFICifForClass(object.getClass());
+        long cif = getFFICifForSignature(object.functionSignature());
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(8);
         byteBuffer.order(ByteOrder.nativeOrder());
 
-        Method closureMethod = getMethodForClosure(object.getClass());
-        ClosureInfo<T> closureInfo = new ClosureInfo<>(cif, closureMethod, object);
+        ClosureInfo<T> closureInfo = new ClosureInfo<>(cif, object);
         long fnPtr = createClosureForObject(cif, closureInfo, byteBuffer);
         long closurePtr = byteBuffer.getLong();
 

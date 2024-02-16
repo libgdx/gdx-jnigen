@@ -26,37 +26,23 @@ public final class ClosureInfo<T extends Closure> {
     private final JavaTypeWrapper cachedReturnWrapper;
     private final AtomicBoolean cacheLock = new AtomicBoolean(false);
 
-    public ClosureInfo(long cif, Method method, T toCallOn) {
+    public ClosureInfo(long cif, T toCallOn) {
         this.cif = cif;
         this.toCallOn = toCallOn;
-        Parameter[] parameters = method.getParameters();
-        cachedWrappers = new JavaTypeWrapper[parameters.length];
-        for (int i = 0; i < parameters.length; i++) {
-            Parameter parameter = parameters[i];
-            CTypeInfo cTypeInfo;
+        long[] functionSignature = toCallOn.functionSignature();
+        int parameterLength = functionSignature.length - 1;
 
-            if (Pointing.class.isAssignableFrom(parameter.getType())) {
-                cTypeInfo = CHandler.getCTypeInfo("void*");
-            } else if (CEnum.class.isAssignableFrom(parameter.getType())) {
-                cTypeInfo = CHandler.getCTypeInfo("int"); // TODO Converting to CType annotation on parameter?
-            } else {
-                // If we are primitive
-                cTypeInfo = Utils.getCTypeForAnnotatedElement(parameter);
-            }
-            cachedWrappers[i] = new JavaTypeWrapper(parameter.getType(), cTypeInfo);
+        cachedWrappers = new JavaTypeWrapper[parameterLength];
+        for (int i = 1; i < functionSignature.length; i++) {
+            CTypeInfo cTypeInfo = CHandler.getFFITypeCType(functionSignature[i]);
+
+            cachedWrappers[i - 1] = new JavaTypeWrapper(cTypeInfo);
         }
-        if (method.getReturnType() != void.class) {
-            CTypeInfo cTypeInfo;
-            if (method.getReturnType().isPrimitive())
-                cTypeInfo = Utils.getCTypeForAnnotatedElement(method);
-            else if (CEnum.class.isAssignableFrom(method.getReturnType()))
-                cTypeInfo = CHandler.getCTypeInfo("int");
-            else
-                cTypeInfo = CHandler.getCTypeInfo("void*");
-            cachedReturnWrapper = new JavaTypeWrapper(method.getReturnType(), cTypeInfo);
-        } else {
+        CTypeInfo returnCType = CHandler.getFFITypeCType(functionSignature[0]);
+        if (returnCType != null)
+            cachedReturnWrapper = new JavaTypeWrapper(returnCType);
+        else
             cachedReturnWrapper = null;
-        }
     }
 
     private JavaTypeWrapper[] createWrapper() {
@@ -76,7 +62,6 @@ public final class ClosureInfo<T extends Closure> {
     }
 
     public long invoke(ByteBuffer parameter) {
-
         JavaTypeWrapper[] wrappers = cachedWrappers;
         JavaTypeWrapper returnWrapper = cachedReturnWrapper;
         boolean usedCachedWrapper = true;

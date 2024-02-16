@@ -35,43 +35,4 @@ public class ParameterTypes {
                 return -1;
         }
     */
-
-
-    public static final byte PASS_AS_POINTER = 1 << 0;
-
-    public static byte buildFlags(Class<?> toMap, Annotation[] annotations) {
-        byte flags = 0;
-        if (Pointing.class.isAssignableFrom(toMap) && !Struct.class.isAssignableFrom(toMap))
-            flags |= PASS_AS_POINTER;
-        for (Annotation annotation : annotations) {
-
-        }
-        return flags;
-    }
-
-    public static long mapToFFIType(Class<?> toMap, AnnotatedElement element) {
-        byte flags = buildFlags(toMap, element.getAnnotations());
-
-        if (toMap == void.class)
-            return ffi_type_void;
-
-        if (toMap.isPrimitive())
-            return Utils.getFFITypeForElement(element);
-
-        if (CEnum.class.isAssignableFrom(toMap))
-            return CHandler.getCTypeFFIType("int"); // TODO Converting to CType annotation on parameter?
-
-        if (Struct.class.isAssignableFrom(toMap)) {
-            long type = CHandler.getStructFFIType((Class<? extends Struct>)toMap);
-            if (type == 0)
-                throw new IllegalArgumentException("Class " + toMap.getName() + " does not got registered yet.");
-            return type;
-        }
-
-        if (Pointing.class.isAssignableFrom(toMap))
-            return ffi_type_pointer;
-
-        throw new IllegalArgumentException("Class " + toMap.getName() + " can not be mapped to native.");
-
-    }
 }
