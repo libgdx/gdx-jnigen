@@ -9,6 +9,8 @@ public final class CTypeInfo {
     private final int size;
     private final boolean signed;
 
+    // Add isStruct/double/float?
+
     public CTypeInfo(String name, long ffiType, int size, boolean signed) {
         this.name = name;
         this.ffiType = ffiType;

@@ -1,5 +1,6 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
+import com.badlogic.gdx.jnigen.generator.Manager;
 import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
 import com.badlogic.gdx.jnigen.pointer.DoublePointer;
 import com.badlogic.gdx.jnigen.pointer.FloatPointer;
@@ -109,5 +110,10 @@ public class PointerType implements MappedType {
         MethodCallExpr methodCallExpr = new MethodCallExpr("getPointer");
         methodCallExpr.setScope(cSend);
         return methodCallExpr;
+    }
+
+    @Override
+    public int typeID() {
+        return Manager.POINTER_FFI_ID;
     }
 }

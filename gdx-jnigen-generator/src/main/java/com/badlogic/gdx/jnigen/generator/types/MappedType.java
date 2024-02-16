@@ -27,4 +27,6 @@ public interface MappedType {
 
     Expression toC(Expression cSend);
 
+    int typeID();
+
 }

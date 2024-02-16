@@ -60,10 +60,9 @@ public class StructType implements MappedType {
 
         // Static-Init
         BlockStmt staticInit = structClass.addStaticInitializer();
-        staticInit.addStatement("__ffi_type = FFITypes.getFFIType(" + Manager.getInstance().getStructID(this) + ");");
+        staticInit.addStatement("__ffi_type = FFITypes.getFFIType(" + typeID() + ");");
         staticInit.addStatement("CHandler.calculateAlignmentAndSizeForType(__ffi_type);");
         staticInit.addStatement("__size = CHandler.getSizeFromFFIType(__ffi_type);");
-        staticInit.addStatement("CHandler.registerStructFFIType(" + javaTypeName + ".class, __ffi_type);");
 
         compilationUnit.addImport(Manager.getInstance().getBasePackage() + ".FFITypes");
 
@@ -198,7 +197,7 @@ public class StructType implements MappedType {
             if (field.getDefinition().getTypeKind() == TypeKind.POINTER || field.getDefinition().getTypeKind() == TypeKind.CLOSURE) {
                 generateFFIMethodBody.append("\t\ttype->elements[").append(i).append("] = &ffi_type_pointer;\n");
             } else if (field.getDefinition().getTypeKind() == TypeKind.STRUCT) {
-                int fieldStructID = Manager.getInstance().getStructID((StructType)field.getDefinition().getMappedType());
+                int fieldStructID = field.getDefinition().getMappedType().typeID();
                 generateFFIMethodBody.append("\t\ttype->elements[").append(i).append("] = ")
                         .append(ffiResolveFunctionName).append("(")
                         .append(fieldStructID)
@@ -261,5 +260,10 @@ public class StructType implements MappedType {
         MethodCallExpr methodCallExpr = new MethodCallExpr("getPointer");
         methodCallExpr.setScope(cSend);
         return methodCallExpr;
+    }
+
+    @Override
+    public int typeID() {
+        return Manager.getInstance().getStructID(this);
     }
 }

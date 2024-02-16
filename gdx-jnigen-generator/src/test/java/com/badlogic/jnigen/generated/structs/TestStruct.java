@@ -18,7 +18,6 @@ public final class TestStruct extends Struct {
         __ffi_type = FFITypes.getFFIType(10);
         CHandler.calculateAlignmentAndSizeForType(__ffi_type);
         __size = CHandler.getSizeFromFFIType(__ffi_type);
-        CHandler.registerStructFFIType(TestStruct.class, __ffi_type);
     }
 
     public TestStruct(long pointer, boolean freeOnGC) {
