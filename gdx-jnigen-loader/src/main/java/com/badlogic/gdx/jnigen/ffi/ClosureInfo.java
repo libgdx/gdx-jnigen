@@ -29,20 +29,14 @@ public final class ClosureInfo<T extends Closure> {
     public ClosureInfo(long cif, T toCallOn) {
         this.cif = cif;
         this.toCallOn = toCallOn;
-        long[] functionSignature = toCallOn.functionSignature();
+        CTypeInfo[] functionSignature = toCallOn.functionSignature();
         int parameterLength = functionSignature.length - 1;
 
         cachedWrappers = new JavaTypeWrapper[parameterLength];
         for (int i = 1; i < functionSignature.length; i++) {
-            CTypeInfo cTypeInfo = CHandler.getFFITypeCType(functionSignature[i]);
-
-            cachedWrappers[i - 1] = new JavaTypeWrapper(cTypeInfo);
+            cachedWrappers[i - 1] = new JavaTypeWrapper(functionSignature[i]);
         }
-        CTypeInfo returnCType = CHandler.getFFITypeCType(functionSignature[0]);
-        if (returnCType != null)
-            cachedReturnWrapper = new JavaTypeWrapper(returnCType);
-        else
-            cachedReturnWrapper = null;
+        cachedReturnWrapper = new JavaTypeWrapper(functionSignature[0]);
     }
 
     private JavaTypeWrapper[] createWrapper() {
@@ -56,8 +50,7 @@ public final class ClosureInfo<T extends Closure> {
     }
 
     private JavaTypeWrapper createReturnWrapper() {
-        if (cachedReturnWrapper == null)
-            return null;
+        // TODO: 16.02.24 Check on void return
         return cachedReturnWrapper.newJavaTypeWrapper();
     }
 
@@ -92,10 +85,10 @@ public final class ClosureInfo<T extends Closure> {
 
         toCallOn.invoke(wrappers, returnWrapper);
         long returnValue = 0;
-        if (returnWrapper != null) {
-            returnWrapper.assertBounds(); // TODO: Make opt in?
-            returnValue = returnWrapper.unwrapToLong();
-        }
+        // TODO: 16.02.24 Check for void
+        returnWrapper.assertBounds();
+        returnValue = returnWrapper.unwrapToLong();
+
         if (usedCachedWrapper)
             cacheLock.set(false);
         return returnValue;

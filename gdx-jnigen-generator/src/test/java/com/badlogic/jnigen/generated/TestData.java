@@ -33,6 +33,7 @@ import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
 import com.badlogic.jnigen.generated.structs.SpecialStruct;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
+import com.badlogic.gdx.jnigen.c.CTypeInfo;
 
 public class TestData {
 
@@ -358,11 +359,11 @@ public class TestData {
 
     public interface methodWithCallbackAllArgs extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(-2), FFITypes.getFFIType(0), FFITypes.getFFIType(5), FFITypes.getFFIType(6), FFITypes.getFFIType(7), FFITypes.getFFIType(2), FFITypes.getFFIType(8), FFITypes.getFFIType(4), FFITypes.getFFIType(9) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(0), FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(6), FFITypes.getCTypeInfo(7), FFITypes.getCTypeInfo(2), FFITypes.getCTypeInfo(8), FFITypes.getCTypeInfo(4), FFITypes.getCTypeInfo(9) };
 
         void methodWithCallbackAllArgs_call(long arg0, int arg1, short arg2, byte arg3, char arg4, boolean arg5, float arg6, double arg7);
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -373,11 +374,11 @@ public class TestData {
 
     public interface methodWithCallback extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(-2) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2) };
 
         void methodWithCallback_call();
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -388,11 +389,11 @@ public class TestData {
 
     public interface methodWithCallbackBooleanArg extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(-2), FFITypes.getFFIType(8) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(8) };
 
         void methodWithCallbackBooleanArg_call(boolean arg0);
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -403,11 +404,11 @@ public class TestData {
 
     public interface methodWithCallbackDoubleReturn extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(9) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(9) };
 
         double methodWithCallbackDoubleReturn_call();
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -418,11 +419,11 @@ public class TestData {
 
     public interface methodWithCallbackIntArg extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(-2), FFITypes.getFFIType(5) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(5) };
 
         void methodWithCallbackIntArg_call(int arg0);
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -433,11 +434,11 @@ public class TestData {
 
     public interface methodWithCallbackShortArg extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(-2), FFITypes.getFFIType(6) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(6) };
 
         void methodWithCallbackShortArg_call(short arg0);
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -448,11 +449,11 @@ public class TestData {
 
     public interface methodWithCallbackTestStructPointerReturn extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(-1) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-1) };
 
         TestStruct.TestStructPointer methodWithCallbackTestStructPointerReturn_call();
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -463,11 +464,11 @@ public class TestData {
 
     public interface methodWithCallbackByteArg extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(-2), FFITypes.getFFIType(7) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(7) };
 
         void methodWithCallbackByteArg_call(byte arg0);
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -478,11 +479,11 @@ public class TestData {
 
     public interface methodWithCallbackShortReturn extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(6) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(6) };
 
         short methodWithCallbackShortReturn_call();
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -493,11 +494,11 @@ public class TestData {
 
     public interface methodWithCallbackBooleanReturn extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(8) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(8) };
 
         boolean methodWithCallbackBooleanReturn_call();
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -508,11 +509,11 @@ public class TestData {
 
     public interface methodWithCallbackTestStructArg extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(-2), FFITypes.getFFIType(10) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(10) };
 
         void methodWithCallbackTestStructArg_call(TestStruct arg0);
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -523,11 +524,11 @@ public class TestData {
 
     public interface methodWithCallbackLongArg extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(-2), FFITypes.getFFIType(0) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(0) };
 
         void methodWithCallbackLongArg_call(long arg0);
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -538,11 +539,11 @@ public class TestData {
 
     public interface methodWithCallbackFloatArg extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(-2), FFITypes.getFFIType(4) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(4) };
 
         void methodWithCallbackFloatArg_call(float arg0);
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -553,11 +554,11 @@ public class TestData {
 
     public interface methodWithCallbackDoubleArg extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(-2), FFITypes.getFFIType(9) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(9) };
 
         void methodWithCallbackDoubleArg_call(double arg0);
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -568,11 +569,11 @@ public class TestData {
 
     public interface methodWithCallbackIntReturn extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(5) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(5) };
 
         int methodWithCallbackIntReturn_call();
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -583,11 +584,11 @@ public class TestData {
 
     public interface methodWithCallbackTestEnumArg extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(-2), FFITypes.getFFIType(5) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(5) };
 
         void methodWithCallbackTestEnumArg_call(TestEnum arg0);
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -598,11 +599,11 @@ public class TestData {
 
     public interface methodWithCallbackLongReturn extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(0) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(0) };
 
         long methodWithCallbackLongReturn_call();
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -613,11 +614,11 @@ public class TestData {
 
     public interface methodWithCallbackTestStructPointerArg extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(-2), FFITypes.getFFIType(-1) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(-1) };
 
         void methodWithCallbackTestStructPointerArg_call(TestStruct.TestStructPointer arg0);
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -628,11 +629,11 @@ public class TestData {
 
     public interface methodWithCallbackCharArg extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(-2), FFITypes.getFFIType(2) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(2) };
 
         void methodWithCallbackCharArg_call(char arg0);
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -643,11 +644,11 @@ public class TestData {
 
     public interface methodWithCallbackByteReturn extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(7) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(7) };
 
         byte methodWithCallbackByteReturn_call();
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -658,11 +659,11 @@ public class TestData {
 
     public interface methodWithCallbackCharReturn extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(2) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(2) };
 
         char methodWithCallbackCharReturn_call();
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -673,11 +674,11 @@ public class TestData {
 
     public interface methodWithCallbackTestStructReturn extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(10) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(10) };
 
         TestStruct methodWithCallbackTestStructReturn_call();
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -688,11 +689,11 @@ public class TestData {
 
     public interface methodWithCallbackTestEnumReturn extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(5) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(5) };
 
         TestEnum methodWithCallbackTestEnumReturn_call();
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
@@ -703,11 +704,11 @@ public class TestData {
 
     public interface methodWithCallbackFloatReturn extends Closure {
 
-        long[] __ffi_cache = new long[] { FFITypes.getFFIType(4) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(4) };
 
         float methodWithCallbackFloatReturn_call();
 
-        default long[] functionSignature() {
+        default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
