@@ -1,7 +1,7 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
-import com.badlogic.gdx.jnigen.generator.Manager;
 import com.badlogic.gdx.jnigen.c.CEnum;
+import com.badlogic.gdx.jnigen.generator.Manager;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.NodeList;
