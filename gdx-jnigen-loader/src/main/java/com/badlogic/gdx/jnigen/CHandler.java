@@ -36,13 +36,11 @@ public class CHandler {
 
     public static final int POINTER_SIZE;
 
-    public static native int getPointerSize();/*
+    private static native int getPointerSize();/*
         return sizeof(void*);
     */
 
-    private static final HashMap<long[], Long> classCifMap = new HashMap<>();
-
-    private static final HashMap<Long, CTypeInfo> ffiTypeCTypeInfoMap = new HashMap<>();
+    private static final HashMap<CTypeInfo[], Long> classCifMap = new HashMap<>();
 
     private static final HashMap<String, CTypeInfo> cTypeInfoMap = new HashMap<>();
 
@@ -137,25 +135,18 @@ public class CHandler {
         }
     }
 
-    public static void registerCTypeFFIType(String name, long ffiType) {
-        CTypeInfo cTypeInfo = new CTypeInfo(name, ffiType, CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType));
+    public static void registerCType(CTypeInfo cTypeInfo) {
         synchronized (cTypeInfoMap) {
-            cTypeInfoMap.put(name, cTypeInfo);
-        }
-        registerFFITypeCType(ffiType, cTypeInfo);
-    }
-
-
-    public static void registerFFITypeCType(long ffiType, CTypeInfo cTypeInfo) {
-        synchronized (ffiTypeCTypeInfoMap) {
-            ffiTypeCTypeInfoMap.put(ffiType, cTypeInfo);
+            cTypeInfoMap.put(cTypeInfo.getName(), cTypeInfo);
         }
     }
 
-    public static CTypeInfo getFFITypeCType(long ffiType) {
-        synchronized (ffiTypeCTypeInfoMap) {
-            return ffiTypeCTypeInfoMap.get(ffiType);
-        }
+    public static CTypeInfo constructCTypeFromFFIType(String name, long ffiType) {
+        boolean isStruct = isStruct(ffiType);
+        if (isStruct)
+            CHandler.calculateAlignmentAndSizeForType(ffiType);
+        // TODO: 16.02.24 Handle float/double/struct?
+        return new CTypeInfo(name, ffiType, CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType), isStruct);
     }
 
     private static native long nativeCreateCif(long returnType, ByteBuffer parameters, int size); /*
@@ -167,37 +158,23 @@ public class CHandler {
         return reinterpret_cast<jlong>(cif);
     */
 
-    private static long generateFFICifForSignature(long[] signature) {
+    private static long generateFFICifForSignature(CTypeInfo[] signature) {
 
         int parameterCount = signature.length - 1;
         // Yes, I'm extremely lazy and don't want to deal with JNI array handling
         ByteBuffer mappedParameter = ByteBuffer.allocateDirect(parameterCount * 8);
         mappedParameter.order(ByteOrder.nativeOrder());
-        mappedParameter.asLongBuffer().put(signature, 1, parameterCount);
+        for (int i = 1; i < signature.length; i++) {
+            mappedParameter.putLong((i - 1) * 8, signature[i].getFfiType());
+        }
 
-        return nativeCreateCif(signature[0], mappedParameter, parameterCount);
+        return nativeCreateCif(signature[0].getFfiType(), mappedParameter, parameterCount);
     }
 
-    public static long getFFICifForSignature(long[] signature) {
+    public static long getFFICifForSignature(CTypeInfo[] signature) {
         synchronized (classCifMap) {
             return classCifMap.computeIfAbsent(signature, CHandler::generateFFICifForSignature);
         }
-    }
-
-    private static Method getMethodForClosure(Class<? extends Closure> closureClass) {
-        Class<?>[] interfaces = closureClass.getInterfaces();
-        if (interfaces.length != 1)
-            throw new IllegalArgumentException("Closures are only allowed to implement one interface");
-
-        Class<?> superClass = interfaces[0];
-        Method[] methods = superClass.getDeclaredMethods();
-        if (methods.length != 2)
-            throw new IllegalArgumentException("Closures are only allowed to implement two methods");
-
-        if (!methods[0].isDefault())
-            return methods[0];
-        else
-            return methods[1];
     }
 
     public static <T extends Closure> ClosureObject<T> createClosureForObject(T object) {
@@ -327,6 +304,10 @@ public class CHandler {
 
     public static native boolean getSignFromFFIType(long type);/*
         return (jboolean)(GET_FFI_TYPE_SIGN((ffi_type*)type));
+    */
+
+    public static native boolean isStruct(long type);/*
+        return ((ffi_type*)type)->type == FFI_TYPE_STRUCT;
     */
 
     // TODO: Add support for specific alignment

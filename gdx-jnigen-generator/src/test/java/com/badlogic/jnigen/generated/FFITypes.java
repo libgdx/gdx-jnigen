@@ -2,6 +2,7 @@ package com.badlogic.jnigen.generated;
 
 import com.badlogic.gdx.jnigen.CHandler;
 import java.util.HashMap;
+import com.badlogic.gdx.jnigen.c.CTypeInfo;
 
 public class FFITypes {
 
@@ -12,9 +13,9 @@ public class FFITypes {
     public static void init() {
     }
 
-    final static HashMap<Integer, Long> ffiIdMap = new HashMap<>();
+    private final static HashMap<Integer, CTypeInfo> ffiIdMap = new HashMap<>();
 
-    public static long getFFIType(int id) {
+    public static CTypeInfo getCTypeInfo(int id) {
         return ffiIdMap.get(id);
     }
 
@@ -82,32 +83,29 @@ switch(id) {
     */
 
     static {
-        ffiIdMap.put(-2, getFFITypeNative(-2));
-        ffiIdMap.put(-1, getFFITypeNative(-1));
-        CHandler.registerCTypeFFIType("void*", ffiIdMap.get(-1));
-        ffiIdMap.put(0, getFFITypeNative(0));
-        CHandler.registerCTypeFFIType("uint64_t", ffiIdMap.get(0));
-        ffiIdMap.put(1, getFFITypeNative(1));
-        CHandler.registerCTypeFFIType("uint32_t", ffiIdMap.get(1));
-        ffiIdMap.put(2, getFFITypeNative(2));
-        CHandler.registerCTypeFFIType("uint16_t", ffiIdMap.get(2));
-        ffiIdMap.put(3, getFFITypeNative(3));
-        CHandler.registerCTypeFFIType("uint8_t", ffiIdMap.get(3));
-        ffiIdMap.put(4, getFFITypeNative(4));
-        CHandler.registerCTypeFFIType("float", ffiIdMap.get(4));
-        ffiIdMap.put(5, getFFITypeNative(5));
-        CHandler.registerCTypeFFIType("int", ffiIdMap.get(5));
-        ffiIdMap.put(6, getFFITypeNative(6));
-        CHandler.registerCTypeFFIType("short", ffiIdMap.get(6));
-        ffiIdMap.put(7, getFFITypeNative(7));
-        CHandler.registerCTypeFFIType("char", ffiIdMap.get(7));
-        ffiIdMap.put(8, getFFITypeNative(8));
-        CHandler.registerCTypeFFIType("bool", ffiIdMap.get(8));
-        ffiIdMap.put(9, getFFITypeNative(9));
-        CHandler.registerCTypeFFIType("double", ffiIdMap.get(9));
-        ffiIdMap.put(10, getFFITypeNative(10));
-        CHandler.registerFFITypeCType(ffiIdMap.get(10), CHandler.getCTypeInfo("void*"));
-        ffiIdMap.put(11, getFFITypeNative(11));
-        CHandler.registerFFITypeCType(ffiIdMap.get(11), CHandler.getCTypeInfo("void*"));
+        ffiIdMap.put(-2, CHandler.constructCTypeFromFFIType("void", getFFITypeNative(-2)));
+        ffiIdMap.put(-1, CHandler.constructCTypeFromFFIType("void*", getFFITypeNative(-1)));
+        ffiIdMap.put(0, CHandler.constructCTypeFromFFIType("uint64_t", getFFITypeNative(0)));
+        CHandler.registerCType(ffiIdMap.get(0));
+        ffiIdMap.put(1, CHandler.constructCTypeFromFFIType("uint32_t", getFFITypeNative(1)));
+        CHandler.registerCType(ffiIdMap.get(1));
+        ffiIdMap.put(2, CHandler.constructCTypeFromFFIType("uint16_t", getFFITypeNative(2)));
+        CHandler.registerCType(ffiIdMap.get(2));
+        ffiIdMap.put(3, CHandler.constructCTypeFromFFIType("uint8_t", getFFITypeNative(3)));
+        CHandler.registerCType(ffiIdMap.get(3));
+        ffiIdMap.put(4, CHandler.constructCTypeFromFFIType("float", getFFITypeNative(4)));
+        CHandler.registerCType(ffiIdMap.get(4));
+        ffiIdMap.put(5, CHandler.constructCTypeFromFFIType("int", getFFITypeNative(5)));
+        CHandler.registerCType(ffiIdMap.get(5));
+        ffiIdMap.put(6, CHandler.constructCTypeFromFFIType("short", getFFITypeNative(6)));
+        CHandler.registerCType(ffiIdMap.get(6));
+        ffiIdMap.put(7, CHandler.constructCTypeFromFFIType("char", getFFITypeNative(7)));
+        CHandler.registerCType(ffiIdMap.get(7));
+        ffiIdMap.put(8, CHandler.constructCTypeFromFFIType("bool", getFFITypeNative(8)));
+        CHandler.registerCType(ffiIdMap.get(8));
+        ffiIdMap.put(9, CHandler.constructCTypeFromFFIType("double", getFFITypeNative(9)));
+        CHandler.registerCType(ffiIdMap.get(9));
+        ffiIdMap.put(10, CHandler.constructCTypeFromFFIType(null, getFFITypeNative(10)));
+        ffiIdMap.put(11, CHandler.constructCTypeFromFFIType(null, getFFITypeNative(11)));
     }
 }

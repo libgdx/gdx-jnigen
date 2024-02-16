@@ -15,8 +15,7 @@ public final class TestStruct extends Struct {
     private final static long __ffi_type;
 
     static {
-        __ffi_type = FFITypes.getFFIType(10);
-        CHandler.calculateAlignmentAndSizeForType(__ffi_type);
+        __ffi_type = FFITypes.getCTypeInfo(10).getFfiType();
         __size = CHandler.getSizeFromFFIType(__ffi_type);
     }
 

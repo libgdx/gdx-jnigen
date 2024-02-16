@@ -60,8 +60,7 @@ public class StructType implements MappedType {
 
         // Static-Init
         BlockStmt staticInit = structClass.addStaticInitializer();
-        staticInit.addStatement("__ffi_type = FFITypes.getFFIType(" + typeID() + ");");
-        staticInit.addStatement("CHandler.calculateAlignmentAndSizeForType(__ffi_type);");
+        staticInit.addStatement("__ffi_type = FFITypes.getCTypeInfo(" + typeID() + ").getFfiType();");
         staticInit.addStatement("__size = CHandler.getSizeFromFFIType(__ffi_type);");
 
         compilationUnit.addImport(Manager.getInstance().getBasePackage() + ".FFITypes");
