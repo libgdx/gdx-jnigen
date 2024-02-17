@@ -11,6 +11,8 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.Statement;
 
 public class PointerType implements MappedType {
 
@@ -115,5 +117,12 @@ public class PointerType implements MappedType {
     @Override
     public int typeID() {
         return Manager.POINTER_FFI_ID;
+    }
+
+    @Override
+    public Statement assertJava(Expression scope) {
+        if (isIntPointer())
+            return new ExpressionStmt(new MethodCallExpr("assertHasCTypeBacking").setScope(scope).addArgument(new StringLiteralExpr(pointingTo.getTypeName())));
+        return MappedType.super.assertJava(scope);
     }
 }
