@@ -25,16 +25,16 @@ import static org.bytedeco.llvm.global.clang.*;
 
 public class Generator {
 
-    public static void parse(String fileToParse) {
+    public static void parse(String fileToParse, String[] options) {
         // What does 0,1 mean? Who knows!
         CXIndex index = clang_createIndex(0,1);
         BytePointer file = new BytePointer(fileToParse);
         // Determine sysroot dynamically
-        String[] parameter;
-        if (SharedLibraryLoader.os == Os.MacOsX)
-            parameter = new String[]{"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk", "-I/Library/Developer/CommandLineTools/usr/lib/clang/15.0.0/include/"};
-        else
-            parameter = new String[]{};
+        String[] includePaths = ClangUtils.getIncludePaths();
+        String[] parameter = new String[options.length + includePaths.length];
+        System.arraycopy(includePaths, 0, parameter, 0, includePaths.length);
+        System.arraycopy(options, 0, parameter, includePaths.length, options.length);
+
         PointerPointer<BytePointer> argPointer = new PointerPointer<>(parameter);
         CXTranslationUnit translationUnit = clang_parseTranslationUnit(index, file, argPointer, parameter.length, null, 0,
                 CXTranslationUnit_SkipFunctionBodies | CXTranslationUnit_DetailedPreprocessingRecord | CXTranslationUnit_IncludeAttributedTypes);
@@ -138,15 +138,17 @@ public class Generator {
         Manager.getInstance().emit(path);
     }
 
-    public static void execute(String path, String basePackage, String fileToParse) {
+    public static void execute(String path, String basePackage, String fileToParse, String[] options) {
         if (!path.endsWith("/"))
             path += "/";
         Manager.init(new File(fileToParse).getName(), basePackage);
-        parse(fileToParse);
+        parse(fileToParse, options);
         generateJavaCode(path);
     }
 
     public static void main(String[] args) {
-        execute(args[0], args[1], args[2]);
+        String[] options = new String[args.length - 3];
+        System.arraycopy(args, 3, options, 0, options.length);
+        execute(args[0], args[1], args[2], options);
     }
 }
