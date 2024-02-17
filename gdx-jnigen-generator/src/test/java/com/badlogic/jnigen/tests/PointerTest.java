@@ -5,6 +5,7 @@ import com.badlogic.jnigen.generated.TestData;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PointerTest extends BaseTest {
 
@@ -15,6 +16,12 @@ public class PointerTest extends BaseTest {
             pointer.setInt(i, 0);
             assertEquals(i, TestData.passIntPointer(pointer));
         }
+    }
+
+    @Test
+    public void testPassIncorrectPointer() {
+        CSizedIntPointer pointer = new CSizedIntPointer("uint32_t", 1);
+        assertThrows(IllegalArgumentException.class, () -> TestData.passIntPointer(pointer));
     }
 
     @Test
