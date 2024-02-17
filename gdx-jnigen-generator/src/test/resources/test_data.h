@@ -97,6 +97,12 @@ void call_methodWithCallbackTestEnumArg(methodWithCallbackTestEnumArg fnPtr);
 int passIntPointer(int*);
 int* returnIntPointer(int);
 
+typedef int* (*methodWithCallbackIntPointerReturn)(void);
+typedef int (*methodWithCallbackIntPointerArg)(int*);
+
+int* call_methodWithCallbackIntPointerReturn(methodWithCallbackIntPointerReturn fnPtr, int val);
+int call_methodWithCallbackIntPointerArg(methodWithCallbackIntPointerArg fnPtr);
+
 float getFloatPtrFieldValue(SpecialStruct specialStruct);
 int getFixedSizeArrayFieldValue(SpecialStruct specialStruct, int index);
 int getIntPtrFieldValue(SpecialStruct specialStruct);

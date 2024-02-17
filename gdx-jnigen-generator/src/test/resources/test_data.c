@@ -182,6 +182,19 @@ int* returnIntPointer(int i) {
     return ret;
 }
 
+int* call_methodWithCallbackIntPointerReturn(methodWithCallbackIntPointerReturn fnPtr, int val) {
+    int* ret = fnPtr();
+    *ret = val;
+    return ret;
+}
+
+int call_methodWithCallbackIntPointerArg(methodWithCallbackIntPointerArg fnPtr) {
+    int* arg = (int*) malloc(sizeof(int*));
+    *arg = 15;
+    fnPtr(arg);
+    return *arg; // We don't free, since we will free it on java side
+}
+
 void setFloatPtrFieldValue(SpecialStruct specialStruct, float value) {
     *(specialStruct.floatPtrField) = value;
 }

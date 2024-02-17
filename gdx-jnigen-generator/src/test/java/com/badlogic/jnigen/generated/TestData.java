@@ -30,6 +30,8 @@ import com.badlogic.jnigen.generated.enums.TestEnum;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumArg;
 import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
+import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerReturn;
+import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerArg;
 import com.badlogic.jnigen.generated.structs.SpecialStruct;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
@@ -310,6 +312,22 @@ public final class TestData {
     	return (jlong)returnIntPointer((int)arg0);
     */
 
+    public static CSizedIntPointer call_methodWithCallbackIntPointerReturn(ClosureObject<methodWithCallbackIntPointerReturn> arg0, int arg1) {
+        return new CSizedIntPointer(call_methodWithCallbackIntPointerReturn_internal(arg0.getFnPtr(), arg1), false, "int");
+    }
+
+    static private native long call_methodWithCallbackIntPointerReturn_internal(long arg0, int arg1);/*
+    	return (jlong)call_methodWithCallbackIntPointerReturn((methodWithCallbackIntPointerReturn)arg0, (int)arg1);
+    */
+
+    public static int call_methodWithCallbackIntPointerArg(ClosureObject<methodWithCallbackIntPointerArg> arg0) {
+        return call_methodWithCallbackIntPointerArg_internal(arg0.getFnPtr());
+    }
+
+    static private native int call_methodWithCallbackIntPointerArg_internal(long arg0);/*
+    	return (jint)call_methodWithCallbackIntPointerArg((methodWithCallbackIntPointerArg)arg0);
+    */
+
     public static float getFloatPtrFieldValue(SpecialStruct arg0) {
         return getFloatPtrFieldValue_internal(arg0.getPointer());
     }
@@ -358,36 +376,6 @@ public final class TestData {
     	setIntPtrFieldValue(*(SpecialStruct*)arg0, (int)arg1);
     */
 
-    public interface methodWithCallbackAllArgs extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(0), FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(6), FFITypes.getCTypeInfo(7), FFITypes.getCTypeInfo(2), FFITypes.getCTypeInfo(8), FFITypes.getCTypeInfo(4), FFITypes.getCTypeInfo(9) };
-
-        void methodWithCallbackAllArgs_call(long arg0, int arg1, short arg2, byte arg3, char arg4, boolean arg5, float arg6, double arg7);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackAllArgs_call((long) parameters[0].asLong(), (int) parameters[1].asLong(), (short) parameters[2].asLong(), (byte) parameters[3].asLong(), (char) parameters[4].asLong(), parameters[5].asLong() != 0, (float) parameters[6].asFloat(), (double) parameters[7].asDouble());
-        }
-    }
-
-    public interface methodWithCallback extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2) };
-
-        void methodWithCallback_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallback_call();
-        }
-    }
-
     public interface methodWithCallbackBooleanArg extends Closure {
 
         CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(8) };
@@ -433,21 +421,6 @@ public final class TestData {
         }
     }
 
-    public interface methodWithCallbackShortArg extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(6) };
-
-        void methodWithCallbackShortArg_call(short arg0);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackShortArg_call((short) parameters[0].asLong());
-        }
-    }
-
     public interface methodWithCallbackTestStructPointerReturn extends Closure {
 
         CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-1) };
@@ -460,21 +433,6 @@ public final class TestData {
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
             returnType.setValue(methodWithCallbackTestStructPointerReturn_call());
-        }
-    }
-
-    public interface methodWithCallbackByteArg extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(7) };
-
-        void methodWithCallbackByteArg_call(byte arg0);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackByteArg_call((byte) parameters[0].asLong());
         }
     }
 
@@ -493,21 +451,6 @@ public final class TestData {
         }
     }
 
-    public interface methodWithCallbackBooleanReturn extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(8) };
-
-        boolean methodWithCallbackBooleanReturn_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(methodWithCallbackBooleanReturn_call());
-        }
-    }
-
     public interface methodWithCallbackTestStructArg extends Closure {
 
         CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(10) };
@@ -520,6 +463,21 @@ public final class TestData {
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
             methodWithCallbackTestStructArg_call(new TestStruct(parameters[0].asLong(), true));
+        }
+    }
+
+    public interface methodWithCallbackIntPointerReturn extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-1) };
+
+        CSizedIntPointer methodWithCallbackIntPointerReturn_call();
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            returnType.setValue(methodWithCallbackIntPointerReturn_call());
         }
     }
 
@@ -568,18 +526,18 @@ public final class TestData {
         }
     }
 
-    public interface methodWithCallbackIntReturn extends Closure {
+    public interface methodWithCallbackIntPointerArg extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(5) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(-1) };
 
-        int methodWithCallbackIntReturn_call();
+        int methodWithCallbackIntPointerArg_call(CSizedIntPointer arg0);
 
         default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(methodWithCallbackIntReturn_call());
+            returnType.setValue(methodWithCallbackIntPointerArg_call(new CSizedIntPointer(parameters[0].asLong(), false, "int")));
         }
     }
 
@@ -598,21 +556,6 @@ public final class TestData {
         }
     }
 
-    public interface methodWithCallbackLongReturn extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(0) };
-
-        long methodWithCallbackLongReturn_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(methodWithCallbackLongReturn_call());
-        }
-    }
-
     public interface methodWithCallbackTestStructPointerArg extends Closure {
 
         CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(-1) };
@@ -625,21 +568,6 @@ public final class TestData {
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
             methodWithCallbackTestStructPointerArg_call(new TestStruct.TestStructPointer(parameters[0].asLong(), false));
-        }
-    }
-
-    public interface methodWithCallbackCharArg extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(2) };
-
-        void methodWithCallbackCharArg_call(char arg0);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackCharArg_call((char) parameters[0].asLong());
         }
     }
 
@@ -673,21 +601,6 @@ public final class TestData {
         }
     }
 
-    public interface methodWithCallbackTestStructReturn extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(10) };
-
-        TestStruct methodWithCallbackTestStructReturn_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(methodWithCallbackTestStructReturn_call());
-        }
-    }
-
     public interface methodWithCallbackTestEnumReturn extends Closure {
 
         CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(5) };
@@ -700,6 +613,141 @@ public final class TestData {
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
             returnType.setValue(methodWithCallbackTestEnumReturn_call());
+        }
+    }
+
+    public interface methodWithCallbackAllArgs extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(0), FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(6), FFITypes.getCTypeInfo(7), FFITypes.getCTypeInfo(2), FFITypes.getCTypeInfo(8), FFITypes.getCTypeInfo(4), FFITypes.getCTypeInfo(9) };
+
+        void methodWithCallbackAllArgs_call(long arg0, int arg1, short arg2, byte arg3, char arg4, boolean arg5, float arg6, double arg7);
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            methodWithCallbackAllArgs_call((long) parameters[0].asLong(), (int) parameters[1].asLong(), (short) parameters[2].asLong(), (byte) parameters[3].asLong(), (char) parameters[4].asLong(), parameters[5].asLong() != 0, (float) parameters[6].asFloat(), (double) parameters[7].asDouble());
+        }
+    }
+
+    public interface methodWithCallback extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2) };
+
+        void methodWithCallback_call();
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            methodWithCallback_call();
+        }
+    }
+
+    public interface methodWithCallbackShortArg extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(6) };
+
+        void methodWithCallbackShortArg_call(short arg0);
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            methodWithCallbackShortArg_call((short) parameters[0].asLong());
+        }
+    }
+
+    public interface methodWithCallbackByteArg extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(7) };
+
+        void methodWithCallbackByteArg_call(byte arg0);
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            methodWithCallbackByteArg_call((byte) parameters[0].asLong());
+        }
+    }
+
+    public interface methodWithCallbackBooleanReturn extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(8) };
+
+        boolean methodWithCallbackBooleanReturn_call();
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            returnType.setValue(methodWithCallbackBooleanReturn_call());
+        }
+    }
+
+    public interface methodWithCallbackIntReturn extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(5) };
+
+        int methodWithCallbackIntReturn_call();
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            returnType.setValue(methodWithCallbackIntReturn_call());
+        }
+    }
+
+    public interface methodWithCallbackLongReturn extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(0) };
+
+        long methodWithCallbackLongReturn_call();
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            returnType.setValue(methodWithCallbackLongReturn_call());
+        }
+    }
+
+    public interface methodWithCallbackCharArg extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(2) };
+
+        void methodWithCallbackCharArg_call(char arg0);
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            methodWithCallbackCharArg_call((char) parameters[0].asLong());
+        }
+    }
+
+    public interface methodWithCallbackTestStructReturn extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(10) };
+
+        TestStruct methodWithCallbackTestStructReturn_call();
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            returnType.setValue(methodWithCallbackTestStructReturn_call());
         }
     }
 
