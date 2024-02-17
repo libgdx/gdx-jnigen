@@ -1,6 +1,7 @@
 package com.badlogic.jnigen.tests;
 
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
+import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 import com.badlogic.jnigen.generated.structs.TestStruct.TestStructPointer;
@@ -243,6 +244,33 @@ public class ClosureTest extends BaseTest {
         assertEquals(structPointer.getPointer(), ret.getPointer());
         assertEquals(77, structPointer.asStruct().field3());
         assertEquals(77, ret.asStruct().field3());
+        closureObject.free();
+    }
+
+    @Test
+    public void testCallbackIntPointerReturn() {
+        CSizedIntPointer ptr = new CSizedIntPointer("int");
+        ptr.setInt(14);
+        assertEquals(14, ptr.getInt());
+        ClosureObject<methodWithCallbackIntPointerReturn> closureObject = ClosureObject.fromClosure(() -> ptr);
+        CSizedIntPointer ret = call_methodWithCallbackIntPointerReturn(closureObject, 20);
+        assertEquals(ret.getPointer(), ptr.getPointer());
+        assertEquals(20, ptr.getInt());
+        closureObject.free();
+    }
+
+    @Test
+    public void testCallbackIntPointerArg() {
+        AtomicReference<CSizedIntPointer> ptrRef = new AtomicReference<>();
+        ClosureObject<methodWithCallbackIntPointerArg> closureObject = ClosureObject.fromClosure((arg) -> {
+            ptrRef.set(arg);
+            assertEquals(15, arg.getInt());
+            arg.setInt(22);
+            return arg.getInt();
+        });
+        assertEquals(22, call_methodWithCallbackIntPointerArg(closureObject));
+        assertEquals(22, ptrRef.get().getInt());
+        ptrRef.get().free();
         closureObject.free();
     }
 }
