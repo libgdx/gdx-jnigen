@@ -3,6 +3,7 @@ package com.badlogic.jnigen.tests;
 import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.gc.GCHandler;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -16,8 +17,13 @@ public class BaseTest {
     }
 
     @BeforeEach
+    @AfterEach
     public void emptyGC() {
-        while (GCHandler.nativeObjectCount() != 0)
+        long time = System.currentTimeMillis();
+        while (GCHandler.nativeObjectCount() != 0) {
+            if (System.currentTimeMillis() - time > 1000)
+                throw new RuntimeException("GC timed out");
             System.gc();
+        }
     }
 }
