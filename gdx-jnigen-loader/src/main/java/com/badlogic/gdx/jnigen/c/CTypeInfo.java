@@ -9,15 +9,15 @@ public final class CTypeInfo {
     private final int size;
     private final boolean signed;
     private final boolean struct;
+    private final boolean isVoid;
 
-    // Add isStruct/isVoid/double/float?
-
-    public CTypeInfo(String name, long ffiType, int size, boolean signed, boolean struct) {
+    public CTypeInfo(String name, long ffiType, int size, boolean signed, boolean struct, boolean isVoid) {
         this.name = name;
         this.ffiType = ffiType;
         this.size = size;
         this.signed = signed;
         this.struct = struct;
+        this.isVoid = isVoid;
     }
 
     public void assertBounds(long value) {
@@ -65,5 +65,9 @@ public final class CTypeInfo {
 
     public boolean isStruct() {
         return struct;
+    }
+
+    public boolean isVoid() {
+        return isVoid;
     }
 }
