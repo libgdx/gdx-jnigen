@@ -15,7 +15,8 @@ public final class JavaTypeWrapper {
     }
 
     public int getSize() {
-        // TODO: 16.02.24 Handling void too?
+        if (cTypeInfo.isVoid())
+            return 0;
         if (cTypeInfo.isStruct())
             return CHandler.POINTER_SIZE;
         return cTypeInfo.getSize();

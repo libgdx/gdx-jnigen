@@ -141,8 +141,7 @@ public class CHandler {
         boolean isStruct = isStruct(ffiType);
         if (isStruct)
             CHandler.calculateAlignmentAndSizeForType(ffiType);
-        // TODO: 16.02.24 Handle float/double/struct?
-        return new CTypeInfo(name, ffiType, CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType), isStruct);
+        return new CTypeInfo(name, ffiType, CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType), isStruct, CHandler.isVoid(ffiType));
     }
 
     private static native long nativeCreateCif(long returnType, ByteBuffer parameters, int size); /*
@@ -304,6 +303,10 @@ public class CHandler {
 
     public static native boolean isStruct(long type);/*
         return ((ffi_type*)type)->type == FFI_TYPE_STRUCT;
+    */
+
+    public static native boolean isVoid(long type);/*
+        return ((ffi_type*)type)->type == FFI_TYPE_VOID;
     */
 
     // TODO: Add support for specific alignment

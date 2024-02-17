@@ -40,7 +40,8 @@ public final class ClosureInfo<T extends Closure> {
     }
 
     private JavaTypeWrapper createReturnWrapper() {
-        // TODO: 16.02.24 Check on void return
+        if (cachedReturnWrapper.getSize() == 0)
+            return cachedReturnWrapper;
         return cachedReturnWrapper.newJavaTypeWrapper();
     }
 
@@ -75,9 +76,10 @@ public final class ClosureInfo<T extends Closure> {
 
         toCallOn.invoke(wrappers, returnWrapper);
         long returnValue = 0;
-        // TODO: 16.02.24 Check for void
-        returnWrapper.assertBounds();
-        returnValue = returnWrapper.unwrapToLong();
+        if (returnWrapper.getSize() > 0) {
+            returnWrapper.assertBounds();
+            returnValue = returnWrapper.unwrapToLong();
+        }
 
         if (usedCachedWrapper)
             cacheLock.set(false);
