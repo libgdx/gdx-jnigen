@@ -8,6 +8,7 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.Statement;
 
 import java.util.HashMap;
 
@@ -25,14 +26,13 @@ public class FunctionType {
 
     public void write(CompilationUnit cu, ClassOrInterfaceDeclaration wrappingClass, HashMap<MethodDeclaration, String> patchNativeMethod) {
         MethodDeclaration callMethod = wrappingClass.addMethod(name, Keyword.PUBLIC, Keyword.STATIC);
+        BlockStmt body = new BlockStmt();
 
         MethodDeclaration nativeMethod = wrappingClass.addMethod(name + "_internal").setStatic(true).setPrivate(true).setNative(true).setBody(null);
         callMethod.setType(returnType.getMappedType().abstractType());
         returnType.getMappedType().importType(cu);
-        if (returnType.getTypeKind().isPrimitive())
-            nativeMethod.setType(returnType.getMappedType().abstractType());
-        else if (returnType.getTypeKind().isSpecial())
-            nativeMethod.setType(returnType.getMappedType().primitiveType());
+        nativeMethod.setType(returnType.getMappedType().primitiveType());
+
         MethodCallExpr callExpr = new MethodCallExpr(nativeMethod.getNameAsString());
 
         StringBuilder nativeBody = new StringBuilder();
@@ -46,13 +46,16 @@ public class FunctionType {
                 nativeBody.append("(").append(namedType.getDefinition().getTypeName()).append(")").append(namedType.getName()).append(", ");
             }
             nativeMethod.addParameter(namedType.getDefinition().getMappedType().primitiveType(), namedType.getName());
+
+            Statement assertStatement = namedType.getDefinition().getMappedType().assertJava(new NameExpr(namedType.getName()));
+            if (!assertStatement.isEmptyStmt())
+                body.addStatement(assertStatement);
             callExpr.addArgument(namedType.getDefinition().getMappedType().toC(new NameExpr(namedType.getName())));
         }
         if (arguments.length != 0)
             nativeBody.delete(nativeBody.length() - 2, nativeBody.length());
         nativeBody.append(");");
 
-        BlockStmt body = new BlockStmt();
         if (returnType.getTypeKind() != TypeKind.VOID) {
             if (returnType.getTypeKind().isPrimitive()) {
                 nativeBody.insert(0, "return (j" + returnType.getMappedType().primitiveType() + ")");

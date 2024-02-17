@@ -35,7 +35,7 @@ import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
 import com.badlogic.gdx.jnigen.c.CTypeInfo;
 
-public class TestData {
+public final class TestData {
 
     /*JNI
 #include <jnigen.h>
@@ -294,6 +294,7 @@ public class TestData {
     */
 
     public static int passIntPointer(CSizedIntPointer arg0) {
+        arg0.assertHasCTypeBacking("int");
         return passIntPointer_internal(arg0.getPointer());
     }
 

@@ -3,6 +3,7 @@ package com.badlogic.gdx.jnigen.generator.types;
 import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.generator.Manager;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.comments.BlockComment;
@@ -43,7 +44,7 @@ public class GlobalType implements MappedType {
 
     public void write(CompilationUnit cu, HashMap<MethodDeclaration, String> patchNativeMethods) {
         cu.addImport(CHandler.class);
-        ClassOrInterfaceDeclaration global = cu.addClass(globalName);
+        ClassOrInterfaceDeclaration global = cu.addClass(globalName, Keyword.PUBLIC, Keyword.FINAL);
         global.addOrphanComment(new BlockComment("JNI\n#include <jnigen.h>\n#include <" + Manager.getInstance().getParsedCHeader() + ">\n"));
         for (FunctionType functionType : functions) {
             functionType.write(cu, global, patchNativeMethods);

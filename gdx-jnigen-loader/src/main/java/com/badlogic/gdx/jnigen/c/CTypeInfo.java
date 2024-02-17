@@ -47,7 +47,7 @@ public final class CTypeInfo {
 
     public String getName() {
         if (name == null)
-            return "unnamed";
+            throw new IllegalArgumentException("CType has no name");
         return name;
     }
 

@@ -146,6 +146,11 @@ public final class CSizedIntPointer extends Pointing {
         CHandler.setPointerPart(getPointer(), cTypeInfo.getSize(), calculateOffset(index), value);
     }
 
+    public void assertHasCTypeBacking(String name) {
+        if (!cTypeInfo.getName().equals(name))
+            throw new IllegalArgumentException("Expected type " + name + " does not match actual type " + cTypeInfo.getName());
+    }
+
     public CSizedIntPointer recast(String newCType) {
         CSizedIntPointer tmp = new CSizedIntPointer(getPointer(), getsGCFreed(), newCType);
         tmp.guardBytes(getSizeGuard());
