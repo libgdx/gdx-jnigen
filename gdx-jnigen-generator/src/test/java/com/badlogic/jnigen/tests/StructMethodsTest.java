@@ -109,6 +109,7 @@ public class StructMethodsTest extends BaseTest {
         TestStructPointer pointer = new TestStructPointer();
         TestStruct testStruct = new TestStruct();
         testStruct.field2(7);
+        testStruct.field4((char)0);
         pointer.set(testStruct);
         assertEquals(7, TestData.passByPointer(pointer));
 
@@ -178,6 +179,10 @@ public class StructMethodsTest extends BaseTest {
     public void testGetSetStruct() {
 
         TestStruct testStruct = new TestStruct();
+        testStruct.field1(0);
+        testStruct.field2(0);
+        testStruct.field3((char)0);
+        testStruct.field4((char)0);
 
         assertEquals(16, testStruct.getSize());// Depends on padding, so kinda shit test
 
