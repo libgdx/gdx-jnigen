@@ -354,10 +354,6 @@ public class CHandler {
         return reinterpret_cast<jlong>(malloc(size));
     */
 
-    public static native long calloc(long size);/*
-        return reinterpret_cast<jlong>(calloc(1, size));
-    */
-
     public static native void free(long pointer);/*
         free((void*)pointer);
     */
