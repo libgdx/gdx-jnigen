@@ -22,18 +22,13 @@ We recommend you look at some existing projects for examples:
 - [gdx-video-desktop](https://github.com/libgdx/gdx-video/blob/master/gdx-video-desktop/build.gradle)
 - [Jamepad](https://github.com/libgdx/Jamepad/blob/master/build.gradle)
 
-```
-// Add buildscript dependency
-buildscript {
-    dependencies {
-        classpath "com.badlogicgames.gdx:gdx-jnigen-gradle:2.X.X"
-    }
+```gradle
+// Apply jnigen plugin
+plugins {
+    id "com.badlogicgames.gdx.gdx-jnigen"
 }
 
-// Apply jnigen plugin
-apply plugin: "com.badlogicgames.gdx.gdx-jnigen"
-
-...
+// ...
 
 // Define jnigen extension
 jnigen {
