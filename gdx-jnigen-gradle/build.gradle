@@ -1,4 +1,17 @@
+plugins {
+    id 'java-gradle-plugin'
+}
+
 dependencies {
     implementation project(":gdx-jnigen")
     implementation gradleApi()
+}
+
+gradlePlugin {
+    plugins {
+        register('gdxJniGen') {
+            id = 'com.badlogicgames.gdx.gdx-jnigen'
+            implementationClass = 'com.badlogic.gdx.jnigen.gradle.JnigenPlugin'
+        }
+    }
 }
