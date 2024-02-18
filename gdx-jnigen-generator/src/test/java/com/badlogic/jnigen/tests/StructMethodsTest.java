@@ -1,18 +1,50 @@
 package com.badlogic.jnigen.tests;
 
 import com.badlogic.gdx.jnigen.CHandler;
+import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
 import com.badlogic.gdx.jnigen.pointer.FloatPointer;
 import com.badlogic.gdx.jnigen.pointer.StructPointer;
 import com.badlogic.jnigen.generated.TestData;
+import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerArg;
+import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerReturn;
+import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructReturn;
 import com.badlogic.jnigen.generated.structs.SpecialStruct;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 import com.badlogic.jnigen.generated.structs.TestStruct.TestStructPointer;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.atomic.AtomicReference;
+
+import static com.badlogic.jnigen.generated.TestData.*;
+import static com.badlogic.jnigen.generated.TestData.call_methodWithCallbackTestStructPointerReturn;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class StructMethodsTest extends BaseTest {
+
+    @Test
+    public void testCallbackStructReturn() {
+        TestStruct struct = new TestStruct();
+        struct.field3((char)77);
+        ClosureObject<methodWithCallbackTestStructReturn> closureObject = ClosureObject.fromClosure(() -> struct);
+        TestStruct ret = call_methodWithCallbackTestStructReturn(closureObject);
+        assertNotEquals(struct.getPointer(), ret.getPointer());
+        assertEquals(77, struct.field3());
+        assertEquals(77, ret.field3());
+        closureObject.free();
+    }
+
+    @Test
+    public void testCallbackStructPointerReturn() {
+        TestStructPointer structPointer = new TestStructPointer();
+        structPointer.asStruct().field3((char)77);
+        ClosureObject<methodWithCallbackTestStructPointerReturn> closureObject = ClosureObject.fromClosure(() -> structPointer);
+        StructPointer<TestStruct> ret = call_methodWithCallbackTestStructPointerReturn(closureObject);
+        assertEquals(structPointer.getPointer(), ret.getPointer());
+        assertEquals(77, structPointer.asStruct().field3());
+        assertEquals(77, ret.asStruct().field3());
+        closureObject.free();
+    }
 
     @Test
     public void pointerInStructTest() {
