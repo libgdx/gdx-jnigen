@@ -15,5 +15,7 @@ public class JnigenPlugin implements Plugin<Project> {
 		jnigen.dependsOn(project.getTasks().getByName("classes"));
 
 		project.getTasks().create("jnigenBuild", JnigenBuildTask.class, ext);
+
+		project.getTasks().create("jnigenGenerateBindings", JnigenGenerateBindingsTask.class, ext);
 	}
 }

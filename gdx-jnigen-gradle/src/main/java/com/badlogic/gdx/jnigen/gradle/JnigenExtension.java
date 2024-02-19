@@ -68,12 +68,17 @@ public class JnigenExtension {
 	JnigenJarTask jarDesktopNatives = null;
 
 	RoboVMXml robovm = new RoboVMXml();
+	JnigenBindingGeneratorExtension generator = new JnigenBindingGeneratorExtension();
 
 	@Inject
 	public JnigenExtension(Project project) {
 		this.project = project;
 		this.subProjectDir = project.getProjectDir().getAbsolutePath() + File.separator;
 		this.nativeCodeGeneratorConfig = new NativeCodeGeneratorConfig(project, subProjectDir);
+	}
+
+	public void generator(Action<JnigenBindingGeneratorExtension> container) {
+		container.execute(generator);
 	}
 
 	public void nativeCodeGenerator(Action<NativeCodeGeneratorConfig> container) {
