@@ -19,17 +19,30 @@ import org.bytedeco.llvm.clang.CXTranslationUnit;
 import org.bytedeco.llvm.clang.CXType;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.bytedeco.llvm.global.clang.*;
 
 public class Generator {
 
+    private static File createTempParsableFile(String fileToParse) {
+        try {
+            Path path = Files.createTempFile("jnigen-generator", ".c");
+            Files.write(path, ("#include <" + fileToParse + ">\n").getBytes());
+            return path.toFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void parse(String fileToParse, String[] options) {
         // What does 0,1 mean? Who knows!
         CXIndex index = clang_createIndex(0,1);
-        BytePointer file = new BytePointer(fileToParse);
-        // Determine sysroot dynamically
+        BytePointer file = new BytePointer(createTempParsableFile(fileToParse).getAbsolutePath());
+
         String[] includePaths = ClangUtils.getIncludePaths();
         String[] parameter = new String[options.length + includePaths.length];
         System.arraycopy(includePaths, 0, parameter, 0, includePaths.length);
@@ -141,7 +154,7 @@ public class Generator {
     public static void execute(String path, String basePackage, String fileToParse, String[] options) {
         if (!path.endsWith("/"))
             path += "/";
-        Manager.init(new File(fileToParse).getName(), basePackage);
+        Manager.init(fileToParse, basePackage);
         parse(fileToParse, options);
         generateJavaCode(path);
     }
