@@ -61,13 +61,14 @@ public class Manager {
     public Manager(String parsedCHeader, String basePackage) {
         this.parsedCHeader = parsedCHeader;
         this.basePackage = basePackage;
-        globalType = new GlobalType(JavaUtils.javarizeName(parsedCHeader.split("\\.h")[0]));
+        String[] segments = parsedCHeader.split("/");
+        globalType = new GlobalType(JavaUtils.javarizeName(segments[segments.length - 1].split("\\.h")[0]));
     }
 
     public void startStruct(TypeDefinition definition) {
         String name = definition.getTypeName();
         if (structs.containsKey(name))
-            return;
+            return; // TODO: 19.02.24 FIGURE OUT WHY THIS CAN HAPPEN?????
         StructType structType = new StructType(definition);
         structs.put(name, structType);
         orderedStructs.add(structType);
