@@ -23,8 +23,10 @@ public class ClangUtils {
             while ((line = reader.readLine()) != null) {
                 if (line.equals("End of search list."))
                     insideIncludePath = false;
-                if (insideIncludePath)
-                    includePaths.add("-I" + line.trim());
+                if (insideIncludePath) {
+                    includePaths.add("-isystem");
+                    includePaths.add(line.trim());
+                }
                 if (line.equals("#include <...> search starts here:"))
                     insideIncludePath = true;
             }
