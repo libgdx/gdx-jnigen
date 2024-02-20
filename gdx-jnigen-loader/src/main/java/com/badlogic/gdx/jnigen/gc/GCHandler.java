@@ -28,8 +28,10 @@ public class GCHandler {
                     }
                     AtomicInteger counter = countMap.get(releasedStructRef.getPointer());
                     int count = counter.decrementAndGet();
-                    if (count <= 0)
+                    if (count <= 0) {
+                        countMap.remove(releasedStructRef.getPointer());
                         CHandler.free(releasedStructRef.getPointer());
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -60,4 +62,7 @@ public class GCHandler {
         return referenceHolder.size();
     }
 
+    public static boolean isEnqueued(long pointer) {
+        return countMap.containsKey(pointer);
+    }
 }

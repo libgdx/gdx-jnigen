@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.ref.WeakReference;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GCTests extends BaseTest {
 
@@ -44,5 +43,13 @@ public class GCTests extends BaseTest {
         assertNull(toCheckGC1.get());
         assertNull(toCheckGC2.get());
         assertEquals(0, GCHandler.nativeObjectCount());
+    }
+
+    @Test
+    public void testPointingFreeEnqueuedPointer() {
+        assertEquals(0, GCHandler.nativeObjectCount());
+        Pointing pointing = new Pointing(1);
+        Pointing manually = new Pointing(pointing.getPointer(), false);
+        assertThrows(IllegalStateException.class, manually::free);
     }
 }
