@@ -48,6 +48,8 @@ public class Pointing {
             throw new IllegalStateException("Double free on " + pointer);
         if (freeOnGC)
             throw new IllegalStateException("Can't free a object, that gets freed by GC.");
+        if (GCHandler.isEnqueued(pointer))
+            throw new IllegalStateException("Can't free object, when another object with the same pointer will be freed by GC.");
         CHandler.free(pointer);
         freed = true;
     }
