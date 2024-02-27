@@ -14,7 +14,7 @@ public class GCTests extends BaseTest {
     @Test
     public void testPointingReleased() {
         assertEquals(0, GCHandler.nativeObjectCount());
-        Pointing pointing = new Pointing(0);
+        Pointing pointing = new Pointing(0, true, true);
         assertEquals(1, GCHandler.nativeObjectCount());
         WeakReference<Pointing> toCheckGC = new WeakReference<>(pointing);
         pointing = null;
@@ -28,7 +28,7 @@ public class GCTests extends BaseTest {
     @Test
     public void testPointingNoDoubleReleased() {
         assertEquals(0, GCHandler.nativeObjectCount());
-        Pointing pointing = new Pointing(0);
+        Pointing pointing = new Pointing(0, true, true);
         Pointing samePointer = new Pointing(pointing.getPointer(), true);
         assertEquals(pointing.getPointer(), samePointer.getPointer());
         assertEquals(2, GCHandler.nativeObjectCount());
@@ -48,7 +48,7 @@ public class GCTests extends BaseTest {
     @Test
     public void testPointingFreeEnqueuedPointer() {
         assertEquals(0, GCHandler.nativeObjectCount());
-        Pointing pointing = new Pointing(1);
+        Pointing pointing = new Pointing(1, true, true);
         Pointing manually = new Pointing(pointing.getPointer(), false);
         assertThrows(IllegalStateException.class, manually::free);
     }

@@ -47,7 +47,11 @@ public class TypeDefinition {
         TypeDefinition definition = new TypeDefinition(TypeKind.getTypeKind(type), typeName);
         if (definition.getTypeKind() == TypeKind.POINTER) {
             CXType pointee = clang.clang_getPointeeType(type);
-            definition.nestedDefinition = createTypeDefinition(pointee);
+            if (pointee.kind() == 0) {
+                definition.nestedDefinition = new TypeDefinition(TypeKind.VOID, "void");
+            } else {
+                definition.nestedDefinition = createTypeDefinition(pointee);
+            }
         } else if (definition.getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
             definition.count = (int)clang.clang_getArraySize(type);
             definition.nestedDefinition = createTypeDefinition(clang.clang_getArrayElementType(type));
