@@ -20,10 +20,6 @@ public class Pointing {
             GCHandler.enqueuePointer(this);
     }
 
-    public Pointing(int size) {
-        this(size, true, true);
-    }
-
     public Pointing(int size, boolean freeOnGC, boolean guard) {
         this(CHandler.malloc(size), freeOnGC);
         if (guard)
