@@ -18,7 +18,7 @@ public enum TypeKind {
     PROMOTED_LONG(8, false, CXType_ULong, CXType_ULongLong),
     FLOAT(4, true, CXType_Float),
     DOUBLE(8, true, CXType_Double, CXType_LongDouble),
-    POINTER(8, false, CXType_Pointer),
+    POINTER(8, false, CXType_Pointer, CXType_IncompleteArray),
     STRUCT(-1, false, CXType_Record),
     CLOSURE(8, false, CXType_FunctionProto),
     ENUM(4, true, CXType_Enum),
@@ -46,7 +46,7 @@ public enum TypeKind {
         for (TypeKind typeKind : CACHE) {
             for (int k : typeKind.getKinds()) {
                 if (k == kind) {
-                    if (size != typeKind.getSize() && typeKind.getSize() != -1)
+                    if (size != -2 && size != typeKind.getSize() && typeKind.getSize() != -1)
                         throw new IllegalArgumentException("Kind: " + kind + " got identified as " + typeKind.name() + ", but has a size of " + size + " != " + typeKind.size);
                     return typeKind;
                 }
