@@ -21,17 +21,17 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 
 public class ClosureType implements MappedType {
 
-    private final String name;
-    private final NamedType[] arguments;
-    private final TypeDefinition returnType;
+    private final FunctionSignature signature;
 
-    public ClosureType(String name, TypeDefinition returnType, NamedType[] arguments) {
-        this.name = name;
-        this.returnType = returnType;
-        this.arguments = arguments;
+    public ClosureType(FunctionSignature signature) {
+        this.signature = signature;
     }
 
     public void write(CompilationUnit cu, ClassOrInterfaceDeclaration wrappingClass) {
+        String name = signature.getName();
+        TypeDefinition returnType = signature.getReturnType();
+        NamedType[] arguments = signature.getArguments();
+
         cu.addImport(Closure.class);
         cu.addImport(JavaTypeWrapper.class);
         cu.addImport(CTypeInfo.class);
@@ -103,12 +103,12 @@ public class ClosureType implements MappedType {
     }
 
     public String getName() {
-        return name;
+        return signature.getName();
     }
 
     @Override
     public String abstractType() {
-        return "ClosureObject<" + name + ">";
+        return "ClosureObject<" + signature.getName() + ">";
     }
 
     @Override
@@ -119,7 +119,7 @@ public class ClosureType implements MappedType {
     @Override
     public void importType(CompilationUnit cu) {
         cu.addImport(ClosureObject.class);
-        cu.addImport(classFile() + "." + name);
+        cu.addImport(classFile() + "." + signature.getName());
     }
 
     @Override
