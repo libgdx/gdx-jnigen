@@ -14,17 +14,17 @@ import java.util.HashMap;
 
 public class FunctionType {
 
-    private final String name;
-    private final NamedType[] arguments;
-    private final TypeDefinition returnType;
+    private final FunctionSignature signature;
 
-    public FunctionType(String name, NamedType[] arguments, TypeDefinition returnType) {
-        this.name = name;
-        this.arguments = arguments;
-        this.returnType = returnType;
+    public FunctionType(FunctionSignature signature) {
+        this.signature = signature;
     }
 
     public void write(CompilationUnit cu, ClassOrInterfaceDeclaration wrappingClass, HashMap<MethodDeclaration, String> patchNativeMethod) {
+        String name = signature.getName();
+        TypeDefinition returnType = signature.getReturnType();
+        NamedType[] arguments = signature.getArguments();
+
         MethodDeclaration callMethod = wrappingClass.addMethod(name, Keyword.PUBLIC, Keyword.STATIC);
         BlockStmt body = new BlockStmt();
 
