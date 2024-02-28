@@ -1,6 +1,10 @@
 package com.badlogic.gdx.jnigen.generator;
 
+import com.badlogic.gdx.jnigen.generator.parser.EnumParser;
+import com.badlogic.gdx.jnigen.generator.parser.StructParser;
+import com.badlogic.gdx.jnigen.generator.parser.UnionParser;
 import com.badlogic.gdx.jnigen.generator.types.ClosureType;
+import com.badlogic.gdx.jnigen.generator.types.FunctionSignature;
 import com.badlogic.gdx.jnigen.generator.types.FunctionType;
 import com.badlogic.gdx.jnigen.generator.types.NamedType;
 import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
@@ -38,6 +42,20 @@ public class Generator {
         }
     }
 
+    public static FunctionSignature parseFunctionSignature(String name, CXType functionType) {
+        CXType returnType = clang_getResultType(functionType);
+        TypeDefinition returnDefinition = TypeDefinition.createTypeDefinition(returnType);
+        int numArgs = clang_getNumArgTypes(functionType);
+        NamedType[] argTypes = new NamedType[numArgs];
+        for (int i = 0; i < numArgs; i++) {
+            CXType argType = clang_getArgType(functionType, i);
+            // TODO: To retrieve the parameter name if available, we should utilise another visitor
+            //  However, I decided that I don't care for the moment
+            argTypes[i] = new NamedType(TypeDefinition.createTypeDefinition(argType), "arg" + i);
+        }
+        return new FunctionSignature(name, argTypes, returnDefinition);
+    }
+
     public static void parse(String fileToParse, String[] options) {
         // What does 0,1 mean? Who knows!
         CXIndex index = clang_createIndex(0,1);
@@ -59,42 +77,24 @@ public class Generator {
                 if (clang_Location_isInSystemHeader(location) != 0)
                     return CXChildVisit_Continue;
 
-                ByteBuffer buffer = cxClientData.asByteBuffer();
                 String name = clang_getCursorSpelling(current).getString(); // Why the hell does `getString` dispose the CXString?
                 switch (current.kind()) {
                 case CXCursor_StructDecl:
                     // TODO: We don't care about TypeDef for the moment
                     if (parent.kind() != CXCursor_TypedefDecl) {
+                        TypeDefinition definition = TypeDefinition.createTypeDefinition(clang_getCursorType(current));
                         Manager.getInstance().startStruct(TypeDefinition.createTypeDefinition(clang_getCursorType(current)));
-                        buffer.put(0, (byte)1);
-                    } else {
-                        buffer.put(0, (byte)0);
-                    }
-                    break;
-                case CXCursor_FieldDecl:
-                    if (parent.kind() == CXCursor_StructDecl && buffer.get(0) == 1) {
-                        CXType type = clang_getCursorType(current);
-                        NamedType namedType = new NamedType(TypeDefinition.createTypeDefinition(type), name);
-                        Manager.getInstance().putStructField(clang_getTypeSpelling(clang_getCursorType(parent)).getString(), namedType);
+                        clang_visitChildren(current, new StructParser(definition), null);
+                        return CXChildVisit_Continue;
                     }
                     break;
                 case CXCursor_EnumDecl:
                     // TODO: We don't care about TypeDef for the moment
                     if (parent.kind() != CXCursor_TypedefDecl) {
-                        Manager.getInstance().startEnum(TypeDefinition.createTypeDefinition(clang_getCursorType(current)));
-                        buffer.put(1, (byte)1);
-                    } else {
-                        buffer.put(1, (byte)0);
-                    }
-                    break;
-                case CXCursor_EnumConstantDecl:
-                    if (parent.kind() == CXCursor_EnumDecl && buffer.get(1) == 1) {
-                        String enumName = clang_getTypeSpelling(clang_getCursorType(parent)).getString();
-                        String constantName = name;
-                        long constantValue = clang_getEnumConstantDeclValue(current);
-                        if (constantValue > Integer.MAX_VALUE)
-                            throw new IllegalArgumentException("Why is the enum " + enumName + " so biiig? Please open a issue in the gdx-jnigen repo");
-                        Manager.getInstance().addEnumConstant(enumName, constantName, (int)constantValue);
+                        TypeDefinition enumDefinition = TypeDefinition.createTypeDefinition(clang_getCursorType(current));
+                        Manager.getInstance().startEnum(enumDefinition);
+                        clang_visitChildren(current, new EnumParser(enumDefinition), null);
+                        return CXChildVisit_Continue;
                     }
                     break;
                 case CXCursor_TypedefDecl:
@@ -104,33 +104,20 @@ public class Generator {
                         typeDef = clang_getPointeeType(typeDef);
                     }
                     if (typeDef.kind() == CXType_FunctionProto || typeDef.kind() == CXType_FunctionNoProto) {
-                        CXType returnType = clang_getResultType(typeDef);
-                        TypeDefinition returnDefinition = TypeDefinition.createTypeDefinition(returnType);
-                        int numArgs = clang_getNumArgTypes(typeDef);
-                        NamedType[] argTypes = new NamedType[numArgs];
-                        for (int i = 0; i < numArgs; i++) {
-                            CXType argType = clang_getArgType(typeDef, i);
-                            // TODO: To retrieve the parameter name if available, we should utilise another visitor
-                            //  However, I decided that I don't care for the moment
-                            argTypes[i] = new NamedType(TypeDefinition.createTypeDefinition(argType), "arg" + i);
-                        }
-                        ClosureType closure = new ClosureType(name, returnDefinition, argTypes);
+                        ClosureType closure = new ClosureType(parseFunctionSignature(name, typeDef));
                         Manager.getInstance().addClosure(closure);
                     }
                     break;
                 case CXCursor_FunctionDecl:
                     CXType funcType = clang_getCursorType(current);
-                    CXType returnType = clang_getResultType(funcType);
-                    TypeDefinition returnDefinition = TypeDefinition.createTypeDefinition(returnType);
-                    int numArgs = clang_getNumArgTypes(funcType);
-                    NamedType[] argTypes = new NamedType[numArgs];
-                    for (int i = 0; i < numArgs; i++) {
-                        CXType argType = clang_getArgType(funcType, i);
-                        // TODO: To retrieve the parameter name if available, we should utilise another visitor
-                        //  However, I decided that I don't care for the moment
-                        argTypes[i] = new NamedType(TypeDefinition.createTypeDefinition(argType), "arg" + i);
+                    Manager.getInstance().addFunction(new FunctionType(parseFunctionSignature(name, funcType)));
+                    break;
+                case CXCursor_UnionDecl:
+                    if (parent.kind() != CXCursor_TypedefDecl) {
+                        TypeDefinition unionDefinition = TypeDefinition.createTypeDefinition(clang_getCursorType(current));
+                        clang_visitChildren(current, new UnionParser(unionDefinition), null);
+                        return CXChildVisit_Continue;
                     }
-                    Manager.getInstance().addFunction(new FunctionType(name, argTypes, returnDefinition));
                     break;
                 default:
                     //System.out.println(name + " " +  current.kind());
@@ -139,8 +126,8 @@ public class Generator {
                 return CXChildVisit_Recurse;
             }
         };
-        CXClientData cxClientData = new CXClientData(Pointer.malloc(2));
-        clang_visitChildren(clang_getTranslationUnitCursor(translationUnit), visitor, cxClientData);
+
+        clang_visitChildren(clang_getTranslationUnitCursor(translationUnit), visitor, null);
         argPointer.close();
         file.close();
         clang_disposeTranslationUnit(translationUnit);

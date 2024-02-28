@@ -9,9 +9,6 @@ import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
 
 public final class SpecialStruct extends Struct {
 
-    /*JNI
-#include <jnigen.h>
-*/
     private final static int __size;
 
     private final static long __ffi_type;

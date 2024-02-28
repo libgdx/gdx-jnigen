@@ -7,9 +7,6 @@ import com.badlogic.jnigen.generated.FFITypes;
 
 public final class TestStruct extends Struct {
 
-    /*JNI
-#include <jnigen.h>
-*/
     private final static int __size;
 
     private final static long __ffi_type;
