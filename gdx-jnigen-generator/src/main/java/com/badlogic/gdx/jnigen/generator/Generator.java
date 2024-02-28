@@ -84,7 +84,9 @@ public class Generator {
                     if (parent.kind() != CXCursor_TypedefDecl) {
                         TypeDefinition definition = TypeDefinition.createTypeDefinition(clang_getCursorType(current));
                         Manager.getInstance().startStruct(TypeDefinition.createTypeDefinition(clang_getCursorType(current)));
-                        clang_visitChildren(current, new StructParser(definition), null);
+                        try (StructParser structParser = new StructParser(definition)) {
+                            clang_visitChildren(current, structParser, null);
+                        }
                         return CXChildVisit_Continue;
                     }
                     break;
@@ -93,7 +95,9 @@ public class Generator {
                     if (parent.kind() != CXCursor_TypedefDecl) {
                         TypeDefinition enumDefinition = TypeDefinition.createTypeDefinition(clang_getCursorType(current));
                         Manager.getInstance().startEnum(enumDefinition);
-                        clang_visitChildren(current, new EnumParser(enumDefinition), null);
+                        try (EnumParser enumParser = new EnumParser(enumDefinition)) {
+                            clang_visitChildren(current, enumParser, null);
+                        }
                         return CXChildVisit_Continue;
                     }
                     break;
@@ -115,7 +119,9 @@ public class Generator {
                 case CXCursor_UnionDecl:
                     if (parent.kind() != CXCursor_TypedefDecl) {
                         TypeDefinition unionDefinition = TypeDefinition.createTypeDefinition(clang_getCursorType(current));
-                        clang_visitChildren(current, new UnionParser(unionDefinition), null);
+                        try (UnionParser unionParser = new UnionParser(unionDefinition)) {
+                            clang_visitChildren(current, unionParser, null);
+                        }
                         return CXChildVisit_Continue;
                     }
                     break;
