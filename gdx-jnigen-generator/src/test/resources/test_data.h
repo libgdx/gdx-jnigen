@@ -26,6 +26,13 @@ typedef enum TestEnum {
     THIRD = 4
 } TestEnum;
 
+typedef union TestUnion
+{
+    uint64_t uintType;
+    double doubleType;
+    TestStruct structType;
+} TestUnion;
+
 // Typedefs
 typedef void (*methodWithCallback)(void);
 typedef void (*methodWithCallbackLongArg)(uint64_t);
@@ -67,8 +74,8 @@ float call_methodWithCallbackFloatReturn(methodWithCallbackFloatReturn fnPtr);
 double call_methodWithCallbackDoubleReturn(methodWithCallbackDoubleReturn fnPtr);
 
 // TestStruct stuff
-TestStruct* returnTestStructPointer();
-TestStruct returnTestStruct();
+TestStruct* returnTestStructPointer(void);
+TestStruct returnTestStruct(void);
 uint32_t passByValue(TestStruct testStruct);
 uint32_t passByPointer(TestStruct* testStruct);
 
@@ -84,7 +91,7 @@ void call_methodWithCallbackTestStructPointerArg(methodWithCallbackTestStructPoi
 
 // TestEnum stuff
 int passTestEnum(TestEnum enumValue);
-TestEnum returnTestEnum();
+TestEnum returnTestEnum(void);
 TestEnum passAndReturnTestEnum(TestEnum enumValue);
 
 typedef TestEnum (*methodWithCallbackTestEnumReturn)(void);
