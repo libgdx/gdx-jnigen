@@ -1,8 +1,7 @@
 package com.badlogic.jnigen.tests;
 
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
-import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
-import com.badlogic.gdx.jnigen.pointer.StructPointer;
+import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 import com.badlogic.jnigen.generated.structs.TestStruct.TestStructPointer;
 import org.junit.jupiter.api.Test;
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -105,7 +103,7 @@ public class ClosureTest extends BaseTest {
 
     @Test
     public void testCallbackStructArg() {
-        StructPointer<TestStruct> structPointer = new TestStructPointer();
+        TestStructPointer structPointer = new TestStructPointer();
         ClosureObject<methodWithCallbackTestStructArg> closureObject = ClosureObject.fromClosure(structPointer::set);
         call_methodWithCallbackTestStructArg(closureObject);
         TestStruct testStruct = structPointer.get();
@@ -119,10 +117,10 @@ public class ClosureTest extends BaseTest {
     @Test
     public void testCallbackStructPointerArg() {
         new TestStruct();
-        AtomicReference<StructPointer<TestStruct>> ref = new AtomicReference<>();
+        AtomicReference<TestStructPointer> ref = new AtomicReference<>();
         ClosureObject<methodWithCallbackTestStructPointerArg> closureObject = ClosureObject.fromClosure(ref::set);
         call_methodWithCallbackTestStructPointerArg(closureObject);
-        StructPointer<TestStruct> structPointer = ref.get();
+        StackElementPointer<TestStruct> structPointer = ref.get();
         TestStruct testStruct = structPointer.get();
         assertEquals(1, testStruct.field1());
         assertEquals(2, testStruct.field2());

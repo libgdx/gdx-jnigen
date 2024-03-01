@@ -2,7 +2,7 @@ package com.badlogic.jnigen.generated.structs;
 
 import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.pointer.Struct;
-import com.badlogic.gdx.jnigen.pointer.StructPointer;
+import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
 import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.gdx.jnigen.pointer.FloatPointer;
 import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
@@ -62,7 +62,7 @@ public final class SpecialStruct extends Struct {
         CHandler.setStructField(getPointer(), __ffi_type, 6, intPtrField.getPointer());
     }
 
-    public static final class SpecialStructPointer extends StructPointer<SpecialStruct> {
+    public static final class SpecialStructPointer extends StackElementPointer<SpecialStruct> {
 
         public SpecialStructPointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);
@@ -85,11 +85,7 @@ public final class SpecialStruct extends Struct {
             return __size;
         }
 
-        public Class<SpecialStruct> getStructClass() {
-            return SpecialStruct.class;
-        }
-
-        protected SpecialStruct createStruct(long ptr, boolean freeOnGC) {
+        protected SpecialStruct createStackElement(long ptr, boolean freeOnGC) {
             return new SpecialStruct(ptr, freeOnGC);
         }
     }

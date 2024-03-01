@@ -4,17 +4,13 @@ import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
 import com.badlogic.gdx.jnigen.pointer.FloatPointer;
-import com.badlogic.gdx.jnigen.pointer.StructPointer;
+import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
 import com.badlogic.jnigen.generated.TestData;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructReturn;
 import com.badlogic.jnigen.generated.structs.SpecialStruct;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 import com.badlogic.jnigen.generated.structs.TestStruct.TestStructPointer;
 import org.junit.jupiter.api.Test;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.badlogic.jnigen.generated.TestData.*;
 import static com.badlogic.jnigen.generated.TestData.call_methodWithCallbackTestStructPointerReturn;
@@ -37,12 +33,12 @@ public class StructMethodsTest extends BaseTest {
     @Test
     public void testCallbackStructPointerReturn() {
         TestStructPointer structPointer = new TestStructPointer();
-        structPointer.asStruct().field3((char)77);
+        structPointer.asStackElement().field3((char)77);
         ClosureObject<methodWithCallbackTestStructPointerReturn> closureObject = ClosureObject.fromClosure(() -> structPointer);
-        StructPointer<TestStruct> ret = call_methodWithCallbackTestStructPointerReturn(closureObject);
+        TestStructPointer ret = call_methodWithCallbackTestStructPointerReturn(closureObject);
         assertEquals(structPointer.getPointer(), ret.getPointer());
-        assertEquals(77, structPointer.asStruct().field3());
-        assertEquals(77, ret.asStruct().field3());
+        assertEquals(77, structPointer.asStackElement().field3());
+        assertEquals(77, ret.asStackElement().field3());
         closureObject.free();
     }
 
@@ -180,7 +176,7 @@ public class StructMethodsTest extends BaseTest {
 
     @Test
     public void returnStructPointerTest() {
-        StructPointer<TestStruct> testStructPtr = TestData.returnTestStructPointer();
+        TestStructPointer testStructPtr = TestData.returnTestStructPointer();
         TestStruct testStruct = testStructPtr.get();
         testStructPtr.free();
 
@@ -192,8 +188,8 @@ public class StructMethodsTest extends BaseTest {
 
     @Test
     public void structPointerAsStrutTest() {
-        StructPointer<TestStruct> testStructPtr = TestData.returnTestStructPointer();
-        TestStruct testStruct = testStructPtr.asStruct();
+        TestStructPointer testStructPtr = TestData.returnTestStructPointer();
+        TestStruct testStruct = testStructPtr.asStackElement();
 
         assertEquals(1, testStruct.field1());
         assertEquals(2, testStruct.field2());

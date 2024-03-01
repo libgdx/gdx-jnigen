@@ -20,7 +20,7 @@ import com.badlogic.jnigen.generated.TestData.methodWithCallbackByteReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackBooleanReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackFloatReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackDoubleReturn;
-import com.badlogic.gdx.jnigen.pointer.StructPointer;
+import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructPointerReturn;

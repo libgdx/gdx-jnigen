@@ -3,7 +3,7 @@ package com.badlogic.gdx.jnigen.generator.types;
 import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.generator.Manager;
 import com.badlogic.gdx.jnigen.pointer.Struct;
-import com.badlogic.gdx.jnigen.pointer.StructPointer;
+import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -13,7 +13,6 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.BinaryExpr.Operator;
 import com.github.javaparser.ast.expr.Expression;
@@ -50,7 +49,7 @@ public class StructType implements MappedType {
 
         compilationUnit.addImport(CHandler.class);
         compilationUnit.addImport(Struct.class);
-        compilationUnit.addImport(StructPointer.class);
+        compilationUnit.addImport(StackElementPointer.class);
         ClassOrInterfaceDeclaration structClass = compilationUnit.addClass(javaTypeName, Keyword.PUBLIC, Keyword.FINAL);
         structClass.addExtendedType(Struct.class);
         structClass.addField(int.class, "__size", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
@@ -141,7 +140,7 @@ public class StructType implements MappedType {
         ClassOrInterfaceDeclaration pointerClass = new ClassOrInterfaceDeclaration(new NodeList<>(Modifier.publicModifier(), Modifier.staticModifier(), Modifier.finalModifier()), false, pointerName);
 
         structClass.addMember(pointerClass);
-        pointerClass.addExtendedType("StructPointer<" + javaTypeName + ">");
+        pointerClass.addExtendedType("StackElementPointer<" + javaTypeName + ">");
         ConstructorDeclaration pointerConstructor = pointerClass.addConstructor(Keyword.PUBLIC);
         pointerConstructor.addParameter(new Parameter(PrimitiveType.longType(), "pointer"));
         pointerConstructor.addParameter(new Parameter(PrimitiveType.booleanType(), "freeOnGC"));
@@ -164,9 +163,7 @@ public class StructType implements MappedType {
                 .addStatement("return this;");
 
         pointerClass.addMethod("getSize", Keyword.PUBLIC).setType(int.class).createBody().addStatement("return __size;");
-        pointerClass.addMethod("getStructClass", Keyword.PUBLIC).setType("Class<" + javaTypeName + ">")
-                .createBody().addStatement("return " + javaTypeName + ".class;");
-        pointerClass.addMethod("createStruct", Keyword.PROTECTED).setType(javaTypeName)
+        pointerClass.addMethod("createStackElement", Keyword.PROTECTED).setType(javaTypeName)
                 .addParameter(long.class, "ptr")
                 .addParameter(boolean.class, "freeOnGC")
                 .createBody().addStatement("return new " + javaTypeName + "(ptr, freeOnGC);");
