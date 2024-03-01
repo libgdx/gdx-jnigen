@@ -30,6 +30,7 @@ typedef union TestUnion
 {
     uint64_t uintType;
     double doubleType;
+    int fixedSizeInt[3];
     TestStruct structType;
 } TestUnion;
 
@@ -117,6 +118,32 @@ int getIntPtrFieldValue(SpecialStruct specialStruct);
 void setFloatPtrFieldValue(SpecialStruct specialStruct, float value);
 void setFixedSizeArrayFieldValue(SpecialStruct* specialStruct, int index, int value);
 void setIntPtrFieldValue(SpecialStruct specialStruct, int value);
+
+// TestUnion
+
+TestUnion* returnTestUnionPointer(void);
+TestUnion returnTestUnion(void);
+
+uint64_t getUnionUintTypeByValue(TestUnion testUnion);
+void setUnionUintTypeByPointer(TestUnion* testUnion, uint64_t value);
+
+double getUnionDoubleTypeByValue(TestUnion testUnion);
+void setUnionDoubleTypeByPointer(TestUnion* testUnion, double value);
+
+int* getUnionFixedSizeIntByPointer(TestUnion* testUnion);
+int getUnionFixedSizeIntByValue(TestUnion testUnion, int index);
+void setUnionFixedSizeIntByPointer(TestUnion* testUnion, int index, int value);
+
+TestStruct getUnionStructTypeByValue(TestUnion testUnion);
+void setUnionStructTypeByPointer(TestUnion* testUnion, TestStruct value);
+
+// Callback Type Definitions
+typedef TestUnion* (*methodWithCallbackTestUnionPointerReturn)(void);
+typedef void (*methodWithCallbackTestUnionPointerArg)(TestUnion*);
+
+// Functions to call callbacks
+TestUnion* call_methodWithCallbackTestUnionPointerReturn(methodWithCallbackTestUnionPointerReturn fnPtr);
+void call_methodWithCallbackTestUnionPointerArg(methodWithCallbackTestUnionPointerArg fnPtr);
 
 #ifdef __cplusplus
 }

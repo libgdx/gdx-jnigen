@@ -17,7 +17,7 @@ public final class JavaTypeWrapper {
     public int getSize() {
         if (cTypeInfo.isVoid())
             return 0;
-        if (cTypeInfo.isStruct())
+        if (cTypeInfo.isStackElement())
             return CHandler.POINTER_SIZE;
         return cTypeInfo.getSize();
     }

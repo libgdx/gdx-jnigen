@@ -4,6 +4,7 @@ import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.generator.Manager;
 import com.badlogic.gdx.jnigen.pointer.Struct;
 import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
+import com.badlogic.gdx.jnigen.pointer.Union;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -26,17 +27,20 @@ import com.github.javaparser.ast.type.PrimitiveType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StructType implements MappedType {
+public class StackElementType implements MappedType {
 
 
     private final TypeDefinition definition;
+    // TODO: Conceptionally, this belongs into TypeDefinition
+    private boolean isStruct;
     private final List<NamedType> fields = new ArrayList<>();
     private final String pointerName;
     private final String javaTypeName;
 
-    public StructType(TypeDefinition definition) {
+    public StackElementType(TypeDefinition definition, boolean isStruct) {
         this.definition = definition;
-        this.javaTypeName = definition.getTypeName().replace("struct ", "");
+        this.isStruct = isStruct;
+        this.javaTypeName = definition.getTypeName().replace("struct ", "").replace("union ", "");
         pointerName = javaTypeName + "Pointer";
     }
 
@@ -48,10 +52,10 @@ public class StructType implements MappedType {
         String structPointerRef = javaTypeName + "." + pointerName;
 
         compilationUnit.addImport(CHandler.class);
-        compilationUnit.addImport(Struct.class);
+        compilationUnit.addImport(isStruct ? Struct.class : Union.class);
         compilationUnit.addImport(StackElementPointer.class);
         ClassOrInterfaceDeclaration structClass = compilationUnit.addClass(javaTypeName, Keyword.PUBLIC, Keyword.FINAL);
-        structClass.addExtendedType(Struct.class);
+        structClass.addExtendedType(isStruct ? Struct.class : Union.class);
         structClass.addField(int.class, "__size", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
         structClass.addField(long.class, "__ffi_type", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
 
@@ -89,22 +93,35 @@ public class StructType implements MappedType {
             MethodDeclaration getMethod = structClass.addMethod(field.getName(), Keyword.PUBLIC);
             getMethod.setType(field.getDefinition().getMappedType().abstractType());
             BlockStmt getBody = new BlockStmt();
-            if (field.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
-                MethodCallExpr getOffsetExpr = new MethodCallExpr("getOffsetForField");
-                getOffsetExpr.setScope(new NameExpr("CHandler"));
-                getOffsetExpr.addArgument("__ffi_type");
-                getOffsetExpr.addArgument(index + "");
-                structClass.addFieldWithInitializer(int.class, "__" + field.getName() + "_offset", getOffsetExpr,
-                        Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
+            if (field.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY || field.getDefinition().getTypeKind() == TypeKind.STACK_ELEMENT) {
+                if (isStruct) {
+                    MethodCallExpr getOffsetExpr = new MethodCallExpr("getOffsetForField");
+                    getOffsetExpr.setScope(new NameExpr("CHandler"));
+                    getOffsetExpr.addArgument("__ffi_type");
+                    getOffsetExpr.addArgument(index + "");
+                    structClass.addFieldWithInitializer(int.class, "__" + field.getName() + "_offset", getOffsetExpr,
+                            Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
+                }
 
-                MethodCallExpr getPointer = new MethodCallExpr("getPointer");
-                BinaryExpr addPointerOffset = new BinaryExpr(getPointer,
-                        new NameExpr("__" + field.getName() + "_offset"), Operator.PLUS);
-                MethodCallExpr guardPointer = new MethodCallExpr("guardCount");
-                guardPointer.setScope(field.getDefinition().getMappedType().fromC(addPointerOffset));
-                guardPointer.addArgument(field.getDefinition().getCount() + "");
+                Expression pointer;
+                if (isStruct) {
+                    MethodCallExpr getPointer = new MethodCallExpr("getPointer");
+                    pointer = new BinaryExpr(getPointer,
+                            new NameExpr("__" + field.getName() + "_offset"), Operator.PLUS);
+                } else {
+                    pointer = new MethodCallExpr("getPointer");
+                }
+
+                Expression fromCExpression = field.getDefinition().getMappedType().fromC(pointer, false);
+
+                if (field.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
+                    MethodCallExpr guardPointer = new MethodCallExpr("guardCount");
+                    guardPointer.setScope(fromCExpression);
+                    guardPointer.addArgument(field.getDefinition().getCount() + "");
+                    fromCExpression = guardPointer;
+                }
                 structClass.addFieldWithInitializer(field.getDefinition().getMappedType().abstractType(),
-                        "__" + field.getName(), guardPointer,
+                        "__" + field.getName(), fromCExpression,
                         Keyword.PRIVATE, Keyword.FINAL);
                 getBody.addStatement("return __" + field.getName() + ";");
                 getMethod.setBody(getBody);
@@ -187,7 +204,7 @@ public class StructType implements MappedType {
             NamedType field = unwrappedFields.get(i);
             if (field.getDefinition().getTypeKind() == TypeKind.POINTER || field.getDefinition().getTypeKind() == TypeKind.CLOSURE) {
                 generateFFIMethodBody.append("\t\ttype->elements[").append(i).append("] = &ffi_type_pointer;\n");
-            } else if (field.getDefinition().getTypeKind() == TypeKind.STRUCT) {
+            } else if (field.getDefinition().getTypeKind() == TypeKind.STACK_ELEMENT) {
                 int fieldStructID = field.getDefinition().getMappedType().typeID();
                 generateFFIMethodBody.append("\t\ttype->elements[").append(i).append("] = ")
                         .append(ffiResolveFunctionName).append("(")
@@ -202,9 +219,14 @@ public class StructType implements MappedType {
             }
         }
         generateFFIMethodBody.append("\t\ttype->elements[").append(unwrappedFields.size()).append("] = NULL;\n");
+        generateFFIMethodBody.append("\t\tcalculateAlignmentAndOffset(type, ").append(isStruct()).append(");\n");
         generateFFIMethodBody.append("\t\treturn type;\n\t}\n");
 
         return generateFFIMethodBody.toString();
+    }
+
+    public boolean isStruct() {
+        return isStruct;
     }
 
     @Override
@@ -239,10 +261,15 @@ public class StructType implements MappedType {
 
     @Override
     public Expression fromC(Expression cRetrieved) {
+        return fromC(cRetrieved, true);
+    }
+
+    @Override
+    public Expression fromC(Expression cRetrieved, boolean owned) {
         ObjectCreationExpr createObject = new ObjectCreationExpr();
         createObject.setType(instantiationType());
         createObject.addArgument(cRetrieved);
-        createObject.addArgument("true");
+        createObject.addArgument(String.valueOf(owned));
         return createObject;
     }
 
@@ -255,6 +282,11 @@ public class StructType implements MappedType {
 
     @Override
     public int typeID() {
-        return Manager.getInstance().getStructID(this);
+        return Manager.getInstance().getStackElementID(this);
+    }
+
+    @Override
+    public boolean isLibFFIConvertible() {
+        return isStruct();
     }
 }

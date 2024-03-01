@@ -219,4 +219,71 @@ int getIntPtrFieldValue(SpecialStruct specialStruct) {
     return *(specialStruct.intPtrField);
 }
 
+// TestUnion
+TestUnion* returnTestUnionPointer(void) {
+    TestUnion* ptr = (TestUnion*)malloc(sizeof(TestUnion));
+    ptr->uintType = 50;
+    return ptr;
+}
+
+TestUnion returnTestUnion(void) {
+    TestUnion value;
+    value.doubleType = 3.3;
+    return value;
+}
+
+uint64_t passByValueUnion(TestUnion testUnion) {
+    return testUnion.uintType;
+}
+
+uint64_t passByPointerUnion(TestUnion* testUnion) {
+    return testUnion->uintType;
+}
+
+uint64_t getUnionUintTypeByValue(TestUnion testUnion) {
+    return testUnion.uintType;
+}
+
+void setUnionUintTypeByPointer(TestUnion* testUnion, uint64_t value) {
+    testUnion->uintType = value;
+}
+
+double getUnionDoubleTypeByValue(TestUnion testUnion) {
+    return testUnion.doubleType;
+}
+
+void setUnionDoubleTypeByPointer(TestUnion* testUnion, double value) {
+    testUnion->doubleType = value;
+}
+
+int* getUnionFixedSizeIntByPointer(TestUnion* testUnion) {
+    return testUnion->fixedSizeInt;
+}
+
+int getUnionFixedSizeIntByValue(TestUnion testUnion, int index) {
+    return testUnion.fixedSizeInt[index];
+}
+
+void setUnionFixedSizeIntByPointer(TestUnion* testUnion, int index, int value) {
+    testUnion->fixedSizeInt[index] = value;
+}
+
+TestStruct getUnionStructTypeByValue(TestUnion testUnion) {
+    return testUnion.structType;
+}
+
+void setUnionStructTypeByPointer(TestUnion* testUnion, TestStruct value) {
+    testUnion->structType = value;
+}
+
+TestUnion* call_methodWithCallbackTestUnionPointerReturn(methodWithCallbackTestUnionPointerReturn fnPtr) {
+    return fnPtr();
+}
+
+void call_methodWithCallbackTestUnionPointerArg(methodWithCallbackTestUnionPointerArg fnPtr) {
+    TestUnion* testUnion = returnTestUnionPointer();
+    fnPtr(testUnion);
+    free(testUnion);
+}
+
 

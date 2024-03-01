@@ -137,11 +137,12 @@ public class CHandler {
         }
     }
 
+    public static CTypeInfo constructStackElementCTypeFromFFIType(String name, long ffiType, boolean isStruct) {
+        return new CTypeInfo(name, ffiType, CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType), true, CHandler.isVoid(ffiType));
+    }
+
     public static CTypeInfo constructCTypeFromFFIType(String name, long ffiType) {
-        boolean isStruct = isStruct(ffiType);
-        if (isStruct)
-            CHandler.calculateAlignmentAndSizeForType(ffiType);
-        return new CTypeInfo(name, ffiType, CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType), isStruct, CHandler.isVoid(ffiType));
+        return new CTypeInfo(name, ffiType, CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType), false, CHandler.isVoid(ffiType));
     }
 
     private static native long nativeCreateCif(long returnType, ByteBuffer parameters, int size); /*
@@ -287,36 +288,6 @@ public class CHandler {
 
     public static native boolean isVoid(long type);/*
         return ((ffi_type*)type)->type == FFI_TYPE_VOID;
-    */
-
-    // TODO: Add support for specific alignment
-    public static native void calculateAlignmentAndSizeForType(long type);/*
-        ffi_type* struct_type = reinterpret_cast<ffi_type*>(type);
-        int index = 0;
-        ffi_type* current_element = struct_type->elements[index];
-        size_t struct_size = 0;
-        size_t struct_alignment = 0;
-        while (current_element != NULL) {
-            size_t alignment = current_element->alignment;
-            if (alignment > struct_alignment)
-                struct_alignment = alignment;
-
-            if (struct_size % alignment != 0) {
-                struct_size += alignment - (struct_size % alignment);
-            }
-
-            struct_size += current_element->size;
-
-            index++;
-            current_element = struct_type->elements[index];
-        }
-
-        if (struct_size % struct_alignment != 0) {
-           struct_size += struct_alignment - (struct_size % struct_alignment);
-        }
-
-        struct_type->alignment = struct_alignment;
-        struct_type->size = struct_size;
     */
 
     public static void freeClosure(ClosureObject<?> closureObject) {

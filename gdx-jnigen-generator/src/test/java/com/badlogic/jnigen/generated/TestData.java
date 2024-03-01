@@ -33,6 +33,9 @@ import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerArg;
 import com.badlogic.jnigen.generated.structs.SpecialStruct;
+import com.badlogic.jnigen.generated.structs.TestUnion;
+import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestUnionPointerReturn;
+import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestUnionPointerArg;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
 import com.badlogic.gdx.jnigen.c.CTypeInfo;
@@ -376,9 +379,117 @@ public final class TestData {
     	setIntPtrFieldValue(*(SpecialStruct*)arg0, (int)arg1);
     */
 
+    public static TestUnion.TestUnionPointer returnTestUnionPointer() {
+        return new TestUnion.TestUnionPointer(returnTestUnionPointer_internal(), false);
+    }
+
+    static private native long returnTestUnionPointer_internal();/*
+    	return (jlong)returnTestUnionPointer();
+    */
+
+    public static TestUnion returnTestUnion() {
+        return new TestUnion(returnTestUnion_internal(), true);
+    }
+
+    static private native long returnTestUnion_internal();/*
+    	TestUnion* _ret = (TestUnion*)malloc(sizeof(TestUnion));
+    	*_ret = returnTestUnion();
+    	return (jlong)_ret;
+    */
+
+    public static long getUnionUintTypeByValue(TestUnion arg0) {
+        return getUnionUintTypeByValue_internal(arg0.getPointer());
+    }
+
+    static private native long getUnionUintTypeByValue_internal(long arg0);/*
+    	return (jlong)getUnionUintTypeByValue(*(TestUnion*)arg0);
+    */
+
+    public static void setUnionUintTypeByPointer(TestUnion.TestUnionPointer arg0, long arg1) {
+        setUnionUintTypeByPointer_internal(arg0.getPointer(), arg1);
+    }
+
+    static private native void setUnionUintTypeByPointer_internal(long arg0, long arg1);/*
+    	setUnionUintTypeByPointer((TestUnion *)arg0, (uint64_t)arg1);
+    */
+
+    public static double getUnionDoubleTypeByValue(TestUnion arg0) {
+        return getUnionDoubleTypeByValue_internal(arg0.getPointer());
+    }
+
+    static private native double getUnionDoubleTypeByValue_internal(long arg0);/*
+    	return (jdouble)getUnionDoubleTypeByValue(*(TestUnion*)arg0);
+    */
+
+    public static void setUnionDoubleTypeByPointer(TestUnion.TestUnionPointer arg0, double arg1) {
+        setUnionDoubleTypeByPointer_internal(arg0.getPointer(), arg1);
+    }
+
+    static private native void setUnionDoubleTypeByPointer_internal(long arg0, double arg1);/*
+    	setUnionDoubleTypeByPointer((TestUnion *)arg0, (double)arg1);
+    */
+
+    public static CSizedIntPointer getUnionFixedSizeIntByPointer(TestUnion.TestUnionPointer arg0) {
+        return new CSizedIntPointer(getUnionFixedSizeIntByPointer_internal(arg0.getPointer()), false, "int");
+    }
+
+    static private native long getUnionFixedSizeIntByPointer_internal(long arg0);/*
+    	return (jlong)getUnionFixedSizeIntByPointer((TestUnion *)arg0);
+    */
+
+    public static int getUnionFixedSizeIntByValue(TestUnion arg0, int arg1) {
+        return getUnionFixedSizeIntByValue_internal(arg0.getPointer(), arg1);
+    }
+
+    static private native int getUnionFixedSizeIntByValue_internal(long arg0, int arg1);/*
+    	return (jint)getUnionFixedSizeIntByValue(*(TestUnion*)arg0, (int)arg1);
+    */
+
+    public static void setUnionFixedSizeIntByPointer(TestUnion.TestUnionPointer arg0, int arg1, int arg2) {
+        setUnionFixedSizeIntByPointer_internal(arg0.getPointer(), arg1, arg2);
+    }
+
+    static private native void setUnionFixedSizeIntByPointer_internal(long arg0, int arg1, int arg2);/*
+    	setUnionFixedSizeIntByPointer((TestUnion *)arg0, (int)arg1, (int)arg2);
+    */
+
+    public static TestStruct getUnionStructTypeByValue(TestUnion arg0) {
+        return new TestStruct(getUnionStructTypeByValue_internal(arg0.getPointer()), true);
+    }
+
+    static private native long getUnionStructTypeByValue_internal(long arg0);/*
+    	TestStruct* _ret = (TestStruct*)malloc(sizeof(TestStruct));
+    	*_ret = getUnionStructTypeByValue(*(TestUnion*)arg0);
+    	return (jlong)_ret;
+    */
+
+    public static void setUnionStructTypeByPointer(TestUnion.TestUnionPointer arg0, TestStruct arg1) {
+        setUnionStructTypeByPointer_internal(arg0.getPointer(), arg1.getPointer());
+    }
+
+    static private native void setUnionStructTypeByPointer_internal(long arg0, long arg1);/*
+    	setUnionStructTypeByPointer((TestUnion *)arg0, *(TestStruct*)arg1);
+    */
+
+    public static TestUnion.TestUnionPointer call_methodWithCallbackTestUnionPointerReturn(ClosureObject<methodWithCallbackTestUnionPointerReturn> arg0) {
+        return new TestUnion.TestUnionPointer(call_methodWithCallbackTestUnionPointerReturn_internal(arg0.getFnPtr()), false);
+    }
+
+    static private native long call_methodWithCallbackTestUnionPointerReturn_internal(long arg0);/*
+    	return (jlong)call_methodWithCallbackTestUnionPointerReturn((methodWithCallbackTestUnionPointerReturn)arg0);
+    */
+
+    public static void call_methodWithCallbackTestUnionPointerArg(ClosureObject<methodWithCallbackTestUnionPointerArg> arg0) {
+        call_methodWithCallbackTestUnionPointerArg_internal(arg0.getFnPtr());
+    }
+
+    static private native void call_methodWithCallbackTestUnionPointerArg_internal(long arg0);/*
+    	call_methodWithCallbackTestUnionPointerArg((methodWithCallbackTestUnionPointerArg)arg0);
+    */
+
     public interface methodWithCallbackBooleanArg extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(8) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(9) };
 
         void methodWithCallbackBooleanArg_call(boolean arg0);
 
@@ -393,7 +504,7 @@ public final class TestData {
 
     public interface methodWithCallbackDoubleReturn extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(9) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(6) };
 
         double methodWithCallbackDoubleReturn_call();
 
@@ -438,7 +549,7 @@ public final class TestData {
 
     public interface methodWithCallbackShortReturn extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(6) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(7) };
 
         short methodWithCallbackShortReturn_call();
 
@@ -513,7 +624,7 @@ public final class TestData {
 
     public interface methodWithCallbackDoubleArg extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(9) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(6) };
 
         void methodWithCallbackDoubleArg_call(double arg0);
 
@@ -571,9 +682,24 @@ public final class TestData {
         }
     }
 
+    public interface methodWithCallbackTestUnionPointerReturn extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-1) };
+
+        TestUnion.TestUnionPointer methodWithCallbackTestUnionPointerReturn_call();
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            returnType.setValue(methodWithCallbackTestUnionPointerReturn_call());
+        }
+    }
+
     public interface methodWithCallbackByteReturn extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(7) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(8) };
 
         byte methodWithCallbackByteReturn_call();
 
@@ -618,7 +744,7 @@ public final class TestData {
 
     public interface methodWithCallbackAllArgs extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(0), FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(6), FFITypes.getCTypeInfo(7), FFITypes.getCTypeInfo(2), FFITypes.getCTypeInfo(8), FFITypes.getCTypeInfo(4), FFITypes.getCTypeInfo(9) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(0), FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(7), FFITypes.getCTypeInfo(8), FFITypes.getCTypeInfo(2), FFITypes.getCTypeInfo(9), FFITypes.getCTypeInfo(4), FFITypes.getCTypeInfo(6) };
 
         void methodWithCallbackAllArgs_call(long arg0, int arg1, short arg2, byte arg3, char arg4, boolean arg5, float arg6, double arg7);
 
@@ -646,9 +772,24 @@ public final class TestData {
         }
     }
 
+    public interface methodWithCallbackTestUnionPointerArg extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(-1) };
+
+        void methodWithCallbackTestUnionPointerArg_call(TestUnion.TestUnionPointer arg0);
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            methodWithCallbackTestUnionPointerArg_call(new TestUnion.TestUnionPointer(parameters[0].asLong(), false));
+        }
+    }
+
     public interface methodWithCallbackShortArg extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(6) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(7) };
 
         void methodWithCallbackShortArg_call(short arg0);
 
@@ -663,7 +804,7 @@ public final class TestData {
 
     public interface methodWithCallbackByteArg extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(7) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(8) };
 
         void methodWithCallbackByteArg_call(byte arg0);
 
@@ -678,7 +819,7 @@ public final class TestData {
 
     public interface methodWithCallbackBooleanReturn extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(8) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(9) };
 
         boolean methodWithCallbackBooleanReturn_call();
 
