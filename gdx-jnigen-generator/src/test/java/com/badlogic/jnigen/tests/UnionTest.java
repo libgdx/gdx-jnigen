@@ -1,10 +1,13 @@
 package com.badlogic.jnigen.tests;
 
+import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.jnigen.generated.TestData;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 import com.badlogic.jnigen.generated.structs.TestUnion;
 import com.badlogic.jnigen.generated.structs.TestUnion.TestUnionPointer;
 import org.junit.jupiter.api.Test;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -41,5 +44,46 @@ public class UnionTest extends BaseTest {
         }
 
         assertEquals(testUnion.fixedSizeInt().getPointer(), TestData.getUnionFixedSizeIntByPointer(testUnion.asPointer()).getPointer());
+    }
+
+    @Test
+    public void testSetPassUnions() {
+        TestUnion testUnion = new TestUnion();
+
+        TestData.setUnionDoubleTypeByPointer(testUnion.asPointer(), 4.4);
+        assertEquals(4.4, testUnion.doubleType());
+
+        TestData.setUnionUintTypeByPointer(testUnion.asPointer(), 18);
+        assertEquals(18, testUnion.uintType());
+
+        for (int i = 0; i < 3; i++) {
+            TestData.setUnionFixedSizeIntByPointer(testUnion.asPointer(), i, i);
+            assertEquals(i, testUnion.fixedSizeInt().getInt(i));
+        }
+
+        TestStruct testStruct = new TestStruct();
+        testStruct.field2(24);
+        TestData.setUnionStructTypeByPointer(testUnion.asPointer(), testStruct);
+        assertEquals(24, testUnion.structType().field2());
+    }
+
+    @Test
+    public void testUnionClosureReturn() {
+        TestUnion testUnion = new TestUnion();
+        ClosureObject<TestData.methodWithCallbackTestUnionPointerReturn> closureObject = ClosureObject.fromClosure(testUnion::asPointer);
+        TestUnionPointer pointer = TestData.call_methodWithCallbackTestUnionPointerReturn(closureObject);
+        assertEquals(pointer.getPointer(), testUnion.getPointer());
+
+        closureObject.free();
+    }
+
+    @Test
+    public void testUnionClosureArgument() {
+        AtomicReference<TestUnion> ref = new AtomicReference<>();
+        ClosureObject<TestData.methodWithCallbackTestUnionPointerArg> closureObject = ClosureObject.fromClosure(arg0 -> ref.set(arg0.get()));
+        TestData.call_methodWithCallbackTestUnionPointerArg(closureObject);
+        assertEquals(50, ref.get().uintType());
+
+        closureObject.free();
     }
 }
