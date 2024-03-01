@@ -10,10 +10,10 @@ import org.bytedeco.llvm.clang.CXType;
 
 import static org.bytedeco.llvm.global.clang.*;
 
-public class StructParser extends CXCursorVisitor {
+public class StackElementParser extends CXCursorVisitor {
 
     private final TypeDefinition structType;
-    public StructParser(TypeDefinition structType) {
+    public StackElementParser(TypeDefinition structType) {
         this.structType = structType;
     }
 
@@ -23,7 +23,7 @@ public class StructParser extends CXCursorVisitor {
         if (current.kind() == CXCursor_FieldDecl) {
             CXType type = clang_getCursorType(current);
             NamedType namedType = new NamedType(TypeDefinition.createTypeDefinition(type), cursorSpelling);
-            Manager.getInstance().putStructField(structType.getTypeName(), namedType);
+            Manager.getInstance().putStackElementField(structType.getTypeName(), namedType);
         }
         return CXChildVisit_Recurse;
     }

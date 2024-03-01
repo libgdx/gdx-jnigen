@@ -8,20 +8,20 @@ public final class CTypeInfo {
     private final long ffiType;
     private final int size;
     private final boolean signed;
-    private final boolean struct;
+    private final boolean stackElement;
     private final boolean isVoid;
 
-    public CTypeInfo(String name, long ffiType, int size, boolean signed, boolean struct, boolean isVoid) {
+    public CTypeInfo(String name, long ffiType, int size, boolean signed, boolean stackElement, boolean isVoid) {
         this.name = name;
         this.ffiType = ffiType;
         this.size = size;
         this.signed = signed;
-        this.struct = struct;
+        this.stackElement = stackElement;
         this.isVoid = isVoid;
     }
 
     public void assertBounds(long value) {
-        if (!isStruct() && !Utils.checkBoundsForNumber(value, size, signed))
+        if (!stackElement && !Utils.checkBoundsForNumber(value, size, signed))
             throw new IllegalArgumentException("Value " + value + " exceeds bounds " + size + " with signess " + signed);
     }
 
@@ -63,8 +63,8 @@ public final class CTypeInfo {
         return signed;
     }
 
-    public boolean isStruct() {
-        return struct;
+    public boolean isStackElement() {
+        return stackElement;
     }
 
     public boolean isVoid() {

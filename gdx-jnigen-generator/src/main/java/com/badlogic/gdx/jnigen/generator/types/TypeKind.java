@@ -19,7 +19,7 @@ public enum TypeKind {
     FLOAT(4, true, CXType_Float),
     DOUBLE(8, true, CXType_Double, CXType_LongDouble),
     POINTER(8, false, CXType_Pointer, CXType_IncompleteArray),
-    STRUCT(-1, false, CXType_Record),
+    STACK_ELEMENT(-1, false, CXType_Record),
     CLOSURE(8, false, CXType_FunctionProto),
     ENUM(4, true, CXType_Enum),
     FIXED_SIZE_ARRAY(-1, false, CXType_ConstantArray);
@@ -68,7 +68,7 @@ public enum TypeKind {
     }
 
     public boolean isSpecial() {
-        return this == POINTER || this == STRUCT || this == CLOSURE || this == ENUM || this == FIXED_SIZE_ARRAY;
+        return this == POINTER || this == STACK_ELEMENT || this == CLOSURE || this == ENUM || this == FIXED_SIZE_ARRAY;
     }
     public boolean isPrimitive() {
         return !isSpecial() && this != VOID;

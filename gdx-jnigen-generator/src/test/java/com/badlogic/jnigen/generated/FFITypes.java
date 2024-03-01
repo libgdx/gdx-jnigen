@@ -39,13 +39,13 @@ switch(id) {
 	case 5:
 		return GET_FFI_TYPE(int);
 	case 6:
-		return GET_FFI_TYPE(short);
-	case 7:
-		return GET_FFI_TYPE(char);
-	case 8:
-		return GET_FFI_TYPE(bool);
-	case 9:
 		return GET_FFI_TYPE(double);
+	case 7:
+		return GET_FFI_TYPE(short);
+	case 8:
+		return GET_FFI_TYPE(char);
+	case 9:
+		return GET_FFI_TYPE(bool);
 	case 10:
 	{
 		ffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));
@@ -56,6 +56,7 @@ switch(id) {
 		type->elements[2] = GET_FFI_TYPE(uint16_t);
 		type->elements[3] = GET_FFI_TYPE(uint8_t);
 		type->elements[4] = NULL;
+		calculateAlignmentAndOffset(type, true);
 		return type;
 	}
 	case 11:
@@ -71,6 +72,22 @@ switch(id) {
 		type->elements[5] = GET_FFI_TYPE(int);
 		type->elements[6] = &ffi_type_pointer;
 		type->elements[7] = NULL;
+		calculateAlignmentAndOffset(type, true);
+		return type;
+	}
+	case 12:
+	{
+		ffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));
+		type->type = FFI_TYPE_STRUCT;
+		type->elements = (ffi_type**)malloc(sizeof(ffi_type*) * 7);
+		type->elements[0] = GET_FFI_TYPE(uint64_t);
+		type->elements[1] = GET_FFI_TYPE(double);
+		type->elements[2] = GET_FFI_TYPE(int);
+		type->elements[3] = GET_FFI_TYPE(int);
+		type->elements[4] = GET_FFI_TYPE(int);
+		type->elements[5] = getFFIType(10);
+		type->elements[6] = NULL;
+		calculateAlignmentAndOffset(type, false);
 		return type;
 	}
 	default:
@@ -97,15 +114,16 @@ switch(id) {
         CHandler.registerCType(ffiIdMap.get(4));
         ffiIdMap.put(5, CHandler.constructCTypeFromFFIType("int", getFFITypeNative(5)));
         CHandler.registerCType(ffiIdMap.get(5));
-        ffiIdMap.put(6, CHandler.constructCTypeFromFFIType("short", getFFITypeNative(6)));
+        ffiIdMap.put(6, CHandler.constructCTypeFromFFIType("double", getFFITypeNative(6)));
         CHandler.registerCType(ffiIdMap.get(6));
-        ffiIdMap.put(7, CHandler.constructCTypeFromFFIType("char", getFFITypeNative(7)));
+        ffiIdMap.put(7, CHandler.constructCTypeFromFFIType("short", getFFITypeNative(7)));
         CHandler.registerCType(ffiIdMap.get(7));
-        ffiIdMap.put(8, CHandler.constructCTypeFromFFIType("bool", getFFITypeNative(8)));
+        ffiIdMap.put(8, CHandler.constructCTypeFromFFIType("char", getFFITypeNative(8)));
         CHandler.registerCType(ffiIdMap.get(8));
-        ffiIdMap.put(9, CHandler.constructCTypeFromFFIType("double", getFFITypeNative(9)));
+        ffiIdMap.put(9, CHandler.constructCTypeFromFFIType("bool", getFFITypeNative(9)));
         CHandler.registerCType(ffiIdMap.get(9));
-        ffiIdMap.put(10, CHandler.constructCTypeFromFFIType(null, getFFITypeNative(10)));
-        ffiIdMap.put(11, CHandler.constructCTypeFromFFIType(null, getFFITypeNative(11)));
+        ffiIdMap.put(10, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(10), true));
+        ffiIdMap.put(11, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(11), true));
+        ffiIdMap.put(12, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(12), false));
     }
 }

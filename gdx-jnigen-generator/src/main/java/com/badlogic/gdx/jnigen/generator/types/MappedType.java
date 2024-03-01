@@ -27,6 +27,10 @@ public interface MappedType {
 
     Expression fromC(Expression cRetrieved);
 
+    default Expression fromC(Expression cRetrieved, boolean owned) {
+        return fromC(cRetrieved);
+    }
+
     Expression toC(Expression cSend);
 
     int typeID();
@@ -37,5 +41,9 @@ public interface MappedType {
 
     default String assertC(Expression scope) {
         return "";
+    }
+
+    default boolean isLibFFIConvertible() {
+        return true;
     }
 }
