@@ -39,11 +39,11 @@ public final class SpecialStruct extends Struct {
     }
 
     public FloatPointer floatPtrField() {
-        return new FloatPointer(CHandler.getStructField(getPointer(), __ffi_type, 0), false);
+        return new FloatPointer(getValue(0), false);
     }
 
     public void floatPtrField(FloatPointer floatPtrField) {
-        CHandler.setStructField(getPointer(), __ffi_type, 0, floatPtrField.getPointer());
+        setValue(floatPtrField.getPointer(), 0);
     }
 
     public CSizedIntPointer arrayField() {
@@ -55,11 +55,11 @@ public final class SpecialStruct extends Struct {
     private final CSizedIntPointer __arrayField = new CSizedIntPointer(getPointer() + __arrayField_offset, false, "int").guardCount(5);
 
     public CSizedIntPointer intPtrField() {
-        return new CSizedIntPointer(CHandler.getStructField(getPointer(), __ffi_type, 6), false, "int");
+        return new CSizedIntPointer(getValue(6), false, "int");
     }
 
     public void intPtrField(CSizedIntPointer intPtrField) {
-        CHandler.setStructField(getPointer(), __ffi_type, 6, intPtrField.getPointer());
+        setValue(intPtrField.getPointer(), 6);
     }
 
     public static final class SpecialStructPointer extends StackElementPointer<SpecialStruct> {
