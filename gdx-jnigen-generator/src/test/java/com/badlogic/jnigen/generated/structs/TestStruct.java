@@ -37,35 +37,35 @@ public final class TestStruct extends Struct {
     }
 
     public long field1() {
-        return (long) CHandler.getStructField(getPointer(), __ffi_type, 0);
+        return (long) getValue(0);
     }
 
     public void field1(long field1) {
-        CHandler.setStructField(getPointer(), __ffi_type, 0, field1);
+        setValue(field1, 0);
     }
 
     public long field2() {
-        return (long) CHandler.getStructField(getPointer(), __ffi_type, 1);
+        return (long) getValue(1);
     }
 
     public void field2(long field2) {
-        CHandler.setStructField(getPointer(), __ffi_type, 1, field2);
+        setValue(field2, 1);
     }
 
     public char field3() {
-        return (char) CHandler.getStructField(getPointer(), __ffi_type, 2);
+        return (char) getValue(2);
     }
 
     public void field3(char field3) {
-        CHandler.setStructField(getPointer(), __ffi_type, 2, field3);
+        setValue(field3, 2);
     }
 
     public char field4() {
-        return (char) CHandler.getStructField(getPointer(), __ffi_type, 3);
+        return (char) getValue(3);
     }
 
     public void field4(char field4) {
-        CHandler.setStructField(getPointer(), __ffi_type, 3, field4);
+        setValue(field4, 3);
     }
 
     public static final class TestStructPointer extends StackElementPointer<TestStruct> {

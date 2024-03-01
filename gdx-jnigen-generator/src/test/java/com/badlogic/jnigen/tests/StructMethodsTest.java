@@ -85,33 +85,6 @@ public class StructMethodsTest extends BaseTest {
     }
 
     @Test
-    public void testReadField() {
-        TestStruct testStruct = new TestStruct();
-        testStruct.field1(1);
-        testStruct.field2(2);
-        testStruct.field3((char)3);
-        testStruct.field4((char)4);
-        assertEquals(1, CHandler.getStructField(testStruct.getPointer(), testStruct.getFFIType(), 0));
-        assertEquals(2, CHandler.getStructField(testStruct.getPointer(), testStruct.getFFIType(), 1));
-        assertEquals(3, CHandler.getStructField(testStruct.getPointer(), testStruct.getFFIType(), 2));
-        assertEquals(4, CHandler.getStructField(testStruct.getPointer(), testStruct.getFFIType(), 3));
-    }
-
-    @Test
-    public void testWriteField() {
-        TestStruct testStruct = new TestStruct();
-        CHandler.setStructField(testStruct.getPointer(), testStruct.getFFIType(), 0, 1);
-        CHandler.setStructField(testStruct.getPointer(), testStruct.getFFIType(), 1, 2);
-        CHandler.setStructField(testStruct.getPointer(), testStruct.getFFIType(), 2, 3);
-        CHandler.setStructField(testStruct.getPointer(), testStruct.getFFIType(), 3, 4);
-
-        assertEquals(1, testStruct.field1());
-        assertEquals(2, testStruct.field2());
-        assertEquals(3, testStruct.field3());
-        assertEquals(4, testStruct.field4());
-    }
-
-    @Test
     public void testWriteOutOfBound() {
         TestStruct testStruct = new TestStruct();
         assertDoesNotThrow(() -> testStruct.field4((char)0xFF));
