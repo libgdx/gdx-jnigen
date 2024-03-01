@@ -40,7 +40,7 @@ public class FunctionType {
         for (NamedType namedType : arguments) {
             namedType.getDefinition().getMappedType().importType(cu);
             callMethod.addParameter(namedType.getDefinition().getMappedType().abstractType(), namedType.getName());
-            if (namedType.getDefinition().getTypeKind() == TypeKind.STRUCT) {
+            if (namedType.getDefinition().getTypeKind() == TypeKind.STACK_ELEMENT) {
                 nativeBody.append("*(").append(namedType.getDefinition().getTypeName()).append("*)").append(namedType.getName()).append(", ");
             } else {
                 nativeBody.append("(").append(namedType.getDefinition().getTypeName()).append(")").append(namedType.getName()).append(", ");
@@ -61,7 +61,7 @@ public class FunctionType {
                 nativeBody.insert(0, "return (j" + returnType.getMappedType().primitiveType() + ")");
                 body.addStatement(new ReturnStmt(callExpr));
             } else {
-                if (returnType.getTypeKind() == TypeKind.STRUCT) {
+                if (returnType.getTypeKind() == TypeKind.STACK_ELEMENT) {
                     nativeBody.insert(0, "*_ret = ");
                     nativeBody.insert(0, returnType.getTypeName() + "* _ret = (" + returnType.getTypeName() + "*)malloc(sizeof(" + returnType.getTypeName() + "));\n");
                     nativeBody.append("\nreturn (jlong)_ret;");

@@ -8,7 +8,7 @@ import com.badlogic.gdx.jnigen.generator.types.FunctionType;
 import com.badlogic.gdx.jnigen.generator.types.GlobalType;
 import com.badlogic.gdx.jnigen.generator.types.MappedType;
 import com.badlogic.gdx.jnigen.generator.types.NamedType;
-import com.badlogic.gdx.jnigen.generator.types.StructType;
+import com.badlogic.gdx.jnigen.generator.types.StackElementType;
 import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
@@ -47,8 +47,8 @@ public class Manager {
         instance = new Manager(parsedCHeader, basePackage);
     }
 
-    private final Map<String, StructType> structs = new HashMap<>();
-    private final ArrayList<StructType> orderedStructs = new ArrayList<>();
+    private final Map<String, StackElementType> stackElements = new HashMap<>();
+    private final ArrayList<StackElementType> orderedStackElements = new ArrayList<>();
     private final Map<String, EnumType> enums = new HashMap<>();
     private final ArrayList<String> knownCTypes = new ArrayList<>();
 
@@ -65,31 +65,25 @@ public class Manager {
         globalType = new GlobalType(JavaUtils.javarizeName(segments[segments.length - 1].split("\\.h")[0]));
     }
 
-    public void startStruct(TypeDefinition definition) {
+    public void startStackElement(TypeDefinition definition, boolean isStruct) {
         String name = definition.getTypeName();
-        if (structs.containsKey(name))
+        if (stackElements.containsKey(name))
             return; // TODO: 19.02.24 FIGURE OUT WHY THIS CAN HAPPEN?????
-        StructType structType = new StructType(definition);
-        structs.put(name, structType);
-        orderedStructs.add(structType);
-        registerCTypeMapping(name, structType);
+        StackElementType stackElementType = new StackElementType(definition, isStruct);
+        stackElements.put(name, stackElementType);
+        orderedStackElements.add(stackElementType);
+        registerCTypeMapping(name, stackElementType);
     }
 
-    public void putStructField(String structName, NamedType type) {
-        if (!structs.containsKey(structName))
+    public void putStackElementField(String structName, NamedType type) {
+        if (!stackElements.containsKey(structName))
             throw new IllegalArgumentException("Struct with name: " + structName + " does not exists.");
-        StructType struct = structs.get(structName);
+        StackElementType struct = stackElements.get(structName);
         struct.addField(type);
     }
 
-    public StructType getStruct(String structName) {
-        if (!structs.containsKey(structName))
-            throw new IllegalArgumentException("Struct with name: " + structName + " does not exists.");
-        return structs.get(structName);
-    }
-
-    public int getStructID(StructType structType) {
-        return orderedStructs.indexOf(structType) + knownCTypes.size();
+    public int getStackElementID(StackElementType stackElementType) {
+        return orderedStackElements.indexOf(stackElementType) + knownCTypes.size();
     }
 
     public void startEnum(TypeDefinition definition) {
@@ -205,13 +199,13 @@ public class Manager {
 
     public void emit(String basePath) {
         try {
-            for (StructType structType : structs.values()) {
-                CompilationUnit cu = new CompilationUnit(structType.packageName());
-                structType.write(cu);
+            for (StackElementType stackElementType : stackElements.values()) {
+                CompilationUnit cu = new CompilationUnit(stackElementType.packageName());
+                stackElementType.write(cu);
 
                 String classContent = cu.toString();
 
-                String fullPath = basePath + structType.classFile().replace(".", "/") + ".java";
+                String fullPath = basePath + stackElementType.classFile().replace(".", "/") + ".java";
                 Path structPath = Paths.get(fullPath);
                 structPath.getParent().toFile().mkdirs();
                 Files.write(structPath, classContent.getBytes(StandardCharsets.UTF_8));
@@ -278,12 +272,12 @@ public class Manager {
                 ffiTypeNativeBody.append("\tcase ").append(i).append(":\n");
                 ffiTypeNativeBody.append("\t\treturn GET_FFI_TYPE(").append(cType).append(");\n");
             }
-            for (int i = 0; i < orderedStructs.size(); i++) {
+            for (int i = 0; i < orderedStackElements.size(); i++) {
                 int id = i + knownCTypes.size();
-                staticInit.addStatement("ffiIdMap.put(" + id + ", CHandler.constructCTypeFromFFIType(null, getFFITypeNative(" + id + ")));");
-                StructType structType = orderedStructs.get(i);
+                StackElementType stackElementType = orderedStackElements.get(i);
+                staticInit.addStatement("ffiIdMap.put(" + id + ", CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(" + id + "), " + stackElementType.isStruct() + "));");
                 ffiTypeNativeBody.append("\tcase ").append(id).append(":\n");
-                ffiTypeNativeBody.append(structType.getFFITypeBody(nativeGetFFIMethodName));
+                ffiTypeNativeBody.append(stackElementType.getFFITypeBody(nativeGetFFIMethodName));
             }
             ffiTypeNativeBody.append("\tdefault:\n\t\treturn NULL;\n");
             ffiTypeNativeBody.append("\t}\n}\n");

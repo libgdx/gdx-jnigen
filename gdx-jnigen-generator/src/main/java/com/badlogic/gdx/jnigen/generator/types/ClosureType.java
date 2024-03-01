@@ -19,6 +19,8 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
+import java.util.Arrays;
+
 public class ClosureType implements MappedType {
 
     private final FunctionSignature signature;
@@ -31,6 +33,10 @@ public class ClosureType implements MappedType {
         String name = signature.getName();
         TypeDefinition returnType = signature.getReturnType();
         NamedType[] arguments = signature.getArguments();
+        if (!returnType.getMappedType().isLibFFIConvertible() || !Arrays.stream(arguments).map(namedType -> namedType.getDefinition().getMappedType()).allMatch(MappedType::isLibFFIConvertible)) {
+            System.err.println("Unions are not allowed to be passed via stack from/to a closure, failing closure: " + name);
+            return;
+        }
 
         cu.addImport(Closure.class);
         cu.addImport(JavaTypeWrapper.class);

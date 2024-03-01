@@ -1,17 +1,13 @@
 package com.badlogic.gdx.jnigen.generator;
 
 import com.badlogic.gdx.jnigen.generator.parser.EnumParser;
-import com.badlogic.gdx.jnigen.generator.parser.StructParser;
-import com.badlogic.gdx.jnigen.generator.parser.UnionParser;
+import com.badlogic.gdx.jnigen.generator.parser.StackElementParser;
 import com.badlogic.gdx.jnigen.generator.types.ClosureType;
 import com.badlogic.gdx.jnigen.generator.types.FunctionSignature;
 import com.badlogic.gdx.jnigen.generator.types.FunctionType;
 import com.badlogic.gdx.jnigen.generator.types.NamedType;
 import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
-import com.badlogic.gdx.utils.Os;
-import com.badlogic.gdx.utils.SharedLibraryLoader;
 import org.bytedeco.javacpp.BytePointer;
-import org.bytedeco.javacpp.Pointer;
 import org.bytedeco.javacpp.PointerPointer;
 import org.bytedeco.javacpp.annotation.ByVal;
 import org.bytedeco.llvm.clang.CXClientData;
@@ -24,7 +20,6 @@ import org.bytedeco.llvm.clang.CXType;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -80,12 +75,13 @@ public class Generator {
                 String name = clang_getCursorSpelling(current).getString(); // Why the hell does `getString` dispose the CXString?
                 switch (current.kind()) {
                 case CXCursor_StructDecl:
+                case CXCursor_UnionDecl:
                     // TODO: We don't care about TypeDef for the moment
                     if (parent.kind() != CXCursor_TypedefDecl) {
                         TypeDefinition definition = TypeDefinition.createTypeDefinition(clang_getCursorType(current));
-                        Manager.getInstance().startStruct(TypeDefinition.createTypeDefinition(clang_getCursorType(current)));
-                        try (StructParser structParser = new StructParser(definition)) {
-                            clang_visitChildren(current, structParser, null);
+                        Manager.getInstance().startStackElement(definition, current.kind() == CXCursor_StructDecl);
+                        try (StackElementParser parser = new StackElementParser(definition)) {
+                            clang_visitChildren(current, parser, null);
                         }
                         return CXChildVisit_Continue;
                     }
@@ -115,15 +111,6 @@ public class Generator {
                 case CXCursor_FunctionDecl:
                     CXType funcType = clang_getCursorType(current);
                     Manager.getInstance().addFunction(new FunctionType(parseFunctionSignature(name, funcType)));
-                    break;
-                case CXCursor_UnionDecl:
-                    if (parent.kind() != CXCursor_TypedefDecl) {
-                        TypeDefinition unionDefinition = TypeDefinition.createTypeDefinition(clang_getCursorType(current));
-                        try (UnionParser unionParser = new UnionParser(unionDefinition)) {
-                            clang_visitChildren(current, unionParser, null);
-                        }
-                        return CXChildVisit_Continue;
-                    }
                     break;
                 default:
                     //System.out.println(name + " " +  current.kind());

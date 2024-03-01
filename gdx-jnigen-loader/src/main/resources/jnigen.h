@@ -39,3 +39,36 @@
     ((size) == 8 ? true : \
     (!(is_signed)) ? ((uint64_t)(value) < (1ULL << ((size) << 3))) : \
     ((int64_t)(value) >= (-1LL << (((size) << 3) - 1)) && (int64_t)(value) <= ((1LL << (((size) << 3) - 1)) - 1)))
+
+static void calculateAlignmentAndOffset(ffi_type* type, bool isStruct) {
+    int index = 0;
+    ffi_type* current_element = type->elements[index];
+    size_t struct_size = 0;
+    size_t struct_alignment = 0;
+    while (current_element != NULL) {
+        size_t alignment = current_element->alignment;
+        if (alignment > struct_alignment)
+            struct_alignment = alignment;
+
+        if (isStruct) {
+            if (struct_size % alignment != 0) {
+                struct_size += alignment - (struct_size % alignment);
+            }
+            struct_size += current_element->size;
+        } else {
+            if (current_element->size > struct_size) {
+                struct_size = current_element->size;
+            }
+        }
+
+        index++;
+        current_element = type->elements[index];
+    }
+
+    if (isStruct && struct_size % struct_alignment != 0) {
+       struct_size += struct_alignment - (struct_size % struct_alignment);
+    }
+
+    type->alignment = struct_alignment;
+    type->size = struct_size;
+}

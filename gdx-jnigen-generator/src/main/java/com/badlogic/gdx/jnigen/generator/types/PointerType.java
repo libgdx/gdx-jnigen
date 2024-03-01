@@ -23,8 +23,8 @@ public class PointerType implements MappedType {
         this.pointingTo = pointingTo;
     }
 
-    public boolean isStructPointer() {
-        return pointingTo.getTypeKind() == TypeKind.STRUCT;
+    public boolean isStackElementPointer() {
+        return pointingTo.getTypeKind() == TypeKind.STACK_ELEMENT;
     }
 
     public boolean isDoublePointer() {
@@ -45,7 +45,7 @@ public class PointerType implements MappedType {
 
     @Override
     public void importType(CompilationUnit cu) {
-        if (isStructPointer())
+        if (isStackElementPointer())
             cu.addImport(StackElementPointer.class);
         else if (isFloatPointer())
             cu.addImport(FloatPointer.class);
@@ -80,7 +80,7 @@ public class PointerType implements MappedType {
             return DoublePointer.class.getSimpleName();
         if (isVoidPointer())
             return VoidPointer.class.getSimpleName();
-        if (isStructPointer())
+        if (isStackElementPointer())
             return pointingTo.getMappedType().abstractType() + "." + pointingTo.getMappedType().abstractType() + "Pointer";
 
         throw new IllegalArgumentException();
@@ -98,10 +98,15 @@ public class PointerType implements MappedType {
 
     @Override
     public Expression fromC(Expression cRetrieved) {
+        return fromC(cRetrieved, false);
+    }
+
+    @Override
+    public Expression fromC(Expression cRetrieved, boolean owned) {
         ObjectCreationExpr createObject = new ObjectCreationExpr();
         createObject.setType(instantiationType());
         createObject.addArgument(cRetrieved);
-        createObject.addArgument("false");
+        createObject.addArgument(String.valueOf(owned));
         if (isIntPointer())
             createObject.addArgument(new StringLiteralExpr(pointingTo.getTypeName()));
         return createObject;
