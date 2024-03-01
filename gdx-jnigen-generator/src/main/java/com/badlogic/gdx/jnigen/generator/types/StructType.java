@@ -116,7 +116,7 @@ public class StructType implements MappedType {
             if (field.getDefinition().getTypeKind() == TypeKind.FLOAT) appendix = "Float";
             else if (field.getDefinition().getTypeKind() == TypeKind.DOUBLE) appendix = "Double";
             Expression expression = StaticJavaParser.parseExpression(
-                    "CHandler.getStructField" + appendix + "(getPointer(), __ffi_type, " + index + ")");
+                    "getValue" + appendix + "(" + index + ")");
             getBody.addStatement(new ReturnStmt(field.getDefinition().getMappedType().fromC(expression)));
             getMethod.setBody(getBody);
 
@@ -124,12 +124,9 @@ public class StructType implements MappedType {
             setMethod.addParameter(field.getDefinition().getMappedType().abstractType(), field.getName());
             BlockStmt setBody = new BlockStmt();
 
-            MethodCallExpr callSetStruct = new MethodCallExpr("setStructField");
-            callSetStruct.setScope(new NameExpr("CHandler"));
-            callSetStruct.addArgument("getPointer()");
-            callSetStruct.addArgument("__ffi_type");
-            callSetStruct.addArgument(String.valueOf(index));
+            MethodCallExpr callSetStruct = new MethodCallExpr("setValue");
             callSetStruct.addArgument(field.getDefinition().getMappedType().toC(new NameExpr(field.getName())));
+            callSetStruct.addArgument(String.valueOf(index));
             setBody.addStatement(callSetStruct);
             setMethod.setBody(setBody);
             index++;

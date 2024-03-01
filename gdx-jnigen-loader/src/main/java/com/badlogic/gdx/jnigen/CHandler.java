@@ -227,45 +227,25 @@ public class CHandler {
         return getOffsetForField(reinterpret_cast<ffi_type*>(type_ptr), (uint32_t) index);
     */
 
-    public static float getStructFieldFloat(long pointer, long type_ptr, int index) {
-        return Float.intBitsToFloat((int)getStructField(pointer, type_ptr, index));
-    }
-
-    public static double getStructFieldDouble(long pointer, long type_ptr, int index) {
-        return Double.longBitsToDouble(getStructField(pointer, type_ptr, index));
-    }
-
-    public static native long getStructField(long pointer, long type_ptr, int index);/*
+    public static native long getStackElementField(long pointer, long type_ptr, int index, boolean calculateOffset);/*
         char* ptr = reinterpret_cast<char*>(pointer);
         ffi_type* struct_type = reinterpret_cast<ffi_type*>(type_ptr);
         uint32_t field = (uint32_t) index;
 
-        size_t offset = getOffsetForField(struct_type, field);
+        size_t offset = calculateOffset ? getOffsetForField(struct_type, field) : 0;
 
         jlong ret = 0;
         memcpy(&ret, ptr + offset, struct_type->elements[field]->size);  // Make it endian safe, I guess?
         return ret;
     */
 
-    public static void setStructField(long pointer, long type_ptr, int index, boolean value) {
-        setStructField_internal(pointer, type_ptr, index, value ? 1 : 0);
-    }
-
-    public static void setStructField(long pointer, long type_ptr, int index, float value) {
-        setStructField_internal(pointer, type_ptr, index, Float.floatToIntBits(value));
-    }
-
-    public static void setStructField(long pointer, long type_ptr, int index, double value) {
-        setStructField_internal(pointer, type_ptr, index, Double.doubleToLongBits(value));
-    }
-
-    public static void setStructField(long pointer, long type_ptr, int index, long value) {
-        boolean res = setStructField_internal(pointer, type_ptr, index, value);
+    public static void setStackElementField(long pointer, long type_ptr, int index, long value, boolean calculateOffset) {
+        boolean res = setStackElement_internal(pointer, type_ptr, index, value, calculateOffset);
         if (!res)
             throw new IllegalArgumentException("Type " + value + " is out of valid bounds");
     }
 
-    private static native boolean setStructField_internal(long pointer, long type_ptr, int index, long value);/*
+    private static native boolean setStackElement_internal(long pointer, long type_ptr, int index, long value, boolean calculateOffset);/*
         char* ptr = reinterpret_cast<char*>(pointer);
         ffi_type* struct_type = reinterpret_cast<ffi_type*>(type_ptr);
         uint32_t field = (uint32_t) index;
@@ -275,7 +255,7 @@ public class CHandler {
             return false;
         }
 
-        size_t offset = getOffsetForField(struct_type, field);
+        size_t offset = calculateOffset ? getOffsetForField(struct_type, field) : 0;
 
         memcpy(ptr + offset, &value, struct_type->elements[field]->size); // Why does that work? That should not work?
         return true;
