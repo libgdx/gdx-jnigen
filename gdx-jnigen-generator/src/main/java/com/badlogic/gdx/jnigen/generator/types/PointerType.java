@@ -4,7 +4,7 @@ import com.badlogic.gdx.jnigen.generator.Manager;
 import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
 import com.badlogic.gdx.jnigen.pointer.DoublePointer;
 import com.badlogic.gdx.jnigen.pointer.FloatPointer;
-import com.badlogic.gdx.jnigen.pointer.StructPointer;
+import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
 import com.badlogic.gdx.jnigen.pointer.VoidPointer;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.expr.Expression;
@@ -46,7 +46,7 @@ public class PointerType implements MappedType {
     @Override
     public void importType(CompilationUnit cu) {
         if (isStructPointer())
-            cu.addImport(StructPointer.class);
+            cu.addImport(StackElementPointer.class);
         else if (isFloatPointer())
             cu.addImport(FloatPointer.class);
         else if (isDoublePointer())
