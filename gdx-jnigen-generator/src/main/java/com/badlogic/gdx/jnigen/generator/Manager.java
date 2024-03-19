@@ -67,11 +67,13 @@ public class Manager {
         globalType = new GlobalType(JavaUtils.javarizeName(segments[segments.length - 1].split("\\.h")[0]));
     }
 
-    public void addStackElement(StackElementType stackElementType) {
+    public void addStackElement(StackElementType stackElementType, boolean registerGlobally) {
         String name = stackElementType.abstractType();
-        if (stackElements.containsKey(name))
-            return; // TODO: 19.02.24 FIGURE OUT WHY THIS CAN HAPPEN?????
-        stackElements.put(name, stackElementType);
+        if (registerGlobally) {
+            if (stackElements.containsKey(name))
+                return; // TODO: 19.02.24 FIGURE OUT WHY THIS CAN HAPPEN?????
+            stackElements.put(name, stackElementType);
+        }
         orderedStackElements.add(stackElementType);
         orderedStackElements.sort(Comparator.comparing(StackElementType::abstractType));
     }
@@ -182,7 +184,9 @@ public class Manager {
         try {
             for (StackElementType stackElementType : stackElements.values()) {
                 CompilationUnit cu = new CompilationUnit(stackElementType.packageName());
-                stackElementType.write(cu);
+                ClassOrInterfaceDeclaration declaration = stackElementType.generateClass();
+                stackElementType.write(cu, declaration);
+                cu.addType(declaration);
 
                 String classContent = cu.toString();
 

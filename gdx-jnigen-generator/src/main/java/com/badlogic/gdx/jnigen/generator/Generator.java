@@ -38,11 +38,11 @@ public class Generator {
         }
     }
 
-    public static void registerCXType(CXType type, String alternativeName) {
+    public static void registerCXType(CXType type, String alternativeName, TypeDefinition parent) {
         if (clang_getTypeDeclaration(type).kind() == CXCursor_TypedefDecl) {
             CXType typeDef = clang_getTypedefDeclUnderlyingType(clang_getTypeDeclaration(type));
             Manager.getInstance().registerTypeDef(clang_getTypedefName(type).getString(), clang_getTypeSpelling(typeDef).getString());
-            registerCXType(typeDef, clang_getTypedefName(type).getString());
+            registerCXType(typeDef, clang_getTypedefName(type).getString(), parent);
             return;
         }
 
@@ -70,17 +70,17 @@ public class Generator {
             CXType pointee = clang_getPointeeType(type);
             if (pointee.kind() == 0)
                 return;
-            registerCXType(pointee, alternativeName);
+            registerCXType(pointee, alternativeName, parent);
             return;
         }
 
         if (type.kind() == CXType_IncompleteArray || type.kind() == CXType_ConstantArray) {
-            registerCXType(clang_getArrayElementType(type), alternativeName);
+            registerCXType(clang_getArrayElementType(type), alternativeName, parent);
             return;
         }
 
         if (typeKind == TypeKind.STACK_ELEMENT) {
-            new StackElementParser(type, alternativeName).register();
+            new StackElementParser(type, alternativeName, parent).register();
         } else if (typeKind == TypeKind.ENUM) {
             new EnumParser(type, alternativeName).register();
         }
@@ -89,13 +89,13 @@ public class Generator {
     // TODO: Pass proper parameter names
     public static FunctionSignature parseFunctionSignature(String name, CXType functionType) {
         CXType returnType = clang_getResultType(functionType);
-        registerCXType(returnType, "ret");
+        registerCXType(returnType, "ret", null);
         TypeDefinition returnDefinition = TypeDefinition.createTypeDefinition(returnType);
         int numArgs = clang_getNumArgTypes(functionType);
         NamedType[] argTypes = new NamedType[numArgs];
         for (int i = 0; i < numArgs; i++) {
             CXType argType = clang_getArgType(functionType, i);
-            registerCXType(argType, "arg" + i);
+            registerCXType(argType, "arg" + i, null);
             // TODO: To retrieve the parameter name if available, we should utilise another visitor
             //  However, I decided that I don't care for the moment
             argTypes[i] = new NamedType(TypeDefinition.createTypeDefinition(argType), "arg" + i);

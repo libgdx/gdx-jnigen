@@ -11,6 +11,7 @@ public class TypeDefinition {
     private TypeDefinition nestedDefinition;
     private boolean constMarked = false;
     private int count;
+    private boolean anonymous;
 
     public TypeDefinition(TypeKind typeKind, String typeName) {
         this.typeKind = typeKind;
@@ -40,11 +41,17 @@ public class TypeDefinition {
         return nestedDefinition;
     }
 
+    public boolean isAnonymous() {
+        return anonymous;
+    }
+
     public static TypeDefinition createTypeDefinition(CXType type) {
         String typeName = clang.clang_getTypeSpelling(type).getString();
         if (typeName.equals("_Bool"))
             typeName = "bool"; //TODO WHYYYY?????? Is it a typedef that gets resolved?
         TypeDefinition definition = new TypeDefinition(TypeKind.getTypeKind(type), typeName);
+        definition.anonymous = clang.clang_Cursor_isAnonymous(clang.clang_getTypeDeclaration(type)) != 0;
+
         if (definition.getTypeKind() == TypeKind.POINTER) {
             // TODO: 19.03.2024 DO better and merge code with logic in generator?
             while (clang.clang_getTypeDeclaration(type).kind() == clang.CXCursor_TypedefDecl) {
