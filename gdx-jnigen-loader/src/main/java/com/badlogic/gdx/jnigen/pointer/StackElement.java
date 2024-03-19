@@ -24,6 +24,11 @@ public abstract class StackElement extends Pointing {
         setValue(Double.doubleToLongBits(value), index);
     }
 
+    protected void setValue(boolean value, int index) {
+        setValue(value ? 1 : 0, index);
+    }
+
+
     protected long getValue(int index) {
         return CHandler.getStackElementField(getPointer(), getFFIType(), index, hasElementOffsets());
     }
