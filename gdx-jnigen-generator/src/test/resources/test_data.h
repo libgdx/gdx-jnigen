@@ -34,6 +34,32 @@ typedef union TestUnion
     TestStruct structType;
 } TestUnion;
 
+typedef struct AnonymousStructNoField {
+    struct {
+        int intValue;
+        float floatValue;
+    };
+    int externalValue;
+} AnonymousStructNoField;
+
+typedef struct AnonymousStructField {
+    struct {
+        int intValue;
+        float floatValue;
+    } inner;
+    int externalValue;
+} AnonymousStructField;
+
+typedef struct AnonymousStructFieldArray {
+    struct {
+        int intValue;
+        float floatValue;
+    } inner[2];
+    int externalValue;
+} AnonymousStructFieldArray;
+
+void ensureAnonymousStructParsed(AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray);
+
 // Typedefs
 typedef void (*methodWithCallback)(void);
 typedef void (*methodWithCallbackLongArg)(uint64_t);
