@@ -2,7 +2,6 @@ package com.badlogic.gdx.jnigen.generator.parser;
 
 import com.badlogic.gdx.jnigen.generator.Manager;
 import com.badlogic.gdx.jnigen.generator.types.EnumType;
-import com.badlogic.gdx.jnigen.generator.types.NamedType;
 import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
 import org.bytedeco.llvm.clang.CXClientData;
 import org.bytedeco.llvm.clang.CXCursor;
@@ -19,9 +18,12 @@ public class EnumParser {
         this.toParse = toParse;
     }
 
-    public EnumType parse() {
+    public void register() {
+        String name = clang_getTypeSpelling(toParse).getString();
         CXCursor cursor = clang_getTypeDeclaration(toParse);
+
         EnumType enumType = new EnumType(TypeDefinition.createTypeDefinition(toParse));
+
         CXCursorVisitor visitor = new CXCursorVisitor() {
             @Override
             public int call(CXCursor current, CXCursor parent, CXClientData cxClientData) {
@@ -35,9 +37,11 @@ public class EnumParser {
                 return CXChildVisit_Recurse;
             }
         };
+
         clang_visitChildren(cursor, visitor, null);
         visitor.close();
+
+        Manager.getInstance().registerCTypeMapping(name, enumType);
         Manager.getInstance().addEnum(enumType);
-        return enumType;
     }
 }
