@@ -58,7 +58,13 @@ typedef struct AnonymousStructFieldArray {
     int externalValue;
 } AnonymousStructFieldArray;
 
-void ensureAnonymousStructParsed(AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray);
+struct AnonymousClosure
+{
+    int (* someClosure)(int* t, double p);
+    float (* anotherClosure)(int t, double p);
+};
+
+void ensureAnonymousStructParsed(AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure);
 
 // Typedefs
 typedef void (*methodWithCallback)(void);

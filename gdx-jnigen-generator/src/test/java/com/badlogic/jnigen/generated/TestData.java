@@ -4,6 +4,7 @@ import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoField;
 import com.badlogic.jnigen.generated.structs.AnonymousStructField;
 import com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray;
+import com.badlogic.jnigen.generated.structs.AnonymousClosure;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.jnigen.generated.TestData.methodWithCallback;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackLongArg;
@@ -49,12 +50,12 @@ public final class TestData {
 #include <jnigen.h>
 #include <test_data.h>
 */
-    public static void ensureAnonymousStructParsed(AnonymousStructNoField arg0, AnonymousStructField arg1, AnonymousStructFieldArray arg2) {
-        ensureAnonymousStructParsed_internal(arg0.getPointer(), arg1.getPointer(), arg2.getPointer());
+    public static void ensureAnonymousStructParsed(AnonymousStructNoField arg0, AnonymousStructField arg1, AnonymousStructFieldArray arg2, AnonymousClosure arg3) {
+        ensureAnonymousStructParsed_internal(arg0.getPointer(), arg1.getPointer(), arg2.getPointer(), arg3.getPointer());
     }
 
-    static private native void ensureAnonymousStructParsed_internal(long arg0, long arg1, long arg2);/*
-    	ensureAnonymousStructParsed(*(AnonymousStructNoField*)arg0, *(AnonymousStructField*)arg1, *(AnonymousStructFieldArray*)arg2);
+    static private native void ensureAnonymousStructParsed_internal(long arg0, long arg1, long arg2, long arg3);/*
+    	ensureAnonymousStructParsed(*(AnonymousStructNoField*)arg0, *(AnonymousStructField*)arg1, *(AnonymousStructFieldArray*)arg2, *(struct AnonymousClosure*)arg3);
     */
 
     public static void call_methodWithCallback(ClosureObject<methodWithCallback> arg0) {
@@ -575,7 +576,7 @@ public final class TestData {
 
     public interface methodWithCallbackTestStructArg extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(14) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(15) };
 
         void methodWithCallbackTestStructArg_call(TestStruct arg0);
 
@@ -890,7 +891,7 @@ public final class TestData {
 
     public interface methodWithCallbackTestStructReturn extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(14) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(15) };
 
         TestStruct methodWithCallbackTestStructReturn_call();
 
