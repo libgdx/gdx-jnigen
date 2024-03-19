@@ -79,7 +79,7 @@ public class Generator {
             return;
         }
 
-        if (type.kind() == CXType_IncompleteArray) {
+        if (type.kind() == CXType_IncompleteArray || type.kind() == CXType_ConstantArray) {
             registerCXType(clang_getArrayElementType(type), typedefName);
             return;
         }
