@@ -31,16 +31,20 @@ public class StackElementType implements MappedType {
 
 
     private final TypeDefinition definition;
+    private final TypeDefinition parent;
+    private final List<TypeDefinition> children = new ArrayList<>();
+
     // TODO: Conceptionally, this belongs into TypeDefinition
     private boolean isStruct;
     private final List<NamedType> fields = new ArrayList<>();
     private final String pointerName;
     private final String javaTypeName;
 
-    public StackElementType(TypeDefinition definition, String javaTypeName, boolean isStruct) {
+    public StackElementType(TypeDefinition definition, String javaTypeName, TypeDefinition parent, boolean isStruct) {
         this.definition = definition;
         this.isStruct = isStruct;
         this.javaTypeName = javaTypeName;
+        this.parent = parent;
         pointerName = javaTypeName + "Pointer";
     }
 
@@ -48,13 +52,24 @@ public class StackElementType implements MappedType {
         fields.add(type);
     }
 
-    public void write(CompilationUnit compilationUnit) {
+    public void addChild(TypeDefinition child) {
+        children.add(child);
+    }
+
+    public ClassOrInterfaceDeclaration generateClass() {
+        NodeList<Modifier> modifiers = new NodeList<>(Modifier.publicModifier(), Modifier.finalModifier());
+        if (parent != null)
+            modifiers.add(Modifier.staticModifier());
+        return new ClassOrInterfaceDeclaration(modifiers, false, javaTypeName);
+    }
+
+    public void write(CompilationUnit compilationUnit, ClassOrInterfaceDeclaration structClass) {
         String structPointerRef = javaTypeName + "." + pointerName;
 
         compilationUnit.addImport(CHandler.class);
         compilationUnit.addImport(isStruct ? Struct.class : Union.class);
         compilationUnit.addImport(StackElementPointer.class);
-        ClassOrInterfaceDeclaration structClass = compilationUnit.addClass(javaTypeName, Keyword.PUBLIC, Keyword.FINAL);
+
         structClass.addExtendedType(isStruct ? Struct.class : Union.class);
         structClass.addField(int.class, "__size", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
         structClass.addField(long.class, "__ffi_type", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
@@ -181,6 +196,15 @@ public class StackElementType implements MappedType {
                 .addParameter(long.class, "ptr")
                 .addParameter(boolean.class, "freeOnGC")
                 .createBody().addStatement("return new " + javaTypeName + "(ptr, freeOnGC);");
+
+
+        // Children
+        children.forEach(child -> {
+            StackElementType childStackElement = (StackElementType)child.getMappedType();
+            ClassOrInterfaceDeclaration declaration = childStackElement.generateClass();
+            childStackElement.write(compilationUnit, declaration);
+            structClass.addMember(declaration);
+        });
     }
 
     public String getFFITypeBody(String ffiResolveFunctionName) {
@@ -246,6 +270,8 @@ public class StackElementType implements MappedType {
 
     @Override
     public String classFile() {
+        if (parent != null)
+            return parent.getMappedType().classFile() + "." + javaTypeName;
         return packageName() + "." + javaTypeName;
     }
 
@@ -282,6 +308,7 @@ public class StackElementType implements MappedType {
 
     @Override
     public int typeID() {
+        // TODO: 19.03.2024 If parent set, no ID should be needed and no ID specific FFI Type should get generated
         return Manager.getInstance().getStackElementID(this);
     }
 
