@@ -13,7 +13,7 @@ public final class AnonymousStructFieldArray extends Struct {
     private final static long __ffi_type;
 
     static {
-        __ffi_type = FFITypes.getCTypeInfo(11).getFfiType();
+        __ffi_type = FFITypes.getCTypeInfo(12).getFfiType();
         __size = CHandler.getSizeFromFFIType(__ffi_type);
     }
 
