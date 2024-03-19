@@ -30,9 +30,9 @@ public class EnumType implements MappedType {
     private final HashMap<Integer, String> constants = new HashMap<>();
     private int highestConstantID = 0;
 
-    public EnumType(TypeDefinition definition) {
+    public EnumType(TypeDefinition definition, String javaName) {
         this.definition = definition;
-        this.javaName = definition.getTypeName().replace("enum ", "");
+        this.javaName = javaName;
     }
 
     public void registerConstant(String constantName, int index) {

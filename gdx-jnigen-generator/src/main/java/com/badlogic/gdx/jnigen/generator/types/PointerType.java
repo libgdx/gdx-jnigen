@@ -50,7 +50,7 @@ public class PointerType implements MappedType {
         else if (isFloatPointer())
             cu.addImport(FloatPointer.class);
         else if (isDoublePointer())
-            cu.addImport(FloatPointer.class);
+            cu.addImport(DoublePointer.class);
         else if (isIntPointer())
             cu.addImport(CSizedIntPointer.class);
         else if (isVoidPointer())

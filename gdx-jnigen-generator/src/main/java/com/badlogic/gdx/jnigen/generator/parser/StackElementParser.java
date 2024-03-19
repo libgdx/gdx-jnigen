@@ -1,6 +1,7 @@
 package com.badlogic.gdx.jnigen.generator.parser;
 
 import com.badlogic.gdx.jnigen.generator.Generator;
+import com.badlogic.gdx.jnigen.generator.JavaUtils;
 import com.badlogic.gdx.jnigen.generator.Manager;
 import com.badlogic.gdx.jnigen.generator.types.NamedType;
 import com.badlogic.gdx.jnigen.generator.types.StackElementType;
@@ -15,16 +16,19 @@ import static org.bytedeco.llvm.global.clang.*;
 public class StackElementParser {
 
     private final CXType toParse;
+    private final String alternativeName;
 
-    public StackElementParser(CXType toParse) {
+    public StackElementParser(CXType toParse, String alternativeName) {
         this.toParse = toParse;
+        this.alternativeName = alternativeName;
     }
 
     public void register() {
         String name = clang_getTypeSpelling(toParse).getString();
+        String javaName = clang_Cursor_isAnonymous(clang_getTypeDeclaration(toParse)) == 0 ? JavaUtils.cNameToJavaTypeName(name) : alternativeName;
         CXCursor cursor = clang_getTypeDeclaration(toParse);
 
-        StackElementType stackElementType = new StackElementType(TypeDefinition.createTypeDefinition(toParse), cursor.kind() == CXCursor_StructDecl);
+        StackElementType stackElementType = new StackElementType(TypeDefinition.createTypeDefinition(toParse), javaName, cursor.kind() == CXCursor_StructDecl);
         Manager.getInstance().registerCTypeMapping(name, stackElementType);
         Manager.getInstance().addStackElement(stackElementType);
 
@@ -34,8 +38,8 @@ public class StackElementParser {
                 String cursorSpelling = clang_getCursorSpelling(current).getString();
                 if (current.kind() == CXCursor_FieldDecl) {
                     CXType type = clang_getCursorType(current);
-                    if (clang_Cursor_isAnonymous(clang_getTypeDeclaration(type)) != 0) System.out.println("ANONYM");
-                    Generator.registerCXType(type);
+                    Generator.registerCXType(type, cursorSpelling);
+
                     NamedType namedType = new NamedType(TypeDefinition.createTypeDefinition(type), cursorSpelling);
                     stackElementType.addField(namedType);
                 }
