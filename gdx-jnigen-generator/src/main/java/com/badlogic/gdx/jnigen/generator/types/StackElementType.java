@@ -27,7 +27,7 @@ import com.github.javaparser.ast.type.PrimitiveType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StackElementType implements MappedType {
+public class StackElementType implements MappedType, WritableClass {
 
 
     private final TypeDefinition definition;
@@ -56,6 +56,7 @@ public class StackElementType implements MappedType {
         children.add(child);
     }
 
+    @Override
     public ClassOrInterfaceDeclaration generateClass() {
         NodeList<Modifier> modifiers = new NodeList<>(Modifier.publicModifier(), Modifier.finalModifier());
         if (parent != null)
@@ -63,6 +64,7 @@ public class StackElementType implements MappedType {
         return new ClassOrInterfaceDeclaration(modifiers, false, javaTypeName);
     }
 
+    @Override
     public void write(CompilationUnit compilationUnit, ClassOrInterfaceDeclaration structClass) {
         String structPointerRef = javaTypeName + "." + pointerName;
 
@@ -200,7 +202,7 @@ public class StackElementType implements MappedType {
 
         // Children
         children.forEach(child -> {
-            StackElementType childStackElement = (StackElementType)child.getMappedType();
+            WritableClass childStackElement = (WritableClass)child.getMappedType();
             ClassOrInterfaceDeclaration declaration = childStackElement.generateClass();
             childStackElement.write(compilationUnit, declaration);
             structClass.addMember(declaration);

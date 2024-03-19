@@ -26,6 +26,9 @@ public class TypeDefinition {
     }
 
     public TypeKind getTypeKind() {
+        // TODO: 19.03.24 Hacky and shitty
+        if (nestedDefinition != null && nestedDefinition.typeKind == TypeKind.CLOSURE)
+            return TypeKind.CLOSURE;
         return typeKind;
     }
 

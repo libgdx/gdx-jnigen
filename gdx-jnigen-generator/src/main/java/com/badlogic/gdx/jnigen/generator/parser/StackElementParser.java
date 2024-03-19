@@ -3,9 +3,11 @@ package com.badlogic.gdx.jnigen.generator.parser;
 import com.badlogic.gdx.jnigen.generator.Generator;
 import com.badlogic.gdx.jnigen.generator.JavaUtils;
 import com.badlogic.gdx.jnigen.generator.Manager;
+import com.badlogic.gdx.jnigen.generator.types.ClosureType;
 import com.badlogic.gdx.jnigen.generator.types.NamedType;
 import com.badlogic.gdx.jnigen.generator.types.StackElementType;
 import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
+import com.badlogic.gdx.jnigen.generator.types.TypeKind;
 import org.bytedeco.llvm.clang.CXClientData;
 import org.bytedeco.llvm.clang.CXCursor;
 import org.bytedeco.llvm.clang.CXCursorVisitor;
@@ -47,11 +49,14 @@ public class StackElementParser {
                 if (current.kind() == CXCursor_FieldDecl) {
                     CXType type = clang_getCursorType(current);
                     TypeDefinition fieldDefinition = TypeDefinition.createTypeDefinition(type);
-                    Generator.registerCXType(type, cursorSpelling, fieldDefinition.isAnonymous() ? definition : null);
+                    boolean isClosure = fieldDefinition.getTypeKind() == TypeKind.CLOSURE;
+                    Generator.registerCXType(type, cursorSpelling, fieldDefinition.isAnonymous() || isClosure ? definition : null);
 
                     NamedType namedType = new NamedType(TypeDefinition.createTypeDefinition(type), cursorSpelling);
                     stackElementType.addField(namedType);
-                    if (fieldDefinition.isAnonymous())
+                    // TODO: 19.03.24 THis is very bad way to determine whether a closure is parentless
+                    if (fieldDefinition.isAnonymous() || (isClosure && !Manager.getInstance().getGlobalType().hasClosure(
+                            (ClosureType)fieldDefinition.getMappedType())))
                         stackElementType.addChild(namedType.getDefinition());
                 }
 
