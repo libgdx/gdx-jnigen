@@ -30,13 +30,6 @@ public class GlobalType implements MappedType {
         closures.put(closureType.getName(), closureType);
     }
 
-    public ClosureType getClosure(String name) {
-        if (!closures.containsKey(name))
-            throw new IllegalArgumentException("Closure with name: " + name + " does not exists.");
-
-        return closures.get(name);
-    }
-
     public void addFunction(FunctionType functionType) {
         functions.add(functionType);
     }
