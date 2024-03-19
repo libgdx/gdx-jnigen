@@ -5,6 +5,7 @@ import com.badlogic.gdx.jnigen.generator.parser.StackElementParser;
 import com.badlogic.gdx.jnigen.generator.types.ClosureType;
 import com.badlogic.gdx.jnigen.generator.types.FunctionSignature;
 import com.badlogic.gdx.jnigen.generator.types.FunctionType;
+import com.badlogic.gdx.jnigen.generator.types.MappedType;
 import com.badlogic.gdx.jnigen.generator.types.NamedType;
 import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
 import com.badlogic.gdx.jnigen.generator.types.TypeKind;
@@ -42,7 +43,8 @@ public class Generator {
         if (clang_getTypeDeclaration(type).kind() == CXCursor_TypedefDecl) {
             CXType typeDef = clang_getTypedefDeclUnderlyingType(clang_getTypeDeclaration(type));
             Manager.getInstance().registerTypeDef(clang_getTypedefName(type).getString(), clang_getTypeSpelling(typeDef).getString());
-            registerCXType(typeDef, clang_getTypedefName(type).getString(), parent);
+            // TODO: 19.03.24 A typedef unsets a parent, because an anonymous declaration can't be typedefed I think
+            registerCXType(typeDef, clang_getTypedefName(type).getString(), null);
             return;
         }
 
@@ -56,8 +58,17 @@ public class Generator {
             if (Manager.getInstance().hasCTypeMapping(name))
                 return;
 
-            ClosureType closureType = new ClosureType(parseFunctionSignature(alternativeName, type));
-            Manager.getInstance().addClosure(closureType);
+            MappedType parentMappedType = parent == null ? Manager.getInstance().getGlobalType() : parent.getMappedType();
+            FunctionSignature functionSignature = parseFunctionSignature(alternativeName, type);
+
+            // TODO: 19.03.24 Solve better, something like "lockMapping" idk
+            if (Manager.getInstance().hasCTypeMapping(name)) // function -> closure -> struct -> same closure
+                return;
+
+            ClosureType closureType = new ClosureType(functionSignature, parentMappedType);
+            if (parent == null)
+                Manager.getInstance().addClosure(closureType);
+
             Manager.getInstance().registerCTypeMapping(name, closureType);
             return;
         }
