@@ -2,10 +2,8 @@ package com.badlogic.gdx.jnigen.generator;
 
 public class JavaUtils {
 
-    public static String functionSignatureToName(String func) {
-        return func
-                .replace("(", "").replace(")", "").replace(", ", "-")
-                .replace(" *", "Pointer").replace(" ", "_");
+    public static String cNameToJavaTypeName(String name) {
+        return name.replace("struct ", "").replace("union ", "").replace("enum ", "");
     }
 
     public static String capitalize(String toCapitalize) {

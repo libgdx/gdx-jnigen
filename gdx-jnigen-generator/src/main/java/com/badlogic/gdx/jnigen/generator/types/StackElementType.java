@@ -37,10 +37,10 @@ public class StackElementType implements MappedType {
     private final String pointerName;
     private final String javaTypeName;
 
-    public StackElementType(TypeDefinition definition, boolean isStruct) {
+    public StackElementType(TypeDefinition definition, String javaTypeName, boolean isStruct) {
         this.definition = definition;
         this.isStruct = isStruct;
-        this.javaTypeName = definition.getTypeName().replace("struct ", "").replace("union ", "");
+        this.javaTypeName = javaTypeName;
         pointerName = javaTypeName + "Pointer";
     }
 

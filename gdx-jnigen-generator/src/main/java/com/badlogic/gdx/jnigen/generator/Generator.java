@@ -38,11 +38,7 @@ public class Generator {
         }
     }
 
-    public static void registerCXType(CXType type) {
-        registerCXType(type, null);
-    }
-
-    public static void registerCXType(CXType type, String typedefName) {
+    public static void registerCXType(CXType type, String alternativeName) {
         if (clang_getTypeDeclaration(type).kind() == CXCursor_TypedefDecl) {
             CXType typeDef = clang_getTypedefDeclUnderlyingType(clang_getTypeDeclaration(type));
             Manager.getInstance().registerTypeDef(clang_getTypedefName(type).getString(), clang_getTypeSpelling(typeDef).getString());
@@ -54,13 +50,15 @@ public class Generator {
 
         String name = clang_getTypeSpelling(type).getString();
         if (typeKind == TypeKind.CLOSURE) {
-            if (typedefName == null) {
-                typedefName = JavaUtils.functionSignatureToName(name);
-            }
-            if (Manager.getInstance().hasCTypeMapping(typedefName))
+            if (alternativeName == null)
+                throw new IllegalArgumentException();
+
+            if (Manager.getInstance().hasCTypeMapping(name))
                 return;
-            ClosureType closureType = new ClosureType(parseFunctionSignature(typedefName, type));
+
+            ClosureType closureType = new ClosureType(parseFunctionSignature(alternativeName, type));
             Manager.getInstance().addClosure(closureType);
+            Manager.getInstance().registerCTypeMapping(name, closureType);
             return;
         }
 
@@ -72,31 +70,32 @@ public class Generator {
             CXType pointee = clang_getPointeeType(type);
             if (pointee.kind() == 0)
                 return;
-            registerCXType(pointee, typedefName);
+            registerCXType(pointee, alternativeName);
             return;
         }
 
         if (type.kind() == CXType_IncompleteArray || type.kind() == CXType_ConstantArray) {
-            registerCXType(clang_getArrayElementType(type), typedefName);
+            registerCXType(clang_getArrayElementType(type), alternativeName);
             return;
         }
 
         if (typeKind == TypeKind.STACK_ELEMENT) {
-            new StackElementParser(type).register();
+            new StackElementParser(type, alternativeName).register();
         } else if (typeKind == TypeKind.ENUM) {
-            new EnumParser(type).register();
+            new EnumParser(type, alternativeName).register();
         }
     }
 
+    // TODO: Pass proper parameter names
     public static FunctionSignature parseFunctionSignature(String name, CXType functionType) {
         CXType returnType = clang_getResultType(functionType);
-        registerCXType(returnType);
+        registerCXType(returnType, "ret");
         TypeDefinition returnDefinition = TypeDefinition.createTypeDefinition(returnType);
         int numArgs = clang_getNumArgTypes(functionType);
         NamedType[] argTypes = new NamedType[numArgs];
         for (int i = 0; i < numArgs; i++) {
             CXType argType = clang_getArgType(functionType, i);
-            registerCXType(argType);
+            registerCXType(argType, "arg" + i);
             // TODO: To retrieve the parameter name if available, we should utilise another visitor
             //  However, I decided that I don't care for the moment
             argTypes[i] = new NamedType(TypeDefinition.createTypeDefinition(argType), "arg" + i);
