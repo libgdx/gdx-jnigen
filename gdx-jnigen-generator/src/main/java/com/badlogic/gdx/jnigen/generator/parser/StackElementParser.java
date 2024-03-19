@@ -17,20 +17,28 @@ public class StackElementParser {
 
     private final CXType toParse;
     private final String alternativeName;
+    private final TypeDefinition parent;
 
-    public StackElementParser(CXType toParse, String alternativeName) {
+    public StackElementParser(CXType toParse, String alternativeName, TypeDefinition parent) {
         this.toParse = toParse;
         this.alternativeName = alternativeName;
+        this.parent = parent;
     }
 
     public void register() {
         String name = clang_getTypeSpelling(toParse).getString();
-        String javaName = clang_Cursor_isAnonymous(clang_getTypeDeclaration(toParse)) == 0 ? JavaUtils.cNameToJavaTypeName(name) : alternativeName;
         CXCursor cursor = clang_getTypeDeclaration(toParse);
+        TypeDefinition definition = TypeDefinition.createTypeDefinition(toParse);
+        String javaName;
+        if (!definition.isAnonymous()) {
+            javaName = JavaUtils.cNameToJavaTypeName(name);
+        } else {
+            javaName = alternativeName;
+        }
 
-        StackElementType stackElementType = new StackElementType(TypeDefinition.createTypeDefinition(toParse), javaName, cursor.kind() == CXCursor_StructDecl);
+        StackElementType stackElementType = new StackElementType(definition, javaName, parent, cursor.kind() == CXCursor_StructDecl);
         Manager.getInstance().registerCTypeMapping(name, stackElementType);
-        Manager.getInstance().addStackElement(stackElementType);
+        Manager.getInstance().addStackElement(stackElementType, parent == null);
 
         CXCursorVisitor visitor = new CXCursorVisitor() {
             @Override
@@ -38,10 +46,13 @@ public class StackElementParser {
                 String cursorSpelling = clang_getCursorSpelling(current).getString();
                 if (current.kind() == CXCursor_FieldDecl) {
                     CXType type = clang_getCursorType(current);
-                    Generator.registerCXType(type, cursorSpelling);
+                    TypeDefinition fieldDefinition = TypeDefinition.createTypeDefinition(type);
+                    Generator.registerCXType(type, cursorSpelling, fieldDefinition.isAnonymous() ? definition : null);
 
                     NamedType namedType = new NamedType(TypeDefinition.createTypeDefinition(type), cursorSpelling);
                     stackElementType.addField(namedType);
+                    if (fieldDefinition.isAnonymous())
+                        stackElementType.addChild(namedType.getDefinition());
                 }
 
                 return CXChildVisit_Continue;
