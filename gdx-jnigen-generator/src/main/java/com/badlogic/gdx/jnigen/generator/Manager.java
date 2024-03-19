@@ -28,6 +28,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -65,49 +67,30 @@ public class Manager {
         globalType = new GlobalType(JavaUtils.javarizeName(segments[segments.length - 1].split("\\.h")[0]));
     }
 
-    public void startStackElement(TypeDefinition definition, boolean isStruct) {
-        String name = definition.getTypeName();
+    public void addStackElement(StackElementType stackElementType) {
+        String name = stackElementType.abstractType();
         if (stackElements.containsKey(name))
             return; // TODO: 19.02.24 FIGURE OUT WHY THIS CAN HAPPEN?????
-        StackElementType stackElementType = new StackElementType(definition, isStruct);
         stackElements.put(name, stackElementType);
         orderedStackElements.add(stackElementType);
-        registerCTypeMapping(name, stackElementType);
-    }
-
-    public void putStackElementField(String structName, NamedType type) {
-        if (!stackElements.containsKey(structName))
-            throw new IllegalArgumentException("Struct with name: " + structName + " does not exists.");
-        StackElementType struct = stackElements.get(structName);
-        struct.addField(type);
+        orderedStackElements.sort(Comparator.comparing(StackElementType::abstractType));
     }
 
     public int getStackElementID(StackElementType stackElementType) {
         return orderedStackElements.indexOf(stackElementType) + knownCTypes.size();
     }
 
-    public void startEnum(TypeDefinition definition) {
-        String name = definition.getTypeName();
+    public void addEnum(EnumType enumType) {
+        String name = enumType.abstractType();
         if (enums.containsKey(name))
             throw new IllegalArgumentException("Enum with name: " + name + " already exists.");
-        EnumType enumType = new EnumType(definition);
         enums.put(name, enumType);
-        registerCTypeMapping(name, enumType);
-    }
-
-    public void addEnumConstant(String enumName, String constantName, int index) {
-        if (!enums.containsKey(enumName))
-            throw new IllegalArgumentException("Enum with name: " + enumName + " does not exist.");
-        enums.get(enumName).registerConstant(constantName, index);
-    }
-
-    public ClosureType getClosure(String closureType) {
-        return globalType.getClosure(closureType);
     }
 
     public void recordCType(String name) {
         if (!knownCTypes.contains(name))
             knownCTypes.add(name);
+        knownCTypes.sort(Comparator.naturalOrder());
     }
 
     public int getCTypeID(String name) {
@@ -142,8 +125,7 @@ public class Manager {
 
     public void addClosure(ClosureType closureType) {
         globalType.addClosure(closureType);
-        registerCTypeMapping(closureType.getName(), closureType);
-        registerCTypeMapping(closureType.getName() + " *", closureType); // TODO: Make better
+        Manager.getInstance().registerCTypeMapping(closureType.getName(), closureType);
     }
 
     public void registerTypeDef(String typedef, String name) {

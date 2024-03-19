@@ -20,7 +20,7 @@ public enum TypeKind {
     DOUBLE(8, true, CXType_Double, CXType_LongDouble),
     POINTER(8, false, CXType_Pointer, CXType_IncompleteArray),
     STACK_ELEMENT(-1, false, CXType_Record),
-    CLOSURE(8, false, CXType_FunctionProto),
+    CLOSURE(-1, false, CXType_FunctionProto, CXType_FunctionNoProto),
     ENUM(4, true, CXType_Enum),
     FIXED_SIZE_ARRAY(-1, false, CXType_ConstantArray);
 
@@ -39,9 +39,7 @@ public enum TypeKind {
     public static TypeKind getTypeKind(CXType type) {
         type = clang_getCanonicalType(type);
         int kind = type.kind();
-        if (kind == CXType_Pointer && clang_getPointeeType(type).kind() == CXType_FunctionProto) {
-            return CLOSURE;
-        }
+
         long size = clang_Type_getSizeOf(type);
         for (TypeKind typeKind : CACHE) {
             for (int k : typeKind.getKinds()) {
