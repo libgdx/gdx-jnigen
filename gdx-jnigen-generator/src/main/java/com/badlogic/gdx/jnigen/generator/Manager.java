@@ -125,8 +125,6 @@ public class Manager {
 
     public void addClosure(ClosureType closureType) {
         globalType.addClosure(closureType);
-        Manager.getInstance().registerCTypeMapping(closureType.getName(), closureType);
-        Manager.getInstance().registerCTypeMapping(closureType.getName() + " *", closureType); // TODO: SOlve closure parsing better
     }
 
     public void registerTypeDef(String typedef, String name) {
