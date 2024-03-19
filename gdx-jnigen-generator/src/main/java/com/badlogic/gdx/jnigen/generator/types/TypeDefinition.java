@@ -46,12 +46,15 @@ public class TypeDefinition {
             typeName = "bool"; //TODO WHYYYY?????? Is it a typedef that gets resolved?
         TypeDefinition definition = new TypeDefinition(TypeKind.getTypeKind(type), typeName);
         if (definition.getTypeKind() == TypeKind.POINTER) {
-            CXType pointee = clang.clang_getPointeeType(type);
+            CXType pointee = clang.clang_getPointeeType(clang.clang_getCanonicalType(type));
             if (pointee.kind() == 0) {
                 definition.nestedDefinition = new TypeDefinition(TypeKind.VOID, "void");
             } else {
                 definition.nestedDefinition = createTypeDefinition(pointee);
             }
+            // TODO: 19.03.2024 Make better
+            if (definition.nestedDefinition.typeKind == TypeKind.CLOSURE)
+                return new TypeDefinition(TypeKind.CLOSURE, typeName); // TODO: WROOONG, but atm I do not care
         } else if (definition.getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
             definition.count = (int)clang.clang_getArraySize(type);
             definition.nestedDefinition = createTypeDefinition(clang.clang_getArrayElementType(type));
