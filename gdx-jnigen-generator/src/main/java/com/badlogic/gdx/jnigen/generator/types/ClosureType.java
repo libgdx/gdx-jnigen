@@ -21,31 +21,37 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 
 import java.util.Arrays;
 
-public class ClosureType implements MappedType {
+public class ClosureType implements MappedType, WritableClass {
 
     private final FunctionSignature signature;
+    private final MappedType parent;
 
-    public ClosureType(FunctionSignature signature) {
+    public ClosureType(FunctionSignature signature, MappedType parent) {
         this.signature = signature;
+        this.parent = parent;
     }
 
-    public void write(CompilationUnit cu, ClassOrInterfaceDeclaration wrappingClass) {
+    @Override
+    public ClassOrInterfaceDeclaration generateClass() {
+        return new ClassOrInterfaceDeclaration()
+                .setInterface(true)
+                .addExtendedType(Closure.class)
+                .setModifier(Keyword.PUBLIC, true)
+                .setName(signature.getName());
+    }
+
+    @Override
+    public void write(CompilationUnit cu, ClassOrInterfaceDeclaration closureClass) {
         String name = signature.getName();
         TypeDefinition returnType = signature.getReturnType();
         NamedType[] arguments = signature.getArguments();
         if (!returnType.getMappedType().isLibFFIConvertible() || !Arrays.stream(arguments).map(namedType -> namedType.getDefinition().getMappedType()).allMatch(MappedType::isLibFFIConvertible)) {
-            System.err.println("Unions are not allowed to be passed via stack from/to a closure, failing closure: " + name);
-            return;
+            throw new IllegalArgumentException("Unions are not allowed to be passed via stack from/to a closure, failing closure: " + name);
         }
 
         cu.addImport(Closure.class);
         cu.addImport(JavaTypeWrapper.class);
         cu.addImport(CTypeInfo.class);
-        ClassOrInterfaceDeclaration closureClass = new ClassOrInterfaceDeclaration()
-                .setInterface(true)
-                .addExtendedType(Closure.class)
-                .setModifier(Keyword.PUBLIC, true)
-                .setName(name);
 
         NodeList<Expression> arrayInitializerExpr = new NodeList<>();
         ArrayCreationExpr arrayCreationExpr = new ArrayCreationExpr();
@@ -103,9 +109,6 @@ public class ClosureType implements MappedType {
         }
 
         invokeMethod.setBody(invokeBody);
-
-
-        wrappingClass.addMember(closureClass);
     }
 
     public String getName() {
@@ -130,12 +133,12 @@ public class ClosureType implements MappedType {
 
     @Override
     public String classFile() {
-        return Manager.getInstance().getGlobalType().classFile();
+        return parent.classFile();
     }
 
     @Override
     public String packageName() {
-        return Manager.getInstance().getBasePackage();
+        return parent.packageName();
     }
 
     @Override

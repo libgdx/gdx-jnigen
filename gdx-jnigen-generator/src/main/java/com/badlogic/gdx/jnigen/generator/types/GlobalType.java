@@ -30,6 +30,10 @@ public class GlobalType implements MappedType {
         closures.put(closureType.getName(), closureType);
     }
 
+    public boolean hasClosure(ClosureType closureType) {
+        return closures.containsValue(closureType);
+    }
+
     public void addFunction(FunctionType functionType) {
         functions.add(functionType);
     }
@@ -44,12 +48,10 @@ public class GlobalType implements MappedType {
         }
 
         for (ClosureType closureType : closures.values()) {
-            closureType.write(cu, global);
+            ClassOrInterfaceDeclaration declaration = closureType.generateClass();
+            closureType.write(cu, declaration);
+            global.addMember(declaration);
         }
-    }
-
-    public String getGlobalName() {
-        return globalName;
     }
 
     @Override
