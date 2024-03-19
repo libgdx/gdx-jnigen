@@ -5,9 +5,7 @@ import com.badlogic.gdx.jnigen.generator.parser.StackElementParser;
 import com.badlogic.gdx.jnigen.generator.types.ClosureType;
 import com.badlogic.gdx.jnigen.generator.types.FunctionSignature;
 import com.badlogic.gdx.jnigen.generator.types.FunctionType;
-import com.badlogic.gdx.jnigen.generator.types.MappedType;
 import com.badlogic.gdx.jnigen.generator.types.NamedType;
-import com.badlogic.gdx.jnigen.generator.types.PrimitiveType;
 import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
 import com.badlogic.gdx.jnigen.generator.types.TypeKind;
 import org.bytedeco.javacpp.BytePointer;
@@ -25,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Objects;
 
 import static org.bytedeco.llvm.global.clang.*;
 
@@ -85,9 +82,9 @@ public class Generator {
         }
 
         if (typeKind == TypeKind.STACK_ELEMENT) {
-            Manager.getInstance().registerCTypeMapping(name, new StackElementParser(type).parse());
+            new StackElementParser(type).register();
         } else if (typeKind == TypeKind.ENUM) {
-            Manager.getInstance().registerCTypeMapping(name, new EnumParser(type).parse());
+            new EnumParser(type).register();
         }
     }
 
