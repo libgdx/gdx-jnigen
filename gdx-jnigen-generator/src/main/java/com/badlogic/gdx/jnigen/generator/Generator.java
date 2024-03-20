@@ -43,6 +43,20 @@ public class Generator {
     }
 
     public static TypeDefinition registerCXType(CXType type, String alternativeName, MappedType parent) {
+        TypeKind typeKind = TypeKind.getTypeKind(type);
+        String name = clang_getTypeSpelling(type).getString();
+        if (name.equals("_Bool"))
+            name = "bool"; //TODO WHYYYY?????? Is it a typedef that gets resolved?
+
+        // We need to do this early, because numbers may be typedefed depending on the platform.
+        // To properly resolve this, we need to generate the CTypeInfo for the "highest" declaration.
+        if (!typeKind.isSpecial()) {
+            TypeDefinition typeDefinition = new TypeDefinition(typeKind, name);
+            MappedType mappedType = PrimitiveType.fromTypeDefinition(typeDefinition);
+            typeDefinition.setOverrideMappedType(mappedType);
+            return typeDefinition;
+        }
+
         if (clang_getTypeDeclaration(type).kind() == CXCursor_TypedefDecl) {
             CXType typeDef = clang_getTypedefDeclUnderlyingType(clang_getTypeDeclaration(type));
             Manager.getInstance().registerTypeDef(clang_getTypedefName(type).getString(), clang_getTypeSpelling(typeDef).getString());
@@ -53,12 +67,6 @@ public class Generator {
             definition.setOverrideMappedType(lower.getMappedType());
             return definition;
         }
-
-        TypeKind typeKind = TypeKind.getTypeKind(type);
-
-        String name = clang_getTypeSpelling(type).getString();
-        if (name.equals("_Bool"))
-            name = "bool"; //TODO WHYYYY?????? Is it a typedef that gets resolved?
 
         if (typeKind == TypeKind.CLOSURE) {
             if (alternativeName == null)
@@ -140,11 +148,6 @@ public class Generator {
             Manager.getInstance().registerCTypeMapping(name, typeDefinition);
 
             typeDefinition.setOverrideMappedType(new EnumParser(typeDefinition, type, alternativeName).register());
-            return typeDefinition;
-        } else if (!typeKind.isSpecial()) {
-            TypeDefinition typeDefinition = new TypeDefinition(typeKind, name);
-            MappedType mappedType = PrimitiveType.fromTypeDefinition(typeDefinition);
-            typeDefinition.setOverrideMappedType(mappedType);
             return typeDefinition;
         }
 
