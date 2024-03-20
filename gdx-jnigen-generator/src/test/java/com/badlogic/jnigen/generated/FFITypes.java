@@ -47,14 +47,6 @@ switch(id) {
 	case 9:
 		return GET_FFI_TYPE(uint8_t);
 	case 10:
-		return GET_FFI_TYPE(unsigned char);
-	case 11:
-		return GET_FFI_TYPE(unsigned int);
-	case 12:
-		return GET_FFI_TYPE(unsigned long long);
-	case 13:
-		return GET_FFI_TYPE(unsigned short);
-	case 14:
 	{
 		ffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));
 		type->type = FFI_TYPE_STRUCT;
@@ -65,30 +57,30 @@ switch(id) {
 		calculateAlignmentAndOffset(type, true);
 		return type;
 	}
-	case 15:
+	case 11:
 	{
 		ffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));
 		type->type = FFI_TYPE_STRUCT;
 		type->elements = (ffi_type**)malloc(sizeof(ffi_type*) * 3);
-		type->elements[0] = getFFIType(21);
+		type->elements[0] = getFFIType(17);
 		type->elements[1] = GET_FFI_TYPE(int);
 		type->elements[2] = NULL;
 		calculateAlignmentAndOffset(type, true);
 		return type;
 	}
-	case 16:
+	case 12:
 	{
 		ffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));
 		type->type = FFI_TYPE_STRUCT;
 		type->elements = (ffi_type**)malloc(sizeof(ffi_type*) * 4);
-		type->elements[0] = getFFIType(22);
-		type->elements[1] = getFFIType(22);
+		type->elements[0] = getFFIType(18);
+		type->elements[1] = getFFIType(18);
 		type->elements[2] = GET_FFI_TYPE(int);
 		type->elements[3] = NULL;
 		calculateAlignmentAndOffset(type, true);
 		return type;
 	}
-	case 17:
+	case 13:
 	{
 		ffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));
 		type->type = FFI_TYPE_STRUCT;
@@ -98,7 +90,7 @@ switch(id) {
 		calculateAlignmentAndOffset(type, true);
 		return type;
 	}
-	case 18:
+	case 14:
 	{
 		ffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));
 		type->type = FFI_TYPE_STRUCT;
@@ -114,7 +106,7 @@ switch(id) {
 		calculateAlignmentAndOffset(type, true);
 		return type;
 	}
-	case 19:
+	case 15:
 	{
 		ffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));
 		type->type = FFI_TYPE_STRUCT;
@@ -127,7 +119,7 @@ switch(id) {
 		calculateAlignmentAndOffset(type, true);
 		return type;
 	}
-	case 20:
+	case 16:
 	{
 		ffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));
 		type->type = FFI_TYPE_STRUCT;
@@ -137,12 +129,12 @@ switch(id) {
 		type->elements[2] = GET_FFI_TYPE(int);
 		type->elements[3] = GET_FFI_TYPE(int);
 		type->elements[4] = GET_FFI_TYPE(int);
-		type->elements[5] = getFFIType(19);
+		type->elements[5] = getFFIType(15);
 		type->elements[6] = NULL;
 		calculateAlignmentAndOffset(type, false);
 		return type;
 	}
-	case 21:
+	case 17:
 	{
 		ffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));
 		type->type = FFI_TYPE_STRUCT;
@@ -153,7 +145,7 @@ switch(id) {
 		calculateAlignmentAndOffset(type, true);
 		return type;
 	}
-	case 22:
+	case 18:
 	{
 		ffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));
 		type->type = FFI_TYPE_STRUCT;
@@ -196,22 +188,14 @@ switch(id) {
         CHandler.registerCType(ffiIdMap.get(8));
         ffiIdMap.put(9, CHandler.constructCTypeFromFFIType("uint8_t", getFFITypeNative(9)));
         CHandler.registerCType(ffiIdMap.get(9));
-        ffiIdMap.put(10, CHandler.constructCTypeFromFFIType("unsigned char", getFFITypeNative(10)));
-        CHandler.registerCType(ffiIdMap.get(10));
-        ffiIdMap.put(11, CHandler.constructCTypeFromFFIType("unsigned int", getFFITypeNative(11)));
-        CHandler.registerCType(ffiIdMap.get(11));
-        ffiIdMap.put(12, CHandler.constructCTypeFromFFIType("unsigned long long", getFFITypeNative(12)));
-        CHandler.registerCType(ffiIdMap.get(12));
-        ffiIdMap.put(13, CHandler.constructCTypeFromFFIType("unsigned short", getFFITypeNative(13)));
-        CHandler.registerCType(ffiIdMap.get(13));
+        ffiIdMap.put(10, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(10), true));
+        ffiIdMap.put(11, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(11), true));
+        ffiIdMap.put(12, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(12), true));
+        ffiIdMap.put(13, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(13), true));
         ffiIdMap.put(14, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(14), true));
         ffiIdMap.put(15, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(15), true));
-        ffiIdMap.put(16, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(16), true));
+        ffiIdMap.put(16, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(16), false));
         ffiIdMap.put(17, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(17), true));
         ffiIdMap.put(18, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(18), true));
-        ffiIdMap.put(19, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(19), true));
-        ffiIdMap.put(20, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(20), false));
-        ffiIdMap.put(21, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(21), true));
-        ffiIdMap.put(22, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(22), true));
     }
 }
