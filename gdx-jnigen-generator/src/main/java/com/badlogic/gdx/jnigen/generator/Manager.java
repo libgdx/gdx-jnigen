@@ -14,11 +14,14 @@ import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.comments.BlockComment;
+import com.github.javaparser.ast.expr.DoubleLiteralExpr;
+import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.printer.configuration.DefaultConfigurationOption;
 import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration;
 import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration.ConfigOption;
 
+import javax.lang.model.SourceVersion;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -26,7 +29,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,6 +57,8 @@ public class Manager {
     private final HashMap<String, TypeDefinition> cTypeToJavaStringMapper = new HashMap<>();
 
     private final Map<String, String> typedefs = new HashMap<>();
+
+    private final Map<String, String> macros = new HashMap<>();
 
     private final GlobalType globalType;
 
@@ -97,6 +101,12 @@ public class Manager {
         if (!knownCTypes.contains(name))
             throw new IllegalArgumentException("CType " + name + " is not registered.");
         return knownCTypes.indexOf(name);
+    }
+
+    public void registerMacro(String name, String value) {
+        if (macros.containsKey(name))
+            throw new IllegalArgumentException("Macro with name: " + name + " already exists");
+        macros.put(name, value);
     }
 
     public void registerCTypeMapping(String name, TypeDefinition javaRepresentation) {
@@ -214,6 +224,54 @@ public class Manager {
                 globalFile = patchMethodNative(methodDeclaration, s, globalFile);
             }
             Files.write(Paths.get(basePath + globalType.classFile().replace(".", "/") + ".java"), globalFile.getBytes(StandardCharsets.UTF_8));
+
+            // Macros
+            CompilationUnit constantsCU = new CompilationUnit(basePackage);
+            ClassOrInterfaceDeclaration constantsClass = constantsCU.addClass("Constants", Keyword.PUBLIC, Keyword.FINAL);
+            macros.keySet().stream().sorted().forEach(name -> {
+                String value = macros.get(name);
+
+                for (int i = 0; i < 3; i++) {
+                    if (value.isEmpty())
+                        return;
+                    char indexLowerCase = value.toLowerCase().charAt(value.length() - 1);
+                    if (indexLowerCase == 'l' || indexLowerCase == 'u')
+                        value = value.substring(0, value.length() - 1);
+                    else
+                        break;
+                }
+
+                if (SourceVersion.isKeyword(name))
+                    name = name + "_r";
+                try {
+                    long l = Long.decode(value);
+                    Class<?> lowestBound;
+                    if (l <= Byte.MAX_VALUE && l >= Byte.MIN_VALUE) {
+                        lowestBound = byte.class;
+                    } else if (l <= Short.MAX_VALUE && l >= Short.MIN_VALUE) {
+                        lowestBound = short.class;
+                    } else if (l <= Character.MAX_VALUE && l >= Character.MIN_VALUE) {
+                        lowestBound = char.class;
+                    } else if (l <= Integer.MAX_VALUE && l >= Integer.MIN_VALUE) {
+                        lowestBound = int.class;
+                    } else {
+                        value += "L";
+                        lowestBound = long.class;
+                    }
+                    constantsClass.addFieldWithInitializer(lowestBound, name, new IntegerLiteralExpr(value), Keyword.PUBLIC, Keyword.STATIC, Keyword.FINAL);
+                }catch (NumberFormatException ignored){
+                    try {
+                        if (value.endsWith("L") || value.endsWith("l"))
+                            value = value.substring(0, value.length() - 1);
+                        Double.parseDouble(value);
+                        boolean isFloat = value.endsWith("f") || value.endsWith("F");
+                        Class<?> lowestBound = isFloat ? float.class : double.class;
+                        constantsClass.addFieldWithInitializer(lowestBound, name, new DoubleLiteralExpr(value), Keyword.PUBLIC, Keyword.STATIC, Keyword.FINAL);
+                    } catch (NumberFormatException ignored1){}
+                }
+            });
+            Files.write(Paths.get(basePath + basePackage.replace(".", "/") + "/Constants.java"), constantsCU.toString().getBytes(StandardCharsets.UTF_8));
+
 
             // FFI Type test
             CompilationUnit ffiTypeCU = new CompilationUnit(basePackage);
