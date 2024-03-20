@@ -26,6 +26,10 @@ public class EnumPointer<T extends CEnum> extends Pointing {
         this.function = function;
     }
 
+    public static <E extends CEnum> PointerDereferenceSupplier<EnumPointer<E>> getPointerPointerSupplier(IntToCEnumFunction<E> function) {
+        return (pointer, freeOnGC) -> new EnumPointer<>(pointer, freeOnGC, function);
+    }
+
     public EnumPointer<T> guardCount(long count) {
         super.guardBytes(count * __int_size);
         return this;
