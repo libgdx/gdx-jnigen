@@ -12,6 +12,7 @@ import com.badlogic.gdx.jnigen.generator.types.PrimitiveType;
 import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
 import com.badlogic.gdx.jnigen.generator.types.TypeKind;
 import org.bytedeco.javacpp.BytePointer;
+import org.bytedeco.javacpp.IntPointer;
 import org.bytedeco.javacpp.PointerPointer;
 import org.bytedeco.javacpp.annotation.ByVal;
 import org.bytedeco.llvm.clang.CXClientData;
@@ -19,6 +20,8 @@ import org.bytedeco.llvm.clang.CXCursor;
 import org.bytedeco.llvm.clang.CXCursorVisitor;
 import org.bytedeco.llvm.clang.CXIndex;
 import org.bytedeco.llvm.clang.CXSourceLocation;
+import org.bytedeco.llvm.clang.CXSourceRange;
+import org.bytedeco.llvm.clang.CXToken;
 import org.bytedeco.llvm.clang.CXTranslationUnit;
 import org.bytedeco.llvm.clang.CXType;
 import org.bytedeco.llvm.global.clang;
@@ -196,6 +199,20 @@ public class Generator {
                 if (current.kind() == CXCursor_FunctionDecl) {
                     CXType funcType = clang_getCursorType(current);
                     Manager.getInstance().addFunction(new FunctionType(parseFunctionSignature(name, funcType)));
+                } else if (current.kind() == CXCursor_MacroDefinition) {
+                    if (clang_Cursor_isMacroBuiltin(current) == 0 && clang_Cursor_isMacroFunctionLike(current) == 0) {
+                        CXSourceRange range = clang_getCursorExtent(current);
+                        CXToken tokens = new CXToken(null);
+                        IntPointer nTokens = new IntPointer(1);
+                        clang_tokenize(translationUnit, range, tokens, nTokens);
+                        String tokenizedName = clang_getTokenSpelling(translationUnit, tokens.position(0)).getString();
+                        StringBuilder value = new StringBuilder();
+
+                        for (int i = 1; i < nTokens.get(); i++) {
+                            value.append(clang_getTokenSpelling(translationUnit, tokens.position(i)).getString());
+                        }
+                        Manager.getInstance().registerMacro(tokenizedName, value.toString());
+                    }
                 }
 
                 return CXChildVisit_Recurse;
