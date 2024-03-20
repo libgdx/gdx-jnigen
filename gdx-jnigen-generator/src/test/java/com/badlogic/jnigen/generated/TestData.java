@@ -61,156 +61,156 @@ public final class TestData {
     	ensureAnonymousStructParsed(*(AnonymousStructNoField*)arg0, *(AnonymousStructField*)arg1, *(AnonymousStructFieldArray*)arg2, *(struct AnonymousClosure*)arg3);
     */
 
-    public static void constArrayParameter(TestStruct.TestStructPointer arg0) {
-        constArrayParameter_internal(arg0.getPointer());
+    public static void constArrayParameter(TestStruct.TestStructPointer structs) {
+        constArrayParameter_internal(structs.getPointer());
     }
 
-    static private native void constArrayParameter_internal(long arg0);/*
-    	constArrayParameter((const TestStruct*)arg0);
+    static private native void constArrayParameter_internal(long structs);/*
+    	constArrayParameter((const TestStruct*)structs);
     */
 
-    public static void call_methodWithCallback(ClosureObject<methodWithCallback> arg0) {
-        call_methodWithCallback_internal(arg0.getFnPtr());
+    public static void call_methodWithCallback(ClosureObject<methodWithCallback> fnPtr) {
+        call_methodWithCallback_internal(fnPtr.getFnPtr());
     }
 
-    static private native void call_methodWithCallback_internal(long arg0);/*
-    	call_methodWithCallback((methodWithCallback)arg0);
+    static private native void call_methodWithCallback_internal(long fnPtr);/*
+    	call_methodWithCallback((methodWithCallback)fnPtr);
     */
 
-    public static void call_methodWithCallbackLongArg(ClosureObject<methodWithCallbackLongArg> arg0) {
-        call_methodWithCallbackLongArg_internal(arg0.getFnPtr());
+    public static void call_methodWithCallbackLongArg(ClosureObject<methodWithCallbackLongArg> fnPtr) {
+        call_methodWithCallbackLongArg_internal(fnPtr.getFnPtr());
     }
 
-    static private native void call_methodWithCallbackLongArg_internal(long arg0);/*
-    	call_methodWithCallbackLongArg((methodWithCallbackLongArg)arg0);
+    static private native void call_methodWithCallbackLongArg_internal(long fnPtr);/*
+    	call_methodWithCallbackLongArg((methodWithCallbackLongArg)fnPtr);
     */
 
-    public static void call_methodWithCallbackIntArg(ClosureObject<methodWithCallbackIntArg> arg0) {
-        call_methodWithCallbackIntArg_internal(arg0.getFnPtr());
+    public static void call_methodWithCallbackIntArg(ClosureObject<methodWithCallbackIntArg> fnPtr) {
+        call_methodWithCallbackIntArg_internal(fnPtr.getFnPtr());
     }
 
-    static private native void call_methodWithCallbackIntArg_internal(long arg0);/*
-    	call_methodWithCallbackIntArg((methodWithCallbackIntArg)arg0);
+    static private native void call_methodWithCallbackIntArg_internal(long fnPtr);/*
+    	call_methodWithCallbackIntArg((methodWithCallbackIntArg)fnPtr);
     */
 
-    public static void call_methodWithCallbackShortArg(ClosureObject<methodWithCallbackShortArg> arg0) {
-        call_methodWithCallbackShortArg_internal(arg0.getFnPtr());
+    public static void call_methodWithCallbackShortArg(ClosureObject<methodWithCallbackShortArg> fnPtr) {
+        call_methodWithCallbackShortArg_internal(fnPtr.getFnPtr());
     }
 
-    static private native void call_methodWithCallbackShortArg_internal(long arg0);/*
-    	call_methodWithCallbackShortArg((methodWithCallbackShortArg)arg0);
+    static private native void call_methodWithCallbackShortArg_internal(long fnPtr);/*
+    	call_methodWithCallbackShortArg((methodWithCallbackShortArg)fnPtr);
     */
 
-    public static void call_methodWithCallbackByteArg(ClosureObject<methodWithCallbackByteArg> arg0) {
-        call_methodWithCallbackByteArg_internal(arg0.getFnPtr());
+    public static void call_methodWithCallbackByteArg(ClosureObject<methodWithCallbackByteArg> fnPtr) {
+        call_methodWithCallbackByteArg_internal(fnPtr.getFnPtr());
     }
 
-    static private native void call_methodWithCallbackByteArg_internal(long arg0);/*
-    	call_methodWithCallbackByteArg((methodWithCallbackByteArg)arg0);
+    static private native void call_methodWithCallbackByteArg_internal(long fnPtr);/*
+    	call_methodWithCallbackByteArg((methodWithCallbackByteArg)fnPtr);
     */
 
-    public static void call_methodWithCallbackCharArg(ClosureObject<methodWithCallbackCharArg> arg0) {
-        call_methodWithCallbackCharArg_internal(arg0.getFnPtr());
+    public static void call_methodWithCallbackCharArg(ClosureObject<methodWithCallbackCharArg> fnPtr) {
+        call_methodWithCallbackCharArg_internal(fnPtr.getFnPtr());
     }
 
-    static private native void call_methodWithCallbackCharArg_internal(long arg0);/*
-    	call_methodWithCallbackCharArg((methodWithCallbackCharArg)arg0);
+    static private native void call_methodWithCallbackCharArg_internal(long fnPtr);/*
+    	call_methodWithCallbackCharArg((methodWithCallbackCharArg)fnPtr);
     */
 
-    public static void call_methodWithCallbackBooleanArg(ClosureObject<methodWithCallbackBooleanArg> arg0) {
-        call_methodWithCallbackBooleanArg_internal(arg0.getFnPtr());
+    public static void call_methodWithCallbackBooleanArg(ClosureObject<methodWithCallbackBooleanArg> fnPtr) {
+        call_methodWithCallbackBooleanArg_internal(fnPtr.getFnPtr());
     }
 
-    static private native void call_methodWithCallbackBooleanArg_internal(long arg0);/*
-    	call_methodWithCallbackBooleanArg((methodWithCallbackBooleanArg)arg0);
+    static private native void call_methodWithCallbackBooleanArg_internal(long fnPtr);/*
+    	call_methodWithCallbackBooleanArg((methodWithCallbackBooleanArg)fnPtr);
     */
 
-    public static void call_methodWithCallbackFloatArg(ClosureObject<methodWithCallbackFloatArg> arg0) {
-        call_methodWithCallbackFloatArg_internal(arg0.getFnPtr());
+    public static void call_methodWithCallbackFloatArg(ClosureObject<methodWithCallbackFloatArg> fnPtr) {
+        call_methodWithCallbackFloatArg_internal(fnPtr.getFnPtr());
     }
 
-    static private native void call_methodWithCallbackFloatArg_internal(long arg0);/*
-    	call_methodWithCallbackFloatArg((methodWithCallbackFloatArg)arg0);
+    static private native void call_methodWithCallbackFloatArg_internal(long fnPtr);/*
+    	call_methodWithCallbackFloatArg((methodWithCallbackFloatArg)fnPtr);
     */
 
-    public static void call_methodWithCallbackDoubleArg(ClosureObject<methodWithCallbackDoubleArg> arg0) {
-        call_methodWithCallbackDoubleArg_internal(arg0.getFnPtr());
+    public static void call_methodWithCallbackDoubleArg(ClosureObject<methodWithCallbackDoubleArg> fnPtr) {
+        call_methodWithCallbackDoubleArg_internal(fnPtr.getFnPtr());
     }
 
-    static private native void call_methodWithCallbackDoubleArg_internal(long arg0);/*
-    	call_methodWithCallbackDoubleArg((methodWithCallbackDoubleArg)arg0);
+    static private native void call_methodWithCallbackDoubleArg_internal(long fnPtr);/*
+    	call_methodWithCallbackDoubleArg((methodWithCallbackDoubleArg)fnPtr);
     */
 
-    public static void call_methodWithCallbackAllArgs(ClosureObject<methodWithCallbackAllArgs> arg0) {
-        call_methodWithCallbackAllArgs_internal(arg0.getFnPtr());
+    public static void call_methodWithCallbackAllArgs(ClosureObject<methodWithCallbackAllArgs> fnPtr) {
+        call_methodWithCallbackAllArgs_internal(fnPtr.getFnPtr());
     }
 
-    static private native void call_methodWithCallbackAllArgs_internal(long arg0);/*
-    	call_methodWithCallbackAllArgs((methodWithCallbackAllArgs)arg0);
+    static private native void call_methodWithCallbackAllArgs_internal(long fnPtr);/*
+    	call_methodWithCallbackAllArgs((methodWithCallbackAllArgs)fnPtr);
     */
 
-    public static long call_methodWithCallbackLongReturn(ClosureObject<methodWithCallbackLongReturn> arg0) {
-        return call_methodWithCallbackLongReturn_internal(arg0.getFnPtr());
+    public static long call_methodWithCallbackLongReturn(ClosureObject<methodWithCallbackLongReturn> fnPtr) {
+        return call_methodWithCallbackLongReturn_internal(fnPtr.getFnPtr());
     }
 
-    static private native long call_methodWithCallbackLongReturn_internal(long arg0);/*
-    	return (jlong)call_methodWithCallbackLongReturn((methodWithCallbackLongReturn)arg0);
+    static private native long call_methodWithCallbackLongReturn_internal(long fnPtr);/*
+    	return (jlong)call_methodWithCallbackLongReturn((methodWithCallbackLongReturn)fnPtr);
     */
 
-    public static int call_methodWithCallbackIntReturn(ClosureObject<methodWithCallbackIntReturn> arg0) {
-        return call_methodWithCallbackIntReturn_internal(arg0.getFnPtr());
+    public static int call_methodWithCallbackIntReturn(ClosureObject<methodWithCallbackIntReturn> fnPtr) {
+        return call_methodWithCallbackIntReturn_internal(fnPtr.getFnPtr());
     }
 
-    static private native int call_methodWithCallbackIntReturn_internal(long arg0);/*
-    	return (jint)call_methodWithCallbackIntReturn((methodWithCallbackIntReturn)arg0);
+    static private native int call_methodWithCallbackIntReturn_internal(long fnPtr);/*
+    	return (jint)call_methodWithCallbackIntReturn((methodWithCallbackIntReturn)fnPtr);
     */
 
-    public static short call_methodWithCallbackShortReturn(ClosureObject<methodWithCallbackShortReturn> arg0) {
-        return call_methodWithCallbackShortReturn_internal(arg0.getFnPtr());
+    public static short call_methodWithCallbackShortReturn(ClosureObject<methodWithCallbackShortReturn> fnPtr) {
+        return call_methodWithCallbackShortReturn_internal(fnPtr.getFnPtr());
     }
 
-    static private native short call_methodWithCallbackShortReturn_internal(long arg0);/*
-    	return (jshort)call_methodWithCallbackShortReturn((methodWithCallbackShortReturn)arg0);
+    static private native short call_methodWithCallbackShortReturn_internal(long fnPtr);/*
+    	return (jshort)call_methodWithCallbackShortReturn((methodWithCallbackShortReturn)fnPtr);
     */
 
-    public static char call_methodWithCallbackCharReturn(ClosureObject<methodWithCallbackCharReturn> arg0) {
-        return call_methodWithCallbackCharReturn_internal(arg0.getFnPtr());
+    public static char call_methodWithCallbackCharReturn(ClosureObject<methodWithCallbackCharReturn> fnPtr) {
+        return call_methodWithCallbackCharReturn_internal(fnPtr.getFnPtr());
     }
 
-    static private native char call_methodWithCallbackCharReturn_internal(long arg0);/*
-    	return (jchar)call_methodWithCallbackCharReturn((methodWithCallbackCharReturn)arg0);
+    static private native char call_methodWithCallbackCharReturn_internal(long fnPtr);/*
+    	return (jchar)call_methodWithCallbackCharReturn((methodWithCallbackCharReturn)fnPtr);
     */
 
-    public static byte call_methodWithCallbackByteReturn(ClosureObject<methodWithCallbackByteReturn> arg0) {
-        return call_methodWithCallbackByteReturn_internal(arg0.getFnPtr());
+    public static byte call_methodWithCallbackByteReturn(ClosureObject<methodWithCallbackByteReturn> fnPtr) {
+        return call_methodWithCallbackByteReturn_internal(fnPtr.getFnPtr());
     }
 
-    static private native byte call_methodWithCallbackByteReturn_internal(long arg0);/*
-    	return (jbyte)call_methodWithCallbackByteReturn((methodWithCallbackByteReturn)arg0);
+    static private native byte call_methodWithCallbackByteReturn_internal(long fnPtr);/*
+    	return (jbyte)call_methodWithCallbackByteReturn((methodWithCallbackByteReturn)fnPtr);
     */
 
-    public static boolean call_methodWithCallbackBooleanReturn(ClosureObject<methodWithCallbackBooleanReturn> arg0) {
-        return call_methodWithCallbackBooleanReturn_internal(arg0.getFnPtr());
+    public static boolean call_methodWithCallbackBooleanReturn(ClosureObject<methodWithCallbackBooleanReturn> fnPtr) {
+        return call_methodWithCallbackBooleanReturn_internal(fnPtr.getFnPtr());
     }
 
-    static private native boolean call_methodWithCallbackBooleanReturn_internal(long arg0);/*
-    	return (jboolean)call_methodWithCallbackBooleanReturn((methodWithCallbackBooleanReturn)arg0);
+    static private native boolean call_methodWithCallbackBooleanReturn_internal(long fnPtr);/*
+    	return (jboolean)call_methodWithCallbackBooleanReturn((methodWithCallbackBooleanReturn)fnPtr);
     */
 
-    public static float call_methodWithCallbackFloatReturn(ClosureObject<methodWithCallbackFloatReturn> arg0) {
-        return call_methodWithCallbackFloatReturn_internal(arg0.getFnPtr());
+    public static float call_methodWithCallbackFloatReturn(ClosureObject<methodWithCallbackFloatReturn> fnPtr) {
+        return call_methodWithCallbackFloatReturn_internal(fnPtr.getFnPtr());
     }
 
-    static private native float call_methodWithCallbackFloatReturn_internal(long arg0);/*
-    	return (jfloat)call_methodWithCallbackFloatReturn((methodWithCallbackFloatReturn)arg0);
+    static private native float call_methodWithCallbackFloatReturn_internal(long fnPtr);/*
+    	return (jfloat)call_methodWithCallbackFloatReturn((methodWithCallbackFloatReturn)fnPtr);
     */
 
-    public static double call_methodWithCallbackDoubleReturn(ClosureObject<methodWithCallbackDoubleReturn> arg0) {
-        return call_methodWithCallbackDoubleReturn_internal(arg0.getFnPtr());
+    public static double call_methodWithCallbackDoubleReturn(ClosureObject<methodWithCallbackDoubleReturn> fnPtr) {
+        return call_methodWithCallbackDoubleReturn_internal(fnPtr.getFnPtr());
     }
 
-    static private native double call_methodWithCallbackDoubleReturn_internal(long arg0);/*
-    	return (jdouble)call_methodWithCallbackDoubleReturn((methodWithCallbackDoubleReturn)arg0);
+    static private native double call_methodWithCallbackDoubleReturn_internal(long fnPtr);/*
+    	return (jdouble)call_methodWithCallbackDoubleReturn((methodWithCallbackDoubleReturn)fnPtr);
     */
 
     public static TestStruct.TestStructPointer returnTestStructPointer() {
@@ -231,62 +231,62 @@ public final class TestData {
     	return (jlong)_ret;
     */
 
-    public static long passByValue(TestStruct arg0) {
-        return passByValue_internal(arg0.getPointer());
+    public static long passByValue(TestStruct testStruct) {
+        return passByValue_internal(testStruct.getPointer());
     }
 
-    static private native long passByValue_internal(long arg0);/*
-    	return (jlong)passByValue(*(TestStruct*)arg0);
+    static private native long passByValue_internal(long testStruct);/*
+    	return (jlong)passByValue(*(TestStruct*)testStruct);
     */
 
-    public static long passByPointer(TestStruct.TestStructPointer arg0) {
-        return passByPointer_internal(arg0.getPointer());
+    public static long passByPointer(TestStruct.TestStructPointer testStruct) {
+        return passByPointer_internal(testStruct.getPointer());
     }
 
-    static private native long passByPointer_internal(long arg0);/*
-    	return (jlong)passByPointer((TestStruct *)arg0);
+    static private native long passByPointer_internal(long testStruct);/*
+    	return (jlong)passByPointer((TestStruct *)testStruct);
     */
 
-    public static TestStruct call_methodWithCallbackTestStructReturn(ClosureObject<methodWithCallbackTestStructReturn> arg0) {
-        return new TestStruct(call_methodWithCallbackTestStructReturn_internal(arg0.getFnPtr()), true);
+    public static TestStruct call_methodWithCallbackTestStructReturn(ClosureObject<methodWithCallbackTestStructReturn> fnPtr) {
+        return new TestStruct(call_methodWithCallbackTestStructReturn_internal(fnPtr.getFnPtr()), true);
     }
 
-    static private native long call_methodWithCallbackTestStructReturn_internal(long arg0);/*
+    static private native long call_methodWithCallbackTestStructReturn_internal(long fnPtr);/*
     	TestStruct* _ret = (TestStruct*)malloc(sizeof(TestStruct));
-    	*_ret = call_methodWithCallbackTestStructReturn((methodWithCallbackTestStructReturn)arg0);
+    	*_ret = call_methodWithCallbackTestStructReturn((methodWithCallbackTestStructReturn)fnPtr);
     	return (jlong)_ret;
     */
 
-    public static TestStruct.TestStructPointer call_methodWithCallbackTestStructPointerReturn(ClosureObject<methodWithCallbackTestStructPointerReturn> arg0) {
-        return new TestStruct.TestStructPointer(call_methodWithCallbackTestStructPointerReturn_internal(arg0.getFnPtr()), false);
+    public static TestStruct.TestStructPointer call_methodWithCallbackTestStructPointerReturn(ClosureObject<methodWithCallbackTestStructPointerReturn> fnPtr) {
+        return new TestStruct.TestStructPointer(call_methodWithCallbackTestStructPointerReturn_internal(fnPtr.getFnPtr()), false);
     }
 
-    static private native long call_methodWithCallbackTestStructPointerReturn_internal(long arg0);/*
-    	return (jlong)call_methodWithCallbackTestStructPointerReturn((methodWithCallbackTestStructPointerReturn)arg0);
+    static private native long call_methodWithCallbackTestStructPointerReturn_internal(long fnPtr);/*
+    	return (jlong)call_methodWithCallbackTestStructPointerReturn((methodWithCallbackTestStructPointerReturn)fnPtr);
     */
 
-    public static void call_methodWithCallbackTestStructArg(ClosureObject<methodWithCallbackTestStructArg> arg0) {
-        call_methodWithCallbackTestStructArg_internal(arg0.getFnPtr());
+    public static void call_methodWithCallbackTestStructArg(ClosureObject<methodWithCallbackTestStructArg> fnPtr) {
+        call_methodWithCallbackTestStructArg_internal(fnPtr.getFnPtr());
     }
 
-    static private native void call_methodWithCallbackTestStructArg_internal(long arg0);/*
-    	call_methodWithCallbackTestStructArg((methodWithCallbackTestStructArg)arg0);
+    static private native void call_methodWithCallbackTestStructArg_internal(long fnPtr);/*
+    	call_methodWithCallbackTestStructArg((methodWithCallbackTestStructArg)fnPtr);
     */
 
-    public static void call_methodWithCallbackTestStructPointerArg(ClosureObject<methodWithCallbackTestStructPointerArg> arg0) {
-        call_methodWithCallbackTestStructPointerArg_internal(arg0.getFnPtr());
+    public static void call_methodWithCallbackTestStructPointerArg(ClosureObject<methodWithCallbackTestStructPointerArg> fnPtr) {
+        call_methodWithCallbackTestStructPointerArg_internal(fnPtr.getFnPtr());
     }
 
-    static private native void call_methodWithCallbackTestStructPointerArg_internal(long arg0);/*
-    	call_methodWithCallbackTestStructPointerArg((methodWithCallbackTestStructPointerArg)arg0);
+    static private native void call_methodWithCallbackTestStructPointerArg_internal(long fnPtr);/*
+    	call_methodWithCallbackTestStructPointerArg((methodWithCallbackTestStructPointerArg)fnPtr);
     */
 
-    public static int passTestEnum(TestEnum arg0) {
-        return passTestEnum_internal(arg0.getIndex());
+    public static int passTestEnum(TestEnum enumValue) {
+        return passTestEnum_internal(enumValue.getIndex());
     }
 
-    static private native int passTestEnum_internal(int arg0);/*
-    	return (jint)passTestEnum((TestEnum)arg0);
+    static private native int passTestEnum_internal(int enumValue);/*
+    	return (jint)passTestEnum((TestEnum)enumValue);
     */
 
     public static TestEnum returnTestEnum() {
@@ -297,20 +297,20 @@ public final class TestData {
     	return (jint)returnTestEnum();
     */
 
-    public static TestEnum passAndReturnTestEnum(TestEnum arg0) {
-        return TestEnum.getByIndex((int) passAndReturnTestEnum_internal(arg0.getIndex()));
+    public static TestEnum passAndReturnTestEnum(TestEnum enumValue) {
+        return TestEnum.getByIndex((int) passAndReturnTestEnum_internal(enumValue.getIndex()));
     }
 
-    static private native int passAndReturnTestEnum_internal(int arg0);/*
-    	return (jint)passAndReturnTestEnum((TestEnum)arg0);
+    static private native int passAndReturnTestEnum_internal(int enumValue);/*
+    	return (jint)passAndReturnTestEnum((TestEnum)enumValue);
     */
 
-    public static int passTestEnumPointer(EnumPointer<TestEnum> arg0) {
-        return passTestEnumPointer_internal(arg0.getPointer());
+    public static int passTestEnumPointer(EnumPointer<TestEnum> enumValue) {
+        return passTestEnumPointer_internal(enumValue.getPointer());
     }
 
-    static private native int passTestEnumPointer_internal(long arg0);/*
-    	return (jint)passTestEnumPointer((TestEnum *)arg0);
+    static private native int passTestEnumPointer_internal(long enumValue);/*
+    	return (jint)passTestEnumPointer((TestEnum *)enumValue);
     */
 
     public static EnumPointer<TestEnum> returnTestEnumPointer() {
@@ -321,44 +321,44 @@ public final class TestData {
     	return (jlong)returnTestEnumPointer();
     */
 
-    public static TestEnum passAndReturnTestEnumPointer(EnumPointer<TestEnum> arg0) {
-        return TestEnum.getByIndex((int) passAndReturnTestEnumPointer_internal(arg0.getPointer()));
+    public static TestEnum passAndReturnTestEnumPointer(EnumPointer<TestEnum> enumValue) {
+        return TestEnum.getByIndex((int) passAndReturnTestEnumPointer_internal(enumValue.getPointer()));
     }
 
-    static private native int passAndReturnTestEnumPointer_internal(long arg0);/*
-    	return (jint)passAndReturnTestEnumPointer((TestEnum *)arg0);
+    static private native int passAndReturnTestEnumPointer_internal(long enumValue);/*
+    	return (jint)passAndReturnTestEnumPointer((TestEnum *)enumValue);
     */
 
-    public static TestEnum call_methodWithCallbackTestEnumReturn(ClosureObject<methodWithCallbackTestEnumReturn> arg0) {
-        return TestEnum.getByIndex((int) call_methodWithCallbackTestEnumReturn_internal(arg0.getFnPtr()));
+    public static TestEnum call_methodWithCallbackTestEnumReturn(ClosureObject<methodWithCallbackTestEnumReturn> fnPtr) {
+        return TestEnum.getByIndex((int) call_methodWithCallbackTestEnumReturn_internal(fnPtr.getFnPtr()));
     }
 
-    static private native int call_methodWithCallbackTestEnumReturn_internal(long arg0);/*
-    	return (jint)call_methodWithCallbackTestEnumReturn((methodWithCallbackTestEnumReturn)arg0);
+    static private native int call_methodWithCallbackTestEnumReturn_internal(long fnPtr);/*
+    	return (jint)call_methodWithCallbackTestEnumReturn((methodWithCallbackTestEnumReturn)fnPtr);
     */
 
-    public static void call_methodWithCallbackTestEnumArg(ClosureObject<methodWithCallbackTestEnumArg> arg0) {
-        call_methodWithCallbackTestEnumArg_internal(arg0.getFnPtr());
+    public static void call_methodWithCallbackTestEnumArg(ClosureObject<methodWithCallbackTestEnumArg> fnPtr) {
+        call_methodWithCallbackTestEnumArg_internal(fnPtr.getFnPtr());
     }
 
-    static private native void call_methodWithCallbackTestEnumArg_internal(long arg0);/*
-    	call_methodWithCallbackTestEnumArg((methodWithCallbackTestEnumArg)arg0);
+    static private native void call_methodWithCallbackTestEnumArg_internal(long fnPtr);/*
+    	call_methodWithCallbackTestEnumArg((methodWithCallbackTestEnumArg)fnPtr);
     */
 
-    public static EnumPointer<TestEnum> call_methodWithCallbackTestEnumPointerReturn(ClosureObject<methodWithCallbackTestEnumPointerReturn> arg0) {
-        return new EnumPointer<TestEnum>(call_methodWithCallbackTestEnumPointerReturn_internal(arg0.getFnPtr()), false, TestEnum::getByIndex);
+    public static EnumPointer<TestEnum> call_methodWithCallbackTestEnumPointerReturn(ClosureObject<methodWithCallbackTestEnumPointerReturn> fnPtr) {
+        return new EnumPointer<TestEnum>(call_methodWithCallbackTestEnumPointerReturn_internal(fnPtr.getFnPtr()), false, TestEnum::getByIndex);
     }
 
-    static private native long call_methodWithCallbackTestEnumPointerReturn_internal(long arg0);/*
-    	return (jlong)call_methodWithCallbackTestEnumPointerReturn((methodWithCallbackTestEnumPointerReturn)arg0);
+    static private native long call_methodWithCallbackTestEnumPointerReturn_internal(long fnPtr);/*
+    	return (jlong)call_methodWithCallbackTestEnumPointerReturn((methodWithCallbackTestEnumPointerReturn)fnPtr);
     */
 
-    public static void call_methodWithCallbackTestEnumPointerArg(ClosureObject<methodWithCallbackTestEnumPointerArg> arg0) {
-        call_methodWithCallbackTestEnumPointerArg_internal(arg0.getFnPtr());
+    public static void call_methodWithCallbackTestEnumPointerArg(ClosureObject<methodWithCallbackTestEnumPointerArg> fnPtr) {
+        call_methodWithCallbackTestEnumPointerArg_internal(fnPtr.getFnPtr());
     }
 
-    static private native void call_methodWithCallbackTestEnumPointerArg_internal(long arg0);/*
-    	call_methodWithCallbackTestEnumPointerArg((methodWithCallbackTestEnumPointerArg)arg0);
+    static private native void call_methodWithCallbackTestEnumPointerArg_internal(long fnPtr);/*
+    	call_methodWithCallbackTestEnumPointerArg((methodWithCallbackTestEnumPointerArg)fnPtr);
     */
 
     public static int passIntPointer(CSizedIntPointer arg0) {
@@ -378,68 +378,68 @@ public final class TestData {
     	return (jlong)returnIntPointer((int)arg0);
     */
 
-    public static CSizedIntPointer call_methodWithCallbackIntPointerReturn(ClosureObject<methodWithCallbackIntPointerReturn> arg0, int arg1) {
-        return new CSizedIntPointer(call_methodWithCallbackIntPointerReturn_internal(arg0.getFnPtr(), arg1), false, "int");
+    public static CSizedIntPointer call_methodWithCallbackIntPointerReturn(ClosureObject<methodWithCallbackIntPointerReturn> fnPtr, int val) {
+        return new CSizedIntPointer(call_methodWithCallbackIntPointerReturn_internal(fnPtr.getFnPtr(), val), false, "int");
     }
 
-    static private native long call_methodWithCallbackIntPointerReturn_internal(long arg0, int arg1);/*
-    	return (jlong)call_methodWithCallbackIntPointerReturn((methodWithCallbackIntPointerReturn)arg0, (int)arg1);
+    static private native long call_methodWithCallbackIntPointerReturn_internal(long fnPtr, int val);/*
+    	return (jlong)call_methodWithCallbackIntPointerReturn((methodWithCallbackIntPointerReturn)fnPtr, (int)val);
     */
 
-    public static int call_methodWithCallbackIntPointerArg(ClosureObject<methodWithCallbackIntPointerArg> arg0) {
-        return call_methodWithCallbackIntPointerArg_internal(arg0.getFnPtr());
+    public static int call_methodWithCallbackIntPointerArg(ClosureObject<methodWithCallbackIntPointerArg> fnPtr) {
+        return call_methodWithCallbackIntPointerArg_internal(fnPtr.getFnPtr());
     }
 
-    static private native int call_methodWithCallbackIntPointerArg_internal(long arg0);/*
-    	return (jint)call_methodWithCallbackIntPointerArg((methodWithCallbackIntPointerArg)arg0);
+    static private native int call_methodWithCallbackIntPointerArg_internal(long fnPtr);/*
+    	return (jint)call_methodWithCallbackIntPointerArg((methodWithCallbackIntPointerArg)fnPtr);
     */
 
-    public static float getFloatPtrFieldValue(SpecialStruct arg0) {
-        return getFloatPtrFieldValue_internal(arg0.getPointer());
+    public static float getFloatPtrFieldValue(SpecialStruct specialStruct) {
+        return getFloatPtrFieldValue_internal(specialStruct.getPointer());
     }
 
-    static private native float getFloatPtrFieldValue_internal(long arg0);/*
-    	return (jfloat)getFloatPtrFieldValue(*(SpecialStruct*)arg0);
+    static private native float getFloatPtrFieldValue_internal(long specialStruct);/*
+    	return (jfloat)getFloatPtrFieldValue(*(SpecialStruct*)specialStruct);
     */
 
-    public static int getFixedSizeArrayFieldValue(SpecialStruct arg0, int arg1) {
-        return getFixedSizeArrayFieldValue_internal(arg0.getPointer(), arg1);
+    public static int getFixedSizeArrayFieldValue(SpecialStruct specialStruct, int index) {
+        return getFixedSizeArrayFieldValue_internal(specialStruct.getPointer(), index);
     }
 
-    static private native int getFixedSizeArrayFieldValue_internal(long arg0, int arg1);/*
-    	return (jint)getFixedSizeArrayFieldValue(*(SpecialStruct*)arg0, (int)arg1);
+    static private native int getFixedSizeArrayFieldValue_internal(long specialStruct, int index);/*
+    	return (jint)getFixedSizeArrayFieldValue(*(SpecialStruct*)specialStruct, (int)index);
     */
 
-    public static int getIntPtrFieldValue(SpecialStruct arg0) {
-        return getIntPtrFieldValue_internal(arg0.getPointer());
+    public static int getIntPtrFieldValue(SpecialStruct specialStruct) {
+        return getIntPtrFieldValue_internal(specialStruct.getPointer());
     }
 
-    static private native int getIntPtrFieldValue_internal(long arg0);/*
-    	return (jint)getIntPtrFieldValue(*(SpecialStruct*)arg0);
+    static private native int getIntPtrFieldValue_internal(long specialStruct);/*
+    	return (jint)getIntPtrFieldValue(*(SpecialStruct*)specialStruct);
     */
 
-    public static void setFloatPtrFieldValue(SpecialStruct arg0, float arg1) {
-        setFloatPtrFieldValue_internal(arg0.getPointer(), arg1);
+    public static void setFloatPtrFieldValue(SpecialStruct specialStruct, float value) {
+        setFloatPtrFieldValue_internal(specialStruct.getPointer(), value);
     }
 
-    static private native void setFloatPtrFieldValue_internal(long arg0, float arg1);/*
-    	setFloatPtrFieldValue(*(SpecialStruct*)arg0, (float)arg1);
+    static private native void setFloatPtrFieldValue_internal(long specialStruct, float value);/*
+    	setFloatPtrFieldValue(*(SpecialStruct*)specialStruct, (float)value);
     */
 
-    public static void setFixedSizeArrayFieldValue(SpecialStruct.SpecialStructPointer arg0, int arg1, int arg2) {
-        setFixedSizeArrayFieldValue_internal(arg0.getPointer(), arg1, arg2);
+    public static void setFixedSizeArrayFieldValue(SpecialStruct.SpecialStructPointer specialStruct, int index, int value) {
+        setFixedSizeArrayFieldValue_internal(specialStruct.getPointer(), index, value);
     }
 
-    static private native void setFixedSizeArrayFieldValue_internal(long arg0, int arg1, int arg2);/*
-    	setFixedSizeArrayFieldValue((SpecialStruct *)arg0, (int)arg1, (int)arg2);
+    static private native void setFixedSizeArrayFieldValue_internal(long specialStruct, int index, int value);/*
+    	setFixedSizeArrayFieldValue((SpecialStruct *)specialStruct, (int)index, (int)value);
     */
 
-    public static void setIntPtrFieldValue(SpecialStruct arg0, int arg1) {
-        setIntPtrFieldValue_internal(arg0.getPointer(), arg1);
+    public static void setIntPtrFieldValue(SpecialStruct specialStruct, int value) {
+        setIntPtrFieldValue_internal(specialStruct.getPointer(), value);
     }
 
-    static private native void setIntPtrFieldValue_internal(long arg0, int arg1);/*
-    	setIntPtrFieldValue(*(SpecialStruct*)arg0, (int)arg1);
+    static private native void setIntPtrFieldValue_internal(long specialStruct, int value);/*
+    	setIntPtrFieldValue(*(SpecialStruct*)specialStruct, (int)value);
     */
 
     public static TestUnion.TestUnionPointer returnTestUnionPointer() {
@@ -460,94 +460,94 @@ public final class TestData {
     	return (jlong)_ret;
     */
 
-    public static long getUnionUintTypeByValue(TestUnion arg0) {
-        return getUnionUintTypeByValue_internal(arg0.getPointer());
+    public static long getUnionUintTypeByValue(TestUnion testUnion) {
+        return getUnionUintTypeByValue_internal(testUnion.getPointer());
     }
 
-    static private native long getUnionUintTypeByValue_internal(long arg0);/*
-    	return (jlong)getUnionUintTypeByValue(*(TestUnion*)arg0);
+    static private native long getUnionUintTypeByValue_internal(long testUnion);/*
+    	return (jlong)getUnionUintTypeByValue(*(TestUnion*)testUnion);
     */
 
-    public static void setUnionUintTypeByPointer(TestUnion.TestUnionPointer arg0, long arg1) {
-        setUnionUintTypeByPointer_internal(arg0.getPointer(), arg1);
+    public static void setUnionUintTypeByPointer(TestUnion.TestUnionPointer testUnion, long value) {
+        setUnionUintTypeByPointer_internal(testUnion.getPointer(), value);
     }
 
-    static private native void setUnionUintTypeByPointer_internal(long arg0, long arg1);/*
-    	setUnionUintTypeByPointer((TestUnion *)arg0, (uint64_t)arg1);
+    static private native void setUnionUintTypeByPointer_internal(long testUnion, long value);/*
+    	setUnionUintTypeByPointer((TestUnion *)testUnion, (uint64_t)value);
     */
 
-    public static double getUnionDoubleTypeByValue(TestUnion arg0) {
-        return getUnionDoubleTypeByValue_internal(arg0.getPointer());
+    public static double getUnionDoubleTypeByValue(TestUnion testUnion) {
+        return getUnionDoubleTypeByValue_internal(testUnion.getPointer());
     }
 
-    static private native double getUnionDoubleTypeByValue_internal(long arg0);/*
-    	return (jdouble)getUnionDoubleTypeByValue(*(TestUnion*)arg0);
+    static private native double getUnionDoubleTypeByValue_internal(long testUnion);/*
+    	return (jdouble)getUnionDoubleTypeByValue(*(TestUnion*)testUnion);
     */
 
-    public static void setUnionDoubleTypeByPointer(TestUnion.TestUnionPointer arg0, double arg1) {
-        setUnionDoubleTypeByPointer_internal(arg0.getPointer(), arg1);
+    public static void setUnionDoubleTypeByPointer(TestUnion.TestUnionPointer testUnion, double value) {
+        setUnionDoubleTypeByPointer_internal(testUnion.getPointer(), value);
     }
 
-    static private native void setUnionDoubleTypeByPointer_internal(long arg0, double arg1);/*
-    	setUnionDoubleTypeByPointer((TestUnion *)arg0, (double)arg1);
+    static private native void setUnionDoubleTypeByPointer_internal(long testUnion, double value);/*
+    	setUnionDoubleTypeByPointer((TestUnion *)testUnion, (double)value);
     */
 
-    public static CSizedIntPointer getUnionFixedSizeIntByPointer(TestUnion.TestUnionPointer arg0) {
-        return new CSizedIntPointer(getUnionFixedSizeIntByPointer_internal(arg0.getPointer()), false, "int");
+    public static CSizedIntPointer getUnionFixedSizeIntByPointer(TestUnion.TestUnionPointer testUnion) {
+        return new CSizedIntPointer(getUnionFixedSizeIntByPointer_internal(testUnion.getPointer()), false, "int");
     }
 
-    static private native long getUnionFixedSizeIntByPointer_internal(long arg0);/*
-    	return (jlong)getUnionFixedSizeIntByPointer((TestUnion *)arg0);
+    static private native long getUnionFixedSizeIntByPointer_internal(long testUnion);/*
+    	return (jlong)getUnionFixedSizeIntByPointer((TestUnion *)testUnion);
     */
 
-    public static int getUnionFixedSizeIntByValue(TestUnion arg0, int arg1) {
-        return getUnionFixedSizeIntByValue_internal(arg0.getPointer(), arg1);
+    public static int getUnionFixedSizeIntByValue(TestUnion testUnion, int index) {
+        return getUnionFixedSizeIntByValue_internal(testUnion.getPointer(), index);
     }
 
-    static private native int getUnionFixedSizeIntByValue_internal(long arg0, int arg1);/*
-    	return (jint)getUnionFixedSizeIntByValue(*(TestUnion*)arg0, (int)arg1);
+    static private native int getUnionFixedSizeIntByValue_internal(long testUnion, int index);/*
+    	return (jint)getUnionFixedSizeIntByValue(*(TestUnion*)testUnion, (int)index);
     */
 
-    public static void setUnionFixedSizeIntByPointer(TestUnion.TestUnionPointer arg0, int arg1, int arg2) {
-        setUnionFixedSizeIntByPointer_internal(arg0.getPointer(), arg1, arg2);
+    public static void setUnionFixedSizeIntByPointer(TestUnion.TestUnionPointer testUnion, int index, int value) {
+        setUnionFixedSizeIntByPointer_internal(testUnion.getPointer(), index, value);
     }
 
-    static private native void setUnionFixedSizeIntByPointer_internal(long arg0, int arg1, int arg2);/*
-    	setUnionFixedSizeIntByPointer((TestUnion *)arg0, (int)arg1, (int)arg2);
+    static private native void setUnionFixedSizeIntByPointer_internal(long testUnion, int index, int value);/*
+    	setUnionFixedSizeIntByPointer((TestUnion *)testUnion, (int)index, (int)value);
     */
 
-    public static TestStruct getUnionStructTypeByValue(TestUnion arg0) {
-        return new TestStruct(getUnionStructTypeByValue_internal(arg0.getPointer()), true);
+    public static TestStruct getUnionStructTypeByValue(TestUnion testUnion) {
+        return new TestStruct(getUnionStructTypeByValue_internal(testUnion.getPointer()), true);
     }
 
-    static private native long getUnionStructTypeByValue_internal(long arg0);/*
+    static private native long getUnionStructTypeByValue_internal(long testUnion);/*
     	TestStruct* _ret = (TestStruct*)malloc(sizeof(TestStruct));
-    	*_ret = getUnionStructTypeByValue(*(TestUnion*)arg0);
+    	*_ret = getUnionStructTypeByValue(*(TestUnion*)testUnion);
     	return (jlong)_ret;
     */
 
-    public static void setUnionStructTypeByPointer(TestUnion.TestUnionPointer arg0, TestStruct arg1) {
-        setUnionStructTypeByPointer_internal(arg0.getPointer(), arg1.getPointer());
+    public static void setUnionStructTypeByPointer(TestUnion.TestUnionPointer testUnion, TestStruct value) {
+        setUnionStructTypeByPointer_internal(testUnion.getPointer(), value.getPointer());
     }
 
-    static private native void setUnionStructTypeByPointer_internal(long arg0, long arg1);/*
-    	setUnionStructTypeByPointer((TestUnion *)arg0, *(TestStruct*)arg1);
+    static private native void setUnionStructTypeByPointer_internal(long testUnion, long value);/*
+    	setUnionStructTypeByPointer((TestUnion *)testUnion, *(TestStruct*)value);
     */
 
-    public static TestUnion.TestUnionPointer call_methodWithCallbackTestUnionPointerReturn(ClosureObject<methodWithCallbackTestUnionPointerReturn> arg0) {
-        return new TestUnion.TestUnionPointer(call_methodWithCallbackTestUnionPointerReturn_internal(arg0.getFnPtr()), false);
+    public static TestUnion.TestUnionPointer call_methodWithCallbackTestUnionPointerReturn(ClosureObject<methodWithCallbackTestUnionPointerReturn> fnPtr) {
+        return new TestUnion.TestUnionPointer(call_methodWithCallbackTestUnionPointerReturn_internal(fnPtr.getFnPtr()), false);
     }
 
-    static private native long call_methodWithCallbackTestUnionPointerReturn_internal(long arg0);/*
-    	return (jlong)call_methodWithCallbackTestUnionPointerReturn((methodWithCallbackTestUnionPointerReturn)arg0);
+    static private native long call_methodWithCallbackTestUnionPointerReturn_internal(long fnPtr);/*
+    	return (jlong)call_methodWithCallbackTestUnionPointerReturn((methodWithCallbackTestUnionPointerReturn)fnPtr);
     */
 
-    public static void call_methodWithCallbackTestUnionPointerArg(ClosureObject<methodWithCallbackTestUnionPointerArg> arg0) {
-        call_methodWithCallbackTestUnionPointerArg_internal(arg0.getFnPtr());
+    public static void call_methodWithCallbackTestUnionPointerArg(ClosureObject<methodWithCallbackTestUnionPointerArg> fnPtr) {
+        call_methodWithCallbackTestUnionPointerArg_internal(fnPtr.getFnPtr());
     }
 
-    static private native void call_methodWithCallbackTestUnionPointerArg_internal(long arg0);/*
-    	call_methodWithCallbackTestUnionPointerArg((methodWithCallbackTestUnionPointerArg)arg0);
+    static private native void call_methodWithCallbackTestUnionPointerArg_internal(long fnPtr);/*
+    	call_methodWithCallbackTestUnionPointerArg((methodWithCallbackTestUnionPointerArg)fnPtr);
     */
 
     public interface methodWithCallbackBooleanArg extends Closure {
