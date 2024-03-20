@@ -3,6 +3,7 @@ package com.badlogic.gdx.jnigen.generator.types;
 import com.badlogic.gdx.jnigen.generator.Manager;
 import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
 import com.badlogic.gdx.jnigen.pointer.DoublePointer;
+import com.badlogic.gdx.jnigen.pointer.EnumPointer;
 import com.badlogic.gdx.jnigen.pointer.FloatPointer;
 import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
 import com.badlogic.gdx.jnigen.pointer.VoidPointer;
@@ -21,6 +22,10 @@ public class PointerType implements MappedType {
 
     public PointerType(TypeDefinition pointingTo) {
         this.pointingTo = pointingTo;
+    }
+
+    public boolean isEnumPointer() {
+        return pointingTo.getTypeKind() == TypeKind.ENUM;
     }
 
     public boolean isStackElementPointer() {
@@ -55,6 +60,8 @@ public class PointerType implements MappedType {
             cu.addImport(CSizedIntPointer.class);
         else if (isVoidPointer())
             cu.addImport(VoidPointer.class);
+        else if (isEnumPointer())
+            cu.addImport(EnumPointer.class);
         else
             throw new IllegalArgumentException("Type " + pointingTo.getTypeKind() + " can't be pointerized");
         pointingTo.getMappedType().importType(cu);
@@ -80,6 +87,8 @@ public class PointerType implements MappedType {
             return DoublePointer.class.getSimpleName();
         if (isVoidPointer())
             return VoidPointer.class.getSimpleName();
+        if (isEnumPointer())
+            return EnumPointer.class.getSimpleName() + "<" + pointingTo.getMappedType().abstractType() + ">";
         if (isStackElementPointer())
             return pointingTo.getMappedType().abstractType() + "." + pointingTo.getMappedType().abstractType() + "Pointer";
 
@@ -109,6 +118,8 @@ public class PointerType implements MappedType {
         createObject.addArgument(String.valueOf(owned));
         if (isIntPointer())
             createObject.addArgument(new StringLiteralExpr(pointingTo.getTypeName()));
+        if (isEnumPointer())
+            createObject.addArgument(pointingTo.getMappedType().abstractType() + "::getByIndex");
         return createObject;
     }
 
