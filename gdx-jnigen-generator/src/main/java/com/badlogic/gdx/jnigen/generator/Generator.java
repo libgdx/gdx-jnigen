@@ -79,7 +79,8 @@ public class Generator {
                 return Manager.getInstance().resolveCTypeMapping(alternativeName);
 
             MappedType parentMappedType = parent == null ? Manager.getInstance().getGlobalType() : parent;
-            FunctionSignature functionSignature = parseFunctionSignature(alternativeName, type);
+            // TODO: 20.03.24 I have yet to find a way to reliably parse closure type arg names
+            FunctionSignature functionSignature = parseFunctionSignature(alternativeName, type, null);
 
             // TODO: 19.03.24 Solve better, something like "lockMapping" idk
             if (Manager.getInstance().hasCTypeMapping(alternativeName)) // function -> closure -> struct -> same closure
@@ -158,7 +159,7 @@ public class Generator {
     }
 
     // TODO: Pass proper parameter names
-    public static FunctionSignature parseFunctionSignature(String name, CXType functionType) {
+    public static FunctionSignature parseFunctionSignature(String functionName, CXType functionType, CXCursor cursor) {
         CXType returnType = clang_getResultType(functionType);
         TypeDefinition returnDefinition = registerCXType(returnType, "ret", null);
 
@@ -166,12 +167,18 @@ public class Generator {
         NamedType[] argTypes = new NamedType[numArgs];
         for (int i = 0; i < numArgs; i++) {
             CXType argType = clang_getArgType(functionType, i);
-            TypeDefinition argTypeDefinition = registerCXType(argType, "arg" + i, null);
-            // TODO: To retrieve the parameter name if available, we should utilise another visitor
-            //  However, I decided that I don't care for the moment
-            argTypes[i] = new NamedType(argTypeDefinition, "arg" + i);
+            String name = "arg" + i;
+            if (cursor != null) {
+                CXCursor paramCursor = clang_Cursor_getArgument(cursor, i);
+                String potentialName = clang_getCursorSpelling(paramCursor).getString();
+                if (!potentialName.isEmpty())
+                    name = potentialName;
+            }
+            TypeDefinition argTypeDefinition = registerCXType(argType, name, null);
+
+            argTypes[i] = new NamedType(argTypeDefinition, name);
         }
-        return new FunctionSignature(name, argTypes, returnDefinition);
+        return new FunctionSignature(functionName, argTypes, returnDefinition);
     }
 
     public static void parse(String fileToParse, String[] options) {
@@ -198,7 +205,7 @@ public class Generator {
                 String name = clang_getCursorSpelling(current).getString(); // Why the hell does `getString` dispose the CXString?
                 if (current.kind() == CXCursor_FunctionDecl) {
                     CXType funcType = clang_getCursorType(current);
-                    Manager.getInstance().addFunction(new FunctionType(parseFunctionSignature(name, funcType)));
+                    Manager.getInstance().addFunction(new FunctionType(parseFunctionSignature(name, funcType, current)));
                 } else if (current.kind() == CXCursor_MacroDefinition) {
                     if (clang_Cursor_isMacroBuiltin(current) == 0 && clang_Cursor_isMacroFunctionLike(current) == 0) {
                         CXSourceRange range = clang_getCursorExtent(current);
