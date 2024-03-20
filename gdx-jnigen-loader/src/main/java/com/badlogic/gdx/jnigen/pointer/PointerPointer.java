@@ -30,7 +30,7 @@ public class PointerPointer<T extends Pointing> extends Pointing {
             throw new IllegalArgumentException("Depth is " + depth + " which is below 2. Depth needs to be at least 2, otherwise use the direct pointer types");
     }
 
-    private PointerPointer<T> guardCount(long count) {
+    public PointerPointer<T> guardCount(long count) {
         super.guardBytes(__pointer_size * count);
         return this;
     }
