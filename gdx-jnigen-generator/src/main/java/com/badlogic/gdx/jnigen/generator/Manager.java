@@ -69,7 +69,7 @@ public class Manager {
         String name = stackElementType.abstractType();
         if (registerGlobally) {
             if (stackElements.containsKey(name))
-                return; // TODO: 19.02.24 FIGURE OUT WHY THIS CAN HAPPEN?????
+                throw new IllegalArgumentException("Struct with name: " + name + " already exists.");
             stackElements.put(name, stackElementType);
         }
         orderedStackElements.add(stackElementType);
