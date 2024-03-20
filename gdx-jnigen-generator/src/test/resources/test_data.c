@@ -185,6 +185,16 @@ void call_methodWithCallbackTestEnumArg(methodWithCallbackTestEnumArg fnPtr) {
     fnPtr(SECOND);
 }
 
+TestEnum* call_methodWithCallbackTestEnumPointerReturn(methodWithCallbackTestEnumPointerReturn fnPtr) {
+    return fnPtr();
+}
+
+void call_methodWithCallbackTestEnumPointerArg(methodWithCallbackTestEnumPointerArg fnPtr) {
+    TestEnum test = SECOND;
+    fnPtr(&test);
+}
+
+
 // Pointer stuff
 int passIntPointer(int* ptr) {
     return *ptr;

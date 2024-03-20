@@ -19,7 +19,6 @@ public class EnumTest extends BaseTest {
         assertEquals(0, TestData.passTestEnum(TestEnum.THIRD));
     }
 
-    // TODO: 20.03.24 TEST CLOSURES
     @Test
     public void testPassEnumPointer() {
         EnumPointer<TestEnum> testEnumEnumPointer = new EnumPointer<>(TestEnum::getByIndex);
@@ -76,10 +75,27 @@ public class EnumTest extends BaseTest {
     }
 
     @Test
+    public void testReturnEnumPointerClosure() {
+        EnumPointer<TestEnum> toReturn = new EnumPointer<>(TestEnum::getByIndex);
+        ClosureObject<TestData.methodWithCallbackTestEnumPointerReturn> closure = ClosureObject.fromClosure(() -> toReturn);
+        assertEquals(toReturn.getPointer(), TestData.call_methodWithCallbackTestEnumPointerReturn(closure).getPointer());
+        closure.free();
+    }
+
+    @Test
     public void testArgEnumClosure() {
         AtomicReference<TestEnum> returned = new AtomicReference<>();
         ClosureObject<TestData.methodWithCallbackTestEnumArg> closure = ClosureObject.fromClosure(returned::set);
         TestData.call_methodWithCallbackTestEnumArg(closure);
+        assertEquals(TestEnum.SECOND, returned.get());
+        closure.free();
+    }
+
+    @Test
+    public void testArgEnumPointerClosure() {
+        AtomicReference<TestEnum> returned = new AtomicReference<>();
+        ClosureObject<TestData.methodWithCallbackTestEnumPointerArg> closure = ClosureObject.fromClosure(newValue -> returned.set(newValue.getEnumValue()));
+        TestData.call_methodWithCallbackTestEnumPointerArg(closure);
         assertEquals(TestEnum.SECOND, returned.get());
         closure.free();
     }
