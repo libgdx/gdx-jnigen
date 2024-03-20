@@ -5,11 +5,13 @@ import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
 import com.badlogic.gdx.jnigen.pointer.DoublePointer;
 import com.badlogic.gdx.jnigen.pointer.EnumPointer;
 import com.badlogic.gdx.jnigen.pointer.FloatPointer;
+import com.badlogic.gdx.jnigen.pointer.PointerPointer;
 import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
 import com.badlogic.gdx.jnigen.pointer.VoidPointer;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
@@ -22,6 +24,10 @@ public class PointerType implements MappedType {
 
     public PointerType(TypeDefinition pointingTo) {
         this.pointingTo = pointingTo;
+    }
+
+    public boolean isPointerPointer() {
+        return pointingTo.getTypeKind() == TypeKind.POINTER;
     }
 
     public boolean isEnumPointer() {
@@ -62,6 +68,8 @@ public class PointerType implements MappedType {
             cu.addImport(VoidPointer.class);
         else if (isEnumPointer())
             cu.addImport(EnumPointer.class);
+        else if (isPointerPointer())
+            cu.addImport(PointerPointer.class);
         else
             throw new IllegalArgumentException("Type " + pointingTo.getTypeKind() + " can't be pointerized");
         pointingTo.getMappedType().importType(cu);
@@ -91,6 +99,8 @@ public class PointerType implements MappedType {
             return EnumPointer.class.getSimpleName() + "<" + pointingTo.getMappedType().abstractType() + ">";
         if (isStackElementPointer())
             return pointingTo.getMappedType().abstractType() + "." + pointingTo.getMappedType().abstractType() + "Pointer";
+        if (isPointerPointer())
+            return PointerPointer.class.getSimpleName() + "<" + pointingTo.getMappedType().abstractType() + ">";
 
         throw new IllegalArgumentException();
     }
@@ -101,8 +111,13 @@ public class PointerType implements MappedType {
     }
 
     @Override
-    public MappedType asPointer() {
-        throw new IllegalArgumentException("Not yet implemented");
+    public PointerType asPointer() {
+        // TODO: 20.03.24 Can this be done better? So, that the definition is created during parsing
+        TypeDefinition definition = new TypeDefinition(TypeKind.POINTER, pointingTo.getTypeName() + "*");
+        definition.setNestedDefinition(pointingTo);
+        definition.setOverrideMappedType(this);
+
+        return new PointerType(definition);
     }
 
     @Override
@@ -120,6 +135,26 @@ public class PointerType implements MappedType {
             createObject.addArgument(new StringLiteralExpr(pointingTo.getTypeName()));
         if (isEnumPointer())
             createObject.addArgument(pointingTo.getMappedType().abstractType() + "::getByIndex");
+        if (isPointerPointer()) {
+            PointerType root = pointingTo.rootType().getMappedType().asPointer();
+            if (root.isPointerPointer())
+                throw new IllegalArgumentException();
+
+            if (root.isEnumPointer() || root.isIntPointer()) {
+                MethodCallExpr methodCallExpr = new MethodCallExpr("getPointerPointerSupplier");
+                if (root.isIntPointer()) {
+                    methodCallExpr.setScope(new NameExpr(root.abstractType()));
+                    methodCallExpr.addArgument(new StringLiteralExpr(root.pointingTo.getTypeName()));
+                } else {
+                    methodCallExpr.setScope(new NameExpr("EnumPointer"));
+                    methodCallExpr.addArgument(root.pointingTo.getMappedType().abstractType() + "::getByIndex");
+                }
+                createObject.addArgument(methodCallExpr);
+            } else {
+                createObject.addArgument(root.abstractType() + "::new");
+            }
+            createObject.addArgument(String.valueOf(pointingTo.getDepth()));
+        }
         return createObject;
     }
 

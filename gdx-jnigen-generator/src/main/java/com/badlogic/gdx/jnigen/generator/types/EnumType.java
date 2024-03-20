@@ -113,7 +113,7 @@ public class EnumType implements MappedType {
     }
 
     @Override
-    public MappedType asPointer() {
+    public PointerType asPointer() {
         return new PointerType(definition);
     }
 

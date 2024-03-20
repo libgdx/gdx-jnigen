@@ -60,7 +60,7 @@ public class PrimitiveType implements MappedType {
     }
 
     @Override
-    public MappedType asPointer() {
+    public PointerType asPointer() {
         return new PointerType(definition);
     }
 

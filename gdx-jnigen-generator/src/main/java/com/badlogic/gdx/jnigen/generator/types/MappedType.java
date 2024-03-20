@@ -23,7 +23,7 @@ public interface MappedType {
 
     String primitiveType();
 
-    MappedType asPointer();
+    PointerType asPointer();
 
     Expression fromC(Expression cRetrieved);
 
