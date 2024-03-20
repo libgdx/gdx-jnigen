@@ -25,10 +25,13 @@ import java.util.Map.Entry;
 
 public class EnumType implements MappedType {
 
+    private static final int MAX_VALUE_ARRAY_SIZE = 16;
+
     private final TypeDefinition definition;
     private final String javaName;
     private final HashMap<Integer, String> constants = new HashMap<>();
-    private int highestConstantID = 0;
+    private int highestConstantID = Integer.MIN_VALUE;
+    private int lowestConstantID = Integer.MAX_VALUE;
 
     public EnumType(TypeDefinition definition, String javaName) {
         this.javaName = javaName;
@@ -45,8 +48,11 @@ public class EnumType implements MappedType {
         }
 
         constants.put(index, constantName);
+
         if (index > highestConstantID)
             highestConstantID = index;
+        if (index < lowestConstantID)
+            lowestConstantID = index;
     }
 
     public void write(CompilationUnit cu) {
@@ -67,10 +73,10 @@ public class EnumType implements MappedType {
         MethodDeclaration getByIndex = declaration.addMethod("getByIndex", Keyword.PUBLIC, Keyword.STATIC);
         getByIndex.addParameter(int.class, "index");
         getByIndex.setType(javaName);
-        if (highestConstantID <= 16) {
+        if (highestConstantID - lowestConstantID <= MAX_VALUE_ARRAY_SIZE) {
             getByIndex.createBody().addStatement("return _values[index];");
             NodeList<Expression> expressions = new NodeList<>();
-            for (int i = 0; i <= highestConstantID; i++) {
+            for (int i = lowestConstantID; i <= highestConstantID; i++) {
                 String name = constants.get(i);
                 expressions.add(name == null ? new NullLiteralExpr() : new NameExpr(name));
             }
