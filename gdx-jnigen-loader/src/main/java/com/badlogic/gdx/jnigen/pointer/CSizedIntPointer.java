@@ -29,6 +29,10 @@ public final class CSizedIntPointer extends Pointing {
         this.cTypeInfo = info;
     }
 
+    public static PointerDereferenceSupplier<CSizedIntPointer> getPointerPointerSupplier(String cTypeInfo) {
+        return (pointer, freeOnGC) -> new CSizedIntPointer(pointer, freeOnGC, cTypeInfo);
+    }
+
     public CSizedIntPointer guardCount(long count) {
         super.guardBytes(count * cTypeInfo.getSize());
         return this;
