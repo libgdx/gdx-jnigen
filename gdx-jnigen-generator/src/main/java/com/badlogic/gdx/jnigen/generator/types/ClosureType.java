@@ -142,7 +142,7 @@ public class ClosureType implements MappedType, WritableClass {
     }
 
     @Override
-    public MappedType asPointer() {
+    public PointerType asPointer() {
         throw new IllegalArgumentException("To implement");
     }
 

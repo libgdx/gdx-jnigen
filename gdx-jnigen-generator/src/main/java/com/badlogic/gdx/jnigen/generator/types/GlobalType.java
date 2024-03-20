@@ -30,10 +30,6 @@ public class GlobalType implements MappedType {
         closures.put(closureType.getName(), closureType);
     }
 
-    public boolean hasClosure(ClosureType closureType) {
-        return closures.containsValue(closureType);
-    }
-
     public void addFunction(FunctionType functionType) {
         functions.add(functionType);
     }
@@ -85,7 +81,7 @@ public class GlobalType implements MappedType {
     }
 
     @Override
-    public MappedType asPointer() {
+    public PointerType asPointer() {
         throw new IllegalArgumentException("Should not reach");
     }
 

@@ -52,6 +52,23 @@ public class TypeDefinition {
         this.nestedDefinition = nestedDefinition;
     }
 
+    public int getDepth() {
+        int depth = 0;
+        TypeDefinition inner = this;
+        while (inner != null) {
+            depth++;
+            inner = inner.nestedDefinition;
+        }
+        return depth;
+    }
+
+    public TypeDefinition rootType() {
+        TypeDefinition root = this;
+        while (root.nestedDefinition != null)
+            root = root.nestedDefinition;
+        return root;
+    }
+
     public boolean isAnonymous() {
         return anonymous;
     }
