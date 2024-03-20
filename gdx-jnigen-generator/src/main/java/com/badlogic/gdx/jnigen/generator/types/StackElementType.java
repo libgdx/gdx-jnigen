@@ -31,7 +31,7 @@ public class StackElementType implements MappedType, WritableClass {
 
 
     private final TypeDefinition definition;
-    private final TypeDefinition parent;
+    private final MappedType parent;
     private final List<TypeDefinition> children = new ArrayList<>();
 
     // TODO: Conceptionally, this belongs into TypeDefinition
@@ -40,7 +40,7 @@ public class StackElementType implements MappedType, WritableClass {
     private final String pointerName;
     private final String javaTypeName;
 
-    public StackElementType(TypeDefinition definition, String javaTypeName, TypeDefinition parent, boolean isStruct) {
+    public StackElementType(TypeDefinition definition, String javaTypeName, MappedType parent, boolean isStruct) {
         this.definition = definition;
         this.isStruct = isStruct;
         this.javaTypeName = javaTypeName;
@@ -273,7 +273,7 @@ public class StackElementType implements MappedType, WritableClass {
     @Override
     public String classFile() {
         if (parent != null)
-            return parent.getMappedType().classFile() + "." + javaTypeName;
+            return parent.classFile() + "." + javaTypeName;
         return packageName() + "." + javaTypeName;
     }
 
