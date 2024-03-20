@@ -31,8 +31,11 @@ import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructPointe
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructArg;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructPointerArg;
 import com.badlogic.jnigen.generated.enums.TestEnum;
+import com.badlogic.gdx.jnigen.pointer.EnumPointer;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumArg;
+import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumPointerReturn;
+import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumPointerArg;
 import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerArg;
@@ -294,6 +297,30 @@ public final class TestData {
     	return (jint)passAndReturnTestEnum((TestEnum)arg0);
     */
 
+    public static int passTestEnumPointer(EnumPointer<TestEnum> arg0) {
+        return passTestEnumPointer_internal(arg0.getPointer());
+    }
+
+    static private native int passTestEnumPointer_internal(long arg0);/*
+    	return (jint)passTestEnumPointer((TestEnum *)arg0);
+    */
+
+    public static EnumPointer<TestEnum> returnTestEnumPointer() {
+        return new EnumPointer<TestEnum>(returnTestEnumPointer_internal(), false, TestEnum::getByIndex);
+    }
+
+    static private native long returnTestEnumPointer_internal();/*
+    	return (jlong)returnTestEnumPointer();
+    */
+
+    public static TestEnum passAndReturnTestEnumPointer(EnumPointer<TestEnum> arg0) {
+        return TestEnum.getByIndex((int) passAndReturnTestEnumPointer_internal(arg0.getPointer()));
+    }
+
+    static private native int passAndReturnTestEnumPointer_internal(long arg0);/*
+    	return (jint)passAndReturnTestEnumPointer((TestEnum *)arg0);
+    */
+
     public static TestEnum call_methodWithCallbackTestEnumReturn(ClosureObject<methodWithCallbackTestEnumReturn> arg0) {
         return TestEnum.getByIndex((int) call_methodWithCallbackTestEnumReturn_internal(arg0.getFnPtr()));
     }
@@ -308,6 +335,22 @@ public final class TestData {
 
     static private native void call_methodWithCallbackTestEnumArg_internal(long arg0);/*
     	call_methodWithCallbackTestEnumArg((methodWithCallbackTestEnumArg)arg0);
+    */
+
+    public static EnumPointer<TestEnum> call_methodWithCallbackTestEnumPointerReturn(ClosureObject<methodWithCallbackTestEnumPointerReturn> arg0) {
+        return new EnumPointer<TestEnum>(call_methodWithCallbackTestEnumPointerReturn_internal(arg0.getFnPtr()), false, TestEnum::getByIndex);
+    }
+
+    static private native long call_methodWithCallbackTestEnumPointerReturn_internal(long arg0);/*
+    	return (jlong)call_methodWithCallbackTestEnumPointerReturn((methodWithCallbackTestEnumPointerReturn)arg0);
+    */
+
+    public static void call_methodWithCallbackTestEnumPointerArg(ClosureObject<methodWithCallbackTestEnumPointerArg> arg0) {
+        call_methodWithCallbackTestEnumPointerArg_internal(arg0.getFnPtr());
+    }
+
+    static private native void call_methodWithCallbackTestEnumPointerArg_internal(long arg0);/*
+    	call_methodWithCallbackTestEnumPointerArg((methodWithCallbackTestEnumPointerArg)arg0);
     */
 
     public static int passIntPointer(CSizedIntPointer arg0) {
@@ -514,6 +557,21 @@ public final class TestData {
         }
     }
 
+    public interface methodWithCallbackTestEnumPointerArg extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(-1) };
+
+        void methodWithCallbackTestEnumPointerArg_call(EnumPointer<TestEnum> arg0);
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            methodWithCallbackTestEnumPointerArg_call(new EnumPointer<TestEnum>(parameters[0].asLong(), false, TestEnum::getByIndex));
+        }
+    }
+
     public interface methodWithCallbackDoubleReturn extends Closure {
 
         CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(2) };
@@ -571,6 +629,21 @@ public final class TestData {
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
             returnType.setValue(methodWithCallbackShortReturn_call());
+        }
+    }
+
+    public interface methodWithCallbackTestEnumPointerReturn extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-1) };
+
+        EnumPointer<TestEnum> methodWithCallbackTestEnumPointerReturn_call();
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            returnType.setValue(methodWithCallbackTestEnumPointerReturn_call());
         }
     }
 

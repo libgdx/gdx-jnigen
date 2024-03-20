@@ -118,7 +118,7 @@ void call_methodWithCallbackTestStructPointerArg(methodWithCallbackTestStructPoi
     fnPtr(arg);
 }
 
-TestStruct* returnTestStructPointer() {
+TestStruct* returnTestStructPointer(void) {
     TestStruct* ptr = (TestStruct*)malloc(sizeof(TestStruct));
     TestStruct str = {
         .field1 = 1,
@@ -131,7 +131,7 @@ TestStruct* returnTestStructPointer() {
     return ptr;
 }
 
-TestStruct returnTestStruct() {
+TestStruct returnTestStruct(void) {
     TestStruct str = {
         .field1 = 1,
         .field2 = 2,
@@ -155,12 +155,26 @@ int passTestEnum(TestEnum enumValue) {
     return enumValue == SECOND;
 }
 
-TestEnum returnTestEnum() {
+TestEnum returnTestEnum(void) {
     return THIRD;
 }
 
 TestEnum passAndReturnTestEnum(TestEnum enumValue) {
     return enumValue;
+}
+
+int passTestEnumPointer(TestEnum* enumValue) {
+    return *enumValue == SECOND;
+}
+
+TestEnum* returnTestEnumPointer(void) {
+    TestEnum* ptr = malloc(sizeof(TestEnum));
+    *ptr = THIRD;
+    return ptr;
+}
+
+TestEnum passAndReturnTestEnumPointer(TestEnum* enumValue) {
+    return *enumValue;
 }
 
 TestEnum call_methodWithCallbackTestEnumReturn(methodWithCallbackTestEnumReturn fnPtr) {
