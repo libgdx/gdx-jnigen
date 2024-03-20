@@ -127,11 +127,22 @@ int passTestEnum(TestEnum enumValue);
 TestEnum returnTestEnum(void);
 TestEnum passAndReturnTestEnum(TestEnum enumValue);
 
+int passTestEnumPointer(TestEnum* enumValue);
+TestEnum* returnTestEnumPointer(void);
+TestEnum passAndReturnTestEnumPointer(TestEnum* enumValue);
+
 typedef TestEnum (*methodWithCallbackTestEnumReturn)(void);
 typedef void (*methodWithCallbackTestEnumArg)(TestEnum);
 
+typedef TestEnum* (*methodWithCallbackTestEnumPointerReturn)(void);
+typedef void (*methodWithCallbackTestEnumPointerArg)(TestEnum*);
+
+
 TestEnum call_methodWithCallbackTestEnumReturn(methodWithCallbackTestEnumReturn fnPtr);
 void call_methodWithCallbackTestEnumArg(methodWithCallbackTestEnumArg fnPtr);
+
+TestEnum* call_methodWithCallbackTestEnumPointerReturn(methodWithCallbackTestEnumPointerReturn fnPtr);
+void call_methodWithCallbackTestEnumPointerArg(methodWithCallbackTestEnumPointerArg fnPtr);
 
 // Pointer stuff
 int passIntPointer(int*);

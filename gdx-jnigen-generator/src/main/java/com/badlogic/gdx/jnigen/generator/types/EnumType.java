@@ -25,12 +25,14 @@ import java.util.Map.Entry;
 
 public class EnumType implements MappedType {
 
+    private final TypeDefinition definition;
     private final String javaName;
     private final HashMap<Integer, String> constants = new HashMap<>();
     private int highestConstantID = 0;
 
-    public EnumType(String javaName) {
+    public EnumType(TypeDefinition definition, String javaName) {
         this.javaName = javaName;
+        this.definition = definition;
     }
 
     public void registerConstant(String constantName, int index) {
@@ -112,7 +114,7 @@ public class EnumType implements MappedType {
 
     @Override
     public MappedType asPointer() {
-        throw new IllegalArgumentException("To implement");
+        return new PointerType(definition);
     }
 
     @Override

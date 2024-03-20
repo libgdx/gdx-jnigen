@@ -1,6 +1,7 @@
 package com.badlogic.jnigen.tests;
 
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
+import com.badlogic.gdx.jnigen.pointer.EnumPointer;
 import com.badlogic.jnigen.generated.TestData;
 import com.badlogic.jnigen.generated.enums.TestEnum;
 import org.junit.jupiter.api.Test;
@@ -18,9 +19,29 @@ public class EnumTest extends BaseTest {
         assertEquals(0, TestData.passTestEnum(TestEnum.THIRD));
     }
 
+    // TODO: 20.03.24 TEST CLOSURES
+    @Test
+    public void testPassEnumPointer() {
+        EnumPointer<TestEnum> testEnumEnumPointer = new EnumPointer<>(TestEnum::getByIndex);
+        testEnumEnumPointer.setEnumValue(TestEnum.SECOND);
+        assertEquals(1, TestData.passTestEnumPointer(testEnumEnumPointer));
+        testEnumEnumPointer.setEnumValue(TestEnum.FIRST);
+        assertEquals(0, TestData.passTestEnumPointer(testEnumEnumPointer));
+        testEnumEnumPointer.setEnumValue(TestEnum.THIRD);
+        assertEquals(0, TestData.passTestEnumPointer(testEnumEnumPointer));
+
+    }
+
     @Test
     public void testReturnEnum() {
         assertEquals(TestEnum.THIRD, TestData.returnTestEnum());
+    }
+
+    @Test
+    public void testReturnEnumPointer() {
+        EnumPointer<TestEnum> pointer = TestData.returnTestEnumPointer();
+        assertEquals(TestEnum.THIRD, pointer.getEnumValue());
+        pointer.free();
     }
 
     @Test
@@ -28,6 +49,17 @@ public class EnumTest extends BaseTest {
         assertEquals(TestEnum.FIRST, TestData.passAndReturnTestEnum(TestEnum.FIRST));
         assertEquals(TestEnum.SECOND, TestData.passAndReturnTestEnum(TestEnum.SECOND));
         assertEquals(TestEnum.THIRD, TestData.passAndReturnTestEnum(TestEnum.THIRD));
+    }
+
+    @Test
+    public void testPassAndReturnEnumPointer() {
+        EnumPointer<TestEnum> testEnumEnumPointer = new EnumPointer<>(TestEnum::getByIndex);
+        testEnumEnumPointer.setEnumValue(TestEnum.FIRST);
+        assertEquals(TestEnum.FIRST, TestData.passAndReturnTestEnumPointer(testEnumEnumPointer));
+        testEnumEnumPointer.setEnumValue(TestEnum.SECOND);
+        assertEquals(TestEnum.SECOND, TestData.passAndReturnTestEnumPointer(testEnumEnumPointer));
+        testEnumEnumPointer.setEnumValue(TestEnum.THIRD);
+        assertEquals(TestEnum.THIRD, TestData.passAndReturnTestEnumPointer(testEnumEnumPointer));
     }
 
     @Test

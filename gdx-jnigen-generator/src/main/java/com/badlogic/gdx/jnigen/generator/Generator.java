@@ -130,7 +130,7 @@ public class Generator {
             TypeDefinition typeDefinition = new TypeDefinition(TypeKind.ENUM, name);
             Manager.getInstance().registerCTypeMapping(name, typeDefinition);
 
-            typeDefinition.setOverrideMappedType(new EnumParser(type, alternativeName).register());
+            typeDefinition.setOverrideMappedType(new EnumParser(typeDefinition, type, alternativeName).register());
             return typeDefinition;
         } else if (!typeKind.isSpecial()) {
             TypeDefinition typeDefinition = new TypeDefinition(typeKind, name);
