@@ -46,7 +46,8 @@ public class Generator {
         if (clang_getTypeDeclaration(type).kind() == CXCursor_TypedefDecl) {
             CXType typeDef = clang_getTypedefDeclUnderlyingType(clang_getTypeDeclaration(type));
             Manager.getInstance().registerTypeDef(clang_getTypedefName(type).getString(), clang_getTypeSpelling(typeDef).getString());
-            // TODO: 19.03.24 A typedef unsets a parent, because an anonymous declaration can't be typedefed I think
+
+            // A typedef unsets a parent, because an anonymous declaration can't be typedefed I think
             TypeDefinition lower = registerCXType(typeDef, clang_getTypedefName(type).getString(), null);
             TypeDefinition definition = new TypeDefinition(lower.getTypeKind(), clang_getTypedefName(type).getString());
             definition.setOverrideMappedType(lower.getMappedType());
@@ -108,7 +109,15 @@ public class Generator {
             return typeDefinition;
         }
 
-        if (type.kind() == CXType_IncompleteArray || type.kind() == CXType_ConstantArray) {
+        if (type.kind() == CXType_IncompleteArray) {
+            TypeDefinition typeDefinition = new TypeDefinition(TypeKind.POINTER, name.replace("[]", "*"));
+            TypeDefinition nested = registerCXType(clang_getArrayElementType(type), alternativeName, parent);
+            typeDefinition.setOverrideMappedType(nested.getMappedType().asPointer());
+            typeDefinition.setNestedDefinition(nested);
+            return typeDefinition;
+        }
+
+        if (type.kind() == CXType_ConstantArray) {
             TypeDefinition typeDefinition = new TypeDefinition(TypeKind.FIXED_SIZE_ARRAY, name);
             typeDefinition.setCount((int)clang.clang_getArraySize(type));
             TypeDefinition nested = registerCXType(clang_getArrayElementType(type), alternativeName, parent);
