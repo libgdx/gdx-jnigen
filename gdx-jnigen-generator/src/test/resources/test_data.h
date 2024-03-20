@@ -65,6 +65,7 @@ struct AnonymousClosure
 };
 
 void ensureAnonymousStructParsed(AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure);
+void constArrayParameter(const TestStruct structs[]);
 
 // Typedefs
 typedef void (*methodWithCallback)(void);

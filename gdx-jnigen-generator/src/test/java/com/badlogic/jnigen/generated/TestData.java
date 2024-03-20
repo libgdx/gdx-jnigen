@@ -5,6 +5,8 @@ import com.badlogic.jnigen.generated.structs.AnonymousStructNoField;
 import com.badlogic.jnigen.generated.structs.AnonymousStructField;
 import com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray;
 import com.badlogic.jnigen.generated.structs.AnonymousClosure;
+import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
+import com.badlogic.jnigen.generated.structs.TestStruct;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.jnigen.generated.TestData.methodWithCallback;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackLongArg;
@@ -24,8 +26,6 @@ import com.badlogic.jnigen.generated.TestData.methodWithCallbackByteReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackBooleanReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackFloatReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackDoubleReturn;
-import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
-import com.badlogic.jnigen.generated.structs.TestStruct;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructPointerReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructArg;
@@ -59,6 +59,14 @@ public final class TestData {
 
     static private native void ensureAnonymousStructParsed_internal(long arg0, long arg1, long arg2, long arg3);/*
     	ensureAnonymousStructParsed(*(AnonymousStructNoField*)arg0, *(AnonymousStructField*)arg1, *(AnonymousStructFieldArray*)arg2, *(struct AnonymousClosure*)arg3);
+    */
+
+    public static void constArrayParameter(TestStruct.TestStructPointer arg0) {
+        constArrayParameter_internal(arg0.getPointer());
+    }
+
+    static private native void constArrayParameter_internal(long arg0);/*
+    	constArrayParameter((const TestStruct*)arg0);
     */
 
     public static void call_methodWithCallback(ClosureObject<methodWithCallback> arg0) {
