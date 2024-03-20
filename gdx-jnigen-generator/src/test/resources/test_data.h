@@ -7,6 +7,21 @@
 extern "C" {
 #endif
 
+#define UNSIGNED_INT 10
+#define SIGNED_INT -10
+#define UNSIGNED_DOUBLE 10.5
+#define SIGNED_DOUBLE -10.5
+#define UNSIGNED_HEX_INT 0x5B
+#define SIGNED_HEX_INT -0x5B
+#define boolean 10
+#define special1 10L
+#define special2 10LLU
+#define special3 10.5
+#define special4 10.5f
+#define special5 10.5F
+#define special6 10.5L
+#define special7 10.5l
+
 typedef struct TestStruct {
     uint64_t field1;
     uint32_t field2;
