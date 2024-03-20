@@ -19,12 +19,9 @@ public class TypeDefinition {
         this.typeKind = typeKind;
         if (typeKind.isPrimitive())
             Manager.getInstance().recordCType(typeName);
-        if (typeName.startsWith("const ")) {
-            this.typeName = typeName.replace("const ", "");
+        this.typeName = typeName;
+        if (typeName.startsWith("const "))
             constMarked = true;
-        } else {
-            this.typeName = typeName;
-        }
     }
 
     public TypeKind getTypeKind() {
