@@ -37,6 +37,7 @@ public enum TypeKind {
     }
 
     public static TypeKind getTypeKind(CXType type) {
+        // TODO: 20.03.24 Get rid of at some point
         type = clang_getCanonicalType(type);
         int kind = type.kind();
 
@@ -50,7 +51,7 @@ public enum TypeKind {
                 }
             }
         }
-        throw new IllegalArgumentException("Could not find Kind for " + kind);
+        throw new IllegalArgumentException("Could not find Kind for " + kind + " for type " + clang_getTypeSpelling(type).getString());
     }
 
     public int getSize() {
