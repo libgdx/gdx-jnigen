@@ -6,8 +6,6 @@ import com.badlogic.gdx.jnigen.generator.types.ClosureType;
 import com.badlogic.gdx.jnigen.generator.types.EnumType;
 import com.badlogic.gdx.jnigen.generator.types.FunctionType;
 import com.badlogic.gdx.jnigen.generator.types.GlobalType;
-import com.badlogic.gdx.jnigen.generator.types.MappedType;
-import com.badlogic.gdx.jnigen.generator.types.NamedType;
 import com.badlogic.gdx.jnigen.generator.types.StackElementType;
 import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
 import com.github.javaparser.StaticJavaParser;
@@ -54,7 +52,7 @@ public class Manager {
     private final Map<String, EnumType> enums = new HashMap<>();
     private final ArrayList<String> knownCTypes = new ArrayList<>();
 
-    private final HashMap<String, MappedType> cTypeToJavaStringMapper = new HashMap<>();
+    private final HashMap<String, TypeDefinition> cTypeToJavaStringMapper = new HashMap<>();
 
     private final Map<String, String> typedefs = new HashMap<>();
 
@@ -101,13 +99,13 @@ public class Manager {
         return knownCTypes.indexOf(name);
     }
 
-    public void registerCTypeMapping(String name, MappedType javaRepresentation) {
+    public void registerCTypeMapping(String name, TypeDefinition javaRepresentation) {
         if (cTypeToJavaStringMapper.containsKey(name))
             throw new IllegalArgumentException("Already registered type " + name);
         cTypeToJavaStringMapper.put(name, javaRepresentation);
     }
 
-    private MappedType getCTypeMapping(String name) {
+    private TypeDefinition getCTypeMapping(String name) {
         if (cTypeToJavaStringMapper.containsKey(name))
             return cTypeToJavaStringMapper.get(name);
         if (typedefs.containsKey(name))
@@ -115,7 +113,7 @@ public class Manager {
         return null;
     }
 
-    public MappedType resolveCTypeMapping(String name) {
+    public TypeDefinition resolveCTypeMapping(String name) {
         if (!hasCTypeMapping(name))
             throw new IllegalArgumentException("No registered type " + name);
         return getCTypeMapping(name);

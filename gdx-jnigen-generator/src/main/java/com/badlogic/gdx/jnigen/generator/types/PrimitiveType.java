@@ -10,9 +10,9 @@ import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 
 public class PrimitiveType implements MappedType {
 
-    private Class<?> javaRepresentation;
+    private final Class<?> javaRepresentation;
 
-    private TypeDefinition definition;
+    private final TypeDefinition definition;
 
     public PrimitiveType(TypeDefinition typeDefinition, Class<?> javaRepresentation) {
         this.definition = typeDefinition;

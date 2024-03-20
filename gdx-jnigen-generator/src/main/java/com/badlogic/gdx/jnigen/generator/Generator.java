@@ -7,6 +7,8 @@ import com.badlogic.gdx.jnigen.generator.types.FunctionSignature;
 import com.badlogic.gdx.jnigen.generator.types.FunctionType;
 import com.badlogic.gdx.jnigen.generator.types.MappedType;
 import com.badlogic.gdx.jnigen.generator.types.NamedType;
+import com.badlogic.gdx.jnigen.generator.types.PointerType;
+import com.badlogic.gdx.jnigen.generator.types.PrimitiveType;
 import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
 import com.badlogic.gdx.jnigen.generator.types.TypeKind;
 import org.bytedeco.javacpp.BytePointer;
@@ -19,6 +21,7 @@ import org.bytedeco.llvm.clang.CXIndex;
 import org.bytedeco.llvm.clang.CXSourceLocation;
 import org.bytedeco.llvm.clang.CXTranslationUnit;
 import org.bytedeco.llvm.clang.CXType;
+import org.bytedeco.llvm.global.clang;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,77 +42,119 @@ public class Generator {
         }
     }
 
-    public static void registerCXType(CXType type, String alternativeName, TypeDefinition parent) {
+    public static TypeDefinition registerCXType(CXType type, String alternativeName, MappedType parent) {
         if (clang_getTypeDeclaration(type).kind() == CXCursor_TypedefDecl) {
             CXType typeDef = clang_getTypedefDeclUnderlyingType(clang_getTypeDeclaration(type));
             Manager.getInstance().registerTypeDef(clang_getTypedefName(type).getString(), clang_getTypeSpelling(typeDef).getString());
             // TODO: 19.03.24 A typedef unsets a parent, because an anonymous declaration can't be typedefed I think
-            registerCXType(typeDef, clang_getTypedefName(type).getString(), null);
-            return;
+            TypeDefinition lower = registerCXType(typeDef, clang_getTypedefName(type).getString(), null);
+            TypeDefinition definition = new TypeDefinition(lower.getTypeKind(), clang_getTypedefName(type).getString());
+            definition.setOverrideMappedType(lower.getMappedType());
+            return definition;
         }
 
         TypeKind typeKind = TypeKind.getTypeKind(type);
 
         String name = clang_getTypeSpelling(type).getString();
+        if (name.equals("_Bool"))
+            name = "bool"; //TODO WHYYYY?????? Is it a typedef that gets resolved?
+
         if (typeKind == TypeKind.CLOSURE) {
             if (alternativeName == null)
                 throw new IllegalArgumentException();
 
-            if (Manager.getInstance().hasCTypeMapping(name))
-                return;
+            if (Manager.getInstance().hasCTypeMapping(alternativeName))
+                return Manager.getInstance().resolveCTypeMapping(alternativeName);
 
-            MappedType parentMappedType = parent == null ? Manager.getInstance().getGlobalType() : parent.getMappedType();
+            MappedType parentMappedType = parent == null ? Manager.getInstance().getGlobalType() : parent;
             FunctionSignature functionSignature = parseFunctionSignature(alternativeName, type);
 
             // TODO: 19.03.24 Solve better, something like "lockMapping" idk
-            if (Manager.getInstance().hasCTypeMapping(name)) // function -> closure -> struct -> same closure
-                return;
+            if (Manager.getInstance().hasCTypeMapping(alternativeName)) // function -> closure -> struct -> same closure
+                return Manager.getInstance().resolveCTypeMapping(alternativeName);
 
             ClosureType closureType = new ClosureType(functionSignature, parentMappedType);
-            if (parent == null)
+            TypeDefinition typeDefinition = new TypeDefinition(TypeKind.CLOSURE, name);
+            typeDefinition.setOverrideMappedType(closureType);
+            typeDefinition.setAnonymous(parent != null);
+            if (!typeDefinition.isAnonymous()) {
                 Manager.getInstance().addClosure(closureType);
+                Manager.getInstance().registerCTypeMapping(alternativeName, typeDefinition);
+            }
 
-            Manager.getInstance().registerCTypeMapping(name, closureType);
-            return;
+            return typeDefinition;
         }
 
-        if (Manager.getInstance().hasCTypeMapping(name)) {
-            return;
-        }
+        if (Manager.getInstance().hasCTypeMapping(name))
+            return Manager.getInstance().resolveCTypeMapping(name);
+
 
         if (type.kind() == CXType_Pointer) {
             CXType pointee = clang_getPointeeType(type);
+            TypeDefinition typeDefinition = new TypeDefinition(TypeKind.POINTER, name);
+
             if (pointee.kind() == 0)
-                return;
-            registerCXType(pointee, alternativeName, parent);
-            return;
+                typeDefinition.setOverrideMappedType(new PointerType(new TypeDefinition(TypeKind.VOID, "void")));
+
+            TypeDefinition nested = registerCXType(pointee, alternativeName, parent);
+            if (TypeKind.getTypeKind(pointee) == TypeKind.CLOSURE) {
+                typeDefinition = new TypeDefinition(TypeKind.CLOSURE, name);
+                typeDefinition.setOverrideMappedType(nested.getMappedType());
+                typeDefinition.setAnonymous(nested.isAnonymous());
+            } else {
+                typeDefinition.setOverrideMappedType(nested.getMappedType().asPointer());
+                typeDefinition.setNestedDefinition(nested);
+            }
+            return typeDefinition;
         }
 
         if (type.kind() == CXType_IncompleteArray || type.kind() == CXType_ConstantArray) {
-            registerCXType(clang_getArrayElementType(type), alternativeName, parent);
-            return;
+            TypeDefinition typeDefinition = new TypeDefinition(TypeKind.FIXED_SIZE_ARRAY, name);
+            typeDefinition.setCount((int)clang.clang_getArraySize(type));
+            TypeDefinition nested = registerCXType(clang_getArrayElementType(type), alternativeName, parent);
+            typeDefinition.setOverrideMappedType(nested.getMappedType().asPointer());
+            typeDefinition.setNestedDefinition(nested);
+            return typeDefinition;
         }
 
         if (typeKind == TypeKind.STACK_ELEMENT) {
-            new StackElementParser(type, alternativeName, parent).register();
+            TypeDefinition typeDefinition = new TypeDefinition(TypeKind.STACK_ELEMENT, name);
+            typeDefinition.setAnonymous(clang_Cursor_isAnonymous(clang.clang_getTypeDeclaration(type)) != 0);
+            Manager.getInstance().registerCTypeMapping(name, typeDefinition);
+            StackElementParser parser = new StackElementParser(typeDefinition, type, alternativeName, parent);
+
+            typeDefinition.setOverrideMappedType(parser.getStackElementType());
+            parser.parseMappedType();
+            return typeDefinition;
         } else if (typeKind == TypeKind.ENUM) {
-            new EnumParser(type, alternativeName).register();
+            TypeDefinition typeDefinition = new TypeDefinition(TypeKind.ENUM, name);
+            Manager.getInstance().registerCTypeMapping(name, typeDefinition);
+
+            typeDefinition.setOverrideMappedType(new EnumParser(type, alternativeName).register());
+            return typeDefinition;
+        } else if (!typeKind.isSpecial()) {
+            TypeDefinition typeDefinition = new TypeDefinition(typeKind, name);
+            MappedType mappedType = PrimitiveType.fromTypeDefinition(typeDefinition);
+            typeDefinition.setOverrideMappedType(mappedType);
+            return typeDefinition;
         }
+
+        throw new IllegalArgumentException("Should not reach");
     }
 
     // TODO: Pass proper parameter names
     public static FunctionSignature parseFunctionSignature(String name, CXType functionType) {
         CXType returnType = clang_getResultType(functionType);
-        registerCXType(returnType, "ret", null);
-        TypeDefinition returnDefinition = TypeDefinition.createTypeDefinition(returnType);
+        TypeDefinition returnDefinition = registerCXType(returnType, "ret", null);
+
         int numArgs = clang_getNumArgTypes(functionType);
         NamedType[] argTypes = new NamedType[numArgs];
         for (int i = 0; i < numArgs; i++) {
             CXType argType = clang_getArgType(functionType, i);
-            registerCXType(argType, "arg" + i, null);
+            TypeDefinition argTypeDefinition = registerCXType(argType, "arg" + i, null);
             // TODO: To retrieve the parameter name if available, we should utilise another visitor
             //  However, I decided that I don't care for the moment
-            argTypes[i] = new NamedType(TypeDefinition.createTypeDefinition(argType), "arg" + i);
+            argTypes[i] = new NamedType(argTypeDefinition, "arg" + i);
         }
         return new FunctionSignature(name, argTypes, returnDefinition);
     }
