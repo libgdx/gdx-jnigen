@@ -25,13 +25,11 @@ import java.util.Map.Entry;
 
 public class EnumType implements MappedType {
 
-    private final TypeDefinition definition;
     private final String javaName;
     private final HashMap<Integer, String> constants = new HashMap<>();
     private int highestConstantID = 0;
 
-    public EnumType(TypeDefinition definition, String javaName) {
-        this.definition = definition;
+    public EnumType(String javaName) {
         this.javaName = javaName;
     }
 

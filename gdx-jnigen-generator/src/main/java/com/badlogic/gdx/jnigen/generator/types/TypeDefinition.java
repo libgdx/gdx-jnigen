@@ -12,6 +12,8 @@ public class TypeDefinition {
     private boolean constMarked = false;
     private int count;
     private boolean anonymous;
+    private MappedType mappedType;
+
 
     public TypeDefinition(TypeKind typeKind, String typeName) {
         this.typeKind = typeKind;
@@ -26,10 +28,11 @@ public class TypeDefinition {
     }
 
     public TypeKind getTypeKind() {
-        // TODO: 19.03.24 Hacky and shitty
-        if (nestedDefinition != null && nestedDefinition.typeKind == TypeKind.CLOSURE)
-            return TypeKind.CLOSURE;
         return typeKind;
+    }
+
+    public void setOverrideMappedType(MappedType mappedType) {
+        this.mappedType = mappedType;
     }
 
     public String getTypeName() {
@@ -40,48 +43,29 @@ public class TypeDefinition {
         return count;
     }
 
+    public void setCount(int count) {
+        this.count = count;
+    }
+
     public TypeDefinition getNestedDefinition() {
         return nestedDefinition;
+    }
+
+    public void setNestedDefinition(TypeDefinition nestedDefinition) {
+        this.nestedDefinition = nestedDefinition;
     }
 
     public boolean isAnonymous() {
         return anonymous;
     }
 
-    public static TypeDefinition createTypeDefinition(CXType type) {
-        String typeName = clang.clang_getTypeSpelling(type).getString();
-        if (typeName.equals("_Bool"))
-            typeName = "bool"; //TODO WHYYYY?????? Is it a typedef that gets resolved?
-        TypeDefinition definition = new TypeDefinition(TypeKind.getTypeKind(type), typeName);
-        definition.anonymous = clang.clang_Cursor_isAnonymous(clang.clang_getTypeDeclaration(type)) != 0;
-
-        if (definition.getTypeKind() == TypeKind.POINTER) {
-            // TODO: 19.03.2024 DO better and merge code with logic in generator?
-            while (clang.clang_getTypeDeclaration(type).kind() == clang.CXCursor_TypedefDecl) {
-                type = clang.clang_getTypedefDeclUnderlyingType(clang.clang_getTypeDeclaration(type));
-            }
-            CXType pointee = clang.clang_getPointeeType(type);
-            if (pointee.kind() == 0) {
-                definition.nestedDefinition = new TypeDefinition(TypeKind.VOID, "void");
-            } else {
-                definition.nestedDefinition = createTypeDefinition(pointee);
-            }
-        } else if (definition.getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
-            definition.count = (int)clang.clang_getArraySize(type);
-            definition.nestedDefinition = createTypeDefinition(clang.clang_getArrayElementType(type));
-        }
-        return definition;
+    public void setAnonymous(boolean anonymous) {
+        this.anonymous = anonymous;
     }
 
     public MappedType getMappedType() {
-        if (nestedDefinition != null) {
-            if (nestedDefinition.getTypeKind() == TypeKind.CLOSURE)
-                return nestedDefinition.getMappedType();
-            return nestedDefinition.getMappedType().asPointer();
-        }
-        if (typeKind.isPrimitive() || typeKind == TypeKind.VOID) // TODO: Is this correct with void?
-            return PrimitiveType.fromTypeDefinition(this);
-
-        return Manager.getInstance().resolveCTypeMapping(typeName);
+        if (mappedType != null)
+            return mappedType;
+        throw new IllegalArgumentException("Type with name " + typeName + " has no mapped type");
     }
 }
