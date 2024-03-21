@@ -125,6 +125,7 @@ jnigen {
     add(Linux, x32, ARM)
     add(Linux, x64)
     add(Linux, x64, ARM)
+    add(MacOsX, x64)
     add(MacOsX, x64, ARM)
 }
 
