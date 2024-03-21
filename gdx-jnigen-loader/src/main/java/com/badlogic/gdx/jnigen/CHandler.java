@@ -67,7 +67,7 @@ public class CHandler {
     jclass globalClass = NULL;
     JavaVM* gJVM = NULL;
     jthrowable typeBoundCheckFailed;
-    _Thread_local int error_code;
+    thread_local int error_code;
 
     void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
         ATTACH_ENV()
