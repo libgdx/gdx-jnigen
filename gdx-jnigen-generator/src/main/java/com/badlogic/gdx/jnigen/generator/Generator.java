@@ -205,7 +205,15 @@ public class Generator {
                 String name = clang_getCursorSpelling(current).getString(); // Why the hell does `getString` dispose the CXString?
                 if (current.kind() == CXCursor_FunctionDecl) {
                     CXType funcType = clang_getCursorType(current);
-                    Manager.getInstance().addFunction(new FunctionType(parseFunctionSignature(name, funcType, current)));
+                    try {
+                        Manager.startNewManager();
+                        FunctionSignature functionSignature = parseFunctionSignature(name, funcType, current);
+                        Manager.getInstance().addFunction(new FunctionType(functionSignature));
+                    }catch (Throwable e) {
+                        Manager.rollBack();
+                        System.err.println("Failed to parse function: " + name);
+                        e.printStackTrace();
+                    }
                 } else if (current.kind() == CXCursor_MacroDefinition) {
                     if (clang_Cursor_isMacroBuiltin(current) == 0 && clang_Cursor_isMacroFunctionLike(current) == 0) {
                         CXSourceRange range = clang_getCursorExtent(current);
