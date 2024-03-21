@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdarg.h>
 
 #define RANDOM_MACRO 5
 #ifdef __cplusplus
@@ -117,6 +118,10 @@ TestStruct** structPointerPointer(TestStruct** test);
 int** intPointerPointer(int** test);
 float** floatPointerPointer(float** test);
 void***** pointerPointerManyyy(void***** test);
+
+//variadic
+int variadic(int count, ...);
+int variadic_va_list(int count, va_list list);
 
 // Typedefs
 typedef void (*methodWithCallback)(void);
