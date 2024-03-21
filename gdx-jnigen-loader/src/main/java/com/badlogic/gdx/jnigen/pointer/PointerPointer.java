@@ -35,6 +35,15 @@ public class PointerPointer<T extends Pointing> extends Pointing {
         return this;
     }
 
+    public void assertDepth(int depth) {
+        if (this.depth != depth)
+            throw new IllegalArgumentException("Expected depth " + depth + " but got " + this.depth);
+    }
+
+    public int getDepth() {
+        return depth;
+    }
+
     public T getValue() {
         return getValue(0);
     }
