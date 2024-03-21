@@ -54,11 +54,41 @@ public class StackElementParser {
     public void parseMappedType() {
         CXCursor cursor = clang_getTypeDeclaration(toParse);
         CXCursorVisitor visitor = new CXCursorVisitor() {
+            private CXType anonymousType;
+
+            private void parseAnonymousType() {
+                CXCursor anonymousCursor = clang_getTypeDeclaration(anonymousType);
+                anonymousType = null;
+                clang_visitChildren(anonymousCursor, this, null);
+                if (anonymousType != null)
+                    parseAnonymousType();
+            }
+
+            @Override
+            public void close() {
+                if (anonymousType != null)
+                    parseAnonymousType();
+                super.close();
+            }
+
             @Override
             public int call(CXCursor current, CXCursor parent, CXClientData cxClientData) {
                 String cursorSpelling = clang_getCursorSpelling(current).getString();
                 if (current.kind() == CXCursor_FieldDecl) {
                     CXType type = clang_getCursorType(current);
+
+                    if (anonymousType != null) {
+                        CXType resolvedType = type;
+                        if (resolvedType.kind() == CXType_ConstantArray)
+                            resolvedType = clang_getArrayElementType(resolvedType);
+
+                        resolvedType = clang_getCursorType(clang_getTypeDeclaration(resolvedType));
+
+                        if (clang_equalTypes(resolvedType, anonymousType) == 0)
+                            parseAnonymousType();
+
+                        anonymousType = null;
+                    }
 
                     TypeDefinition fieldDefinition = Generator.registerCXType(type, cursorSpelling, stackElementType);
 
@@ -70,6 +100,12 @@ public class StackElementParser {
 
                     if (fieldDefinition.isAnonymous())
                         stackElementType.addChild(fieldDefinition);
+                } else if (current.kind() == CXCursor_StructDecl || current.kind() == CXCursor_UnionDecl) {
+                    if (anonymousType != null)
+                        parseAnonymousType();
+
+                    if (clang_Cursor_isAnonymous(current) != 0)
+                        anonymousType = clang_getCursorType(current);
                 }
 
                 return CXChildVisit_Continue;
