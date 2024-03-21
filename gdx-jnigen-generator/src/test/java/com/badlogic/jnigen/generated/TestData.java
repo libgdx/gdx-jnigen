@@ -5,6 +5,9 @@ import com.badlogic.jnigen.generated.structs.AnonymousStructNoField;
 import com.badlogic.jnigen.generated.structs.AnonymousStructField;
 import com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray;
 import com.badlogic.jnigen.generated.structs.AnonymousClosure;
+import com.badlogic.jnigen.generated.structs.AnonymousStructNoFieldEnd;
+import com.badlogic.jnigen.generated.structs.AnonymousStructNoFieldConsecutive;
+import com.badlogic.jnigen.generated.structs.AnonymousStructNoFieldNested;
 import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
@@ -53,12 +56,12 @@ public final class TestData {
 #include <jnigen.h>
 #include <test_data.h>
 */
-    public static void ensureAnonymousStructParsed(AnonymousStructNoField arg0, AnonymousStructField arg1, AnonymousStructFieldArray arg2, AnonymousClosure arg3) {
-        ensureAnonymousStructParsed_internal(arg0.getPointer(), arg1.getPointer(), arg2.getPointer(), arg3.getPointer());
+    public static void ensureAnonymousStructParsed(AnonymousStructNoField arg0, AnonymousStructField arg1, AnonymousStructFieldArray arg2, AnonymousClosure arg3, AnonymousStructNoFieldEnd arg4, AnonymousStructNoFieldConsecutive arg5, AnonymousStructNoFieldNested arg6) {
+        ensureAnonymousStructParsed_internal(arg0.getPointer(), arg1.getPointer(), arg2.getPointer(), arg3.getPointer(), arg4.getPointer(), arg5.getPointer(), arg6.getPointer());
     }
 
-    static private native void ensureAnonymousStructParsed_internal(long arg0, long arg1, long arg2, long arg3);/*
-    	ensureAnonymousStructParsed(*(AnonymousStructNoField*)arg0, *(AnonymousStructField*)arg1, *(AnonymousStructFieldArray*)arg2, *(struct AnonymousClosure*)arg3);
+    static private native void ensureAnonymousStructParsed_internal(long arg0, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6);/*
+    	ensureAnonymousStructParsed(*(AnonymousStructNoField*)arg0, *(AnonymousStructField*)arg1, *(AnonymousStructFieldArray*)arg2, *(struct AnonymousClosure*)arg3, *(AnonymousStructNoFieldEnd*)arg4, *(AnonymousStructNoFieldConsecutive*)arg5, *(AnonymousStructNoFieldNested*)arg6);
     */
 
     public static void constArrayParameter(TestStruct.TestStructPointer structs) {
@@ -657,7 +660,7 @@ public final class TestData {
 
     public interface methodWithCallbackTestStructArg extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(15) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(18) };
 
         void methodWithCallbackTestStructArg_call(TestStruct arg0);
 
@@ -972,7 +975,7 @@ public final class TestData {
 
     public interface methodWithCallbackTestStructReturn extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(15) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(18) };
 
         TestStruct methodWithCallbackTestStructReturn_call();
 

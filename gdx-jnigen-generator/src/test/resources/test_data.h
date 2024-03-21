@@ -57,6 +57,36 @@ typedef struct AnonymousStructNoField {
     int externalValue;
 } AnonymousStructNoField;
 
+typedef struct AnonymousStructNoFieldEnd {
+    int externalValue;
+    struct {
+        int intValue;
+        float floatValue;
+    };
+} AnonymousStructNoFieldEnd;
+
+typedef struct AnonymousStructNoFieldConsecutive {
+    int externalValue;
+    struct {
+        int intValue1;
+        float floatValue1;
+    };
+    struct {
+        int intValue2;
+        float floatValue2;
+    };
+} AnonymousStructNoFieldConsecutive;
+
+typedef struct AnonymousStructNoFieldNested {
+    struct {
+        int intValue1;
+        struct {
+            float floatValue2;
+        };
+    };
+    int externalValue;
+} AnonymousStructNoFieldNested;
+
 typedef struct AnonymousStructField {
     struct {
         int intValue;
@@ -79,7 +109,7 @@ struct AnonymousClosure
     float (* anotherClosure)(int t, double p);
 };
 
-void ensureAnonymousStructParsed(AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure);
+void ensureAnonymousStructParsed(AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested);
 void constArrayParameter(const TestStruct structs[]);
 
 // Typedefs
