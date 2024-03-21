@@ -42,6 +42,8 @@ public class Manager {
 
     private static Manager instance;
 
+    private final Manager rollBackManager;
+
     private final String parsedCHeader;
     private final String basePackage;
 
@@ -63,10 +65,35 @@ public class Manager {
     private final GlobalType globalType;
 
     public Manager(String parsedCHeader, String basePackage) {
+        this.rollBackManager = null;
         this.parsedCHeader = parsedCHeader;
         this.basePackage = basePackage;
         String[] segments = parsedCHeader.split("/");
         globalType = new GlobalType(JavaUtils.javarizeName(segments[segments.length - 1].split("\\.h")[0]));
+    }
+
+    public Manager(Manager rollBackManager) {
+        this.rollBackManager = rollBackManager;
+        this.parsedCHeader = rollBackManager.parsedCHeader;
+        this.basePackage = rollBackManager.basePackage;
+        this.stackElements.putAll(rollBackManager.stackElements);
+        this.orderedStackElements.addAll(rollBackManager.orderedStackElements);
+        this.enums.putAll(rollBackManager.enums);
+        this.knownCTypes.addAll(rollBackManager.knownCTypes);
+        this.cTypeToJavaStringMapper.putAll(rollBackManager.cTypeToJavaStringMapper);
+        this.typedefs.putAll(rollBackManager.typedefs);
+        this.macros.putAll(rollBackManager.macros);
+        this.globalType = rollBackManager.globalType;
+    }
+
+    public static void startNewManager() {
+        instance = new Manager(instance);
+    }
+
+    public static void rollBack() {
+        if (instance.rollBackManager == null)
+            throw new IllegalStateException("Can't rollback, because no rollback point exists");
+        instance = instance.rollBackManager;
     }
 
     public void addStackElement(StackElementType stackElementType, boolean registerGlobally) {
