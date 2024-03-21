@@ -160,6 +160,9 @@ public class Generator {
 
     // TODO: Pass proper parameter names
     public static FunctionSignature parseFunctionSignature(String functionName, CXType functionType, CXCursor cursor) {
+        if (clang_isFunctionTypeVariadic(functionType) != 0)
+            throw new IllegalArgumentException("Function " + functionName + " is variadic, which is currently not supported");
+
         CXType returnType = clang_getResultType(functionType);
         TypeDefinition returnDefinition = registerCXType(returnType, "ret", null);
 
@@ -167,6 +170,9 @@ public class Generator {
         NamedType[] argTypes = new NamedType[numArgs];
         for (int i = 0; i < numArgs; i++) {
             CXType argType = clang_getArgType(functionType, i);
+            if (clang_getTypeSpelling(argType).getString().equals("va_list"))
+                throw new IllegalArgumentException("Function " + functionName + " has va_list parameter, which is currently not supported");
+
             String name = "arg" + i;
             if (cursor != null) {
                 CXCursor paramCursor = clang_Cursor_getArgument(cursor, i);
