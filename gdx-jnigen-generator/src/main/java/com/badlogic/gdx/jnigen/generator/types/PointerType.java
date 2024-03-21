@@ -10,6 +10,7 @@ import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
 import com.badlogic.gdx.jnigen.pointer.VoidPointer;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
@@ -174,6 +175,8 @@ public class PointerType implements MappedType {
     public Statement assertJava(Expression scope) {
         if (isIntPointer())
             return new ExpressionStmt(new MethodCallExpr("assertHasCTypeBacking").setScope(scope).addArgument(new StringLiteralExpr(pointingTo.getTypeName())));
+        if (isPointerPointer())
+            return new ExpressionStmt(new MethodCallExpr("assertDepth").setScope(scope).addArgument(new IntegerLiteralExpr(String.valueOf(pointingTo.getDepth()))));
         return MappedType.super.assertJava(scope);
     }
 }
