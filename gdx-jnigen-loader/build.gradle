@@ -89,16 +89,16 @@ task build_mac {
 }
 
 task build_linux {
-    dependsOn createBuildTask("linux", "x86", "", ["--host=i686-linux-gnu"])
-    dependsOn createBuildTask("linux", "x86_64", "", ["--host=x86_64-linux-gnu"])
-    dependsOn createBuildTask("linux", "arm32", "", ["--host=arm-linux-gnueabihf"])
-    dependsOn createBuildTask("linux", "arm64", "", ["--host=aarch64-linux-gnu"])
+    dependsOn createBuildTask("linux", "x86", "-fPIC", ["--host=i686-linux-gnu"])
+    dependsOn createBuildTask("linux", "x86_64", "-fPIC", ["--host=x86_64-linux-gnu"])
+    dependsOn createBuildTask("linux", "arm", "-fPIC", ["--host=arm-linux-gnueabihf"])
+    dependsOn createBuildTask("linux", "arm64", "-fPIC", ["--host=aarch64-linux-gnu"])
 }
 
 task build_windows {
     dependsOn createBuildTask("windows", "x86", "", ["--host=i686-w64-mingw32"])
     dependsOn createBuildTask("windows", "x86_64", "", ["--host=x86_64-w64-mingw32"])
-    dependsOn createBuildTask("windows", "arm32", "", ["--host=armv7-w64-mingw32"])
+    dependsOn createBuildTask("windows", "arm", "", ["--host=armv7-w64-mingw32"])
     dependsOn createBuildTask("windows", "arm64", "", ["--host=aarch64-w64-mingw32"])
 }
 
@@ -113,16 +113,18 @@ jnigen {
 
     all {
         def name = it.os.name().toLowerCase()
-        def arch = it.architecture.name() + (it.architecture == x86 ? "_" : "") + it.bitness.toSuffix()
+        def arch = it.architecture.name().toLowerCase() + (it.architecture == x86 && it.bitness != x32 ? "_" : "") + it.bitness.toSuffix()
         def combined = name + "_" + arch
         headerDirs += [file("build/${combined}/include/"), file("src/main/resources/")]
         libraries += "${file("build/${combined}/lib/libffi.a").absolutePath}"
         cFlags += " -std=c11 "
-        cppFlags += " -std=c++11 " // for using alignof
-        cppCompiler = "clang"
+        cppFlags += " -std=c++11 "
     }
 
+    add(Linux)
+    add(Linux, x32, ARM)
     add(Linux, x64)
+    add(Linux, x64, ARM)
     add(MacOsX, x64, ARM)
 }
 
