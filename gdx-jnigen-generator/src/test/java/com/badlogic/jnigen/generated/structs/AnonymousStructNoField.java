@@ -36,12 +36,28 @@ public final class AnonymousStructNoField extends Struct {
         return new AnonymousStructNoField.AnonymousStructNoFieldPointer(getPointer(), getsGCFreed());
     }
 
-    public int externalValue() {
+    public int intValue() {
         return (int) getValue(0);
     }
 
+    public void intValue(int intValue) {
+        setValue(intValue, 0);
+    }
+
+    public float floatValue() {
+        return (float) getValueFloat(1);
+    }
+
+    public void floatValue(float floatValue) {
+        setValue(floatValue, 1);
+    }
+
+    public int externalValue() {
+        return (int) getValue(2);
+    }
+
     public void externalValue(int externalValue) {
-        setValue(externalValue, 0);
+        setValue(externalValue, 2);
     }
 
     public static final class AnonymousStructNoFieldPointer extends StackElementPointer<AnonymousStructNoField> {
