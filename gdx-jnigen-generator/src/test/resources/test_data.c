@@ -310,4 +310,56 @@ void call_methodWithCallbackTestUnionPointerArg(methodWithCallbackTestUnionPoint
     free(testUnion);
 }
 
+// These tests are very cheap, but I'm just to lazy... To bad!
+void** voidPointerPointer(void** test) {
+    return test;
+}
 
+TestEnum** enumPointerPointer(TestEnum** test) {
+    TestEnum* ptr = malloc(sizeof(TestEnum));
+    *ptr = SECOND;
+    *test = ptr;
+    return test;
+}
+
+TestStruct** structPointerPointer(TestStruct** test) {
+    TestStruct* ptr = malloc(sizeof(TestStruct));
+    TestStruct str = {
+        .field1 = 1,
+        .field2 = 2,
+        .field3 = 3,
+        .field4 = 4
+    };
+
+    *ptr = str;
+    *test = ptr;
+    return test;
+}
+
+int** intPointerPointer(int** test) {
+    int* ptr = malloc(sizeof(int));
+    *ptr = 5;
+    *test = ptr;
+    return test;
+}
+
+float** floatPointerPointer(float** test) {
+    float* ptr = malloc(sizeof(float));
+    *ptr = 5.5;
+    *test = ptr;
+    return test;
+}
+
+void***** pointerPointerManyyy(void***** test) {
+    void**** ptr4 = malloc(sizeof(void****));
+    void*** ptr3 = malloc(sizeof(void***));
+    void** ptr2 = malloc(sizeof(void**));
+    void* ptr1 = (void*)5;
+
+    *ptr2 = ptr1;
+    *ptr3 = ptr2;
+    *ptr4 = ptr3;
+    *test = ptr4;
+
+    return test;
+}

@@ -111,6 +111,12 @@ struct AnonymousClosure
 
 void ensureAnonymousStructParsed(AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested);
 void constArrayParameter(const TestStruct structs[]);
+void** voidPointerPointer(void** test);
+TestEnum** enumPointerPointer(TestEnum** test);
+TestStruct** structPointerPointer(TestStruct** test);
+int** intPointerPointer(int** test);
+float** floatPointerPointer(float** test);
+void***** pointerPointerManyyy(void***** test);
 
 // Typedefs
 typedef void (*methodWithCallback)(void);

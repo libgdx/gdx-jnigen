@@ -10,6 +10,12 @@ import com.badlogic.jnigen.generated.structs.AnonymousStructNoFieldConsecutive;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoFieldNested;
 import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
 import com.badlogic.jnigen.generated.structs.TestStruct;
+import com.badlogic.gdx.jnigen.pointer.PointerPointer;
+import com.badlogic.gdx.jnigen.pointer.VoidPointer;
+import com.badlogic.gdx.jnigen.pointer.EnumPointer;
+import com.badlogic.jnigen.generated.enums.TestEnum;
+import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
+import com.badlogic.gdx.jnigen.pointer.FloatPointer;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.jnigen.generated.TestData.methodWithCallback;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackLongArg;
@@ -33,13 +39,10 @@ import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructReturn
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructPointerReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructArg;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructPointerArg;
-import com.badlogic.jnigen.generated.enums.TestEnum;
-import com.badlogic.gdx.jnigen.pointer.EnumPointer;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumArg;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumPointerReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumPointerArg;
-import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerArg;
 import com.badlogic.jnigen.generated.structs.SpecialStruct;
@@ -70,6 +73,60 @@ public final class TestData {
 
     static private native void constArrayParameter_internal(long structs);/*
     	constArrayParameter((const TestStruct*)structs);
+    */
+
+    public static PointerPointer<VoidPointer> voidPointerPointer(PointerPointer<VoidPointer> test) {
+        test.assertDepth(2);
+        return new PointerPointer<VoidPointer>(voidPointerPointer_internal(test.getPointer()), false, VoidPointer::new, 2);
+    }
+
+    static private native long voidPointerPointer_internal(long test);/*
+    	return (jlong)voidPointerPointer((void **)test);
+    */
+
+    public static PointerPointer<EnumPointer<TestEnum>> enumPointerPointer(PointerPointer<EnumPointer<TestEnum>> test) {
+        test.assertDepth(2);
+        return new PointerPointer<EnumPointer<TestEnum>>(enumPointerPointer_internal(test.getPointer()), false, EnumPointer.getPointerPointerSupplier(TestEnum::getByIndex), 2);
+    }
+
+    static private native long enumPointerPointer_internal(long test);/*
+    	return (jlong)enumPointerPointer((TestEnum **)test);
+    */
+
+    public static PointerPointer<TestStruct.TestStructPointer> structPointerPointer(PointerPointer<TestStruct.TestStructPointer> test) {
+        test.assertDepth(2);
+        return new PointerPointer<TestStruct.TestStructPointer>(structPointerPointer_internal(test.getPointer()), false, TestStruct.TestStructPointer::new, 2);
+    }
+
+    static private native long structPointerPointer_internal(long test);/*
+    	return (jlong)structPointerPointer((TestStruct **)test);
+    */
+
+    public static PointerPointer<CSizedIntPointer> intPointerPointer(PointerPointer<CSizedIntPointer> test) {
+        test.assertDepth(2);
+        return new PointerPointer<CSizedIntPointer>(intPointerPointer_internal(test.getPointer()), false, CSizedIntPointer.getPointerPointerSupplier("int"), 2);
+    }
+
+    static private native long intPointerPointer_internal(long test);/*
+    	return (jlong)intPointerPointer((int **)test);
+    */
+
+    public static PointerPointer<FloatPointer> floatPointerPointer(PointerPointer<FloatPointer> test) {
+        test.assertDepth(2);
+        return new PointerPointer<FloatPointer>(floatPointerPointer_internal(test.getPointer()), false, FloatPointer::new, 2);
+    }
+
+    static private native long floatPointerPointer_internal(long test);/*
+    	return (jlong)floatPointerPointer((float **)test);
+    */
+
+    public static PointerPointer<PointerPointer<PointerPointer<PointerPointer<VoidPointer>>>> pointerPointerManyyy(PointerPointer<PointerPointer<PointerPointer<PointerPointer<VoidPointer>>>> test) {
+        test.assertDepth(5);
+        return new PointerPointer<PointerPointer<PointerPointer<PointerPointer<VoidPointer>>>>(pointerPointerManyyy_internal(test.getPointer()), false, VoidPointer::new, 5);
+    }
+
+    static private native long pointerPointerManyyy_internal(long test);/*
+    	return (jlong)pointerPointerManyyy((void *****)test);
     */
 
     public static void call_methodWithCallback(ClosureObject<methodWithCallback> fnPtr) {
