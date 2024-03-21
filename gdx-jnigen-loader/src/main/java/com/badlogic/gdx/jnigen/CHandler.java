@@ -83,7 +83,7 @@ public class CHandler {
                     memcpy(structBuf, args[i], type->size);
                     backingBuffer[i] = structBuf;
                 } else {
-                    memcpy(backingBuffer + i, args[i],  type->size);
+                    memcpy(backingBuffer + i, args[i],  type->size); // TODO Make it endian safe, I guess?
                 }
             }
         }
@@ -92,7 +92,7 @@ public class CHandler {
         if(rtype->type == FFI_TYPE_STRUCT) {
             memcpy(result, reinterpret_cast<void*>(ret), rtype->size);
         } else {
-            memcpy(result, &ret, rtype->size); // Make it endian safe, I guess?
+            memcpy(result, &ret, rtype->size); // TODO Make it endian safe, I guess?
         }
         DETACH_ENV()
     }
@@ -236,7 +236,7 @@ public class CHandler {
         size_t offset = calculateOffset ? getOffsetForField(struct_type, field) : 0;
 
         jlong ret = 0;
-        memcpy(&ret, ptr + offset, struct_type->elements[field]->size);  // Make it endian safe, I guess?
+        memcpy(&ret, ptr + offset, struct_type->elements[field]->size);  // TODO Make it endian safe, I guess?
         return ret;
     */
 
@@ -258,20 +258,20 @@ public class CHandler {
 
         size_t offset = calculateOffset ? getOffsetForField(struct_type, field) : 0;
 
-        memcpy(ptr + offset, &value, struct_type->elements[field]->size); // Why does that work? That should not work?
+        memcpy(ptr + offset, &value, struct_type->elements[field]->size); // TODO Make it endian safe, I guess?
         return true;
     */
 
     public static native long getPointerPart(long pointer, int size, int offset);/*
         char* ptr = reinterpret_cast<char*>(pointer);
         jlong ret = 0;
-        memcpy(&ret, ptr + offset, size);  // Make it endian safe, I guess?
+        memcpy(&ret, ptr + offset, size);  // TODO Make it endian safe, I guess?
         return ret;
     */
 
     public static native void setPointerPart(long pointer, int size, int offset, long value);/*
         char* ptr = reinterpret_cast<char*>(pointer);
-        memcpy(ptr + offset, &value, size);  // Make it endian safe, I guess?
+        memcpy(ptr + offset, &value, size);  // TODO Make it endian safe, I guess?
     */
 
     public static native int getSizeFromFFIType(long type);/*
