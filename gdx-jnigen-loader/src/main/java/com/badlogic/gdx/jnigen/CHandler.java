@@ -47,7 +47,9 @@ public class CHandler {
     #include <string.h>
     #include <ffi.h>
     #include <jnigen.h>
+#ifdef __linux__
     #include <dlfcn.h>
+#endif // __linux__
 
 
     #define ATTACH_ENV()                                                    \
@@ -112,10 +114,14 @@ public class CHandler {
     */
 
     public static native boolean reExportSymbolsGlobally(String libPath);/*
+#ifdef __linux__
         void* handle = dlopen(libPath, RTLD_NOW | RTLD_GLOBAL);
         if (handle == NULL)
             printf("Error: %s\n", dlerror());
         return handle != NULL;
+#else
+        return JNI_TRUE;
+#endif // __linux__
     */
 
     public static <T extends Closure> long dispatchCallback(ClosureInfo<T> toCallOn, ByteBuffer parameter) {
