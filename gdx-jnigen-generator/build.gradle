@@ -62,11 +62,23 @@ jnigen {
         cFlags += " -std=c11 "
         cppFlags += " -std=c++11 "
         linkerFlags += " -undefined dynamic_lookup "
-        cppCompiler = "clang"
     }
 
+    add(Linux)
+    add(Linux, x32, ARM)
     add(Linux, x64)
+    add(Linux, x64, ARM)
+    add(Linux, x32, RISCV)
+    add(Linux, x64, RISCV)
+    add(Linux, x64, LOONGARCH)
+    add(MacOsX, x64)
     add(MacOsX, x64, ARM)
+    add(Windows)
+    add(Windows, x64)
+    add(Windows, x32, ARM)
+    add(Windows, x64, ARM)
+    add(IOS)
+    add(Android)
 }
 tasks.named("jnigen").get().dependsOn(compileTestJava)
 tasks.named("jnigen").get().dependsOn(copyTestFiles)
