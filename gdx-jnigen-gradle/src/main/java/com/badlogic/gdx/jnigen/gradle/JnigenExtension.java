@@ -34,6 +34,7 @@ public class JnigenExtension {
 	public static final Architecture x86 = Architecture.x86;
 	public static final Architecture ARM = Architecture.ARM;
 	public static final Architecture RISCV = Architecture.RISCV;
+	public static final Architecture LOONGARCH = Architecture.LOONGARCH;
 	public static final Os Windows = Os.Windows;
 	public static final Os Linux = Os.Linux;
 	public static final Os MacOsX = Os.MacOsX;
