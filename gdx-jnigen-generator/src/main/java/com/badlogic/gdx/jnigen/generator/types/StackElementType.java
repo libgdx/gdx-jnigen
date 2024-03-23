@@ -283,11 +283,6 @@ public class StackElementType implements MappedType, WritableClass {
     }
 
     @Override
-    public PointerType asPointer() {
-        return new PointerType(definition);
-    }
-
-    @Override
     public Expression fromC(Expression cRetrieved) {
         return fromC(cRetrieved, true);
     }
