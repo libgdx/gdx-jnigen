@@ -119,11 +119,6 @@ public class EnumType implements MappedType {
     }
 
     @Override
-    public PointerType asPointer() {
-        return new PointerType(definition);
-    }
-
-    @Override
     public Expression fromC(Expression cRetrieved) {
         CastExpr intCast = new CastExpr();
         intCast.setType(int.class);

@@ -81,11 +81,6 @@ public class GlobalType implements MappedType {
     }
 
     @Override
-    public PointerType asPointer() {
-        throw new IllegalArgumentException("Should not reach");
-    }
-
-    @Override
     public Expression fromC(Expression cRetrieved) {
         throw new IllegalArgumentException("Should not reach");
     }

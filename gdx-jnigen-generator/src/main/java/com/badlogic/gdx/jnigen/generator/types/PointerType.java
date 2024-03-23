@@ -112,16 +112,6 @@ public class PointerType implements MappedType {
     }
 
     @Override
-    public PointerType asPointer() {
-        // TODO: 20.03.24 Can this be done better? So, that the definition is created during parsing
-        TypeDefinition definition = new TypeDefinition(TypeKind.POINTER, pointingTo.getTypeName() + "*");
-        definition.setNestedDefinition(pointingTo);
-        definition.setOverrideMappedType(this);
-
-        return new PointerType(definition);
-    }
-
-    @Override
     public Expression fromC(Expression cRetrieved) {
         return fromC(cRetrieved, false);
     }
@@ -137,7 +127,8 @@ public class PointerType implements MappedType {
         if (isEnumPointer())
             createObject.addArgument(pointingTo.getMappedType().abstractType() + "::getByIndex");
         if (isPointerPointer()) {
-            PointerType root = pointingTo.rootType().getMappedType().asPointer();
+            // TODO: 23.03.24 Look whether this should get improved
+            PointerType root = new PointerType(pointingTo.rootType());
             if (root.isPointerPointer())
                 throw new IllegalArgumentException();
 

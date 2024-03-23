@@ -60,11 +60,6 @@ public class PrimitiveType implements MappedType {
     }
 
     @Override
-    public PointerType asPointer() {
-        return new PointerType(definition);
-    }
-
-    @Override
     public void importType(CompilationUnit cu) {
         // Unimportable
     }

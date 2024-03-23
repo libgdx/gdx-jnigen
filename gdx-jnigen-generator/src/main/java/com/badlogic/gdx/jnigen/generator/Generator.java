@@ -115,7 +115,7 @@ public class Generator {
                 typeDefinition.setOverrideMappedType(nested.getMappedType());
                 typeDefinition.setAnonymous(nested.isAnonymous());
             } else {
-                typeDefinition.setOverrideMappedType(nested.getMappedType().asPointer());
+                typeDefinition.setOverrideMappedType(new PointerType(nested));
                 typeDefinition.setNestedDefinition(nested);
             }
             return typeDefinition;
@@ -124,7 +124,7 @@ public class Generator {
         if (type.kind() == CXType_IncompleteArray) {
             TypeDefinition typeDefinition = new TypeDefinition(TypeKind.POINTER, name.replace("[]", "*"));
             TypeDefinition nested = registerCXType(clang_getArrayElementType(type), alternativeName, parent);
-            typeDefinition.setOverrideMappedType(nested.getMappedType().asPointer());
+            typeDefinition.setOverrideMappedType(new PointerType(nested));
             typeDefinition.setNestedDefinition(nested);
             return typeDefinition;
         }
@@ -133,7 +133,7 @@ public class Generator {
             TypeDefinition typeDefinition = new TypeDefinition(TypeKind.FIXED_SIZE_ARRAY, name);
             typeDefinition.setCount((int)clang.clang_getArraySize(type));
             TypeDefinition nested = registerCXType(clang_getArrayElementType(type), alternativeName, parent);
-            typeDefinition.setOverrideMappedType(nested.getMappedType().asPointer());
+            typeDefinition.setOverrideMappedType(new PointerType(nested));
             typeDefinition.setNestedDefinition(nested);
             return typeDefinition;
         }
