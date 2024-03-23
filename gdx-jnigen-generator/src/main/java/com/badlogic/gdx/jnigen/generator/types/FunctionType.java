@@ -75,6 +75,11 @@ public class FunctionType {
         }
         callMethod.setBody(body);
 
+        nativeBody.insert(0, "HANDLE_JAVA_EXCEPTION_START()\n");
+        nativeBody.append("\nHANDLE_JAVA_EXCEPTION_END()");
+        if (returnType.getTypeKind() != TypeKind.VOID)
+            nativeBody.append("\nreturn 0;");
+
         patchNativeMethod.put(nativeMethod, nativeBody.toString());
     }
 }
