@@ -96,6 +96,10 @@ TestStruct* call_methodWithCallbackTestStructPointerReturn(methodWithCallbackTes
     return fnPtr();
 }
 
+void call_methodWithThrowingCallback(methodWithThrowingCallback fnPtr) {
+    fnPtr();
+}
+
 void call_methodWithCallbackTestStructArg(methodWithCallbackTestStructArg fnPtr) {
    TestStruct arg = {
        .field1 = 1,

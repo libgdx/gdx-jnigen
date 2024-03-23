@@ -35,6 +35,7 @@ import com.badlogic.jnigen.generated.TestData.methodWithCallbackByteReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackBooleanReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackFloatReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackDoubleReturn;
+import com.badlogic.jnigen.generated.TestData.methodWithThrowingCallback;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructPointerReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructArg;
@@ -337,6 +338,16 @@ public final class TestData {
     	return (jdouble)call_methodWithCallbackDoubleReturn((methodWithCallbackDoubleReturn)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
     	return 0;
+    */
+
+    public static void call_methodWithThrowingCallback(ClosureObject<methodWithThrowingCallback> fnPtr) {
+        call_methodWithThrowingCallback_internal(fnPtr.getFnPtr());
+    }
+
+    static private native void call_methodWithThrowingCallback_internal(long fnPtr);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	call_methodWithThrowingCallback((methodWithThrowingCallback)fnPtr);
+    	HANDLE_JAVA_EXCEPTION_END()
     */
 
     public static TestStruct.TestStructPointer returnTestStructPointer() {
@@ -829,6 +840,21 @@ public final class TestData {
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
             returnType.setValue(methodWithCallbackDoubleReturn_call());
+        }
+    }
+
+    public interface methodWithThrowingCallback extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2) };
+
+        void methodWithThrowingCallback_call();
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            methodWithThrowingCallback_call();
         }
     }
 

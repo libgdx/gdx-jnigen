@@ -30,6 +30,15 @@ public class ClosureTest extends BaseTest {
     }
 
     @Test
+    public void testCallbackThrows() {
+        ClosureObject<methodWithThrowingCallback> closureObject = ClosureObject.fromClosure(() -> {
+            throw new IllegalStateException("This is expected");
+        });
+        assertThrows(IllegalStateException.class, () -> call_methodWithThrowingCallback(closureObject));
+        closureObject.free();
+    }
+
+    @Test
     public void testCallbackLongArg() {
         AtomicLong changed = new AtomicLong(0);
         ClosureObject<methodWithCallbackLongArg> closureObject = ClosureObject.fromClosure(changed::set);
