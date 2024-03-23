@@ -59,8 +59,8 @@ jnigen {
 
     all {
         headerDirs += [project(":gdx-jnigen-loader").file("src/main/resources/").absolutePath, file("src/test/resources/").absolutePath]
-        cFlags += " -std=c11 "
-        cppFlags += " -std=c++11 "
+        cFlags += " -std=c11 -fexceptions "
+        cppFlags += " -std=c++11 -fexceptions "
         linkerFlags += " -undefined dynamic_lookup "
     }
 

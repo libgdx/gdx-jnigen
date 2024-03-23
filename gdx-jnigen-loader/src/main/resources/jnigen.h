@@ -2,6 +2,16 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <ffi.h>
+#include <stdexcept>
+
+#define HANDLE_JAVA_EXCEPTION_START() try {
+
+#define HANDLE_JAVA_EXCEPTION_END() } catch (const JavaExceptionMarker& e) {}
+
+struct JavaExceptionMarker : public std::runtime_error {
+    JavaExceptionMarker();
+    const char* what() const noexcept override;
+};
 
 #define GET_FFI_TYPE(type) \
     _Generic((type){0}, \
