@@ -944,7 +944,9 @@ public final class TestData {
         }
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(methodWithCallbackIntPointerReturn_call());
+            CSizedIntPointer _ret = methodWithCallbackIntPointerReturn_call();
+            _ret.assertHasCTypeBacking("int");
+            returnType.setValue(_ret);
         }
     }
 

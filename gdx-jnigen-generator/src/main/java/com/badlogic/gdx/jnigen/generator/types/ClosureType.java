@@ -5,11 +5,13 @@ import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
 import com.badlogic.gdx.jnigen.generator.Manager;
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.ArrayAccessExpr;
 import com.github.javaparser.ast.expr.ArrayCreationExpr;
 import com.github.javaparser.ast.expr.ArrayInitializerExpr;
@@ -17,7 +19,9 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.Statement;
 
 import java.util.Arrays;
 
@@ -104,7 +108,17 @@ public class ClosureType implements MappedType, WritableClass {
         if (returnType.getTypeKind() == TypeKind.VOID) {
             invokeBody.addStatement(callExpr);
         } else {
-            MethodCallExpr returnTypeSetMethodCall = new MethodCallExpr("returnType.setValue", callExpr);
+            MethodCallExpr returnTypeSetMethodCall = new MethodCallExpr("setValue");
+            returnTypeSetMethodCall.setScope(new NameExpr("returnType"));
+            Statement assertStatement = returnType.getMappedType().assertJava(new NameExpr("_ret"));
+            if (!assertStatement.isEmptyStmt()) {
+                VariableDeclarationExpr declarationExpr = new VariableDeclarationExpr(new VariableDeclarator(StaticJavaParser.parseType(returnType.getMappedType().abstractType()), "_ret", callExpr));
+                returnTypeSetMethodCall.addArgument("_ret");
+                invokeBody.addStatement(declarationExpr);
+                invokeBody.addStatement(assertStatement);
+            } else {
+                returnTypeSetMethodCall.addArgument(callExpr);
+            }
             invokeBody.addStatement(returnTypeSetMethodCall);
         }
 

@@ -36,6 +36,15 @@ public class PointerTest extends BaseTest {
     }
 
     @Test
+    public void testCallbackIntPointerReturnWrongType() {
+        CSizedIntPointer ptr = new CSizedIntPointer("uint32_t");
+        ClosureObject<methodWithCallbackIntPointerReturn> closureObject = ClosureObject.fromClosure(() -> ptr);
+        assertThrows(IllegalArgumentException.class, () -> call_methodWithCallbackIntPointerReturn(closureObject, 20));
+
+        closureObject.free();
+    }
+
+    @Test
     public void testCallbackIntPointerArg() {
         AtomicReference<CSizedIntPointer> ptrRef = new AtomicReference<>();
         ClosureObject<methodWithCallbackIntPointerArg> closureObject = ClosureObject.fromClosure((arg) -> {
