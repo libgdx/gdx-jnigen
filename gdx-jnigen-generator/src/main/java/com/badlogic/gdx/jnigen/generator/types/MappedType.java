@@ -23,8 +23,6 @@ public interface MappedType {
 
     String primitiveType();
 
-    PointerType asPointer();
-
     Expression fromC(Expression cRetrieved);
 
     default Expression fromC(Expression cRetrieved, boolean owned) {

@@ -156,11 +156,6 @@ public class ClosureType implements MappedType, WritableClass {
     }
 
     @Override
-    public PointerType asPointer() {
-        throw new IllegalArgumentException("To implement");
-    }
-
-    @Override
     public Expression fromC(Expression cRetrieved) {
         MethodCallExpr methodCallExpr = new MethodCallExpr("getClosureObject");
         methodCallExpr.setScope(new NameExpr("CHandler"));
