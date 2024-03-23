@@ -142,6 +142,7 @@ typedef char (*methodWithCallbackByteReturn)(void);
 typedef bool (*methodWithCallbackBooleanReturn)(void);
 typedef float (*methodWithCallbackFloatReturn)(void);
 typedef double (*methodWithCallbackDoubleReturn)(void);
+typedef void (*methodWithThrowingCallback)(void);
 
 // Function declarations
 void call_methodWithCallback(methodWithCallback fnPtr);
@@ -162,6 +163,7 @@ char call_methodWithCallbackByteReturn(methodWithCallbackByteReturn fnPtr);
 bool call_methodWithCallbackBooleanReturn(methodWithCallbackBooleanReturn fnPtr);
 float call_methodWithCallbackFloatReturn(methodWithCallbackFloatReturn fnPtr);
 double call_methodWithCallbackDoubleReturn(methodWithCallbackDoubleReturn fnPtr);
+void call_methodWithThrowingCallback(methodWithThrowingCallback fnPtr);
 
 // TestStruct stuff
 TestStruct* returnTestStructPointer(void);
