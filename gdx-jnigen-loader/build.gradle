@@ -117,8 +117,8 @@ jnigen {
         def combined = name + "_" + arch
         headerDirs += [file("build/${combined}/include/"), file("src/main/resources/")]
         libraries += "${file("build/${combined}/lib/libffi.a").absolutePath}"
-        cFlags += " -std=c11 "
-        cppFlags += " -std=c++11 "
+        cFlags += " -std=c11 -fexceptions "
+        cppFlags += " -std=c++11 -fexceptions "
     }
 
     add(Linux)

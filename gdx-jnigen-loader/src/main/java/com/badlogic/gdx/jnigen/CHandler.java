@@ -90,6 +90,10 @@ public class CHandler {
             }
         }
         jlong ret = env->CallStaticLongMethod(globalClass, dispatchCallbackMethod, closureInfo, jBuffer);
+
+        if(env->ExceptionCheck() == JNI_TRUE)
+            throw JavaExceptionMarker();
+
         ffi_type* rtype = cif->rtype;
         if(rtype->type == FFI_TYPE_STRUCT) {
             memcpy(result, reinterpret_cast<void*>(ret), rtype->size);
@@ -97,6 +101,16 @@ public class CHandler {
             memcpy(result, &ret, rtype->size); // TODO Make it endian safe, I guess?
         }
         DETACH_ENV()
+    }
+
+    JavaExceptionMarker::JavaExceptionMarker() : std::runtime_error("Java Exception") {}
+
+    const char* JavaExceptionMarker::what() const noexcept {
+        ATTACH_ENV()
+        env->ExceptionDescribe();
+        DETACH_ENV()
+        // TODO: Implement at some point properly
+        return std::runtime_error::what();
     }
 
     */
