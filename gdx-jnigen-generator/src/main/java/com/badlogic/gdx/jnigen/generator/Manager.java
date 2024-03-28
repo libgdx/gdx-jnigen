@@ -197,7 +197,7 @@ public class Manager {
         if (lineToPatch == null)
             throw new IllegalArgumentException("Failed to find native method: " + method.toString() + " in " + classString);
 
-        String offset = lineToPatch.replace(method.toString(), "");
+        String offset = lineToPatch.replace(lineToPatch.trim(), "");
         String newLine = lineToPatch + "/*\n";
         newLine += Arrays.stream(nativeCode.split("\n"))
                 .map(s -> offset + "\t" + s)

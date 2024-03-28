@@ -59,7 +59,7 @@ public class ClosureType implements MappedType, WritableClass {
 
         NodeList<Expression> arrayInitializerExpr = new NodeList<>();
         ArrayCreationExpr arrayCreationExpr = new ArrayCreationExpr();
-        arrayCreationExpr.setElementType(CTypeInfo[].class);
+        arrayCreationExpr.setElementType(CTypeInfo.class);
         arrayCreationExpr.setInitializer(new ArrayInitializerExpr(arrayInitializerExpr));
 
         closureClass.addFieldWithInitializer(CTypeInfo[].class, "__ffi_cache", arrayCreationExpr);

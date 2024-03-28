@@ -10,6 +10,7 @@ import com.badlogic.jnigen.generated.TestData;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerArg;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerReturn;
 import com.badlogic.jnigen.generated.enums.TestEnum;
+import com.badlogic.jnigen.generated.enums.TestEnum.TestEnumPointer;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 import com.badlogic.jnigen.generated.structs.TestStruct.TestStructPointer;
 import org.junit.jupiter.api.Test;
@@ -118,8 +119,17 @@ public class PointerTest extends BaseTest {
     }
 
     @Test
+    public void intPointerPointerWrongTypeTest() {
+        PointerPointer<CSizedIntPointer> pointer = new PointerPointer<>(CSizedIntPointer.pointerPointer("int"), 2);
+        pointer.setBackingCType("short");
+        assertThrows(IllegalArgumentException.class, () -> TestData.intPointerPointer(pointer));
+        assertThrows(IllegalArgumentException.class, pointer::getValue);
+    }
+
+    @Test
     public void intPointerPointerTest() {
-        PointerPointer<CSizedIntPointer> pointer = new PointerPointer<>(CSizedIntPointer.getPointerPointerSupplier("int"), 2);
+        PointerPointer<CSizedIntPointer> pointer = new PointerPointer<>(CSizedIntPointer.pointerPointer("int"), 2);
+        pointer.setBackingCType("int");
         assertEquals(pointer.getPointer(), TestData.intPointerPointer(pointer).getPointer());
         assertEquals(5, pointer.getValue().getInt());
 
@@ -137,7 +147,11 @@ public class PointerTest extends BaseTest {
 
     @Test
     public void voidPointerPointerManyTest() {
-        PointerPointer<PointerPointer<PointerPointer<PointerPointer<VoidPointer>>>> pointer = new PointerPointer<>(VoidPointer::new, 5);
+        PointerPointer<PointerPointer<PointerPointer<PointerPointer<VoidPointer>>>> pointer = new PointerPointer<>((long peer5, boolean owned5) -> new PointerPointer<>(
+                peer5, false,
+                (long peer4, boolean owned4) -> new PointerPointer<>(peer4, false,
+                        (long peer3, boolean owned3) -> new PointerPointer<>(peer3, false,
+                                (long peer2, boolean owned2) -> new VoidPointer(peer2, false), 2), 3), 4), 5);
         assertEquals(pointer.getPointer(), TestData.pointerPointerManyyy(pointer).getPointer());
         assertEquals(5, pointer.getValue().getValue().getValue().getValue().getPointer());
 

@@ -29,7 +29,7 @@ public final class CSizedIntPointer extends Pointing {
         this.cTypeInfo = info;
     }
 
-    public static PointerDereferenceSupplier<CSizedIntPointer> getPointerPointerSupplier(String cTypeInfo) {
+    public static PointerDereferenceSupplier<CSizedIntPointer> pointerPointer(String cTypeInfo) {
         return (pointer, freeOnGC) -> new CSizedIntPointer(pointer, freeOnGC, cTypeInfo);
     }
 

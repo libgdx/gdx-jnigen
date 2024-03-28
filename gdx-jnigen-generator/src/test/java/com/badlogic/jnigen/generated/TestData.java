@@ -82,7 +82,7 @@ public final class TestData {
 
     public static PointerPointer<VoidPointer> voidPointerPointer(PointerPointer<VoidPointer> test) {
         test.assertDepth(2);
-        return new PointerPointer<VoidPointer>(voidPointerPointer_internal(test.getPointer()), false, VoidPointer::new, 2);
+        return new PointerPointer<VoidPointer>(voidPointerPointer_internal(test.getPointer()), false, (long peer2, boolean owned2) -> new VoidPointer(peer2, false), 2);
     }
 
     static private native long voidPointerPointer_internal(long test);/*
@@ -106,7 +106,7 @@ public final class TestData {
 
     public static PointerPointer<TestStruct.TestStructPointer> structPointerPointer(PointerPointer<TestStruct.TestStructPointer> test) {
         test.assertDepth(2);
-        return new PointerPointer<TestStruct.TestStructPointer>(structPointerPointer_internal(test.getPointer()), false, TestStruct.TestStructPointer::new, 2);
+        return new PointerPointer<TestStruct.TestStructPointer>(structPointerPointer_internal(test.getPointer()), false, (long peer2, boolean owned2) -> new TestStruct.TestStructPointer(peer2, false), 2);
     }
 
     static private native long structPointerPointer_internal(long test);/*
@@ -117,8 +117,8 @@ public final class TestData {
     */
 
     public static PointerPointer<CSizedIntPointer> intPointerPointer(PointerPointer<CSizedIntPointer> test) {
-        test.assertDepth(2);
-        return new PointerPointer<CSizedIntPointer>(intPointerPointer_internal(test.getPointer()), false, CSizedIntPointer.getPointerPointerSupplier("int"), 2);
+        test.assertCTypeBackingAndDepth("int", 2);
+        return new PointerPointer<CSizedIntPointer>(intPointerPointer_internal(test.getPointer()), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, false, "int"), 2).setBackingCType("int");
     }
 
     static private native long intPointerPointer_internal(long test);/*
@@ -130,7 +130,7 @@ public final class TestData {
 
     public static PointerPointer<FloatPointer> floatPointerPointer(PointerPointer<FloatPointer> test) {
         test.assertDepth(2);
-        return new PointerPointer<FloatPointer>(floatPointerPointer_internal(test.getPointer()), false, FloatPointer::new, 2);
+        return new PointerPointer<FloatPointer>(floatPointerPointer_internal(test.getPointer()), false, (long peer2, boolean owned2) -> new FloatPointer(peer2, false), 2);
     }
 
     static private native long floatPointerPointer_internal(long test);/*
@@ -142,7 +142,7 @@ public final class TestData {
 
     public static PointerPointer<PointerPointer<PointerPointer<PointerPointer<VoidPointer>>>> pointerPointerManyyy(PointerPointer<PointerPointer<PointerPointer<PointerPointer<VoidPointer>>>> test) {
         test.assertDepth(5);
-        return new PointerPointer<PointerPointer<PointerPointer<PointerPointer<VoidPointer>>>>(pointerPointerManyyy_internal(test.getPointer()), false, VoidPointer::new, 5);
+        return new PointerPointer<PointerPointer<PointerPointer<PointerPointer<VoidPointer>>>>(pointerPointerManyyy_internal(test.getPointer()), false, (long peer5, boolean owned5) -> new PointerPointer<PointerPointer<PointerPointer<VoidPointer>>>(peer5, false, (long peer4, boolean owned4) -> new PointerPointer<PointerPointer<VoidPointer>>(peer4, false, (long peer3, boolean owned3) -> new PointerPointer<VoidPointer>(peer3, false, (long peer2, boolean owned2) -> new VoidPointer(peer2, false), 2), 3), 4), 5);
     }
 
     static private native long pointerPointerManyyy_internal(long test);/*
