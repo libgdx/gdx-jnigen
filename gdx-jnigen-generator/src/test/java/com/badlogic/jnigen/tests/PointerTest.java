@@ -95,7 +95,21 @@ public class PointerTest extends BaseTest {
         assertThrows(IllegalArgumentException.class, () -> TestData.voidPointerPointer(wrongDepth));
     }
 
-    // TODO: 21.03.24 Closure PtrPtr tests
+    @Test
+    public void closureIntPtrPtrTest() {
+        ClosureObject<TestData.methodWithIntPtrPtrArg> ptrPtrArg = ClosureObject.fromClosure(arg0 -> {
+            arg0.assertCTypeBackingAndDepth("int", 2);
+            assertEquals(5, arg0.getValue().getInt());
+        });
+        TestData.call_methodWithIntPtrPtrArg(ptrPtrArg);
+        ptrPtrArg.free();
+
+        PointerPointer<CSizedIntPointer> pointer = new PointerPointer<>((pointer1, freeOnGC) -> new CSizedIntPointer("int"), 2);
+        pointer.setBackingCType("int");
+        ClosureObject<TestData.methodWithIntPtrPtrRet> ptrPtrRet = ClosureObject.fromClosure(() -> pointer);
+        TestData.call_methodWithIntPtrPtrRet(ptrPtrRet);
+        ptrPtrRet.free();
+    }
 
     @Test
     public void enumPointerPointerTest() {
@@ -124,6 +138,10 @@ public class PointerTest extends BaseTest {
         pointer.setBackingCType("short");
         assertThrows(IllegalArgumentException.class, () -> TestData.intPointerPointer(pointer));
         assertThrows(IllegalArgumentException.class, pointer::getValue);
+
+        ClosureObject<TestData.methodWithIntPtrPtrRet> ptrPtrRet = ClosureObject.fromClosure(() -> pointer);
+        assertThrows(IllegalArgumentException.class, () -> TestData.call_methodWithIntPtrPtrRet(ptrPtrRet));
+        ptrPtrRet.free();
     }
 
     @Test
