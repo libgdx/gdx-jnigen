@@ -317,6 +317,27 @@ public final class TestData {
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
+    public static void call_methodWithIntPtrPtrArg(ClosureObject<methodWithIntPtrPtrArg> fnPtr) {
+        call_methodWithIntPtrPtrArg_internal(fnPtr.getFnPtr());
+    }
+
+    static private native void call_methodWithIntPtrPtrArg_internal(long fnPtr);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	call_methodWithIntPtrPtrArg((methodWithIntPtrPtrArg)fnPtr);
+    	HANDLE_JAVA_EXCEPTION_END()
+    */
+
+    public static PointerPointer<CSizedIntPointer> call_methodWithIntPtrPtrRet(ClosureObject<methodWithIntPtrPtrRet> fnPtr) {
+        return new PointerPointer<>(call_methodWithIntPtrPtrRet_internal(fnPtr.getFnPtr()), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, owned2, "int"), 2).setBackingCType("int");
+    }
+
+    static private native long call_methodWithIntPtrPtrRet_internal(long fnPtr);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)call_methodWithIntPtrPtrRet((methodWithIntPtrPtrRet)fnPtr);
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
     public static TestStruct.TestStructPointer returnTestStructPointer() {
         return new TestStruct.TestStructPointer(returnTestStructPointer_internal(), false);
     }
@@ -1097,6 +1118,23 @@ public final class TestData {
         }
     }
 
+    public interface methodWithIntPtrPtrRet extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-1) };
+
+        PointerPointer<CSizedIntPointer> methodWithIntPtrPtrRet_call();
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            PointerPointer<CSizedIntPointer> _ret = methodWithIntPtrPtrRet_call();
+            _ret.assertCTypeBackingAndDepth("int", 2);
+            returnType.setValue(_ret);
+        }
+    }
+
     public interface methodWithCallbackTestUnionPointerArg extends Closure {
 
         CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(-1) };
@@ -1199,6 +1237,21 @@ public final class TestData {
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
             methodWithCallbackCharArg_call((char) parameters[0].asLong());
+        }
+    }
+
+    public interface methodWithIntPtrPtrArg extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(-1) };
+
+        void methodWithIntPtrPtrArg_call(PointerPointer<CSizedIntPointer> arg0);
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            methodWithIntPtrPtrArg_call(new PointerPointer<>(parameters[0].asLong(), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, owned2, "int"), 2).setBackingCType("int"));
         }
     }
 

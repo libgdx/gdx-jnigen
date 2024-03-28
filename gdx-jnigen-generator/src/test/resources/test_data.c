@@ -367,3 +367,14 @@ void***** pointerPointerManyyy(void***** test) {
 
     return test;
 }
+
+void call_methodWithIntPtrPtrArg(methodWithIntPtrPtrArg fnPtr) {
+    int i = 5;
+    int* i1 = &i;
+    int** i2 = &i1;
+    fnPtr(i2);
+}
+
+int** call_methodWithIntPtrPtrRet(methodWithIntPtrPtrRet fnPtr) {
+    return fnPtr();
+}
