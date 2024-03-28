@@ -10,14 +10,13 @@ import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
 import com.badlogic.gdx.jnigen.pointer.VoidPointer;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.Statement;
 
@@ -116,11 +115,11 @@ public class PointerType implements MappedType {
 
     @Override
     public Expression fromC(Expression cRetrieved) {
-        return fromC(cRetrieved, false);
+        return fromC(cRetrieved, new BooleanLiteralExpr(false));
     }
 
     @Override
-    public Expression fromC(Expression cRetrieved, boolean owned) {
+    public Expression fromC(Expression cRetrieved, Expression owned) {
         ObjectCreationExpr createObject = new ObjectCreationExpr();
         createObject.setType(instantiationType());
         createObject.addArgument(cRetrieved);
@@ -131,8 +130,8 @@ public class PointerType implements MappedType {
             LambdaExpr expr = new LambdaExpr();
             expr.setEnclosingParameters(true);
             Parameter peerPar = expr.addAndGetParameter(long.class, "peer" + pointingTo.getDepth());
-            expr.addParameter(boolean.class, "owned" + pointingTo.getDepth());
-            expr.setBody(new ExpressionStmt(pointingTo.getMappedType().fromC(peerPar.getNameAsExpression())));
+            Parameter ownedPar = expr.addAndGetParameter(boolean.class, "owned" + pointingTo.getDepth());
+            expr.setBody(new ExpressionStmt(pointingTo.getMappedType().fromC(peerPar.getNameAsExpression(), ownedPar.getNameAsExpression())));
 
             createObject.addArgument(expr);
             createObject.addArgument(String.valueOf(pointingTo.getDepth()));
