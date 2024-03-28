@@ -60,7 +60,7 @@ public class PointerType implements MappedType {
     @Override
     public void importType(CompilationUnit cu) {
         if (isStackElementPointer())
-            cu.addImport(StackElementPointer.class);
+            pointingTo.getMappedType().importType(cu);
         else if (isFloatPointer())
             cu.addImport(FloatPointer.class);
         else if (isDoublePointer())
@@ -70,7 +70,7 @@ public class PointerType implements MappedType {
         else if (isVoidPointer())
             cu.addImport(VoidPointer.class);
         else if (isEnumPointer())
-            cu.addImport(EnumPointer.class);
+            pointingTo.getMappedType().importType(cu);
         else if (isPointerPointer())
             cu.addImport(PointerPointer.class);
         else
@@ -109,6 +109,13 @@ public class PointerType implements MappedType {
     }
 
     @Override
+    public String instantiationType() {
+        if (isPointerPointer())
+            return PointerPointer.class.getSimpleName() + "<>";
+        return MappedType.super.instantiationType();
+    }
+
+    @Override
     public String primitiveType() {
         return long.class.getName();
     }
@@ -127,13 +134,19 @@ public class PointerType implements MappedType {
         if (isIntPointer())
             createObject.addArgument(new StringLiteralExpr(pointingTo.getTypeName()));
         if (isPointerPointer()) {
-            LambdaExpr expr = new LambdaExpr();
-            expr.setEnclosingParameters(true);
-            Parameter peerPar = expr.addAndGetParameter(long.class, "peer" + pointingTo.getDepth());
-            Parameter ownedPar = expr.addAndGetParameter(boolean.class, "owned" + pointingTo.getDepth());
-            expr.setBody(new ExpressionStmt(pointingTo.getMappedType().fromC(peerPar.getNameAsExpression(), ownedPar.getNameAsExpression())));
+            PointerType childPointerType = (PointerType) pointingTo.getMappedType();
+            if (childPointerType.isIntPointer() || childPointerType.isPointerPointer()) {
+                LambdaExpr expr = new LambdaExpr();
+                expr.setEnclosingParameters(true);
+                Parameter peerPar = expr.addAndGetParameter(long.class, "peer" + pointingTo.getDepth());
+                Parameter ownedPar = expr.addAndGetParameter(boolean.class, "owned" + pointingTo.getDepth());
+                expr.setBody(new ExpressionStmt(pointingTo.getMappedType()
+                        .fromC(peerPar.getNameAsExpression(), ownedPar.getNameAsExpression())));
 
-            createObject.addArgument(expr);
+                createObject.addArgument(expr);
+            } else {
+                createObject.addArgument(pointingTo.getMappedType().instantiationType() + "::new");
+            }
             createObject.addArgument(String.valueOf(pointingTo.getDepth()));
 
             PointerType root = new PointerType(pointingTo.rootType());

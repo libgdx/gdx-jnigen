@@ -5,8 +5,6 @@ import com.badlogic.gdx.jnigen.pointer.Struct;
 import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
 import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
-import com.badlogic.jnigen.generated.structs.AnonymousClosure.someClosure;
-import com.badlogic.jnigen.generated.structs.AnonymousClosure.anotherClosure;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
 import com.badlogic.gdx.jnigen.c.CTypeInfo;
