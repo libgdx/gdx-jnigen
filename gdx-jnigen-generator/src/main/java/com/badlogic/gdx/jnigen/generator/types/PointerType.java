@@ -145,7 +145,7 @@ public class PointerType implements MappedType {
 
                 createObject.addArgument(expr);
             } else {
-                createObject.addArgument(pointingTo.getMappedType().instantiationType() + "::new");
+                createObject.addArgument(pointingTo.getMappedType().abstractType() + "::new");
             }
             createObject.addArgument(String.valueOf(pointingTo.getDepth()));
 
