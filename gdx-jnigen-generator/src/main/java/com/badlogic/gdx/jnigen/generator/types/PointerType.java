@@ -9,12 +9,15 @@ import com.badlogic.gdx.jnigen.pointer.PointerPointer;
 import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
 import com.badlogic.gdx.jnigen.pointer.VoidPointer;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
+import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.Statement;
 
@@ -125,25 +128,21 @@ public class PointerType implements MappedType {
         if (isIntPointer())
             createObject.addArgument(new StringLiteralExpr(pointingTo.getTypeName()));
         if (isPointerPointer()) {
-            // TODO: 23.03.24 Look whether this should get improved
-            PointerType root = new PointerType(pointingTo.rootType());
-            if (root.isPointerPointer())
-                throw new IllegalArgumentException();
+            LambdaExpr expr = new LambdaExpr();
+            expr.setEnclosingParameters(true);
+            Parameter peerPar = expr.addAndGetParameter(long.class, "peer" + pointingTo.getDepth());
+            expr.addParameter(boolean.class, "owned" + pointingTo.getDepth());
+            expr.setBody(new ExpressionStmt(pointingTo.getMappedType().fromC(peerPar.getNameAsExpression())));
 
-            if (root.isEnumPointer() || root.isIntPointer()) {
-                MethodCallExpr methodCallExpr = new MethodCallExpr("getPointerPointerSupplier");
-                if (root.isIntPointer()) {
-                    methodCallExpr.setScope(new NameExpr(root.abstractType()));
-                    methodCallExpr.addArgument(new StringLiteralExpr(root.pointingTo.getTypeName()));
-                } else {
-                    methodCallExpr.setScope(new NameExpr("EnumPointer"));
-                    methodCallExpr.addArgument(root.pointingTo.getMappedType().abstractType() + "::getByIndex");
-                }
-                createObject.addArgument(methodCallExpr);
-            } else {
-                createObject.addArgument(root.abstractType() + "::new");
-            }
+            createObject.addArgument(expr);
             createObject.addArgument(String.valueOf(pointingTo.getDepth()));
+
+            PointerType root = new PointerType(pointingTo.rootType());
+            if (root.isIntPointer()) {
+                MethodCallExpr setCType = new MethodCallExpr(createObject, "setBackingCType");
+                setCType.addArgument(new StringLiteralExpr(pointingTo.rootType().getTypeName()));
+                return setCType;
+            }
         }
         return createObject;
     }
@@ -164,8 +163,17 @@ public class PointerType implements MappedType {
     public Statement assertJava(Expression scope) {
         if (isIntPointer())
             return new ExpressionStmt(new MethodCallExpr("assertHasCTypeBacking").setScope(scope).addArgument(new StringLiteralExpr(pointingTo.getTypeName())));
-        if (isPointerPointer())
-            return new ExpressionStmt(new MethodCallExpr("assertDepth").setScope(scope).addArgument(new IntegerLiteralExpr(String.valueOf(pointingTo.getDepth()))));
+        if (isPointerPointer()) {
+            PointerType root = new PointerType(pointingTo.rootType());
+
+            if (root.isIntPointer()) {
+                return new ExpressionStmt(new MethodCallExpr("assertCTypeBackingAndDepth").setScope(scope)
+                        .addArgument(new StringLiteralExpr(pointingTo.rootType().getTypeName()))
+                        .addArgument(new IntegerLiteralExpr(String.valueOf(pointingTo.getDepth()))));
+            }
+            return new ExpressionStmt(new MethodCallExpr("assertDepth").setScope(scope)
+                    .addArgument(new IntegerLiteralExpr(String.valueOf(pointingTo.getDepth()))));
+        }
         return MappedType.super.assertJava(scope);
     }
 }
