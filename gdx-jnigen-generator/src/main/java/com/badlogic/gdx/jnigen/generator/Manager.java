@@ -220,8 +220,8 @@ public class Manager {
             for (StackElementType stackElementType : stackElements.values()) {
                 CompilationUnit cu = new CompilationUnit(stackElementType.packageName());
                 ClassOrInterfaceDeclaration declaration = stackElementType.generateClass();
-                stackElementType.write(cu, declaration);
                 cu.addType(declaration);
+                stackElementType.write(cu, declaration);
 
                 String classContent = cu.toString();
 

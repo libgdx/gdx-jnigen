@@ -1,5 +1,6 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
+import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.c.CTypeInfo;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
@@ -68,7 +69,7 @@ public class ClosureType implements MappedType, WritableClass {
         callMethod.setBody(null);
         for (NamedType namedType : arguments) {
             namedType.getDefinition().getMappedType().importType(cu);
-            callMethod.addAndGetParameter(namedType.getDefinition().getMappedType().instantiationType(), namedType.getName());
+            callMethod.addAndGetParameter(namedType.getDefinition().getMappedType().abstractType(), namedType.getName());
             MethodCallExpr getTypeID = new MethodCallExpr("getCTypeInfo");
             getTypeID.setScope(new NameExpr("FFITypes"));
             getTypeID.addArgument(new IntegerLiteralExpr(String.valueOf(namedType.getDefinition().getMappedType().typeID())));
@@ -142,6 +143,9 @@ public class ClosureType implements MappedType, WritableClass {
     @Override
     public void importType(CompilationUnit cu) {
         cu.addImport(ClosureObject.class);
+        cu.addImport(CHandler.class);
+        if (cu.getClassByName(parent.abstractType()).isPresent())
+            return;
         cu.addImport(classFile() + "." + signature.getName());
     }
 
