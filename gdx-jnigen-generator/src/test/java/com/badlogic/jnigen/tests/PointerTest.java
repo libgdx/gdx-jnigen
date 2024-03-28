@@ -98,7 +98,7 @@ public class PointerTest extends BaseTest {
 
     @Test
     public void enumPointerPointerTest() {
-        PointerPointer<EnumPointer<TestEnum>> pointer = new PointerPointer<>(EnumPointer.getPointerPointerSupplier(TestEnum::getByIndex), 2);
+        PointerPointer<TestEnumPointer> pointer = new PointerPointer<>(TestEnumPointer::new, 2);
         assertEquals(pointer.getPointer(), TestData.enumPointerPointer(pointer).getPointer());
         assertEquals(TestEnum.SECOND, pointer.getValue().getEnumValue());
         pointer.getValue().free();

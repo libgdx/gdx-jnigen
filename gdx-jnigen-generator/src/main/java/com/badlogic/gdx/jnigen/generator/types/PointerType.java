@@ -97,7 +97,7 @@ public class PointerType implements MappedType {
         if (isVoidPointer())
             return VoidPointer.class.getSimpleName();
         if (isEnumPointer())
-            return EnumPointer.class.getSimpleName() + "<" + pointingTo.getMappedType().abstractType() + ">";
+            return pointingTo.getMappedType().abstractType() + "." + pointingTo.getMappedType().abstractType() + "Pointer";
         if (isStackElementPointer())
             return pointingTo.getMappedType().abstractType() + "." + pointingTo.getMappedType().abstractType() + "Pointer";
         if (isPointerPointer())
@@ -124,8 +124,6 @@ public class PointerType implements MappedType {
         createObject.addArgument(String.valueOf(owned));
         if (isIntPointer())
             createObject.addArgument(new StringLiteralExpr(pointingTo.getTypeName()));
-        if (isEnumPointer())
-            createObject.addArgument(pointingTo.getMappedType().abstractType() + "::getByIndex");
         if (isPointerPointer()) {
             // TODO: 23.03.24 Look whether this should get improved
             PointerType root = new PointerType(pointingTo.rootType());
