@@ -21,7 +21,7 @@ public class EnumTest extends BaseTest {
 
     @Test
     public void testPassEnumPointer() {
-        EnumPointer<TestEnum> testEnumEnumPointer = new EnumPointer<>(TestEnum::getByIndex);
+        TestEnumPointer testEnumEnumPointer = new TestEnumPointer();
         testEnumEnumPointer.setEnumValue(TestEnum.SECOND);
         assertEquals(1, TestData.passTestEnumPointer(testEnumEnumPointer));
         testEnumEnumPointer.setEnumValue(TestEnum.FIRST);
@@ -52,7 +52,7 @@ public class EnumTest extends BaseTest {
 
     @Test
     public void testPassAndReturnEnumPointer() {
-        EnumPointer<TestEnum> testEnumEnumPointer = new EnumPointer<>(TestEnum::getByIndex);
+        TestEnumPointer testEnumEnumPointer = new TestEnumPointer();
         testEnumEnumPointer.setEnumValue(TestEnum.FIRST);
         assertEquals(TestEnum.FIRST, TestData.passAndReturnTestEnumPointer(testEnumEnumPointer));
         testEnumEnumPointer.setEnumValue(TestEnum.SECOND);
@@ -76,7 +76,7 @@ public class EnumTest extends BaseTest {
 
     @Test
     public void testReturnEnumPointerClosure() {
-        EnumPointer<TestEnum> toReturn = new EnumPointer<>(TestEnum::getByIndex);
+        TestEnumPointer toReturn = new TestEnumPointer();
         ClosureObject<TestData.methodWithCallbackTestEnumPointerReturn> closure = ClosureObject.fromClosure(() -> toReturn);
         assertEquals(toReturn.getPointer(), TestData.call_methodWithCallbackTestEnumPointerReturn(closure).getPointer());
         closure.free();

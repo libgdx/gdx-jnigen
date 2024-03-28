@@ -2,12 +2,16 @@ package com.badlogic.gdx.jnigen.generator.types;
 
 import com.badlogic.gdx.jnigen.c.CEnum;
 import com.badlogic.gdx.jnigen.generator.Manager;
+import com.badlogic.gdx.jnigen.pointer.EnumPointer;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.ArrayInitializerExpr;
 import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.Expression;
@@ -18,6 +22,7 @@ import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.type.PrimitiveType;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -56,6 +61,7 @@ public class EnumType implements MappedType {
     }
 
     public void write(CompilationUnit cu) {
+        cu.addImport(EnumPointer.class);
         EnumDeclaration declaration = cu.addEnum(javaName);
         declaration.addImplementedType(CEnum.class);
         constants.entrySet().stream()
@@ -91,6 +97,39 @@ public class EnumType implements MappedType {
             staticInit.addStatement("for (" + javaName + " _val : values()) _values.put(_val.index, _val);");
             getByIndex.createBody().addStatement("return _values.get(index);");
         }
+
+        String pointerName = javaName + "Pointer";
+
+        // Pointer
+        ClassOrInterfaceDeclaration pointerClass = new ClassOrInterfaceDeclaration(new NodeList<>(Modifier.publicModifier(), Modifier.staticModifier(), Modifier.finalModifier()), false, pointerName);
+
+        declaration.addMember(pointerClass);
+        pointerClass.addExtendedType("EnumPointer<" + javaName + ">");
+        ConstructorDeclaration pointerConstructor = pointerClass.addConstructor(Keyword.PUBLIC);
+        pointerConstructor.addParameter(new Parameter(com.github.javaparser.ast.type.PrimitiveType.longType(), "pointer"));
+        pointerConstructor.addParameter(new Parameter(PrimitiveType.booleanType(), "freeOnGC"));
+        BlockStmt body = new BlockStmt();
+        body.addStatement("super(pointer, freeOnGC);");
+        pointerConstructor.setBody(body);
+
+        pointerClass.addConstructor(Keyword.PUBLIC).getBody().addStatement("this(1, true, true);");
+
+        ConstructorDeclaration defaultConstructorPointer = pointerClass.addConstructor(Keyword.PUBLIC);
+        defaultConstructorPointer.addParameter(int.class, "count");
+        defaultConstructorPointer.addParameter(boolean.class, "freeOnGC");
+        defaultConstructorPointer.addParameter(boolean.class, "guard");
+        defaultConstructorPointer.createBody().addStatement("super(count, freeOnGC, guard);");
+
+        pointerClass.addMethod("guardCount", Keyword.PUBLIC).setType(javaName + "." + pointerName)
+                .addParameter(long.class, "count")
+                .createBody()
+                .addStatement("super.guardCount(count);")
+                .addStatement("return this;");
+
+        pointerClass.addMethod("getEnum", Keyword.PROTECTED).setType(javaName)
+                .addParameter(int.class, "index")
+                .createBody().addStatement("return getByIndex(index);");
+
     }
 
     @Override

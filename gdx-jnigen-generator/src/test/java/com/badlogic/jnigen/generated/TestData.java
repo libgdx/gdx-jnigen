@@ -92,9 +92,9 @@ public final class TestData {
     	return 0;
     */
 
-    public static PointerPointer<EnumPointer<TestEnum>> enumPointerPointer(PointerPointer<EnumPointer<TestEnum>> test) {
+    public static PointerPointer<TestEnum.TestEnumPointer> enumPointerPointer(PointerPointer<TestEnum.TestEnumPointer> test) {
         test.assertDepth(2);
-        return new PointerPointer<EnumPointer<TestEnum>>(enumPointerPointer_internal(test.getPointer()), false, EnumPointer.getPointerPointerSupplier(TestEnum::getByIndex), 2);
+        return new PointerPointer<TestEnum.TestEnumPointer>(enumPointerPointer_internal(test.getPointer()), false, (long peer2, boolean owned2) -> new TestEnum.TestEnumPointer(peer2, false), 2);
     }
 
     static private native long enumPointerPointer_internal(long test);/*
@@ -473,7 +473,7 @@ public final class TestData {
     	return 0;
     */
 
-    public static int passTestEnumPointer(EnumPointer<TestEnum> enumValue) {
+    public static int passTestEnumPointer(TestEnum.TestEnumPointer enumValue) {
         return passTestEnumPointer_internal(enumValue.getPointer());
     }
 
@@ -484,8 +484,8 @@ public final class TestData {
     	return 0;
     */
 
-    public static EnumPointer<TestEnum> returnTestEnumPointer() {
-        return new EnumPointer<TestEnum>(returnTestEnumPointer_internal(), false, TestEnum::getByIndex);
+    public static TestEnum.TestEnumPointer returnTestEnumPointer() {
+        return new TestEnum.TestEnumPointer(returnTestEnumPointer_internal(), false);
     }
 
     static private native long returnTestEnumPointer_internal();/*
@@ -495,7 +495,7 @@ public final class TestData {
     	return 0;
     */
 
-    public static TestEnum passAndReturnTestEnumPointer(EnumPointer<TestEnum> enumValue) {
+    public static TestEnum passAndReturnTestEnumPointer(TestEnum.TestEnumPointer enumValue) {
         return TestEnum.getByIndex((int) passAndReturnTestEnumPointer_internal(enumValue.getPointer()));
     }
 
@@ -527,8 +527,8 @@ public final class TestData {
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static EnumPointer<TestEnum> call_methodWithCallbackTestEnumPointerReturn(ClosureObject<methodWithCallbackTestEnumPointerReturn> fnPtr) {
-        return new EnumPointer<TestEnum>(call_methodWithCallbackTestEnumPointerReturn_internal(fnPtr.getFnPtr()), false, TestEnum::getByIndex);
+    public static TestEnum.TestEnumPointer call_methodWithCallbackTestEnumPointerReturn(ClosureObject<methodWithCallbackTestEnumPointerReturn> fnPtr) {
+        return new TestEnum.TestEnumPointer(call_methodWithCallbackTestEnumPointerReturn_internal(fnPtr.getFnPtr()), false);
     }
 
     static private native long call_methodWithCallbackTestEnumPointerReturn_internal(long fnPtr);/*
@@ -817,14 +817,14 @@ public final class TestData {
 
         CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(-1) };
 
-        void methodWithCallbackTestEnumPointerArg_call(EnumPointer<TestEnum> arg0);
+        void methodWithCallbackTestEnumPointerArg_call(TestEnum.TestEnumPointer arg0);
 
         default CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackTestEnumPointerArg_call(new EnumPointer<TestEnum>(parameters[0].asLong(), false, TestEnum::getByIndex));
+            methodWithCallbackTestEnumPointerArg_call(new TestEnum.TestEnumPointer(parameters[0].asLong(), false));
         }
     }
 
@@ -907,7 +907,7 @@ public final class TestData {
 
         CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-1) };
 
-        EnumPointer<TestEnum> methodWithCallbackTestEnumPointerReturn_call();
+        TestEnum.TestEnumPointer methodWithCallbackTestEnumPointerReturn_call();
 
         default CTypeInfo[] functionSignature() {
             return __ffi_cache;
