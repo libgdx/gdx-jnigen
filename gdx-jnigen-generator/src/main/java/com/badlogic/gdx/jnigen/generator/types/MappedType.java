@@ -25,7 +25,7 @@ public interface MappedType {
 
     Expression fromC(Expression cRetrieved);
 
-    default Expression fromC(Expression cRetrieved, boolean owned) {
+    default Expression fromC(Expression cRetrieved, Expression owned) {
         return fromC(cRetrieved);
     }
 

@@ -16,6 +16,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.BinaryExpr.Operator;
+import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -129,7 +130,7 @@ public class StackElementType implements MappedType, WritableClass {
                     pointer = new MethodCallExpr("getPointer");
                 }
 
-                Expression fromCExpression = field.getDefinition().getMappedType().fromC(pointer, false);
+                Expression fromCExpression = field.getDefinition().getMappedType().fromC(pointer, new BooleanLiteralExpr(false));
 
                 if (field.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
                     MethodCallExpr guardPointer = new MethodCallExpr("guardCount");
@@ -284,11 +285,11 @@ public class StackElementType implements MappedType, WritableClass {
 
     @Override
     public Expression fromC(Expression cRetrieved) {
-        return fromC(cRetrieved, true);
+        return fromC(cRetrieved, new BooleanLiteralExpr(true));
     }
 
     @Override
-    public Expression fromC(Expression cRetrieved, boolean owned) {
+    public Expression fromC(Expression cRetrieved, Expression owned) {
         ObjectCreationExpr createObject = new ObjectCreationExpr();
         createObject.setType(instantiationType());
         createObject.addArgument(cRetrieved);
