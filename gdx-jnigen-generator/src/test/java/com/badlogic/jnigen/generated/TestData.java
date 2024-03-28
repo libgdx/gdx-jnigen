@@ -1,6 +1,5 @@
 package com.badlogic.jnigen.generated;
 
-import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoField;
 import com.badlogic.jnigen.generated.structs.AnonymousStructField;
 import com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray;
@@ -8,48 +7,16 @@ import com.badlogic.jnigen.generated.structs.AnonymousClosure;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoFieldEnd;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoFieldConsecutive;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoFieldNested;
-import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 import com.badlogic.gdx.jnigen.pointer.PointerPointer;
 import com.badlogic.gdx.jnigen.pointer.VoidPointer;
-import com.badlogic.gdx.jnigen.pointer.EnumPointer;
 import com.badlogic.jnigen.generated.enums.TestEnum;
 import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
 import com.badlogic.gdx.jnigen.pointer.FloatPointer;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
-import com.badlogic.jnigen.generated.TestData.methodWithCallback;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackLongArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackShortArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackByteArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackCharArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackBooleanArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackFloatArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackDoubleArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackAllArgs;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackLongReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackShortReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackCharReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackByteReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackBooleanReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackFloatReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackDoubleReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithThrowingCallback;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructPointerReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructPointerArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumPointerReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumPointerArg;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerArg;
+import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.jnigen.generated.structs.SpecialStruct;
 import com.badlogic.jnigen.generated.structs.TestUnion;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestUnionPointerReturn;
-import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestUnionPointerArg;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
 import com.badlogic.gdx.jnigen.c.CTypeInfo;
@@ -82,7 +49,7 @@ public final class TestData {
 
     public static PointerPointer<VoidPointer> voidPointerPointer(PointerPointer<VoidPointer> test) {
         test.assertDepth(2);
-        return new PointerPointer<VoidPointer>(voidPointerPointer_internal(test.getPointer()), false, (long peer2, boolean owned2) -> new VoidPointer(peer2, false), 2);
+        return new PointerPointer<>(voidPointerPointer_internal(test.getPointer()), false, VoidPointer::new, 2);
     }
 
     static private native long voidPointerPointer_internal(long test);/*
@@ -94,7 +61,7 @@ public final class TestData {
 
     public static PointerPointer<TestEnum.TestEnumPointer> enumPointerPointer(PointerPointer<TestEnum.TestEnumPointer> test) {
         test.assertDepth(2);
-        return new PointerPointer<TestEnum.TestEnumPointer>(enumPointerPointer_internal(test.getPointer()), false, (long peer2, boolean owned2) -> new TestEnum.TestEnumPointer(peer2, false), 2);
+        return new PointerPointer<>(enumPointerPointer_internal(test.getPointer()), false, TestEnum.TestEnumPointer::new, 2);
     }
 
     static private native long enumPointerPointer_internal(long test);/*
@@ -106,7 +73,7 @@ public final class TestData {
 
     public static PointerPointer<TestStruct.TestStructPointer> structPointerPointer(PointerPointer<TestStruct.TestStructPointer> test) {
         test.assertDepth(2);
-        return new PointerPointer<TestStruct.TestStructPointer>(structPointerPointer_internal(test.getPointer()), false, (long peer2, boolean owned2) -> new TestStruct.TestStructPointer(peer2, false), 2);
+        return new PointerPointer<>(structPointerPointer_internal(test.getPointer()), false, TestStruct.TestStructPointer::new, 2);
     }
 
     static private native long structPointerPointer_internal(long test);/*
@@ -118,7 +85,7 @@ public final class TestData {
 
     public static PointerPointer<CSizedIntPointer> intPointerPointer(PointerPointer<CSizedIntPointer> test) {
         test.assertCTypeBackingAndDepth("int", 2);
-        return new PointerPointer<CSizedIntPointer>(intPointerPointer_internal(test.getPointer()), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, false, "int"), 2).setBackingCType("int");
+        return new PointerPointer<>(intPointerPointer_internal(test.getPointer()), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, owned2, "int"), 2).setBackingCType("int");
     }
 
     static private native long intPointerPointer_internal(long test);/*
@@ -130,7 +97,7 @@ public final class TestData {
 
     public static PointerPointer<FloatPointer> floatPointerPointer(PointerPointer<FloatPointer> test) {
         test.assertDepth(2);
-        return new PointerPointer<FloatPointer>(floatPointerPointer_internal(test.getPointer()), false, (long peer2, boolean owned2) -> new FloatPointer(peer2, false), 2);
+        return new PointerPointer<>(floatPointerPointer_internal(test.getPointer()), false, FloatPointer::new, 2);
     }
 
     static private native long floatPointerPointer_internal(long test);/*
@@ -142,7 +109,7 @@ public final class TestData {
 
     public static PointerPointer<PointerPointer<PointerPointer<PointerPointer<VoidPointer>>>> pointerPointerManyyy(PointerPointer<PointerPointer<PointerPointer<PointerPointer<VoidPointer>>>> test) {
         test.assertDepth(5);
-        return new PointerPointer<PointerPointer<PointerPointer<PointerPointer<VoidPointer>>>>(pointerPointerManyyy_internal(test.getPointer()), false, (long peer5, boolean owned5) -> new PointerPointer<PointerPointer<PointerPointer<VoidPointer>>>(peer5, false, (long peer4, boolean owned4) -> new PointerPointer<PointerPointer<VoidPointer>>(peer4, false, (long peer3, boolean owned3) -> new PointerPointer<VoidPointer>(peer3, false, (long peer2, boolean owned2) -> new VoidPointer(peer2, false), 2), 3), 4), 5);
+        return new PointerPointer<>(pointerPointerManyyy_internal(test.getPointer()), false, (long peer5, boolean owned5) -> new PointerPointer<>(peer5, owned5, (long peer4, boolean owned4) -> new PointerPointer<>(peer4, owned4, (long peer3, boolean owned3) -> new PointerPointer<>(peer3, owned3, VoidPointer::new, 2), 3), 4), 5);
     }
 
     static private native long pointerPointerManyyy_internal(long test);/*

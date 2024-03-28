@@ -36,7 +36,6 @@ public class GlobalType implements MappedType {
 
 
     public void write(CompilationUnit cu, HashMap<MethodDeclaration, String> patchNativeMethods) {
-        cu.addImport(CHandler.class);
         ClassOrInterfaceDeclaration global = cu.addClass(globalName, Keyword.PUBLIC, Keyword.FINAL);
         global.addOrphanComment(new BlockComment("JNI\n#include <jnigen.h>\n#include <" + Manager.getInstance().getParsedCHeader() + ">\n"));
         for (FunctionType functionType : functions) {
