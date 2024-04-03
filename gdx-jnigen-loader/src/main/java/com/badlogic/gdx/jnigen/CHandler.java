@@ -65,6 +65,18 @@ public class CHandler {
             gJVM->DetachCurrentThread(); \
         }
 
+    #ifdef __BYTE_ORDER__
+        #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+            #define ENDIAN_INTCPY(dest, dest_size, src, src_size) memcpy(dest, src, dest_size > src_size ? src_size : dest_size)
+        #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+            #error Big endian is currently unsupported
+        #else
+            #error Could not determine byte order
+        #endif
+    #else
+        #error Could not determine byte order
+    #endif
+
     jmethodID dispatchCallbackMethod = NULL;
     jclass globalClass = NULL;
     JavaVM* gJVM = NULL;
@@ -85,7 +97,7 @@ public class CHandler {
                     memcpy(structBuf, args[i], type->size);
                     backingBuffer[i] = structBuf;
                 } else {
-                    memcpy(backingBuffer + i, args[i],  type->size); // TODO Make it endian safe, I guess?
+                    ENDIAN_INTCPY(backingBuffer + i, sizeof(void*), args[i], type->size);
                 }
             }
         }
@@ -98,7 +110,7 @@ public class CHandler {
         if(rtype->type == FFI_TYPE_STRUCT) {
             memcpy(result, reinterpret_cast<void*>(ret), rtype->size);
         } else {
-            memcpy(result, &ret, rtype->size); // TODO Make it endian safe, I guess?
+            ENDIAN_INTCPY(result, rtype->size, &ret, sizeof(jlong));
         }
         DETACH_ENV()
     }
@@ -256,7 +268,7 @@ public class CHandler {
         size_t offset = calculateOffset ? getOffsetForField(struct_type, field) : 0;
 
         jlong ret = 0;
-        memcpy(&ret, ptr + offset, struct_type->elements[field]->size);  // TODO Make it endian safe, I guess?
+        ENDIAN_INTCPY(&ret, sizeof(jlong), ptr + offset, struct_type->elements[field]->size);
         return ret;
     */
 
@@ -278,20 +290,20 @@ public class CHandler {
 
         size_t offset = calculateOffset ? getOffsetForField(struct_type, field) : 0;
 
-        memcpy(ptr + offset, &value, struct_type->elements[field]->size); // TODO Make it endian safe, I guess?
+        ENDIAN_INTCPY(ptr + offset, struct_type->elements[field]->size, &value, sizeof(jlong));
         return true;
     */
 
     public static native long getPointerPart(long pointer, int size, int offset);/*
         char* ptr = reinterpret_cast<char*>(pointer);
         jlong ret = 0;
-        memcpy(&ret, ptr + offset, size);  // TODO Make it endian safe, I guess?
+        ENDIAN_INTCPY(&ret, sizeof(jlong), ptr + offset, size);
         return ret;
     */
 
     public static native void setPointerPart(long pointer, int size, int offset, long value);/*
         char* ptr = reinterpret_cast<char*>(pointer);
-        memcpy(ptr + offset, &value, size);  // TODO Make it endian safe, I guess?
+        ENDIAN_INTCPY(ptr + offset, size, &value, sizeof(jlong));
     */
 
     public static native int getSizeFromFFIType(long type);/*
