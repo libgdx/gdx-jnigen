@@ -1,6 +1,7 @@
 package com.badlogic.gdx.jnigen;
 
 import com.badlogic.gdx.jnigen.c.CTypeInfo;
+import com.badlogic.gdx.jnigen.c.CXXException;
 import com.badlogic.gdx.jnigen.closure.Closure;
 import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.ffi.ClosureInfo;
@@ -16,7 +17,8 @@ public class CHandler {
     static {
         new SharedLibraryLoader().load("jnigen-native");
         try {
-            boolean res = init(CHandler.class.getDeclaredMethod("dispatchCallback", ClosureInfo.class, ByteBuffer.class), IllegalArgumentException.class);
+            boolean res = init(CHandler.class.getDeclaredMethod("dispatchCallback", ClosureInfo.class, ByteBuffer.class),
+                    IllegalArgumentException.class, CXXException.class);
             if (!res)
                 throw new RuntimeException("JNI initialization failed.");
         } catch (NoSuchMethodException e) {
@@ -80,6 +82,7 @@ public class CHandler {
     jmethodID dispatchCallbackMethod = NULL;
     jclass globalClass = NULL;
     jclass illegalArgumentExceptionClass = NULL;
+    jclass cxxExceptionClass = NULL;
     JavaVM* gJVM = NULL;
 
     void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
@@ -124,12 +127,16 @@ public class CHandler {
         return std::runtime_error::what();
     }
 
-    void throwIllegalArgumentException(JNIEnv* env, char* message) {
+    void throwIllegalArgumentException(JNIEnv* env, const char* message) {
         env->ThrowNew(illegalArgumentExceptionClass, message);
+    }
+
+    void throwCXXException(JNIEnv* env, const char* message) {
+        env->ThrowNew(cxxExceptionClass, message);
     }
     */
 
-    private static native boolean init(Method dispatchCallbackReflectedMethod, Class illegalArgumentException);/*
+    private static native boolean init(Method dispatchCallbackReflectedMethod, Class illegalArgumentException, Class cxxException);/*
         env->GetJavaVM(&gJVM);
         globalClass = (jclass)env->NewGlobalRef(clazz);
         dispatchCallbackMethod = env->FromReflectedMethod(dispatchCallbackReflectedMethod);
@@ -138,6 +145,7 @@ public class CHandler {
             return JNI_FALSE;
         }
         illegalArgumentExceptionClass = (jclass)env->NewGlobalRef(illegalArgumentException);
+        cxxExceptionClass = (jclass)env->NewGlobalRef(cxxException);
         return JNI_TRUE;
     */
 
@@ -146,10 +154,18 @@ public class CHandler {
             testIllegalArgumentExceptionThrowable();
             throw new RuntimeException("Unable to throw IllegalArgumentException from JNI.");
         }catch (IllegalArgumentException ignored) {}
+        try {
+            testCXXExceptionThrowable();
+            throw new RuntimeException("Unable to throw CXXException from JNI.");
+        }catch (CXXException ignored) {}
     }
 
     private static native void testIllegalArgumentExceptionThrowable();/*
-        env->ThrowNew(illegalArgumentExceptionClass, "Test");
+        throwIllegalArgumentException(env, "Test");
+    */
+
+    private static native void testCXXExceptionThrowable();/*
+        throwCXXException(env, "Test");
     */
 
     public static native boolean reExportSymbolsGlobally(String libPath);/*
