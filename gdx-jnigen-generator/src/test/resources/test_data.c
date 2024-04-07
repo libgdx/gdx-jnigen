@@ -378,3 +378,7 @@ void call_methodWithIntPtrPtrArg(methodWithIntPtrPtrArg fnPtr) {
 int** call_methodWithIntPtrPtrRet(methodWithIntPtrPtrRet fnPtr) {
     return fnPtr();
 }
+
+void outOfBoundArg(uint32_t par) {
+    // do nothing
+}
