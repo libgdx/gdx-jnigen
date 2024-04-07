@@ -554,6 +554,7 @@ public final class TestData {
 
     static private native long returnIntPointer_internal(int arg0);/*
     	HANDLE_JAVA_EXCEPTION_START()
+    	CHECK_AND_THROW_C_TYPE(env, int, arg0, 0, return 0);
     	return (jlong)returnIntPointer((int)arg0);
     	HANDLE_JAVA_EXCEPTION_END()
     	return 0;
@@ -565,6 +566,7 @@ public final class TestData {
 
     static private native long call_methodWithCallbackIntPointerReturn_internal(long fnPtr, int val);/*
     	HANDLE_JAVA_EXCEPTION_START()
+    	CHECK_AND_THROW_C_TYPE(env, int, val, 1, return 0);
     	return (jlong)call_methodWithCallbackIntPointerReturn((methodWithCallbackIntPointerReturn)fnPtr, (int)val);
     	HANDLE_JAVA_EXCEPTION_END()
     	return 0;
@@ -598,6 +600,7 @@ public final class TestData {
 
     static private native int getFixedSizeArrayFieldValue_internal(long specialStruct, int index);/*
     	HANDLE_JAVA_EXCEPTION_START()
+    	CHECK_AND_THROW_C_TYPE(env, int, index, 1, return 0);
     	return (jint)getFixedSizeArrayFieldValue(*(SpecialStruct*)specialStruct, (int)index);
     	HANDLE_JAVA_EXCEPTION_END()
     	return 0;
@@ -630,6 +633,8 @@ public final class TestData {
 
     static private native void setFixedSizeArrayFieldValue_internal(long specialStruct, int index, int value);/*
     	HANDLE_JAVA_EXCEPTION_START()
+    	CHECK_AND_THROW_C_TYPE(env, int, value, 2, return);
+    	CHECK_AND_THROW_C_TYPE(env, int, index, 1, return);
     	setFixedSizeArrayFieldValue((SpecialStruct *)specialStruct, (int)index, (int)value);
     	HANDLE_JAVA_EXCEPTION_END()
     */
@@ -640,6 +645,7 @@ public final class TestData {
 
     static private native void setIntPtrFieldValue_internal(long specialStruct, int value);/*
     	HANDLE_JAVA_EXCEPTION_START()
+    	CHECK_AND_THROW_C_TYPE(env, int, value, 1, return);
     	setIntPtrFieldValue(*(SpecialStruct*)specialStruct, (int)value);
     	HANDLE_JAVA_EXCEPTION_END()
     */
@@ -685,6 +691,7 @@ public final class TestData {
 
     static private native void setUnionUintTypeByPointer_internal(long testUnion, long value);/*
     	HANDLE_JAVA_EXCEPTION_START()
+    	CHECK_AND_THROW_C_TYPE(env, uint64_t, value, 1, return);
     	setUnionUintTypeByPointer((TestUnion *)testUnion, (uint64_t)value);
     	HANDLE_JAVA_EXCEPTION_END()
     */
@@ -727,6 +734,7 @@ public final class TestData {
 
     static private native int getUnionFixedSizeIntByValue_internal(long testUnion, int index);/*
     	HANDLE_JAVA_EXCEPTION_START()
+    	CHECK_AND_THROW_C_TYPE(env, int, index, 1, return 0);
     	return (jint)getUnionFixedSizeIntByValue(*(TestUnion*)testUnion, (int)index);
     	HANDLE_JAVA_EXCEPTION_END()
     	return 0;
@@ -738,6 +746,8 @@ public final class TestData {
 
     static private native void setUnionFixedSizeIntByPointer_internal(long testUnion, int index, int value);/*
     	HANDLE_JAVA_EXCEPTION_START()
+    	CHECK_AND_THROW_C_TYPE(env, int, value, 2, return);
+    	CHECK_AND_THROW_C_TYPE(env, int, index, 1, return);
     	setUnionFixedSizeIntByPointer((TestUnion *)testUnion, (int)index, (int)value);
     	HANDLE_JAVA_EXCEPTION_END()
     */
@@ -783,6 +793,17 @@ public final class TestData {
     static private native void call_methodWithCallbackTestUnionPointerArg_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	call_methodWithCallbackTestUnionPointerArg((methodWithCallbackTestUnionPointerArg)fnPtr);
+    	HANDLE_JAVA_EXCEPTION_END()
+    */
+
+    public static void outOfBoundArg(long par) {
+        outOfBoundArg_internal(par);
+    }
+
+    static private native void outOfBoundArg_internal(long par);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	CHECK_AND_THROW_C_TYPE(env, uint32_t, par, 0, return);
+    	outOfBoundArg((uint32_t)par);
     	HANDLE_JAVA_EXCEPTION_END()
     */
 

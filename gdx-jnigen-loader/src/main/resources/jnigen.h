@@ -13,6 +13,8 @@ struct JavaExceptionMarker : public std::runtime_error {
     const char* what() const noexcept override;
 };
 
+extern "C" void throwIllegalArgumentException(JNIEnv* env, char* message);
+
 #define GET_FFI_TYPE(type) \
     _Generic((type){0}, \
         double: &ffi_type_double, \
@@ -35,22 +37,23 @@ struct JavaExceptionMarker : public std::runtime_error {
 
 #define IS_SIGNED_TYPE(type) (((type)-1) < 0)
 
-#define CHECK_AND_THROW_C_TYPE(type, value, set_error) \
-    bool _check = CHECK_BOUNDS_FOR_C_TYPE(type, value); \
-    if (!_check) { \
-        env->Throw(typeBoundCheckFailed); \
-        error_code = set_error; \
+#define CHECK_AND_THROW_C_TYPE(env, type, value, argument_index, returnAction) \
+    bool _signed##argument_index = IS_SIGNED_TYPE(type); \
+    int _size##argument_index = sizeof(type); \
+    if (!CHECK_BOUNDS_FOR_NUMBER(value, _size##argument_index, _signed##argument_index)) { \
+        char buffer[1024]; \
+        snprintf(buffer, sizeof(buffer), "Value %ld is out of bound for size %d and signess %d on argument %d", (jlong)value, _size##argument_index, _signed##argument_index, argument_index); \
+        throwIllegalArgumentException(env, buffer); \
+        returnAction; \
     }
-
-#define CHECK_BOUNDS_FOR_C_TYPE(type, value) \
-    CHECK_BOUNDS_FOR_NUMBER(value, sizeof(type), IS_SIGNED_TYPE(type))
 
 #define CHECK_BOUNDS_FOR_NUMBER(value, size, is_signed) \
     ((size) == 8 ? true : \
     (!(is_signed)) ? ((uint64_t)(value) < (1ULL << ((size) << 3))) : \
     ((int64_t)(value) >= (-1LL << (((size) << 3) - 1)) && (int64_t)(value) <= ((1LL << (((size) << 3) - 1)) - 1)))
 
-static void calculateAlignmentAndOffset(ffi_type* type, bool isStruct) {
+// We do inline to silence compiler warnings, but it shouldn't actually inline
+static inline void calculateAlignmentAndOffset(ffi_type* type, bool isStruct) {
     int index = 0;
     ffi_type* current_element = type->elements[index];
     size_t struct_size = 0;

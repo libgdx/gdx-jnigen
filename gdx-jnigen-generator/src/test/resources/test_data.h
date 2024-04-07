@@ -251,6 +251,8 @@ typedef void (*methodWithCallbackTestUnionPointerArg)(TestUnion*);
 TestUnion* call_methodWithCallbackTestUnionPointerReturn(methodWithCallbackTestUnionPointerReturn fnPtr);
 void call_methodWithCallbackTestUnionPointerArg(methodWithCallbackTestUnionPointerArg fnPtr);
 
+void outOfBoundArg(uint32_t par);
+
 #ifdef __cplusplus
 }
 #endif
