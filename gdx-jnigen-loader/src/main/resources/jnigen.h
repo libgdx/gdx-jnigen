@@ -6,14 +6,17 @@
 
 #define HANDLE_JAVA_EXCEPTION_START() try {
 
-#define HANDLE_JAVA_EXCEPTION_END() } catch (const JavaExceptionMarker& e) {}
+#define HANDLE_JAVA_EXCEPTION_END() } catch (const JavaExceptionMarker& e) {/*We don't need to do anything, java exception is already pending*/ } \
+        catch (const std::exception& ex) { throwCXXException(env, ex.what()); } \
+        catch (...) { throwCXXException(env, "An unknown error occurred"); }
 
 struct JavaExceptionMarker : public std::runtime_error {
     JavaExceptionMarker();
     const char* what() const noexcept override;
 };
 
-extern "C" void throwIllegalArgumentException(JNIEnv* env, char* message);
+extern "C" void throwIllegalArgumentException(JNIEnv* env, const char* message);
+extern "C" void throwCXXException(JNIEnv* env, const char* message);
 
 #define GET_FFI_TYPE(type) \
     _Generic((type){0}, \
