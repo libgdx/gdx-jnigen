@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "test_data.h"
 
 void call_methodWithCallback(methodWithCallback fnPtr) {
@@ -172,7 +173,7 @@ int passTestEnumPointer(TestEnum* enumValue) {
 }
 
 TestEnum* returnTestEnumPointer(void) {
-    TestEnum* ptr = malloc(sizeof(TestEnum));
+    TestEnum* ptr = (TestEnum*)malloc(sizeof(TestEnum));
     *ptr = THIRD;
     return ptr;
 }
@@ -205,7 +206,7 @@ int passIntPointer(int* ptr) {
 }
 
 int* returnIntPointer(int i) {
-    int* ret = malloc(sizeof(int));
+    int* ret = (int*)malloc(sizeof(int));
     *ret = i;
     return ret;
 }
@@ -217,7 +218,7 @@ int* call_methodWithCallbackIntPointerReturn(methodWithCallbackIntPointerReturn 
 }
 
 int call_methodWithCallbackIntPointerArg(methodWithCallbackIntPointerArg fnPtr) {
-    int* arg = (int*) malloc(sizeof(int*));
+    int* arg = (int*) malloc(sizeof(int));
     *arg = 15;
     fnPtr(arg);
     return *arg; // We don't free, since we will free it on java side
@@ -320,14 +321,14 @@ void** voidPointerPointer(void** test) {
 }
 
 TestEnum** enumPointerPointer(TestEnum** test) {
-    TestEnum* ptr = malloc(sizeof(TestEnum));
+    TestEnum* ptr = (TestEnum*)malloc(sizeof(TestEnum));
     *ptr = SECOND;
     *test = ptr;
     return test;
 }
 
 TestStruct** structPointerPointer(TestStruct** test) {
-    TestStruct* ptr = malloc(sizeof(TestStruct));
+    TestStruct* ptr = (TestStruct*)malloc(sizeof(TestStruct));
     TestStruct str = {
         .field1 = 1,
         .field2 = 2,
@@ -341,23 +342,23 @@ TestStruct** structPointerPointer(TestStruct** test) {
 }
 
 int** intPointerPointer(int** test) {
-    int* ptr = malloc(sizeof(int));
+    int* ptr = (int*)malloc(sizeof(int));
     *ptr = 5;
     *test = ptr;
     return test;
 }
 
 float** floatPointerPointer(float** test) {
-    float* ptr = malloc(sizeof(float));
+    float* ptr = (float*)malloc(sizeof(float));
     *ptr = 5.5;
     *test = ptr;
     return test;
 }
 
 void***** pointerPointerManyyy(void***** test) {
-    void**** ptr4 = malloc(sizeof(void****));
-    void*** ptr3 = malloc(sizeof(void***));
-    void** ptr2 = malloc(sizeof(void**));
+    void**** ptr4 = (void****)malloc(sizeof(void***));
+    void*** ptr3 = (void***)malloc(sizeof(void**));
+    void** ptr2 = (void**)malloc(sizeof(void*));
     void* ptr1 = (void*)5;
 
     *ptr2 = ptr1;
@@ -382,3 +383,12 @@ int** call_methodWithIntPtrPtrRet(methodWithIntPtrPtrRet fnPtr) {
 void outOfBoundArg(uint32_t par) {
     // do nothing
 }
+
+void throwOrdinaryException() {
+    throw std::runtime_error("Normal error");
+}
+
+void throwNumberException() {
+    throw -2;
+}
+

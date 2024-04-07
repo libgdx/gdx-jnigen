@@ -807,6 +807,26 @@ public final class TestData {
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
+    public static void throwOrdinaryException() {
+        throwOrdinaryException_internal();
+    }
+
+    static private native void throwOrdinaryException_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	throwOrdinaryException();
+    	HANDLE_JAVA_EXCEPTION_END()
+    */
+
+    public static void throwNumberException() {
+        throwNumberException_internal();
+    }
+
+    static private native void throwNumberException_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	throwNumberException();
+    	HANDLE_JAVA_EXCEPTION_END()
+    */
+
     public interface methodWithCallbackBooleanArg extends Closure {
 
         CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(0) };
