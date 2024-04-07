@@ -1,10 +1,10 @@
 package com.badlogic.jnigen.tests;
 
+import com.badlogic.gdx.jnigen.c.CXXException;
 import com.badlogic.jnigen.generated.TestData;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class BasicTest extends BaseTest {
 
@@ -16,5 +16,23 @@ public class BasicTest extends BaseTest {
         assertThrows(IllegalArgumentException.class, () -> TestData.outOfBoundArg(-1));
         assertThrows(IllegalArgumentException.class, () -> TestData.outOfBoundArg(Long.MAX_VALUE));
         assertThrows(IllegalArgumentException.class, () -> TestData.outOfBoundArg(1L << 32));
+    }
+
+    @Test
+    public void testCXXException() {
+        assertThrows(CXXException.class, TestData::throwOrdinaryException);
+        assertThrows(CXXException.class, TestData::throwNumberException);
+
+        try {
+            TestData.throwOrdinaryException();
+        } catch (CXXException e) {
+            assertEquals("Normal error", e.getMessage());
+        }
+
+        try {
+            TestData.throwNumberException();
+        } catch (CXXException e) {
+            assertEquals("An unknown error occurred", e.getMessage());
+        }
     }
 }

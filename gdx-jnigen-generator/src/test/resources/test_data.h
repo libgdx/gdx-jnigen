@@ -253,6 +253,9 @@ void call_methodWithCallbackTestUnionPointerArg(methodWithCallbackTestUnionPoint
 
 void outOfBoundArg(uint32_t par);
 
+void throwOrdinaryException(void);
+void throwNumberException(void);
+
 #ifdef __cplusplus
 }
 #endif
