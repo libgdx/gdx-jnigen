@@ -75,6 +75,16 @@ public class FunctionType {
         }
         callMethod.setBody(body);
 
+        for (int i = 0; i < arguments.length; i++) {
+            NamedType namedType = arguments[i];
+            TypeKind typeKind = namedType.getDefinition().getTypeKind();
+            if (typeKind.isPrimitive() && typeKind != TypeKind.FLOAT && typeKind != TypeKind.DOUBLE) {
+                String ret = returnType.getTypeKind() == TypeKind.VOID ? "return" : "return 0";
+                nativeBody.insert(0, "CHECK_AND_THROW_C_TYPE(env, " + namedType.getDefinition().getTypeName() + ", "
+                        + namedType.getName() + ", " + i + ", " + ret + ");\n");
+            }
+        }
+
         nativeBody.insert(0, "HANDLE_JAVA_EXCEPTION_START()\n");
         nativeBody.append("\nHANDLE_JAVA_EXCEPTION_END()");
         if (returnType.getTypeKind() != TypeKind.VOID)

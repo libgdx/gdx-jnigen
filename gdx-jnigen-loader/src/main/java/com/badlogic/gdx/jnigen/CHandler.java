@@ -16,14 +16,14 @@ public class CHandler {
     static {
         new SharedLibraryLoader().load("jnigen-native");
         try {
-            IllegalArgumentException boundCheckFailed = new IllegalArgumentException("A type bound check failed - this stacktrace is useless.");
-            boolean res = init(CHandler.class.getDeclaredMethod("dispatchCallback", ClosureInfo.class, ByteBuffer.class), boundCheckFailed);
+            boolean res = init(CHandler.class.getDeclaredMethod("dispatchCallback", ClosureInfo.class, ByteBuffer.class), IllegalArgumentException.class);
             if (!res)
                 throw new RuntimeException("JNI initialization failed.");
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
         POINTER_SIZE = getPointerSize();
+        testNativeSetup();
     }
 
     public static void init() {
@@ -79,9 +79,8 @@ public class CHandler {
 
     jmethodID dispatchCallbackMethod = NULL;
     jclass globalClass = NULL;
+    jclass illegalArgumentExceptionClass = NULL;
     JavaVM* gJVM = NULL;
-    jthrowable typeBoundCheckFailed;
-    thread_local int error_code;
 
     void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
         ATTACH_ENV()
@@ -125,9 +124,12 @@ public class CHandler {
         return std::runtime_error::what();
     }
 
+    void throwIllegalArgumentException(JNIEnv* env, char* message) {
+        env->ThrowNew(illegalArgumentExceptionClass, message);
+    }
     */
 
-    private static native boolean init(Method dispatchCallbackReflectedMethod, Throwable e);/*
+    private static native boolean init(Method dispatchCallbackReflectedMethod, Class illegalArgumentException);/*
         env->GetJavaVM(&gJVM);
         globalClass = (jclass)env->NewGlobalRef(clazz);
         dispatchCallbackMethod = env->FromReflectedMethod(dispatchCallbackReflectedMethod);
@@ -135,8 +137,19 @@ public class CHandler {
             fprintf(stderr, "com.badlogic.gdx.jnigen.Global#dispatchCallback is not reachable via JNI\n");
             return JNI_FALSE;
         }
-        typeBoundCheckFailed = (jthrowable)env->NewGlobalRef(e);
+        illegalArgumentExceptionClass = (jclass)env->NewGlobalRef(illegalArgumentException);
         return JNI_TRUE;
+    */
+
+    private static void testNativeSetup() {
+        try {
+            testIllegalArgumentExceptionThrowable();
+            throw new RuntimeException("Unable to throw IllegalArgumentException from JNI.");
+        }catch (IllegalArgumentException ignored) {}
+    }
+
+    private static native void testIllegalArgumentExceptionThrowable();/*
+        env->ThrowNew(illegalArgumentExceptionClass, "Test");
     */
 
     public static native boolean reExportSymbolsGlobally(String libPath);/*
