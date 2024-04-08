@@ -7,6 +7,8 @@ import com.badlogic.gdx.jnigen.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.ffi.ClosureInfo;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -18,9 +20,10 @@ public class CHandler {
         new SharedLibraryLoader().load("jnigen-native");
         try {
             boolean res = init(CHandler.class.getDeclaredMethod("dispatchCallback", ClosureInfo.class, ByteBuffer.class),
+                    CHandler.class.getDeclaredMethod("getExceptionString", Throwable.class),
                     IllegalArgumentException.class, CXXException.class);
             if (!res)
-                throw new RuntimeException("JNI initialization failed.");
+                throw new RuntimeException("JNI initialization failed, either CHandler#dispatchCallback or CHandler#getExceptionString are not JNI accessible.");
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
@@ -80,10 +83,12 @@ public class CHandler {
     #endif
 
     jmethodID dispatchCallbackMethod = NULL;
+    jmethodID getExceptionStringMethod = NULL;
     jclass globalClass = NULL;
     jclass illegalArgumentExceptionClass = NULL;
     jclass cxxExceptionClass = NULL;
     JavaVM* gJVM = NULL;
+    bool ignoreCXXExceptionMessage = false;
 
     void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
         ATTACH_ENV()
@@ -105,8 +110,17 @@ public class CHandler {
         }
         jlong ret = env->CallStaticLongMethod(globalClass, dispatchCallbackMethod, closureInfo, jBuffer);
 
-        if(env->ExceptionCheck() == JNI_TRUE)
-            throw JavaExceptionMarker();
+        jthrowable exc = env->ExceptionOccurred();
+        if(exc != NULL) {
+            env->ExceptionClear();
+            if (ignoreCXXExceptionMessage)
+                throw JavaExceptionMarker(exc, "Java-Side exception");
+            jstring message = (jstring)env->CallStaticObjectMethod(globalClass, getExceptionStringMethod, exc);
+            const char* cStringMessage = env->GetStringUTFChars(message, NULL);
+            std::string cxxMessage(cStringMessage);
+            env->ReleaseStringUTFChars(message, cStringMessage);
+            throw JavaExceptionMarker(exc, cxxMessage);
+        }
 
         ffi_type* rtype = cif->rtype;
         if(rtype->type == FFI_TYPE_STRUCT) {
@@ -117,14 +131,16 @@ public class CHandler {
         DETACH_ENV()
     }
 
-    JavaExceptionMarker::JavaExceptionMarker() : std::runtime_error("Java Exception") {}
-
-    const char* JavaExceptionMarker::what() const noexcept {
-        ATTACH_ENV()
-        env->ExceptionDescribe();
+    JavaExceptionMarker::JavaExceptionMarker(jthrowable exc, const std::string& message) : std::runtime_error(message) {
+        ATTACH_ENV() // TODO: We could save this by doing this in the caller, but that seems overoptimization?
+        javaExc = (jthrowable)env->NewGlobalRef(exc);
         DETACH_ENV()
-        // TODO: Implement at some point properly
-        return std::runtime_error::what();
+    }
+
+    JavaExceptionMarker::~JavaExceptionMarker() {
+        ATTACH_ENV() // TODO: Figure out, whether this is an issue during full-crash
+        env->DeleteGlobalRef(javaExc);
+        DETACH_ENV()
     }
 
     void throwIllegalArgumentException(JNIEnv* env, const char* message) {
@@ -136,7 +152,7 @@ public class CHandler {
     }
     */
 
-    private static native boolean init(Method dispatchCallbackReflectedMethod, Class illegalArgumentException, Class cxxException);/*
+    private static native boolean init(Method dispatchCallbackReflectedMethod, Method getExceptionStringReflectedMethod, Class illegalArgumentException, Class cxxException);/*
         env->GetJavaVM(&gJVM);
         globalClass = (jclass)env->NewGlobalRef(clazz);
         dispatchCallbackMethod = env->FromReflectedMethod(dispatchCallbackReflectedMethod);
@@ -144,10 +160,21 @@ public class CHandler {
             fprintf(stderr, "com.badlogic.gdx.jnigen.Global#dispatchCallback is not reachable via JNI\n");
             return JNI_FALSE;
         }
+        getExceptionStringMethod = env->FromReflectedMethod(getExceptionStringReflectedMethod);
+        if (getExceptionStringMethod == NULL) {
+            fprintf(stderr, "com.badlogic.gdx.jnigen.Global#getExceptionStringMethod is not reachable via JNI\n");
+            return JNI_FALSE;
+        }
         illegalArgumentExceptionClass = (jclass)env->NewGlobalRef(illegalArgumentException);
         cxxExceptionClass = (jclass)env->NewGlobalRef(cxxException);
         return JNI_TRUE;
     */
+
+    public static String getExceptionString(Throwable e) {
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        return sw.toString();
+    }
 
     private static void testNativeSetup() {
         try {
@@ -166,6 +193,14 @@ public class CHandler {
 
     private static native void testCXXExceptionThrowable();/*
         throwCXXException(env, "Test");
+    */
+
+    /**
+     * If java code throws an exception into native, this will disable setting a descriptor for the wrapping CXX exception
+     * This can hold a performance boost, if a lot of CXX exceptions are created
+     */
+    public static native void setDisableCXXExceptionMessage(boolean disable);/*
+        ignoreCXXExceptionMessage = disable;
     */
 
     public static native boolean reExportSymbolsGlobally(String libPath);/*
@@ -333,6 +368,10 @@ public class CHandler {
     public static native void setPointerPart(long pointer, int size, int offset, long value);/*
         char* ptr = reinterpret_cast<char*>(pointer);
         ENDIAN_INTCPY(ptr + offset, size, &value, sizeof(jlong));
+    */
+
+    public static native String getPointerAsString(long pointer);/*
+        return env->NewStringUTF(reinterpret_cast<const char*>(pointer));
     */
 
     public static native int getSizeFromFFIType(long type);/*

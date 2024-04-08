@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <jnigen.h>
 #include "test_data.h"
 
 void call_methodWithCallback(methodWithCallback fnPtr) {
@@ -390,5 +391,14 @@ void throwOrdinaryException() {
 
 void throwNumberException() {
     throw -2;
+}
+
+const char* returnThrownCauseMessage(methodWithThrowingCallback fnPtr) {
+    try {
+        fnPtr();
+    } catch (const JavaExceptionMarker& e) {
+        return e.what();
+    }
+    return NULL;
 }
 
