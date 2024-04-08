@@ -17,7 +17,7 @@ public final class AnonymousClosure extends Struct {
     private final static long __ffi_type;
 
     static {
-        __ffi_type = FFITypes.getCTypeInfo(10).getFfiType();
+        __ffi_type = FFITypes.getCTypeInfo(11).getFfiType();
         __size = CHandler.getSizeFromFFIType(__ffi_type);
     }
 
@@ -87,7 +87,7 @@ public final class AnonymousClosure extends Struct {
 
     public interface someClosure extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(4), FFITypes.getCTypeInfo(-1), FFITypes.getCTypeInfo(2) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(-1), FFITypes.getCTypeInfo(3) };
 
         int someClosure_call(CSizedIntPointer arg0, double arg1);
 
@@ -102,7 +102,7 @@ public final class AnonymousClosure extends Struct {
 
     public interface anotherClosure extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(3), FFITypes.getCTypeInfo(4), FFITypes.getCTypeInfo(2) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(4), FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(3) };
 
         float anotherClosure_call(int arg0, double arg1);
 
