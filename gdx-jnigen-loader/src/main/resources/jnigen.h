@@ -3,16 +3,19 @@
 #include <stdlib.h>
 #include <ffi.h>
 #include <stdexcept>
+#include <string>
+#include <jni.h>
 
 #define HANDLE_JAVA_EXCEPTION_START() try {
 
-#define HANDLE_JAVA_EXCEPTION_END() } catch (const JavaExceptionMarker& e) {/*We don't need to do anything, java exception is already pending*/ } \
+#define HANDLE_JAVA_EXCEPTION_END() } catch (const JavaExceptionMarker& e) { env->Throw(e.javaExc); } \
         catch (const std::exception& ex) { throwCXXException(env, ex.what()); } \
         catch (...) { throwCXXException(env, "An unknown error occurred"); }
 
 struct JavaExceptionMarker : public std::runtime_error {
-    JavaExceptionMarker();
-    const char* what() const noexcept override;
+    jthrowable javaExc;
+    JavaExceptionMarker(jthrowable exc, const std::string& message);
+    ~JavaExceptionMarker();
 };
 
 extern "C" void throwIllegalArgumentException(JNIEnv* env, const char* message);

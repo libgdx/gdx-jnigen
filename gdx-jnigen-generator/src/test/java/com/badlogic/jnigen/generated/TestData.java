@@ -827,6 +827,17 @@ public final class TestData {
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
+    public static CSizedIntPointer returnThrownCauseMessage(ClosureObject<methodWithThrowingCallback> fnPtr) {
+        return new CSizedIntPointer(returnThrownCauseMessage_internal(fnPtr.getFnPtr()), false, "const char");
+    }
+
+    static private native long returnThrownCauseMessage_internal(long fnPtr);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)returnThrownCauseMessage((methodWithThrowingCallback)fnPtr);
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
     public interface methodWithCallbackBooleanArg extends Closure {
 
         CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(0) };
