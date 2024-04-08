@@ -160,4 +160,8 @@ public final class CSizedIntPointer extends Pointing {
         tmp.guardBytes(getSizeGuard());
         return tmp;
     }
+
+    public String getString() {
+        return CHandler.getPointerAsString(getPointer());
+    }
 }

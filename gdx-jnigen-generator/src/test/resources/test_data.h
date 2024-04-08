@@ -256,6 +256,8 @@ void outOfBoundArg(uint32_t par);
 void throwOrdinaryException(void);
 void throwNumberException(void);
 
+const char* returnThrownCauseMessage(methodWithThrowingCallback fnPtr);
+
 #ifdef __cplusplus
 }
 #endif
