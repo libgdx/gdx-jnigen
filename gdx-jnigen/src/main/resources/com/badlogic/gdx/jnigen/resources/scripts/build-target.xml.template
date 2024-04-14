@@ -121,8 +121,7 @@
 			<targetfile/>
 			<fileset refid="g++-files"/>
 			<compositemapper>
-				<mapper type="glob" from="*.cpp" to="*.o"/>
-				<mapper type="glob" from="*.mm" to="*.o"/>
+				<mapper type="glob" from="*" to="*.o"/>
 			</compositemapper>
 		</apply>
 		<apply failonerror="true" executable="${gcc}" dest="${buildDir}" verbose="true">
@@ -136,8 +135,7 @@
 			<targetfile/>
 			<fileset refid="gcc-files"/>
 			<compositemapper>
-				<mapper type="glob" from="*.c" to="*.o"/>
-				<mapper type="glob" from="*.m" to="*.o"/>
+				<mapper type="glob" from="*" to="*.o"/>
 			</compositemapper>
 		</apply>
 	</target>	
