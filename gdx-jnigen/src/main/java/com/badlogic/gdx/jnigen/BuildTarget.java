@@ -128,8 +128,10 @@ public class BuildTarget {
 		if (libName != null && !libName.isEmpty())
 			return libName;
 
+		String suffix = os.getLibExtension().isEmpty() ? "" : "." + os.getLibExtension();
+
 		// generate shared lib prefix and suffix, determine jni platform headers directory
-		return os.getLibPrefix() + sharedLibName + architecture.toSuffix() + bitness.toSuffix() + "." + os.getLibExtension();
+		return os.getLibPrefix() + sharedLibName + architecture.toSuffix() + bitness.toSuffix() + suffix;
 	}
 
 	public String getTargetFolder () {
