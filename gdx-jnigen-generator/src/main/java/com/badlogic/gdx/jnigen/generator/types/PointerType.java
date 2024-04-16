@@ -147,7 +147,6 @@ public class PointerType implements MappedType {
             } else {
                 createObject.addArgument(pointingTo.getMappedType().abstractType() + "::new");
             }
-            createObject.addArgument(String.valueOf(pointingTo.getDepth()));
 
             PointerType root = new PointerType(pointingTo.rootType());
             if (root.isIntPointer()) {
@@ -179,12 +178,9 @@ public class PointerType implements MappedType {
             PointerType root = new PointerType(pointingTo.rootType());
 
             if (root.isIntPointer()) {
-                return new ExpressionStmt(new MethodCallExpr("assertCTypeBackingAndDepth").setScope(scope)
-                        .addArgument(new StringLiteralExpr(pointingTo.rootType().getTypeName()))
-                        .addArgument(new IntegerLiteralExpr(String.valueOf(pointingTo.getDepth()))));
+                return new ExpressionStmt(new MethodCallExpr("assertCTypeBacking").setScope(scope)
+                        .addArgument(new StringLiteralExpr(pointingTo.rootType().getTypeName())));
             }
-            return new ExpressionStmt(new MethodCallExpr("assertDepth").setScope(scope)
-                    .addArgument(new IntegerLiteralExpr(String.valueOf(pointingTo.getDepth()))));
         }
         return MappedType.super.assertJava(scope);
     }

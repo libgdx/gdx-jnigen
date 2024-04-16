@@ -48,8 +48,7 @@ public final class TestData {
     */
 
     public static PointerPointer<VoidPointer> voidPointerPointer(PointerPointer<VoidPointer> test) {
-        test.assertDepth(2);
-        return new PointerPointer<>(voidPointerPointer_internal(test.getPointer()), false, VoidPointer::new, 2);
+        return new PointerPointer<>(voidPointerPointer_internal(test.getPointer()), false, VoidPointer::new);
     }
 
     static private native long voidPointerPointer_internal(long test);/*
@@ -60,8 +59,7 @@ public final class TestData {
     */
 
     public static PointerPointer<TestEnum.TestEnumPointer> enumPointerPointer(PointerPointer<TestEnum.TestEnumPointer> test) {
-        test.assertDepth(2);
-        return new PointerPointer<>(enumPointerPointer_internal(test.getPointer()), false, TestEnum.TestEnumPointer::new, 2);
+        return new PointerPointer<>(enumPointerPointer_internal(test.getPointer()), false, TestEnum.TestEnumPointer::new);
     }
 
     static private native long enumPointerPointer_internal(long test);/*
@@ -72,8 +70,7 @@ public final class TestData {
     */
 
     public static PointerPointer<TestStruct.TestStructPointer> structPointerPointer(PointerPointer<TestStruct.TestStructPointer> test) {
-        test.assertDepth(2);
-        return new PointerPointer<>(structPointerPointer_internal(test.getPointer()), false, TestStruct.TestStructPointer::new, 2);
+        return new PointerPointer<>(structPointerPointer_internal(test.getPointer()), false, TestStruct.TestStructPointer::new);
     }
 
     static private native long structPointerPointer_internal(long test);/*
@@ -84,8 +81,8 @@ public final class TestData {
     */
 
     public static PointerPointer<CSizedIntPointer> intPointerPointer(PointerPointer<CSizedIntPointer> test) {
-        test.assertCTypeBackingAndDepth("int", 2);
-        return new PointerPointer<>(intPointerPointer_internal(test.getPointer()), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, owned2, "int"), 2).setBackingCType("int");
+        test.assertCTypeBacking("int");
+        return new PointerPointer<>(intPointerPointer_internal(test.getPointer()), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, owned2, "int")).setBackingCType("int");
     }
 
     static private native long intPointerPointer_internal(long test);/*
@@ -96,8 +93,7 @@ public final class TestData {
     */
 
     public static PointerPointer<FloatPointer> floatPointerPointer(PointerPointer<FloatPointer> test) {
-        test.assertDepth(2);
-        return new PointerPointer<>(floatPointerPointer_internal(test.getPointer()), false, FloatPointer::new, 2);
+        return new PointerPointer<>(floatPointerPointer_internal(test.getPointer()), false, FloatPointer::new);
     }
 
     static private native long floatPointerPointer_internal(long test);/*
@@ -108,8 +104,7 @@ public final class TestData {
     */
 
     public static PointerPointer<PointerPointer<PointerPointer<PointerPointer<VoidPointer>>>> pointerPointerManyyy(PointerPointer<PointerPointer<PointerPointer<PointerPointer<VoidPointer>>>> test) {
-        test.assertDepth(5);
-        return new PointerPointer<>(pointerPointerManyyy_internal(test.getPointer()), false, (long peer5, boolean owned5) -> new PointerPointer<>(peer5, owned5, (long peer4, boolean owned4) -> new PointerPointer<>(peer4, owned4, (long peer3, boolean owned3) -> new PointerPointer<>(peer3, owned3, VoidPointer::new, 2), 3), 4), 5);
+        return new PointerPointer<>(pointerPointerManyyy_internal(test.getPointer()), false, (long peer5, boolean owned5) -> new PointerPointer<>(peer5, owned5, (long peer4, boolean owned4) -> new PointerPointer<>(peer4, owned4, (long peer3, boolean owned3) -> new PointerPointer<>(peer3, owned3, VoidPointer::new))));
     }
 
     static private native long pointerPointerManyyy_internal(long test);/*
@@ -328,7 +323,7 @@ public final class TestData {
     */
 
     public static PointerPointer<CSizedIntPointer> call_methodWithIntPtrPtrRet(ClosureObject<methodWithIntPtrPtrRet> fnPtr) {
-        return new PointerPointer<>(call_methodWithIntPtrPtrRet_internal(fnPtr.getFnPtr()), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, owned2, "int"), 2).setBackingCType("int");
+        return new PointerPointer<>(call_methodWithIntPtrPtrRet_internal(fnPtr.getFnPtr()), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, owned2, "int")).setBackingCType("int");
     }
 
     static private native long call_methodWithIntPtrPtrRet_internal(long fnPtr);/*
@@ -1182,7 +1177,7 @@ public final class TestData {
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
             PointerPointer<CSizedIntPointer> _ret = methodWithIntPtrPtrRet_call();
-            _ret.assertCTypeBackingAndDepth("int", 2);
+            _ret.assertCTypeBacking("int");
             returnType.setValue(_ret);
         }
     }
@@ -1303,7 +1298,7 @@ public final class TestData {
         }
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithIntPtrPtrArg_call(new PointerPointer<>(parameters[0].asLong(), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, owned2, "int"), 2).setBackingCType("int"));
+            methodWithIntPtrPtrArg_call(new PointerPointer<>(parameters[0].asLong(), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, owned2, "int")).setBackingCType("int"));
         }
     }
 
