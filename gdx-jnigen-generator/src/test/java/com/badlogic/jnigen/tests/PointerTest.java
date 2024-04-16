@@ -86,25 +86,22 @@ public class PointerTest extends BaseTest {
 
     @Test
     public void voidPointerPointerTest() {
-        PointerPointer<VoidPointer> voidPtrPtr = new PointerPointer<>(VoidPointer::new, 2);
+        PointerPointer<VoidPointer> voidPtrPtr = new PointerPointer<>(VoidPointer::new);
         PointerPointer<VoidPointer> ret = TestData.voidPointerPointer(voidPtrPtr);
 
         assertEquals(voidPtrPtr.getPointer(), ret.getPointer());
-
-        PointerPointer<VoidPointer> wrongDepth = new PointerPointer<>(VoidPointer::new, 3);
-        assertThrows(IllegalArgumentException.class, () -> TestData.voidPointerPointer(wrongDepth));
     }
 
     @Test
     public void closureIntPtrPtrTest() {
         ClosureObject<TestData.methodWithIntPtrPtrArg> ptrPtrArg = ClosureObject.fromClosure(arg0 -> {
-            arg0.assertCTypeBackingAndDepth("int", 2);
+            arg0.assertCTypeBacking("int");
             assertEquals(5, arg0.getValue().getInt());
         });
         TestData.call_methodWithIntPtrPtrArg(ptrPtrArg);
         ptrPtrArg.free();
 
-        PointerPointer<CSizedIntPointer> pointer = new PointerPointer<>((pointer1, freeOnGC) -> new CSizedIntPointer("int"), 2);
+        PointerPointer<CSizedIntPointer> pointer = new PointerPointer<>((pointer1, freeOnGC) -> new CSizedIntPointer("int"));
         pointer.setBackingCType("int");
         ClosureObject<TestData.methodWithIntPtrPtrRet> ptrPtrRet = ClosureObject.fromClosure(() -> pointer);
         TestData.call_methodWithIntPtrPtrRet(ptrPtrRet);
@@ -113,7 +110,7 @@ public class PointerTest extends BaseTest {
 
     @Test
     public void enumPointerPointerTest() {
-        PointerPointer<TestEnumPointer> pointer = new PointerPointer<>(TestEnumPointer::new, 2);
+        PointerPointer<TestEnumPointer> pointer = new PointerPointer<>(TestEnumPointer::new);
         assertEquals(pointer.getPointer(), TestData.enumPointerPointer(pointer).getPointer());
         assertEquals(TestEnum.SECOND, pointer.getValue().getEnumValue());
         pointer.getValue().free();
@@ -121,7 +118,7 @@ public class PointerTest extends BaseTest {
 
     @Test
     public void structPointerPointerTest() {
-        PointerPointer<TestStructPointer> pointer = new PointerPointer<>(TestStructPointer::new, 2);
+        PointerPointer<TestStructPointer> pointer = new PointerPointer<>(TestStructPointer::new);
         assertEquals(pointer.getPointer(), TestData.structPointerPointer(pointer).getPointer());
         TestStruct struct = pointer.getValue().get();
         assertEquals(1, struct.field1());
@@ -134,7 +131,7 @@ public class PointerTest extends BaseTest {
 
     @Test
     public void intPointerPointerWrongTypeTest() {
-        PointerPointer<CSizedIntPointer> pointer = new PointerPointer<>(CSizedIntPointer.pointerPointer("int"), 2);
+        PointerPointer<CSizedIntPointer> pointer = new PointerPointer<>(CSizedIntPointer.pointerPointer("int"));
         pointer.setBackingCType("short");
         assertThrows(IllegalArgumentException.class, () -> TestData.intPointerPointer(pointer));
         assertThrows(IllegalArgumentException.class, pointer::getValue);
@@ -146,7 +143,7 @@ public class PointerTest extends BaseTest {
 
     @Test
     public void intPointerPointerTest() {
-        PointerPointer<CSizedIntPointer> pointer = new PointerPointer<>(CSizedIntPointer.pointerPointer("int"), 2);
+        PointerPointer<CSizedIntPointer> pointer = new PointerPointer<>(CSizedIntPointer.pointerPointer("int"));
         pointer.setBackingCType("int");
         assertEquals(pointer.getPointer(), TestData.intPointerPointer(pointer).getPointer());
         assertEquals(5, pointer.getValue().getInt());
@@ -156,7 +153,7 @@ public class PointerTest extends BaseTest {
 
     @Test
     public void floatPointerPointerTest() {
-        PointerPointer<FloatPointer> pointer = new PointerPointer<>(FloatPointer::new, 2);
+        PointerPointer<FloatPointer> pointer = new PointerPointer<>(FloatPointer::new);
         assertEquals(pointer.getPointer(), TestData.floatPointerPointer(pointer).getPointer());
         assertEquals(5.5f, pointer.getValue().getFloat());
 
@@ -169,7 +166,7 @@ public class PointerTest extends BaseTest {
                 peer5, false,
                 (long peer4, boolean owned4) -> new PointerPointer<>(peer4, false,
                         (long peer3, boolean owned3) -> new PointerPointer<>(peer3, false,
-                                (long peer2, boolean owned2) -> new VoidPointer(peer2, false), 2), 3), 4), 5);
+                                (long peer2, boolean owned2) -> new VoidPointer(peer2, false)))));
         assertEquals(pointer.getPointer(), TestData.pointerPointerManyyy(pointer).getPointer());
         assertEquals(5, pointer.getValue().getValue().getValue().getValue().getPointer());
 
