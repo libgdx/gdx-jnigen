@@ -39,7 +39,7 @@ jobs:
         path: "*/build/libs"
         
     - name: Snapshot build deploy
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository_owner == 'libgdx'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/package-rename' && github.repository_owner == 'libgdx'
       run: ./gradlew build publish
       env:
         ORG_GRADLE_PROJECT_NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
