@@ -61,13 +61,10 @@ public final class ClosureInfo<T extends Closure> {
                 int cSize = wrapper.getSize();
                 if (cSize == 1) {
                     wrapper.setValue(parameter.get());
-                    parameter.position(parameter.position() + 7);
                 } else if (cSize == 2) {
                     wrapper.setValue(parameter.getShort());
-                    parameter.position(parameter.position() + 6);
                 } else if (cSize == 4) {
                     wrapper.setValue(parameter.getInt());
-                    parameter.position(parameter.position() + 4);
                 } else if (cSize == 8) {
                     wrapper.setValue(parameter.getLong());
                 }
