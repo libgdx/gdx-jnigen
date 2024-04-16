@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
 
 import javax.inject.Inject;
@@ -19,8 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.badlogic.gdx.jnigen.BuildTarget;
-import com.badlogic.gdx.utils.Architecture;
-import com.badlogic.gdx.utils.Os;
+import com.badlogic.gdx.jnigen.Architecture;
+import com.badlogic.gdx.jnigen.Os;
 
 /**
  * @author Desu

@@ -18,7 +18,6 @@ package com.badlogic.gdx.jnigen;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.utils.Os;
 import com.badlogic.gdx.jnigen.FileDescriptor.FileType;
 
 /** <p>Generates Ant scripts for multiple native build targets based on the given {@link BuildConfig}.

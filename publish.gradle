@@ -8,6 +8,7 @@ subprojects
             publications {
                 mavenJava(MavenPublication) {
                     from components.java
+                    artifactId = project.archivesBaseName
                     versionMapping {
                         usage('java-api') {
                             fromResolutionOf('runtimeClasspath')

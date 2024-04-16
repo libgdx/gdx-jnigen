@@ -4,9 +4,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.badlogic.gdx.jnigen.JniGenTestClass.TestInner;
-import com.badlogic.gdx.utils.Architecture;
-import com.badlogic.gdx.utils.Os;
-import com.badlogic.gdx.utils.SharedLibraryLoader;
 
 import java.nio.ByteBuffer;
 
