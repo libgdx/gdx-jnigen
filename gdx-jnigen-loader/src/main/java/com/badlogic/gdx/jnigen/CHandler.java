@@ -90,25 +90,33 @@ public class CHandler {
     JavaVM* gJVM = NULL;
     bool ignoreCXXExceptionMessage = false;
 
+    typedef struct _closure_info {
+        jobject javaInfo;
+        size_t argumentSize;
+    } closure_info;
+
     void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
         ATTACH_ENV()
-        jobject closureInfo = (jobject) user;
-        void* backingBuffer[cif->nargs * sizeof(void*)];
+        closure_info* info = (closure_info*) user;
+        char backingBuffer[info->argumentSize];
         jobject jBuffer = NULL;
         if (cif->nargs != 0) {
-            jBuffer = env->NewDirectByteBuffer(backingBuffer, cif->nargs * sizeof(void*));
+            jBuffer = env->NewDirectByteBuffer(backingBuffer, info->argumentSize);
+            size_t offset = 0;
             for (size_t i = 0; i < cif->nargs; i++) {
                 ffi_type* type = cif->arg_types[i];
                 if(type->type == FFI_TYPE_STRUCT) {
                     void* structBuf = malloc(type->size);
                     memcpy(structBuf, args[i], type->size);
-                    backingBuffer[i] = structBuf;
+                    *(void**)(backingBuffer + offset) = structBuf;
+                    offset += sizeof(void*);
                 } else {
-                    ENDIAN_INTCPY(backingBuffer + i, sizeof(void*), args[i], type->size);
+                    memcpy(backingBuffer + offset, args[i], type->size);
+                    offset += type->size;
                 }
             }
         }
-        jlong ret = env->CallStaticLongMethod(globalClass, dispatchCallbackMethod, closureInfo, jBuffer);
+        jlong ret = env->CallStaticLongMethod(globalClass, dispatchCallbackMethod, info->javaInfo, jBuffer);
 
         jthrowable exc = env->ExceptionOccurred();
         if(exc != NULL) {
@@ -285,12 +293,28 @@ public class CHandler {
         return closureObject;
     }
 
-    public static native <T extends Closure> long createClosureForObject(long cif, ClosureInfo<T> object, ByteBuffer closureRet);/*
+    public static native <T extends Closure> long createClosureForObject(long cifArg, ClosureInfo<T> object, ByteBuffer closureRet);/*
+        ffi_cif* cif = (ffi_cif*)cifArg;
+        size_t argsSize = 0;
+        for (size_t i = 0; i < cif->nargs; i++) {
+            ffi_type* type = cif->arg_types[i];
+                if(type->type == FFI_TYPE_STRUCT) {
+                    argsSize += sizeof(void*);
+                } else {
+                    argsSize += type->size;
+                }
+        }
+
+
         jobject toCallOn = env->NewGlobalRef(object);
+        closure_info* info = (closure_info*)malloc(sizeof(closure_info));
+        info->javaInfo = toCallOn;
+        info->argumentSize = argsSize;
+
         void* fnPtr;
         ffi_closure* closure = (ffi_closure*)ffi_closure_alloc(sizeof(ffi_closure), &fnPtr);
 
-        ffi_prep_closure_loc(closure, (ffi_cif*)cif, callbackHandler, toCallOn, fnPtr);
+        ffi_prep_closure_loc(closure, cif, callbackHandler, info, fnPtr);
         *((ffi_closure**) closureRet) = closure;
         return reinterpret_cast<jlong>(fnPtr);
     */
@@ -400,7 +424,8 @@ public class CHandler {
 
     private static native void freeClosure(long closurePtr);/*
         ffi_closure* closure = (ffi_closure*) closurePtr;
-        env->DeleteGlobalRef((jobject)closure->user_data);
+        env->DeleteGlobalRef(((closure_info*)closure->user_data)->javaInfo);
+        free(closure->user_data);
         ffi_closure_free(closure);
     */
 
