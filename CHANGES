@@ -1,4 +1,5 @@
 [2.5.2]
+- [BREAKING CHANGE] Increased default `minIOSVersion` to iOS 12. Default can be overridden with `minIOSVersion = "11.0"`
 - Compile all files that are defined by cIncludes/cExcludes/cppIncludes/cppExcludes
 - Add support for defining multiple source directories in the gradle plugin
 
