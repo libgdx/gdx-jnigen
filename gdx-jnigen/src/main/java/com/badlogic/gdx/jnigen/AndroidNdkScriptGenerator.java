@@ -19,7 +19,6 @@ package com.badlogic.gdx.jnigen;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.jnigen.FileDescriptor.FileType;
-import com.badlogic.gdx.utils.Os;
 
 public class AndroidNdkScriptGenerator {
 	public void generate (BuildConfig config, BuildTarget target) {

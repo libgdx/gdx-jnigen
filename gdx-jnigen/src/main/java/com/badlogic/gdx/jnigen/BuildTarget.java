@@ -16,9 +16,6 @@
 
 package com.badlogic.gdx.jnigen;
 
-import com.badlogic.gdx.utils.Architecture;
-import com.badlogic.gdx.utils.Os;
-
 import java.util.function.BooleanSupplier;
 
 /** Defines the configuration for building a native shared library for a specific platform. Used with {@link AntScriptGenerator}

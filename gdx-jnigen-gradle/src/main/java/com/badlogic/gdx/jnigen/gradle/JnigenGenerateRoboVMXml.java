@@ -26,7 +26,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.badlogic.gdx.jnigen.BuildTarget;
-import com.badlogic.gdx.utils.Os;
+import com.badlogic.gdx.jnigen.Os;
 import com.badlogic.gdx.jnigen.gradle.JnigenExtension.RoboVMXml.RoboVMXmlLib;
 
 /**

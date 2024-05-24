@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import org.gradle.api.tasks.bundling.Jar;
 
 import com.badlogic.gdx.jnigen.BuildTarget;
-import com.badlogic.gdx.utils.Os;
+import com.badlogic.gdx.jnigen.Os;
 
 /**
  * @author Desu
