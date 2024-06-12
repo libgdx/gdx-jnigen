@@ -22,6 +22,7 @@ public enum Os {
 		if (this == Os.Windows) return "dll";
 		if (this == Os.Linux) return "so";
 		if (this == Os.MacOsX) return "dylib";
+		if (this == Os.Android) return "so";
 		return "";
 	}
 }
