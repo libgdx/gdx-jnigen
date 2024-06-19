@@ -46,6 +46,9 @@ public class Generator {
     }
 
     public static TypeDefinition registerCXType(CXType type, String alternativeName, MappedType parent) {
+        if (type.kind() == CXType_Attributed)
+            type = clang_Type_getModifiedType(type);
+
         TypeKind typeKind = TypeKind.getTypeKind(type);
         String name = clang_getTypeSpelling(type).getString();
         if (name.equals("_Bool"))
