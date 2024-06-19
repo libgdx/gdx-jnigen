@@ -131,8 +131,10 @@ public class Manager {
     }
 
     public void registerMacro(String name, String value) {
-        if (macros.containsKey(name))
-            throw new IllegalArgumentException("Macro with name: " + name + " already exists");
+        if (macros.containsKey(name)) {
+            if (!macros.get(name).equals(value))
+                throw new IllegalArgumentException("Macro with name " + name + " already exists, but has different value. Old: " + macros.get(name) + " != New: " + value);
+        }
         macros.put(name, value);
     }
 
