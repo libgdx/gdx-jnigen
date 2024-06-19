@@ -67,6 +67,14 @@ public class Generator {
             CXType typeDef = clang_getTypedefDeclUnderlyingType(clang_getTypeDeclaration(type));
             Manager.getInstance().registerTypeDef(clang_getTypedefName(type).getString(), clang_getTypeSpelling(typeDef).getString());
 
+            String strippedTypeName = JavaUtils.cNameToJavaTypeName(clang_getTypeSpelling(typeDef).getString());
+            // TODO: 19.06.24 Figure out, whether this actually prevents private API parsing
+            if (strippedTypeName.startsWith("__")) {
+                TypeDefinition definition = new TypeDefinition(TypeKind.VOID, "void");
+                definition.setOverrideMappedType(PrimitiveType.fromTypeDefinition(definition));
+                return definition;
+            }
+
             // A typedef unsets a parent, because an anonymous declaration can't be typedefed I think
             TypeDefinition lower = registerCXType(typeDef, clang_getTypedefName(type).getString(), null);
             TypeDefinition definition = new TypeDefinition(lower.getTypeKind(), clang_getTypedefName(type).getString());
