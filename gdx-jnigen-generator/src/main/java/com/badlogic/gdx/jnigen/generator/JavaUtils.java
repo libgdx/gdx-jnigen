@@ -3,7 +3,10 @@ package com.badlogic.gdx.jnigen.generator;
 public class JavaUtils {
 
     public static String cNameToJavaTypeName(String name) {
-        return name.replace("struct ", "").replace("union ", "").replace("enum ", "");
+        return name.replace("struct ", "")
+                .replace("union ", "")
+                .replace("enum ", "")
+                .replace("const ", "");
     }
 
     public static String capitalize(String toCapitalize) {
