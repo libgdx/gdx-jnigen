@@ -30,11 +30,17 @@ public class Pointing {
         this.sizeGuard = size;
     }
 
+    public boolean isNull() {
+        return pointer == 0;
+    }
+
     public long getSizeGuard() {
         return sizeGuard;
     }
 
     public void assertBounds(long index) {
+        if (isNull())
+            throw new NullPointerException("Pointer is null");
         if (sizeGuard != -1 && index >= sizeGuard)
             throw new IllegalArgumentException("Byte " + index + " overshoots guard " + sizeGuard);
     }

@@ -162,6 +162,8 @@ public final class CSizedIntPointer extends Pointing {
     }
 
     public String getString() {
+        if (isNull())
+            return null;
         return CHandler.getPointerAsString(getPointer());
     }
 }
