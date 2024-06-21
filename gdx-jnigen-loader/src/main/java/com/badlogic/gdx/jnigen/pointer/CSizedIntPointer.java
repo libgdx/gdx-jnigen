@@ -29,6 +29,12 @@ public final class CSizedIntPointer extends Pointing {
         this.cTypeInfo = info;
     }
 
+    public static CSizedIntPointer fromString(String string, boolean freeOnGC) {
+        CSizedIntPointer pointer = new CSizedIntPointer("char", string.length() + 1, freeOnGC, true);
+        pointer.setString(string);
+        return pointer;
+    }
+
     public static PointerDereferenceSupplier<CSizedIntPointer> pointerPointer(String cTypeInfo) {
         return (pointer, freeOnGC) -> new CSizedIntPointer(pointer, freeOnGC, cTypeInfo);
     }
@@ -158,6 +164,12 @@ public final class CSizedIntPointer extends Pointing {
         CSizedIntPointer tmp = new CSizedIntPointer(getPointer(), getsGCFreed(), newCType);
         tmp.guardBytes(getSizeGuard());
         return tmp;
+    }
+
+    public void setString(String string) {
+        // TODO: 21.06.24 is that sane?
+        assertBounds(string.length());
+        CHandler.setPointerAsString(getPointer(), string);
     }
 
     public String getString() {

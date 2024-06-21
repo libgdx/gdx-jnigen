@@ -2,7 +2,7 @@ package com.badlogic.jnigen.generated;
 
 public final class Constants {
 
-    public static final byte MACRO_IN_BRACKETS = (0x5);
+    public static final byte MACRO_IN_BRACKETS = 0x5;
 
     public static final byte RANDOM_MACRO = 5;
 

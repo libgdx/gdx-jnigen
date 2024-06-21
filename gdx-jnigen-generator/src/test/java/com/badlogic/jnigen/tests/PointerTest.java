@@ -19,8 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.badlogic.jnigen.generated.TestData.call_methodWithCallbackIntPointerArg;
 import static com.badlogic.jnigen.generated.TestData.call_methodWithCallbackIntPointerReturn;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PointerTest extends BaseTest {
 
@@ -173,5 +172,21 @@ public class PointerTest extends BaseTest {
         pointer.getValue().getValue().getValue().free();
         pointer.getValue().getValue().free();
         pointer.getValue().free();
+    }
+
+    @Test
+    public void stringTests() {
+        CSizedIntPointer rightPointer = CSizedIntPointer.fromString("TEST STRING", true);
+        assertEquals("TEST STRING", rightPointer.getString());
+        assertTrue(TestData.validateString(rightPointer));
+
+        CSizedIntPointer wrongPointer = CSizedIntPointer.fromString("TEST STRING ", true);
+        assertFalse(TestData.validateString(wrongPointer));
+
+        CSizedIntPointer ret = TestData.returnString();
+        assertEquals("HALLO 123", ret.getString());
+        assertFalse(TestData.validateString(ret));
+
+        ret.free();
     }
 }
