@@ -23,6 +23,8 @@ extern "C" {
 #define special5 10.5F
 #define special6 10.5L
 #define special7 10.5l
+#define MACRO_IN_BRACKETS (0x5)
+#define MACRO_BYTE_SHIFT 1 << 3
 
 typedef struct TestStruct {
     uint64_t field1;
