@@ -45,6 +45,14 @@ public final class CTypeInfo {
             throw new IllegalArgumentException("CType " + name + " would overflow an int");
     }
 
+    public void assertConformsTo(String typeNameToCheck) {
+        if (name == null)
+            throw new IllegalArgumentException("CType has no name");
+        // TODO: 21.06.2024 This is stupid
+        if (!typeNameToCheck.replace("const ", "").equals(name))
+            throw new IllegalArgumentException("Expected type " + typeNameToCheck + " does not match actual type " + name);
+    }
+
     public String getName() {
         if (name == null)
             throw new IllegalArgumentException("CType has no name");

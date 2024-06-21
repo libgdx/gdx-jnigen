@@ -40,8 +40,7 @@ public class PointerPointer<T extends Pointing> extends Pointing {
     public void assertCTypeBacking(String name) {
         if (cTypeInfo == null)
             throw new IllegalArgumentException("PointerPointer has no recorded CTypeInfo, set it with setBackingCType");
-        if (!cTypeInfo.getName().equals(name))
-            throw new IllegalArgumentException("Expected type " + name + " does not match actual type " + cTypeInfo.getName());
+        cTypeInfo.assertConformsTo(name);
     }
 
     public T getValue() {

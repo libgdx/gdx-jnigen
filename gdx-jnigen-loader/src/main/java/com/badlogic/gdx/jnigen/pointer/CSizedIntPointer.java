@@ -151,8 +151,7 @@ public final class CSizedIntPointer extends Pointing {
     }
 
     public void assertHasCTypeBacking(String name) {
-        if (!cTypeInfo.getName().equals(name))
-            throw new IllegalArgumentException("Expected type " + name + " does not match actual type " + cTypeInfo.getName());
+        cTypeInfo.assertConformsTo(name);
     }
 
     public CSizedIntPointer recast(String newCType) {
