@@ -1,17 +1,28 @@
 package com.badlogic.gdx.jnigen.gc;
 
+import com.badlogic.gdx.jnigen.CHandler;
+import com.badlogic.gdx.jnigen.c.CTypeInfo;
 import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
 import com.badlogic.gdx.jnigen.pointer.DoublePointer;
 import com.badlogic.gdx.jnigen.pointer.FloatPointer;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PointerTest extends BaseTest {
 
+    @BeforeAll
+    public static void setupCTypes() {
+        CHandler.registerCType(new CTypeInfo("int32_t", 0, 4, true, false, false));
+        CHandler.registerCType(new CTypeInfo("uint16_t", 0, 2, false, false, false));
+        CHandler.registerCType(new CTypeInfo("uint32_t", 0, 4, false, false, false));
+        CHandler.registerCType(new CTypeInfo("char", 0, 1, true, false, false));
+    }
+
     @Test
     public void testPointerSizedGetSet() {
-        CSizedIntPointer cSizedIntPointer = new CSizedIntPointer("int", 4);
+        CSizedIntPointer cSizedIntPointer = new CSizedIntPointer("int32_t", 4);
         cSizedIntPointer.setInt(10, 0);
         assertEquals(10, cSizedIntPointer.getInt(0));
 
@@ -56,8 +67,16 @@ public class PointerTest extends BaseTest {
 
     @Test
     public void testPointerBoundCheck() {
-        CSizedIntPointer cSizedIntPointer = new CSizedIntPointer("int", 4);
+        CSizedIntPointer cSizedIntPointer = new CSizedIntPointer("int32_t", 4);
         assertDoesNotThrow(() -> cSizedIntPointer.getInt(3));
         assertThrows(IllegalArgumentException.class, () -> cSizedIntPointer.getInt(4));
+    }
+
+    @Test
+    public void testPointerNullCheck() {
+        CSizedIntPointer pointer = new CSizedIntPointer(0, false,"char");
+        assertTrue(pointer.isNull());
+        assertThrows(NullPointerException.class, pointer::getByte);
+        assertNull(pointer.getString());
     }
 }
