@@ -260,6 +260,10 @@ public class Manager {
             macros.keySet().stream().sorted().forEach(name -> {
                 String value = macros.get(name);
 
+                // TODO: 21.06.24 We need to find more reliable ways, maybe a fancy regex?
+                if (value.startsWith("(") && value.endsWith(")"))
+                    value = value.substring(1, value.length() - 1);
+
                 for (int i = 0; i < 3; i++) {
                     if (value.isEmpty())
                         return;
