@@ -402,3 +402,11 @@ const char* returnThrownCauseMessage(methodWithThrowingCallback fnPtr) {
     return NULL;
 }
 
+char* returnString(void) {
+    return strdup("HALLO 123");
+}
+
+bool validateString(char* str) {
+    return strcmp(str, "TEST STRING") == 0;
+}
+
