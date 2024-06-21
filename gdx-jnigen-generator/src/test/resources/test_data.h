@@ -262,6 +262,9 @@ void throwNumberException(void);
 
 const char* returnThrownCauseMessage(methodWithThrowingCallback fnPtr);
 
+char* returnString(void);
+bool validateString(char* str);
+
 #ifdef __cplusplus
 }
 #endif

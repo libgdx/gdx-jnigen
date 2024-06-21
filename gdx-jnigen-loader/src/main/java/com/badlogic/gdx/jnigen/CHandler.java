@@ -394,6 +394,10 @@ public class CHandler {
         ENDIAN_INTCPY(ptr + offset, size, &value, sizeof(jlong));
     */
 
+    public static native void setPointerAsString(long pointer, String string);/*
+        strcpy((char*)pointer, string);
+    */
+
     public static native String getPointerAsString(long pointer);/*
         return env->NewStringUTF(reinterpret_cast<const char*>(pointer));
     */

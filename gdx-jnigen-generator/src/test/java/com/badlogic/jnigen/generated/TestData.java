@@ -843,6 +843,29 @@ public final class TestData {
     	return 0;
     */
 
+    public static CSizedIntPointer returnString() {
+        return new CSizedIntPointer(returnString_internal(), false, "char");
+    }
+
+    static private native long returnString_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)returnString();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static boolean validateString(CSizedIntPointer str) {
+        str.assertHasCTypeBacking("char");
+        return validateString_internal(str.getPointer());
+    }
+
+    static private native boolean validateString_internal(long str);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jboolean)validateString((char *)str);
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
     public interface methodWithCallbackBooleanArg extends Closure {
 
         CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(0) };
