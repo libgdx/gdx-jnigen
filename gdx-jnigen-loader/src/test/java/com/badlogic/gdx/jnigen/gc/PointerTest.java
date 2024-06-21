@@ -79,4 +79,10 @@ public class PointerTest extends BaseTest {
         assertThrows(NullPointerException.class, pointer::getByte);
         assertNull(pointer.getString());
     }
+
+    @Test
+    public void testCTypeConformsTo() {
+        CTypeInfo infoNonConst = new CTypeInfo("char", 0, 1, true, false, false);
+        assertDoesNotThrow(() -> infoNonConst.assertConformsTo("const char"));
+    }
 }
