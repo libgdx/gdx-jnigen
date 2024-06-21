@@ -15,7 +15,7 @@
 struct JavaExceptionMarker : public std::runtime_error {
     jthrowable javaExc;
     JavaExceptionMarker(jthrowable exc, const std::string& message);
-    ~JavaExceptionMarker();
+    ~JavaExceptionMarker() _NOEXCEPT;
 };
 
 extern "C" void throwIllegalArgumentException(JNIEnv* env, const char* message);
