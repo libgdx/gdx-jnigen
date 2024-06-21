@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdarg.h>
+#include <stdio.h>
 
 #define RANDOM_MACRO 5
 #ifdef __cplusplus
@@ -111,6 +112,7 @@ struct AnonymousClosure
 };
 
 void ensureAnonymousStructParsed(AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested);
+void weirdPointer(FILE *_file);
 void constArrayParameter(const TestStruct structs[]);
 void** voidPointerPointer(void** test);
 TestEnum** enumPointerPointer(TestEnum** test);

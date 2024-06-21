@@ -7,9 +7,9 @@ import com.badlogic.jnigen.generated.structs.AnonymousClosure;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoFieldEnd;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoFieldConsecutive;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoFieldNested;
+import com.badlogic.gdx.jnigen.pointer.VoidPointer;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 import com.badlogic.gdx.jnigen.pointer.PointerPointer;
-import com.badlogic.gdx.jnigen.pointer.VoidPointer;
 import com.badlogic.jnigen.generated.enums.TestEnum;
 import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
 import com.badlogic.gdx.jnigen.pointer.FloatPointer;
@@ -34,6 +34,16 @@ public final class TestData {
     static private native void ensureAnonymousStructParsed_internal(long arg0, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	ensureAnonymousStructParsed(*(AnonymousStructNoField*)arg0, *(AnonymousStructField*)arg1, *(AnonymousStructFieldArray*)arg2, *(struct AnonymousClosure*)arg3, *(AnonymousStructNoFieldEnd*)arg4, *(AnonymousStructNoFieldConsecutive*)arg5, *(AnonymousStructNoFieldNested*)arg6);
+    	HANDLE_JAVA_EXCEPTION_END()
+    */
+
+    public static void weirdPointer(VoidPointer _file) {
+        weirdPointer_internal(_file.getPointer());
+    }
+
+    static private native void weirdPointer_internal(long _file);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	weirdPointer((FILE *)_file);
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
