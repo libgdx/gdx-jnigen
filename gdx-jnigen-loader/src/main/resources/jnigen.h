@@ -9,17 +9,14 @@
 #define HANDLE_JAVA_EXCEPTION_START() try {
 
 #define HANDLE_JAVA_EXCEPTION_END() } catch (const JavaExceptionMarker& e) { env->Throw(e.javaExc); } \
-        catch (const std::exception& ex) { throwCXXException(env, ex.what()); } \
-        catch (...) { throwCXXException(env, "An unknown error occurred"); }
+        catch (const std::exception& ex) { env->ThrowNew(cxxExceptionClass, ex.what()); } \
+        catch (...) { env->ThrowNew(cxxExceptionClass, "An unknown error occurred"); }
 
 struct JavaExceptionMarker : public std::runtime_error {
     jthrowable javaExc;
     JavaExceptionMarker(jthrowable exc, const std::string& message);
     ~JavaExceptionMarker() _NOEXCEPT;
 };
-
-extern "C" void throwIllegalArgumentException(JNIEnv* env, const char* message);
-extern "C" void throwCXXException(JNIEnv* env, const char* message);
 
 #define GET_FFI_TYPE(type) \
     _Generic((type){0}, \
@@ -49,7 +46,7 @@ extern "C" void throwCXXException(JNIEnv* env, const char* message);
     if (!CHECK_BOUNDS_FOR_NUMBER(value, _size##argument_index, _signed##argument_index)) { \
         char buffer[1024]; \
         snprintf(buffer, sizeof(buffer), "Value %ld is out of bound for size %d and signess %d on argument %d", (jlong)value, _size##argument_index, _signed##argument_index, argument_index); \
-        throwIllegalArgumentException(env, buffer); \
+        env->ThrowNew(illegalArgumentExceptionClass, buffer); \
         returnAction; \
     }
 
