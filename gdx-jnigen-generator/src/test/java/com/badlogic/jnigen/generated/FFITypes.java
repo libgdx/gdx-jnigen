@@ -232,17 +232,17 @@ switch(id) {
         CHandler.registerCType(ffiIdMap.get(9));
         ffiIdMap.put(10, CHandler.constructCTypeFromFFIType("uint8_t", getFFITypeNative(10)));
         CHandler.registerCType(ffiIdMap.get(10));
-        ffiIdMap.put(11, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(11), true));
-        ffiIdMap.put(12, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(12), true));
-        ffiIdMap.put(13, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(13), true));
-        ffiIdMap.put(14, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(14), true));
-        ffiIdMap.put(15, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(15), true));
-        ffiIdMap.put(16, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(16), true));
-        ffiIdMap.put(17, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(17), true));
-        ffiIdMap.put(18, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(18), true));
-        ffiIdMap.put(19, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(19), true));
-        ffiIdMap.put(20, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(20), false));
-        ffiIdMap.put(21, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(21), true));
-        ffiIdMap.put(22, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(22), true));
+        ffiIdMap.put(11, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(11)));
+        ffiIdMap.put(12, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(12)));
+        ffiIdMap.put(13, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(13)));
+        ffiIdMap.put(14, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(14)));
+        ffiIdMap.put(15, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(15)));
+        ffiIdMap.put(16, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(16)));
+        ffiIdMap.put(17, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(17)));
+        ffiIdMap.put(18, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(18)));
+        ffiIdMap.put(19, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(19)));
+        ffiIdMap.put(20, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(20)));
+        ffiIdMap.put(21, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(21)));
+        ffiIdMap.put(22, CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(22)));
     }
 }

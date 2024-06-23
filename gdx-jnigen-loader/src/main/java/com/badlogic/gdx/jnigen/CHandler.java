@@ -93,7 +93,7 @@ public class CHandler {
         }
     }
 
-    public static CTypeInfo constructStackElementCTypeFromFFIType(String name, long ffiType, boolean isStruct) {
+    public static CTypeInfo constructStackElementCTypeFromFFIType(String name, long ffiType) {
         return new CTypeInfo(name, ffiType, CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType), true, CHandler.isVoid(ffiType));
     }
 
