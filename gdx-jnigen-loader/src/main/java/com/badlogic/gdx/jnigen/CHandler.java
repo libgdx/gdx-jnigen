@@ -17,7 +17,6 @@ import java.util.HashMap;
 public class CHandler {
 
     static {
-        new SharedLibraryLoader().load("jnigen-native");
         try {
             boolean res = init(CHandler.class.getDeclaredMethod("dispatchCallback", ClosureInfo.class, ByteBuffer.class),
                     CHandler.class.getDeclaredMethod("getExceptionString", Throwable.class),
@@ -37,9 +36,7 @@ public class CHandler {
 
     public static final int POINTER_SIZE;
 
-    private static native int getPointerSize();/*
-        return sizeof(void*);
-    */
+    private static native int getPointerSize();
 
     private static final HashMap<CTypeInfo[], Long> classCifMap = new HashMap<>();
 
@@ -47,136 +44,7 @@ public class CHandler {
 
     private static final HashMap<Long, ClosureObject<?>> fnPtrClosureMap = new HashMap<>();
 
-    /*JNI
-    #include <stdlib.h>
-    #include <string.h>
-    #include <ffi.h>
-    #include <jnigen.h>
-#ifdef __linux__
-    #include <dlfcn.h>
-#endif // __linux__
-
-
-    #define ATTACH_ENV()                                                    \
-        bool _hadToAttach = false;                                          \
-        JNIEnv* env;                                                        \
-        if (gJVM->GetEnv((void**)&env, JNI_VERSION_1_6) == JNI_EDETACHED) { \
-            gJVM->AttachCurrentThread((void**)&env, NULL);                  \
-            _hadToAttach = true;                                            \
-        }
-
-    #define DETACH_ENV()                 \
-        if (_hadToAttach) {              \
-            gJVM->DetachCurrentThread(); \
-        }
-
-    #ifdef __BYTE_ORDER__
-        #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-            #define ENDIAN_INTCPY(dest, dest_size, src, src_size) memcpy(dest, src, dest_size > src_size ? src_size : dest_size)
-        #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-            #error Big endian is currently unsupported
-        #else
-            #error Could not determine byte order
-        #endif
-    #else
-        #error Could not determine byte order
-    #endif
-
-    jmethodID dispatchCallbackMethod = NULL;
-    jmethodID getExceptionStringMethod = NULL;
-    jclass globalClass = NULL;
-    jclass illegalArgumentExceptionClass = NULL;
-    jclass cxxExceptionClass = NULL;
-    JavaVM* gJVM = NULL;
-    bool ignoreCXXExceptionMessage = false;
-
-    typedef struct _closure_info {
-        jobject javaInfo;
-        size_t argumentSize;
-    } closure_info;
-
-    void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
-        ATTACH_ENV()
-        closure_info* info = (closure_info*) user;
-        char backingBuffer[info->argumentSize];
-        jobject jBuffer = NULL;
-        if (cif->nargs != 0) {
-            jBuffer = env->NewDirectByteBuffer(backingBuffer, info->argumentSize);
-            size_t offset = 0;
-            for (size_t i = 0; i < cif->nargs; i++) {
-                ffi_type* type = cif->arg_types[i];
-                if(type->type == FFI_TYPE_STRUCT) {
-                    void* structBuf = malloc(type->size);
-                    memcpy(structBuf, args[i], type->size);
-                    *(void**)(backingBuffer + offset) = structBuf;
-                    offset += sizeof(void*);
-                } else {
-                    memcpy(backingBuffer + offset, args[i], type->size);
-                    offset += type->size;
-                }
-            }
-        }
-        jlong ret = env->CallStaticLongMethod(globalClass, dispatchCallbackMethod, info->javaInfo, jBuffer);
-
-        jthrowable exc = env->ExceptionOccurred();
-        if(exc != NULL) {
-            env->ExceptionClear();
-            if (ignoreCXXExceptionMessage)
-                throw JavaExceptionMarker(exc, "Java-Side exception");
-            jstring message = (jstring)env->CallStaticObjectMethod(globalClass, getExceptionStringMethod, exc);
-            const char* cStringMessage = env->GetStringUTFChars(message, NULL);
-            std::string cxxMessage(cStringMessage);
-            env->ReleaseStringUTFChars(message, cStringMessage);
-            throw JavaExceptionMarker(exc, cxxMessage);
-        }
-
-        ffi_type* rtype = cif->rtype;
-        if(rtype->type == FFI_TYPE_STRUCT) {
-            memcpy(result, reinterpret_cast<void*>(ret), rtype->size);
-        } else {
-            ENDIAN_INTCPY(result, rtype->size, &ret, sizeof(jlong));
-        }
-        DETACH_ENV()
-    }
-
-    JavaExceptionMarker::JavaExceptionMarker(jthrowable exc, const std::string& message) : std::runtime_error(message) {
-        ATTACH_ENV() // TODO: We could save this by doing this in the caller, but that seems overoptimization?
-        javaExc = (jthrowable)env->NewGlobalRef(exc);
-        DETACH_ENV()
-    }
-
-    JavaExceptionMarker::~JavaExceptionMarker() {
-        ATTACH_ENV() // TODO: Figure out, whether this is an issue during full-crash
-        env->DeleteGlobalRef(javaExc);
-        DETACH_ENV()
-    }
-
-    void throwIllegalArgumentException(JNIEnv* env, const char* message) {
-        env->ThrowNew(illegalArgumentExceptionClass, message);
-    }
-
-    void throwCXXException(JNIEnv* env, const char* message) {
-        env->ThrowNew(cxxExceptionClass, message);
-    }
-    */
-
-    private static native boolean init(Method dispatchCallbackReflectedMethod, Method getExceptionStringReflectedMethod, Class illegalArgumentException, Class cxxException);/*
-        env->GetJavaVM(&gJVM);
-        globalClass = (jclass)env->NewGlobalRef(clazz);
-        dispatchCallbackMethod = env->FromReflectedMethod(dispatchCallbackReflectedMethod);
-        if (dispatchCallbackMethod == NULL) {
-            fprintf(stderr, "com.badlogic.gdx.jnigen.Global#dispatchCallback is not reachable via JNI\n");
-            return JNI_FALSE;
-        }
-        getExceptionStringMethod = env->FromReflectedMethod(getExceptionStringReflectedMethod);
-        if (getExceptionStringMethod == NULL) {
-            fprintf(stderr, "com.badlogic.gdx.jnigen.Global#getExceptionStringMethod is not reachable via JNI\n");
-            return JNI_FALSE;
-        }
-        illegalArgumentExceptionClass = (jclass)env->NewGlobalRef(illegalArgumentException);
-        cxxExceptionClass = (jclass)env->NewGlobalRef(cxxException);
-        return JNI_TRUE;
-    */
+    private static native boolean init(Method dispatchCallbackReflectedMethod, Method getExceptionStringReflectedMethod, Class illegalArgumentException, Class cxxException);
 
     public static String getExceptionString(Throwable e) {
         StringWriter sw = new StringWriter();
@@ -195,32 +63,17 @@ public class CHandler {
         }catch (CXXException ignored) {}
     }
 
-    private static native void testIllegalArgumentExceptionThrowable();/*
-        throwIllegalArgumentException(env, "Test");
-    */
+    private static native void testIllegalArgumentExceptionThrowable();
 
-    private static native void testCXXExceptionThrowable();/*
-        throwCXXException(env, "Test");
-    */
+    private static native void testCXXExceptionThrowable();
 
     /**
      * If java code throws an exception into native, this will disable setting a descriptor for the wrapping CXX exception
      * This can hold a performance boost, if a lot of CXX exceptions are created
      */
-    public static native void setDisableCXXExceptionMessage(boolean disable);/*
-        ignoreCXXExceptionMessage = disable;
-    */
+    public static native void setDisableCXXExceptionMessage(boolean disable);
 
-    public static native boolean reExportSymbolsGlobally(String libPath);/*
-#ifdef __linux__
-        void* handle = dlopen(libPath, RTLD_NOW | RTLD_GLOBAL);
-        if (handle == NULL)
-            printf("Error: %s\n", dlerror());
-        return handle != NULL;
-#else
-        return JNI_TRUE;
-#endif // __linux__
-    */
+    public static native boolean reExportSymbolsGlobally(String libPath);
 
     public static <T extends Closure> long dispatchCallback(ClosureInfo<T> toCallOn, ByteBuffer parameter) {
         return toCallOn.invoke(parameter);
@@ -249,14 +102,7 @@ public class CHandler {
         return new CTypeInfo(name, ffiType, CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType), false, CHandler.isVoid(ffiType));
     }
 
-    private static native long nativeCreateCif(long returnType, ByteBuffer parameters, int size); /*
-        ffi_type** parameterFFITypes = (ffi_type**)malloc(sizeof(ffi_type*) * size);
-        memcpy(parameterFFITypes, parameters, sizeof(ffi_type*) * size);
-
-        ffi_cif* cif = (ffi_cif*)malloc(sizeof(ffi_cif));
-        ffi_prep_cif(cif, FFI_DEFAULT_ABI, size, reinterpret_cast<ffi_type*>(returnType), parameterFFITypes);
-        return reinterpret_cast<jlong>(cif);
-    */
+    private static native long nativeCreateCif(long returnType, ByteBuffer parameters, int size); 
 
     private static long generateFFICifForSignature(CTypeInfo[] signature) {
 
@@ -293,31 +139,7 @@ public class CHandler {
         return closureObject;
     }
 
-    public static native <T extends Closure> long createClosureForObject(long cifArg, ClosureInfo<T> object, ByteBuffer closureRet);/*
-        ffi_cif* cif = (ffi_cif*)cifArg;
-        size_t argsSize = 0;
-        for (size_t i = 0; i < cif->nargs; i++) {
-            ffi_type* type = cif->arg_types[i];
-                if(type->type == FFI_TYPE_STRUCT) {
-                    argsSize += sizeof(void*);
-                } else {
-                    argsSize += type->size;
-                }
-        }
-
-
-        jobject toCallOn = env->NewGlobalRef(object);
-        closure_info* info = (closure_info*)malloc(sizeof(closure_info));
-        info->javaInfo = toCallOn;
-        info->argumentSize = argsSize;
-
-        void* fnPtr;
-        ffi_closure* closure = (ffi_closure*)ffi_closure_alloc(sizeof(ffi_closure), &fnPtr);
-
-        ffi_prep_closure_loc(closure, cif, callbackHandler, info, fnPtr);
-        *((ffi_closure**) closureRet) = closure;
-        return reinterpret_cast<jlong>(fnPtr);
-    */
+    public static native <T extends Closure> long createClosureForObject(long cifArg, ClosureInfo<T> object, ByteBuffer closureRet);
 
     public static <T extends Closure> ClosureObject<T> getClosureObject(long fnPtr) {
         synchronized (fnPtrClosureMap) {
@@ -326,39 +148,9 @@ public class CHandler {
         }
     }
 
-    /*JNI
-    static size_t getOffsetForField(ffi_type* struct_type, uint32_t index) {
-        size_t offset = 0;
+    public static native int getOffsetForField(long type_ptr, int index);
 
-        for (size_t i = 0; i <= index; i++) {
-            ffi_type* current_element = struct_type->elements[i];
-            size_t alignment = current_element->alignment;
-            if (offset % alignment != 0) {
-                offset += alignment - (offset % alignment);
-            }
-            if (i != index)
-                offset += current_element->size;
-        }
-
-        return offset;
-    }
-    */
-
-    public static native int getOffsetForField(long type_ptr, int index);/*
-        return getOffsetForField(reinterpret_cast<ffi_type*>(type_ptr), (uint32_t) index);
-    */
-
-    public static native long getStackElementField(long pointer, long type_ptr, int index, boolean calculateOffset);/*
-        char* ptr = reinterpret_cast<char*>(pointer);
-        ffi_type* struct_type = reinterpret_cast<ffi_type*>(type_ptr);
-        uint32_t field = (uint32_t) index;
-
-        size_t offset = calculateOffset ? getOffsetForField(struct_type, field) : 0;
-
-        jlong ret = 0;
-        ENDIAN_INTCPY(&ret, sizeof(jlong), ptr + offset, struct_type->elements[field]->size);
-        return ret;
-    */
+    public static native long getStackElementField(long pointer, long type_ptr, int index, boolean calculateOffset);
 
     public static void setStackElementField(long pointer, long type_ptr, int index, long value, boolean calculateOffset) {
         boolean res = setStackElement_internal(pointer, type_ptr, index, value, calculateOffset);
@@ -366,57 +158,23 @@ public class CHandler {
             throw new IllegalArgumentException("Type " + value + " is out of valid bounds");
     }
 
-    private static native boolean setStackElement_internal(long pointer, long type_ptr, int index, long value, boolean calculateOffset);/*
-        char* ptr = reinterpret_cast<char*>(pointer);
-        ffi_type* struct_type = reinterpret_cast<ffi_type*>(type_ptr);
-        uint32_t field = (uint32_t) index;
+    private static native boolean setStackElement_internal(long pointer, long type_ptr, int index, long value, boolean calculateOffset);
 
-        bool valid_bounds = CHECK_BOUNDS_FFI_TYPE(struct_type->elements[field], value);
-        if(!valid_bounds) {
-            return false;
-        }
+    public static native long getPointerPart(long pointer, int size, int offset);
 
-        size_t offset = calculateOffset ? getOffsetForField(struct_type, field) : 0;
+    public static native void setPointerPart(long pointer, int size, int offset, long value);
 
-        ENDIAN_INTCPY(ptr + offset, struct_type->elements[field]->size, &value, sizeof(jlong));
-        return true;
-    */
+    public static native void setPointerAsString(long pointer, String string);
 
-    public static native long getPointerPart(long pointer, int size, int offset);/*
-        char* ptr = reinterpret_cast<char*>(pointer);
-        jlong ret = 0;
-        ENDIAN_INTCPY(&ret, sizeof(jlong), ptr + offset, size);
-        return ret;
-    */
+    public static native String getPointerAsString(long pointer);
 
-    public static native void setPointerPart(long pointer, int size, int offset, long value);/*
-        char* ptr = reinterpret_cast<char*>(pointer);
-        ENDIAN_INTCPY(ptr + offset, size, &value, sizeof(jlong));
-    */
+    public static native int getSizeFromFFIType(long type);
 
-    public static native void setPointerAsString(long pointer, String string);/*
-        strcpy((char*)pointer, string);
-    */
+    public static native boolean getSignFromFFIType(long type);
 
-    public static native String getPointerAsString(long pointer);/*
-        return env->NewStringUTF(reinterpret_cast<const char*>(pointer));
-    */
+    public static native boolean isStruct(long type);
 
-    public static native int getSizeFromFFIType(long type);/*
-        return reinterpret_cast<ffi_type*>(type)->size;
-    */
-
-    public static native boolean getSignFromFFIType(long type);/*
-        return (jboolean)(GET_FFI_TYPE_SIGN((ffi_type*)type));
-    */
-
-    public static native boolean isStruct(long type);/*
-        return ((ffi_type*)type)->type == FFI_TYPE_STRUCT;
-    */
-
-    public static native boolean isVoid(long type);/*
-        return ((ffi_type*)type)->type == FFI_TYPE_VOID;
-    */
+    public static native boolean isVoid(long type);
 
     public static void freeClosure(ClosureObject<?> closureObject) {
         synchronized (fnPtrClosureMap) {
@@ -426,28 +184,13 @@ public class CHandler {
     }
 
 
-    private static native void freeClosure(long closurePtr);/*
-        ffi_closure* closure = (ffi_closure*) closurePtr;
-        env->DeleteGlobalRef(((closure_info*)closure->user_data)->javaInfo);
-        free(closure->user_data);
-        ffi_closure_free(closure);
-    */
+    private static native void freeClosure(long closurePtr);
 
-    public static native long malloc(long size);/*
-        return reinterpret_cast<jlong>(malloc(size));
-    */
+    public static native long malloc(long size);
 
-    public static native void free(long pointer);/*
-        free((void*)pointer);
-    */
+    public static native void free(long pointer);
 
-    public static native void memcpy(long dst, long src, long size);/*
-        memcpy((void*)dst, (void*)src, size);
-    */
+    public static native void memcpy(long dst, long src, long size);
 
-    public static native long clone(long src, long size);/*
-        void* dst = malloc(size);
-        memcpy((void*)dst, (void*)src, size);
-        return reinterpret_cast<jlong>(dst);
-    */
+    public static native long clone(long src, long size);
 }

@@ -29,7 +29,6 @@ dependencies {
     implementation project(':gdx-jnigen-loader')
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    testRuntimeOnly fileTree(dir: project(':gdx-jnigen-loader').file("build/libs/"), include: '*natives-desktop.jar')
     testRuntimeOnly fileTree(dir: file("build/libs/"), include: '*natives-desktop.jar')
 }
 
@@ -41,11 +40,12 @@ task generateTestClasses(type: JavaExec) {
 
 task copyTestFiles(type: Copy) {
     from("src/test/resources/")
+    from(project(":gdx-jnigen-loader").file("src/main/resources/"))
     into("jni/")
 }
 
 test {
-    dependsOn(":gdx-jnigen-loader:jnigenBuild", ":gdx-jnigen-generator:jnigenBuild", ":gdx-jnigen-loader:jnigenJarNativesDesktop", ":gdx-jnigen-generator:jnigenJarNativesDesktop")
+    dependsOn(":gdx-jnigen-generator:jnigenBuild", ":gdx-jnigen-generator:jnigenJarNativesDesktop")
     useJUnitPlatform()
     outputs.upToDateWhen {false}
 }
@@ -58,10 +58,16 @@ jnigen {
     }
 
     all {
-        headerDirs += [project(":gdx-jnigen-loader").file("src/main/resources/").absolutePath, file("src/test/resources/").absolutePath]
+        def name = it.os.name().toLowerCase()
+        def arch = it.architecture.name().toLowerCase() + (it.architecture == x86 && it.bitness != x32 ? "_" : "") + it.bitness.toSuffix()
+        def combined = name + "_" + arch
+
+        headerDirs += [project(":gdx-jnigen-loader").file("src/main/resources/").absolutePath,
+                       project(":gdx-jnigen-loader").file("build/${combined}/include/"),
+                       file("src/test/resources/").absolutePath]
         cFlags += " -std=c11 -fexceptions "
         cppFlags += " -std=c++11 -fexceptions "
-        linkerFlags += " -undefined dynamic_lookup "
+        libraries += " ${project(":gdx-jnigen-loader").file("build/${combined}/lib/libffi.a").absolutePath} "
     }
 
     add(Linux)
@@ -77,7 +83,14 @@ jnigen {
     add(Windows, x64)
     add(Windows, x32, ARM)
     add(Windows, x64, ARM)
-    add(IOS)
+    /*add(IOS) {
+        headerDirs = [project(":gdx-jnigen-loader").file("src/main/resources/").absolutePath,
+                      project(":gdx-jnigen-loader").file("build/libFFI-iOS/include/"),
+                      file("src/test/resources/").absolutePath]
+        libraries =
+                "${project(":gdx-jnigen-loader").file("build/ios_iphonesimulator/libffi.a").absolutePath} "
+                + " ${project(":gdx-jnigen-loader").file("build/ios_iphoneos/libffi.a").absolutePath} "
+    }*/
     add(Android)
 }
 tasks.named("jnigen").get().dependsOn(compileTestJava)

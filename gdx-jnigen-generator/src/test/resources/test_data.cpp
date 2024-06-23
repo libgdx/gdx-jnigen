@@ -410,3 +410,8 @@ bool validateString(char* str) {
     return strcmp(str, "TEST STRING") == 0;
 }
 
+void ensureAnonymousStructParsed(AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested) {}
+void weirdPointer(FILE *_file) {}
+void constArrayParameter(const TestStruct structs[]) {}
+
+

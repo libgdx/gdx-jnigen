@@ -11,8 +11,8 @@ public class BaseTest {
 
     @BeforeAll
     public static void setUp() {
-        CHandler.init();
         new SharedLibraryLoader().load("test-natives");
+        CHandler.init();
         com.badlogic.jnigen.generated.FFITypes.init();
     }
 
