@@ -38,8 +38,6 @@
 jmethodID dispatchCallbackMethod = NULL;
 jmethodID getExceptionStringMethod = NULL;
 jclass globalClass = NULL;
-jclass illegalArgumentExceptionClass = NULL;
-jclass cxxExceptionClass = NULL;
 JavaVM* gJVM = NULL;
 bool ignoreCXXExceptionMessage = false;
 
@@ -121,19 +119,11 @@ JavaExceptionMarker::~JavaExceptionMarker() {
     DETACH_ENV()
 }
 
-void throwIllegalArgumentException(JNIEnv* env, const char* message) {
-    env->ThrowNew(illegalArgumentExceptionClass, message);
-}
-
-void throwCXXException(JNIEnv* env, const char* message) {
-    env->ThrowNew(cxxExceptionClass, message);
-}
-
 JNIEXPORT jint JNICALL Java_com_badlogic_gdx_jnigen_CHandler_getPointerSize(JNIEnv* env, jclass clazz) {
     return sizeof(void*);
 }
 
-JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_CHandler_init(JNIEnv* env, jclass clazz, jobject dispatchCallbackReflectedMethod, jobject getExceptionStringReflectedMethod, jclass illegalArgumentException, jclass cxxException) {
+JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_CHandler_init(JNIEnv* env, jclass clazz, jobject dispatchCallbackReflectedMethod, jobject getExceptionStringReflectedMethod) {
     env->GetJavaVM(&gJVM);
     globalClass = (jclass)env->NewGlobalRef(clazz);
     dispatchCallbackMethod = env->FromReflectedMethod(dispatchCallbackReflectedMethod);
@@ -146,17 +136,15 @@ JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_CHandler_init(JNIEnv* en
         fprintf(stderr, "com.badlogic.gdx.jnigen.Global#getExceptionStringMethod is not reachable via JNI\n");
         return JNI_FALSE;
     }
-    illegalArgumentExceptionClass = (jclass)env->NewGlobalRef(illegalArgumentException);
-    cxxExceptionClass = (jclass)env->NewGlobalRef(cxxException);
     return JNI_TRUE;
 }
 
-JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_CHandler_testIllegalArgumentExceptionThrowable(JNIEnv* env, jclass clazz) {
-    throwIllegalArgumentException(env, "Test");
+JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_CHandler_testIllegalArgumentExceptionThrowable(JNIEnv* env, jclass clazz, jclass illegalArgumentException) {
+    env->ThrowNew(illegalArgumentException, "Test");
 }
 
-JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_CHandler_testCXXExceptionThrowable(JNIEnv* env, jclass clazz) {
-    throwCXXException(env, "Test");
+JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_CHandler_testCXXExceptionThrowable(JNIEnv* env, jclass clazz, jclass cxxException) {
+    env->ThrowNew(cxxException, "Test");
 }
 
 JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_CHandler_setDisableCXXExceptionMessage(JNIEnv* env, jclass clazz, jboolean disable) {

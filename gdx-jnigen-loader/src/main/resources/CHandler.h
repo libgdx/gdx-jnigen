@@ -21,7 +21,7 @@ JNIEXPORT jint JNICALL Java_com_badlogic_gdx_jnigen_CHandler_getPointerSize
  * Signature: (Ljava/lang/reflect/Method;Ljava/lang/reflect/Method;Ljava/lang/Class;Ljava/lang/Class;)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_CHandler_init
-  (JNIEnv *, jclass, jobject, jobject, jclass, jclass);
+  (JNIEnv *, jclass, jobject, jobject);
 
 /*
  * Class:     com_badlogic_gdx_jnigen_CHandler
@@ -29,7 +29,7 @@ JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_CHandler_init
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_CHandler_testIllegalArgumentExceptionThrowable
-  (JNIEnv *, jclass);
+  (JNIEnv *, jclass, jclass);
 
 /*
  * Class:     com_badlogic_gdx_jnigen_CHandler
@@ -37,7 +37,7 @@ JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_CHandler_testIllegalArgument
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_CHandler_testCXXExceptionThrowable
-  (JNIEnv *, jclass);
+  (JNIEnv *, jclass, jclass);
 
 /*
  * Class:     com_badlogic_gdx_jnigen_CHandler

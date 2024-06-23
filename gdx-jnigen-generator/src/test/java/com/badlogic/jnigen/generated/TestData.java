@@ -1,5 +1,6 @@
 package com.badlogic.jnigen.generated;
 
+import com.badlogic.gdx.jnigen.c.CXXException;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoField;
 import com.badlogic.jnigen.generated.structs.AnonymousStructField;
 import com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray;
@@ -23,10 +24,22 @@ import com.badlogic.gdx.jnigen.c.CTypeInfo;
 
 public final class TestData {
 
+    static {
+        init(IllegalArgumentException.class, CXXException.class);
+    }
+
     /*JNI
 #include <jnigen.h>
 #include <test_data.h>
+
+static jclass illegalArgumentExceptionClass = NULL;
+static jclass cxxExceptionClass = NULL;
 */
+    private static native void init(Class illegalArgumentException, Class cxxException);/*
+    	illegalArgumentExceptionClass = (jclass)env->NewGlobalRef(illegalArgumentException);
+    	cxxExceptionClass = (jclass)env->NewGlobalRef(cxxException);
+    */
+
     public static void ensureAnonymousStructParsed(AnonymousStructNoField arg0, AnonymousStructField arg1, AnonymousStructFieldArray arg2, AnonymousClosure arg3, AnonymousStructNoFieldEnd arg4, AnonymousStructNoFieldConsecutive arg5, AnonymousStructNoFieldNested arg6) {
         ensureAnonymousStructParsed_internal(arg0.getPointer(), arg1.getPointer(), arg2.getPointer(), arg3.getPointer(), arg4.getPointer(), arg5.getPointer(), arg6.getPointer());
     }
