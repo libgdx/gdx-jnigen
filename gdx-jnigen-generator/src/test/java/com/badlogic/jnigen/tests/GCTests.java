@@ -1,7 +1,8 @@
-package com.badlogic.gdx.jnigen.gc;
+package com.badlogic.jnigen.tests;
 
+import com.badlogic.gdx.jnigen.gc.GCHandler;
 import com.badlogic.gdx.jnigen.pointer.Pointing;
-import com.badlogic.gdx.jnigen.pointer.Struct;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.lang.ref.WeakReference;

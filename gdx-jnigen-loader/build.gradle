@@ -1,36 +1,11 @@
 import java.nio.file.Files
 
-buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        maven { url("https://oss.sonatype.org/content/repositories/snapshots/") }
-    }
-
-    project.group = "THIS_IS_THE_DUMBEST_HACK"
-    dependencies {
-        classpath "com.badlogicgames.gdx:gdx-jnigen-gradle:2.5.2-SNAPSHOT"
-    }
-}
-
-
-
 plugins {
     id "de.undercouch.download" version "5.0.1"
 }
 
-apply plugin: "com.badlogicgames.gdx.gdx-jnigen"
-project.group = "com.badlogicgames.gdx"
-
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-
-
-dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testRuntimeOnly fileTree(dir: file("build/libs/"), include: '*natives-desktop.jar')
-}
 
 tasks.register("fetchLibFFI", Download) {
     src 'https://github.com/libffi/libffi/releases/download/v3.4.4/libffi-3.4.4.tar.gz'
@@ -56,7 +31,7 @@ tasks.register("extractLibFFI", Copy) {
 
 task copyIOSFiles {
     inputs.dir("build/libFFI")
-    outputs.dir("jni/libFFI-iOS")
+    outputs.dir("build/libFFI-iOS")
     dependsOn("extractLibFFI")
     doLast {
         def tmpDir = Files.createTempDirectory("ios_files").resolve("libFFI")
@@ -73,12 +48,12 @@ task copyIOSFiles {
         copy {
             from tmpDir.toFile().absolutePath + '/darwin_common/src/'
             from tmpDir.toFile().absolutePath + '/darwin_ios/src/'
-            into 'jni/libFFI-iOS'
+            into 'build/libFFI-iOS'
         }
         copy {
             from tmpDir.toFile().absolutePath + '/darwin_common/include/'
             from tmpDir.toFile().absolutePath + '/darwin_ios/include/'
-            into 'jni/libFFI-iOS/include'
+            into 'build/libFFI-iOS/include'
         }
     }
 }
@@ -95,8 +70,8 @@ def createBuildTask(String platformName, String architecture, String specialFlag
             exec {
                 workingDir = tmpDir.toFile()
                 commandLine = "./configure"
-                environment "CFLAGS", specialFlags
-                environment "LDFLAGS", specialFlags
+                environment "CFLAGS", specialFlags + " -fexceptions"
+                environment "LDFLAGS", specialFlags + " -fexceptions"
                 args = ["--prefix=${new File(buildDir,  platformName + "_" + architecture)}"] + specialArgs
             }
             exec {
@@ -133,51 +108,57 @@ task build_windows {
     dependsOn createBuildTask("windows", "arm64", "", ["--host=aarch64-w64-mingw32"])
 }
 
-test {
-    dependsOn("jnigenBuild", "jnigenJarNativesDesktop")
-    useJUnitPlatform()
-    outputs.upToDateWhen {false}
-}
+task build_ios {
+    dependsOn("copyIOSFiles")
+    doLast {
+        def srcDir = file("build/libFFI-iOS")
+        def tempDirectory = Files.createTempDirectory("libFFI-iOS-build")
 
-jnigen {
-    sharedLibName = "jnigen-native"
+        def files = []
+        srcDir.eachFileRecurse {
+            if (it.name.endsWith(".c") || it.name.endsWith(".S"))
+                files << it
+        }
 
-    all {
-        def name = it.os.name().toLowerCase()
-        def arch = it.architecture.name().toLowerCase() + (it.architecture == x86 && it.bitness != x32 ? "_" : "") + it.bitness.toSuffix()
-        def combined = name + "_" + arch
-        headerDirs += [file("build/${combined}/include/"), file("src/main/resources/")]
-        cExcludes += ["libFFI-iOS/"]
-        libraries += "${file("build/${combined}/lib/libffi.a").absolutePath}"
-        cFlags += " -std=gnu11 -fexceptions "
-        cppFlags += " -std=c++11 -fexceptions "
+        [iphoneos: "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/",
+         iphonesimulator: "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk"]
+        .forEach { target, sysroot ->
+            def objectFiles = []
+            def outDirectory = file("build/ios_${target}")
+            outDirectory.deleteDir()
+            outDirectory.mkdirs()
+
+            def archs = target == "iphoneos" ? ["arm64"] : ["arm64", "x86_64"]
+            for (arch in archs) {
+                files.each { cFile ->
+                    def objectFile = "${new File(outDirectory, "${cFile.name}.${arch}.o")}"
+                    objectFiles << objectFile
+
+                    exec {
+                        workingDir tempDirectory
+                        commandLine = "clang"
+                        args = ["-arch", arch, "-isysroot", sysroot, "-I${file("build/libFFI-iOS/include").absolutePath}", "-c", cFile.absolutePath, "-o", objectFile]
+                    }
+                }
+            }
+
+            exec {
+                workingDir outDirectory
+                commandLine = "libtool"
+                args = [ "-static", "-o", "libffi.a"] + objectFiles
+            }
+        }
+        def outDirectoryFramework = file("build/ios_xcframework")
+        outDirectoryFramework.deleteDir()
+        outDirectoryFramework.mkdirs()
+        exec {
+            workingDir outDirectoryFramework
+            commandLine = "xcodebuild"
+            args = ["-create-xcframework", "-library", file("build/ios_iphoneos/libffi.a"), "-headers", file("build/libFFI-iOS/include"), "-library", file("build/ios_iphonesimulator/libffi.a"),
+            "-headers", file("build/libFFI-iOS/include"), "-output", new File(outDirectoryFramework, "libFFI.xcframework")]
+        }
     }
-
-    add(Linux, x32, x86)
-    add(Linux, x32, ARM)
-    add(Linux, x32, RISCV)
-    add(Linux, x64, x86)
-    add(Linux, x64, ARM)
-    add(Linux, x64, RISCV)
-    add(Linux, x64, LOONGARCH)
-    add(MacOsX, x64, x86)
-    add(MacOsX, x64, ARM)
-    add(Windows, x32, x86)
-    add(Windows, x32, ARM)
-    add(Windows, x64, x86)
-    add(Windows, x64, ARM)
-    add(IOS) {
-        cIncludes += ["**/*.S"]
-        cExcludes = []
-        headerDirs = [file("jni/libFFI-iOS/include/"), file("src/main/resources/")]
-        libraries = ""
-    }
-    add(Android)
 }
-
-jnigenBuildIOS.dependsOn copyIOSFiles
-jnigenJarNativesDesktop.mustRunAfter jnigenBuild
-
 
 eclipse {
     project {

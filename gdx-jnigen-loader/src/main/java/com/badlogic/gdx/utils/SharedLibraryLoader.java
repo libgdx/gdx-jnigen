@@ -385,9 +385,6 @@ public class SharedLibraryLoader {
 
 	private void loadFromAbsolutePath(String path) {
 		System.load(path);
-		if (!CHandler.reExportSymbolsGlobally(path)) {
-			throw new SharedLibraryLoadRuntimeException("Unable to re-export loaded symbols.");
-		}
 	}
 
 	/** Sets the library as loaded, for when application code wants to handle libary loading itself. */
