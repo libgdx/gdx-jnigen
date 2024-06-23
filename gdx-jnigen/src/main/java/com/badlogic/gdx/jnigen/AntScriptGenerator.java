@@ -18,6 +18,7 @@ package com.badlogic.gdx.jnigen;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.utils.Architecture;
 import com.badlogic.gdx.utils.Os;
 import com.badlogic.gdx.jnigen.FileDescriptor.FileType;
 
@@ -173,14 +174,20 @@ public class AntScriptGenerator {
 			return template;
 		}
 
-		// read template file from resources
 		String template = null;
-		if (target.os == Os.IOS) {
-			template = new FileDescriptor("com/badlogic/gdx/jnigen/resources/scripts/build-ios.xml.template", FileType.Classpath)
-				.readString();
+		if (target.compilerABIType == CompilerABIType.MSVC) {
+			//Hard code and use this target for msvc compatible ant template
+			template = new FileDescriptor("com/badlogic/gdx/jnigen/resources/scripts/build-msvc-target.xml.template", FileType.Classpath)
+					.readString();
 		} else {
-			template = new FileDescriptor("com/badlogic/gdx/jnigen/resources/scripts/build-target.xml.template", FileType.Classpath)
-				.readString();
+			// read template file from resources
+			if (target.os == Os.IOS) {
+				template = new FileDescriptor("com/badlogic/gdx/jnigen/resources/scripts/build-ios.xml.template", FileType.Classpath)
+						.readString();
+			} else {
+				template = new FileDescriptor("com/badlogic/gdx/jnigen/resources/scripts/build-target.xml.template", FileType.Classpath)
+						.readString();
+			}
 		}
 
 		// generate shared lib filename and jni platform headers directory name
@@ -238,6 +245,23 @@ public class AntScriptGenerator {
 		template = template.replace("%headerDirs%", headerDirs.toString().trim());
 		template = template.replace("%precompile%", target.preCompileTask == null ? "" : target.preCompileTask);
 		template = template.replace("%postcompile%", target.postCompileTask == null ? "" : target.postCompileTask);
+
+		//Vcvars all for setup of MSVC toolchain
+		String vcVarsAllTarget = "";
+		if (target.architecture == Architecture.x86) {
+			if (target.bitness == Architecture.Bitness._32) {
+				vcVarsAllTarget = "x86";
+			} else {
+				vcVarsAllTarget = "x64";
+			}
+		} else if (target.architecture == Architecture.ARM) {
+			if (target.bitness == Architecture.Bitness._32) {
+				vcVarsAllTarget = "x86_arm";
+			} else {
+				vcVarsAllTarget = "x86_arm64";
+			}
+		}
+		template = template.replace("%vcvarsallArch%", vcVarsAllTarget);
 
 		return template;
 	}

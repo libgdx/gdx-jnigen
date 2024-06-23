@@ -30,6 +30,10 @@ public class BuildTarget {
 	public Architecture.Bitness bitness;
 	/** whether this is an x86, ARM or RISC-V build, not used for Android **/
 	public Architecture architecture = Architecture.x86;
+
+    /** Compiler ABI type, GCC/clang compatible or MSVC **/
+    public CompilerABIType compilerABIType = CompilerABIType.GCC_CLANG;
+
 	/** the C files and directories to be included in the build, accepts Ant path format, must not be null **/
 	public String[] cIncludes;
 	/** the C files and directories to be excluded from the build, accepts Ant path format, must not be null **/
@@ -161,43 +165,100 @@ public class BuildTarget {
 		return newDefaultTarget(type, is64Bit ? Architecture.Bitness._64 : Architecture.Bitness._32, isARM ? Architecture.ARM : Architecture.x86);
 	}
 
-	/** Creates a new default BuildTarget for the given OS, using common default values. */
 	public static BuildTarget newDefaultTarget (Os type, Architecture.Bitness bitness, Architecture architecture) {
-		if (type == Os.Windows && architecture == Architecture.x86 && bitness == Architecture.Bitness._32) {
-			// Windows x86 32-Bit
-			return new BuildTarget(Os.Windows, Architecture.Bitness._32, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
-				new String[0], new String[0], "i686-w64-mingw32-", "-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m32",
-				"-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m32",
-				"-Wl,--kill-at -shared -m32 -static -static-libgcc -static-libstdc++");
-		}
+		return newDefaultTarget(type, bitness, architecture, CompilerABIType.GCC_CLANG);
+	}
 
-		if (type == Os.Windows && architecture == Architecture.x86 && bitness == Architecture.Bitness._64) {
-			// Windows x86 64-Bit
-			return new BuildTarget(Os.Windows, Architecture.Bitness._64, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
-				new String[0], new String[0], "x86_64-w64-mingw32-", "-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m64",
-				"-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m64",
-				"-Wl,--kill-at -shared -static -static-libgcc -static-libstdc++ -m64");
-		}
+	/** Creates a new default BuildTarget for the given OS, using common default values. */
+	public static BuildTarget newDefaultTarget (Os type, Architecture.Bitness bitness, Architecture architecture, CompilerABIType abiType) {
 
-		if (type == Os.Windows && architecture == Architecture.ARM && bitness == Architecture.Bitness._32) {
-			// Windows ARM 32-Bit
-			BuildTarget target = new BuildTarget(Os.Windows, Architecture.Bitness._32, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
-					new String[0], new String[0], "armv7-w64-mingw32-", "-c -Wall -O2 -fmessage-length=0",
-					"-c -Wall -O2 -fmessage-length=0",
-					"-Wl,--kill-at -shared -static -static-libgcc -static-libstdc++");
-			target.architecture = Architecture.ARM;
-			return target;
-		}
+        if (abiType == CompilerABIType.MSVC) {
+            if (type == Os.Windows && architecture == Architecture.x86 && bitness == Architecture.Bitness._32) {
+                // Windows x86 32-Bit
+                BuildTarget target = new BuildTarget(Os.Windows, Architecture.Bitness._32, new String[]{"**/*.c"}, new String[0], new String[]{"**/*.cpp"},
+                        new String[0], new String[0], "", "/O2 /W4 /fp:fast /arch:IA32",
+                        "/O2 /W4 /fp:fast /arch:IA32",
+                        "/DLL");
+				target.cCompiler = "cl.exe";
+				target.cppCompiler = "cl.exe";
+				target.compilerABIType = abiType;
+                return target;
+            }
 
-		if (type == Os.Windows && architecture == Architecture.ARM && bitness == Architecture.Bitness._64) {
-			// Windows ARM 64-Bit
-			BuildTarget target = new BuildTarget(Os.Windows, Architecture.Bitness._64, new String[] {"**/*.c"}, new String[0], new String[] {"**/*.cpp"},
-					new String[0], new String[0], "aarch64-w64-mingw32-", "-c -Wall -O2 -fmessage-length=0",
-					"-c -Wall -O2 -fmessage-length=0",
-					"-Wl,--kill-at -shared -static -static-libgcc -static-libstdc++");
-			target.architecture = Architecture.ARM;
-			return target;
-		}
+            if (type == Os.Windows && architecture == Architecture.x86 && bitness == Architecture.Bitness._64) {
+                // Windows x86 64-Bit
+				BuildTarget target = new BuildTarget(Os.Windows, Architecture.Bitness._64, new String[]{"**/*.c"}, new String[0], new String[]{"**/*.cpp"},
+                        new String[0], new String[0], "", "/O2 /W4 /fp:fast /arch:AVX2",
+                        "/O2 /W4 /fp:fast /arch:AVX2",
+                        "");
+				target.compilerABIType = abiType;
+				target.cCompiler = "cl.exe";
+				target.cppCompiler = "cl.exe";
+				return target;
+            }
+
+            if (type == Os.Windows && architecture == Architecture.ARM && bitness == Architecture.Bitness._32) {
+                // Windows ARM 32-Bit
+                BuildTarget target = new BuildTarget(Os.Windows, Architecture.Bitness._32, new String[]{"**/*.c"}, new String[0], new String[]{"**/*.cpp"},
+                        new String[0], new String[0], "", "/O2 /W4 /fp:fast /arch:IA32",
+                        "/O2 /W4 /fp:fast /arch:IA32",
+                        "");
+				target.cCompiler = "cl.exe";
+				target.cppCompiler = "cl.exe";
+                target.architecture = Architecture.ARM;
+				target.compilerABIType = abiType;
+                return target;
+            }
+
+            if (type == Os.Windows && architecture == Architecture.ARM && bitness == Architecture.Bitness._64) {
+                // Windows ARM 64-Bit
+                BuildTarget target = new BuildTarget(Os.Windows, Architecture.Bitness._64, new String[]{"**/*.c"}, new String[0], new String[]{"**/*.cpp"},
+                        new String[0], new String[0], "", "/O2 /W4 /fp:fast /arch:ARM64",
+                        "/O2 /W4 /fp:fast /arch:ARM64",
+                        "");
+				target.cCompiler = "cl.exe";
+				target.cppCompiler = "cl.exe";
+                target.architecture = Architecture.ARM;
+				target.compilerABIType = abiType;
+                return target;
+            }
+        } else {
+            if (type == Os.Windows && architecture == Architecture.x86 && bitness == Architecture.Bitness._32) {
+                // Windows x86 32-Bit
+                return new BuildTarget(Os.Windows, Architecture.Bitness._32, new String[]{"**/*.c"}, new String[0], new String[]{"**/*.cpp"},
+                        new String[0], new String[0], "i686-w64-mingw32-", "-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m32",
+                        "-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m32",
+                        "-Wl,--kill-at -shared -m32 -static -static-libgcc -static-libstdc++");
+            }
+
+            if (type == Os.Windows && architecture == Architecture.x86 && bitness == Architecture.Bitness._64) {
+                // Windows x86 64-Bit
+                return new BuildTarget(Os.Windows, Architecture.Bitness._64, new String[]{"**/*.c"}, new String[0], new String[]{"**/*.cpp"},
+                        new String[0], new String[0], "x86_64-w64-mingw32-", "-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m64",
+                        "-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m64",
+                        "-Wl,--kill-at -shared -static -static-libgcc -static-libstdc++ -m64");
+            }
+
+            if (type == Os.Windows && architecture == Architecture.ARM && bitness == Architecture.Bitness._32) {
+                // Windows ARM 32-Bit
+                BuildTarget target = new BuildTarget(Os.Windows, Architecture.Bitness._32, new String[]{"**/*.c"}, new String[0], new String[]{"**/*.cpp"},
+                        new String[0], new String[0], "armv7-w64-mingw32-", "-c -Wall -O2 -fmessage-length=0",
+                        "-c -Wall -O2 -fmessage-length=0",
+                        "-Wl,--kill-at -shared -static -static-libgcc -static-libstdc++");
+                target.architecture = Architecture.ARM;
+                return target;
+            }
+
+            if (type == Os.Windows && architecture == Architecture.ARM && bitness == Architecture.Bitness._64) {
+                // Windows ARM 64-Bit
+                BuildTarget target = new BuildTarget(Os.Windows, Architecture.Bitness._64, new String[]{"**/*.c"}, new String[0], new String[]{"**/*.cpp"},
+                        new String[0], new String[0], "aarch64-w64-mingw32-", "-c -Wall -O2 -fmessage-length=0",
+                        "-c -Wall -O2 -fmessage-length=0",
+                        "-Wl,--kill-at -shared -static -static-libgcc -static-libstdc++");
+                target.architecture = Architecture.ARM;
+                return target;
+            }
+        }
 
 		if (type == Os.Linux && architecture == Architecture.LOONGARCH && bitness == Architecture.Bitness._64) {
 			// Linux LoongArch 64-Bit
