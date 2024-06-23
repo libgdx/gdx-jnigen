@@ -1,6 +1,7 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
 import com.badlogic.gdx.jnigen.CHandler;
+import com.badlogic.gdx.jnigen.c.CXXException;
 import com.badlogic.gdx.jnigen.generator.Manager;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
@@ -37,7 +38,22 @@ public class GlobalType implements MappedType {
 
     public void write(CompilationUnit cu, HashMap<MethodDeclaration, String> patchNativeMethods) {
         ClassOrInterfaceDeclaration global = cu.addClass(globalName, Keyword.PUBLIC, Keyword.FINAL);
-        global.addOrphanComment(new BlockComment("JNI\n#include <jnigen.h>\n#include <" + Manager.getInstance().getParsedCHeader() + ">\n"));
+        cu.addImport(CXXException.class);
+        cu.addImport(IllegalArgumentException.class);
+        global.addStaticInitializer().addStatement("init(IllegalArgumentException.class, CXXException.class);");
+        global.addOrphanComment(new BlockComment("JNI\n#include <jnigen.h>\n"
+                + "#include <" + Manager.getInstance().getParsedCHeader() + ">\n\n"
+                + "static jclass illegalArgumentExceptionClass = NULL;\n"
+                + "static jclass cxxExceptionClass = NULL;\n"));
+
+        MethodDeclaration initMethod = global.addMethod("init", Keyword.PRIVATE, Keyword.STATIC, Keyword.NATIVE);
+        initMethod.setType(void.class)
+                .addParameter(Class.class, "illegalArgumentException")
+                .addParameter(Class.class, "cxxException")
+                .setBody(null);
+        patchNativeMethods.put(initMethod, "illegalArgumentExceptionClass = (jclass)env->NewGlobalRef(illegalArgumentException);\n"
+                + "cxxExceptionClass = (jclass)env->NewGlobalRef(cxxException);");
+
         for (FunctionType functionType : functions) {
             functionType.write(cu, global, patchNativeMethods);
         }

@@ -19,8 +19,7 @@ public class CHandler {
     static {
         try {
             boolean res = init(CHandler.class.getDeclaredMethod("dispatchCallback", ClosureInfo.class, ByteBuffer.class),
-                    CHandler.class.getDeclaredMethod("getExceptionString", Throwable.class),
-                    IllegalArgumentException.class, CXXException.class);
+                    CHandler.class.getDeclaredMethod("getExceptionString", Throwable.class));
             if (!res)
                 throw new RuntimeException("JNI initialization failed, either CHandler#dispatchCallback or CHandler#getExceptionString are not JNI accessible.");
         } catch (NoSuchMethodException e) {
@@ -44,7 +43,7 @@ public class CHandler {
 
     private static final HashMap<Long, ClosureObject<?>> fnPtrClosureMap = new HashMap<>();
 
-    private static native boolean init(Method dispatchCallbackReflectedMethod, Method getExceptionStringReflectedMethod, Class illegalArgumentException, Class cxxException);
+    private static native boolean init(Method dispatchCallbackReflectedMethod, Method getExceptionStringReflectedMethod);
 
     public static String getExceptionString(Throwable e) {
         StringWriter sw = new StringWriter();
@@ -54,18 +53,18 @@ public class CHandler {
 
     private static void testNativeSetup() {
         try {
-            testIllegalArgumentExceptionThrowable();
+            testIllegalArgumentExceptionThrowable(IllegalArgumentException.class);
             throw new RuntimeException("Unable to throw IllegalArgumentException from JNI.");
         }catch (IllegalArgumentException ignored) {}
         try {
-            testCXXExceptionThrowable();
+            testCXXExceptionThrowable(CXXException.class);
             throw new RuntimeException("Unable to throw CXXException from JNI.");
         }catch (CXXException ignored) {}
     }
 
-    private static native void testIllegalArgumentExceptionThrowable();
+    private static native void testIllegalArgumentExceptionThrowable(Class illegalArgumentException);
 
-    private static native void testCXXExceptionThrowable();
+    private static native void testCXXExceptionThrowable(Class cxxException);
 
     /**
      * If java code throws an exception into native, this will disable setting a descriptor for the wrapping CXX exception
