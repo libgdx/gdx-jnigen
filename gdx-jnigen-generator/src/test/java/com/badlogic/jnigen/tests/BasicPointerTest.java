@@ -1,4 +1,4 @@
-package com.badlogic.gdx.jnigen.gc;
+package com.badlogic.jnigen.tests;
 
 import com.badlogic.gdx.jnigen.CHandler;
 import com.badlogic.gdx.jnigen.c.CTypeInfo;
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PointerTest extends BaseTest {
+public class BasicPointerTest extends BaseTest {
 
     @BeforeAll
     public static void setupCTypes() {

@@ -1,4 +1,4 @@
-package com.badlogic.gdx.jnigen.gc;
+package com.badlogic.jnigen.tests;
 
 import com.badlogic.gdx.jnigen.util.Utils;
 import org.junit.jupiter.api.Test;
