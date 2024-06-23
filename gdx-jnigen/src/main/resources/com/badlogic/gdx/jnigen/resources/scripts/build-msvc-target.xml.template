@@ -29,6 +29,7 @@
     </fileset>
 
     <!-- define linker options -->
+    <property name="msvc-prelinker-flags" value="%msvcPreLinkerFlags%"/>
     <property name="linker-opts" value="%linkerFlags%"/>
     <property name="libraries" value="%libraries%"/>
 
@@ -250,7 +251,7 @@
         <exec executable="${cl}" failonerror="true" dir="${buildDir}">
 
             <arg line="${linkerBuildFlags}"/>
-
+            <arg line="${msvc-prelinker-flags}"/>
             <arg value="/Fe${libName}"/>
             <arg line="${objFiles}"/>
 

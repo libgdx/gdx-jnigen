@@ -236,6 +236,7 @@ public class AntScriptGenerator {
 		template = template.replace("%cFlags%", target.cFlags);
 		template = template.replace("%cppFlags%", target.cppFlags);
 		template = template.replace("%linkerFlags%", target.linkerFlags);
+		template = template.replace("%msvcPreLinkerFlags%", target.msvcPreLinkerFlags);
 		template = template.replace("%archiverFlags%", target.archiverFlags);
 		template = template.replace("%libraries%", target.libraries);
 		template = template.replace("%cIncludes%", cIncludes.toString().trim());

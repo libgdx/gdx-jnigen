@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
+import com.badlogic.gdx.jnigen.CompilerABIType;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -35,6 +36,9 @@ public class JnigenExtension {
 	public static final Architecture ARM = Architecture.ARM;
 	public static final Architecture RISCV = Architecture.RISCV;
 	public static final Architecture LOONGARCH = Architecture.LOONGARCH;
+
+	public static final CompilerABIType MSVC = CompilerABIType.MSVC;
+	public static final CompilerABIType GCC_CLANG = CompilerABIType.GCC_CLANG;
 	public static final Os Windows = Os.Windows;
 	public static final Os Linux = Os.Linux;
 	public static final Os MacOsX = Os.MacOsX;
@@ -97,7 +101,7 @@ public class JnigenExtension {
 	}
 
 	public void add(Os type, Architecture.Bitness bitness, Architecture architecture) {
-		add(type, bitness, architecture, null);
+		add(type, bitness, architecture, CompilerABIType.GCC_CLANG,null);
 	}
 
 	@Deprecated
@@ -111,7 +115,7 @@ public class JnigenExtension {
 	}
 
 	public void add(Os type, Action<BuildTarget> container) {
-		add(type, Architecture.Bitness._32, Architecture.x86, container);
+		add(type, Architecture.Bitness._32, Architecture.x86, CompilerABIType.GCC_CLANG, container);
 	}
 
 	@Deprecated
@@ -120,15 +124,15 @@ public class JnigenExtension {
 	}
 
 	public void add(Os type, Architecture.Bitness bitness, Action<BuildTarget> container) {
-		add(type, bitness, Architecture.x86, container);
+		add(type, bitness, Architecture.x86, CompilerABIType.GCC_CLANG, container);
 	}
 
 	@Deprecated
 	public void add(Os type, boolean is64Bit, boolean isARM, Action<BuildTarget> container) {
-		add(type, is64Bit ? Architecture.Bitness._64 : Architecture.Bitness._32, isARM ? Architecture.ARM : Architecture.x86, container);
+		add(type, is64Bit ? Architecture.Bitness._64 : Architecture.Bitness._32, isARM ? Architecture.ARM : Architecture.x86, CompilerABIType.GCC_CLANG, container);
 	}
 
-	public void add(Os type, Architecture.Bitness bitness, Architecture architecture, Action<BuildTarget> container) {
+	public void add(Os type, Architecture.Bitness bitness, Architecture architecture, CompilerABIType abiType, Action<BuildTarget> container) {
 		String name = type + architecture.toSuffix().toUpperCase() + bitness.toSuffix();
 
 		if(get(type, bitness, architecture) != null)
@@ -136,7 +140,7 @@ public class JnigenExtension {
 		if((type == Android || type == IOS) && bitness != Architecture.Bitness._32 && architecture != Architecture.x86)
 			throw new RuntimeException("Android and iOS must not have is64Bit or isARM or isRISCV.");
 
-		BuildTarget target = BuildTarget.newDefaultTarget(type, bitness, architecture);
+		BuildTarget target = BuildTarget.newDefaultTarget(type, bitness, architecture, abiType);
 
 		if (all != null)
 			all.execute(target);
