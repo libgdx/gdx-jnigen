@@ -5,16 +5,41 @@
 #include <string>
 #include <jni.h>
 
+#define ATTACH_ENV()                                                    \
+    bool _hadToAttach = false;                                          \
+    JNIEnv* env;                                                        \
+    if (gJVM->GetEnv((void**)&env, JNI_VERSION_1_6) == JNI_EDETACHED) { \
+        gJVM->AttachCurrentThread((void**)&env, NULL);                  \
+        _hadToAttach = true;                                            \
+    }
+
+#define DETACH_ENV()                 \
+    if (_hadToAttach) {              \
+        gJVM->DetachCurrentThread(); \
+    }
+
 #define HANDLE_JAVA_EXCEPTION_START() try {
 
 #define HANDLE_JAVA_EXCEPTION_END() } catch (const JavaExceptionMarker& e) { env->Throw(e.javaExc); } \
         catch (const std::exception& ex) { env->ThrowNew(cxxExceptionClass, ex.what()); } \
         catch (...) { env->ThrowNew(cxxExceptionClass, "An unknown error occurred"); }
 
-struct JavaExceptionMarker : public std::runtime_error {
-    jthrowable javaExc;
-    JavaExceptionMarker(jthrowable exc, const std::string& message);
-    ~JavaExceptionMarker() _NOEXCEPT;
+class JavaExceptionMarker : public std::runtime_error {
+    public:
+        jthrowable javaExc;
+        JavaVM* gJVM;
+        JavaExceptionMarker(JavaVM* passedJVM, jthrowable exc, const std::string& message) : std::runtime_error(message) {
+            gJVM = passedJVM;
+            ATTACH_ENV() // TODO: We could save this by doing this in the caller, but that seems overoptimization?
+            javaExc = (jthrowable)env->NewGlobalRef(exc);
+            DETACH_ENV()
+        }
+
+        ~JavaExceptionMarker() _NOEXCEPT {
+            ATTACH_ENV() // TODO: Figure out, whether this is an issue during full-crash
+            env->DeleteGlobalRef(javaExc);
+            DETACH_ENV()
+        }
 };
 
 typedef enum _native_type_id {
