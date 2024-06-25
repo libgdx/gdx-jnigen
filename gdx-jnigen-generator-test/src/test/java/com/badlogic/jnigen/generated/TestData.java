@@ -25,7 +25,12 @@ import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;
 public final class TestData {
 
     static {
+        CHandler.init();
+        FFITypes.init();
         init(IllegalArgumentException.class, CXXException.class);
+    }
+
+    public static void initialize() {
     }
 
     /*JNI
