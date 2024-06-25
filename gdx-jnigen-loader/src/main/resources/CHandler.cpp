@@ -113,7 +113,7 @@ JavaExceptionMarker::JavaExceptionMarker(jthrowable exc, const std::string& mess
     DETACH_ENV()
 }
 
-JavaExceptionMarker::~JavaExceptionMarker() {
+JavaExceptionMarker::~JavaExceptionMarker() _NOEXCEPT {
     ATTACH_ENV() // TODO: Figure out, whether this is an issue during full-crash
     env->DeleteGlobalRef(javaExc);
     DETACH_ENV()
