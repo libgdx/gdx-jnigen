@@ -1,13 +1,6 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "com.badlogicgames.gdx:gdx-jnigen-gradle"
-    }
+plugins {
+    id "com.badlogicgames.gdx.gdx-jnigen"
 }
-
-apply plugin: "com.badlogicgames.gdx.gdx-jnigen"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
