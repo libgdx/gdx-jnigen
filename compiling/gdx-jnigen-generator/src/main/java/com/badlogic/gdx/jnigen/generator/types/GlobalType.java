@@ -39,7 +39,11 @@ public class GlobalType implements MappedType {
         ClassOrInterfaceDeclaration global = cu.addClass(globalName, Keyword.PUBLIC, Keyword.FINAL);
         cu.addImport(ClassNameConstants.CXXEXCEPTION_CLASS);
         cu.addImport(IllegalArgumentException.class);
-        global.addStaticInitializer().addStatement("init(IllegalArgumentException.class, CXXException.class);");
+        global.addStaticInitializer()
+                .addStatement("CHandler.init();")
+                .addStatement("FFITypes.init();")
+                .addStatement("init(IllegalArgumentException.class, CXXException.class);");
+        global.addMethod("initialize", Keyword.PUBLIC, Keyword.STATIC).createBody();
         global.addOrphanComment(new BlockComment("JNI\n#include <jnigen.h>\n"
                 + "#include <" + Manager.getInstance().getParsedCHeader() + ">\n\n"
                 + "static jclass illegalArgumentExceptionClass = NULL;\n"
