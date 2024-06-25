@@ -199,6 +199,14 @@ JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_memcpy
 JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_clone
   (JNIEnv *, jclass, jlong, jlong);
 
+/*
+ * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
+ * Method:    convertNativeTypeToFFIType
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_convertNativeTypeToFFIType
+  (JNIEnv *, jclass, jlong);
+
 #ifdef __cplusplus
 }
 #endif
