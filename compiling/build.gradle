@@ -12,11 +12,11 @@ allprojects {
     }
 }
 
-ext.propertiesFile = rootProject.file("gradle.properties")
+ext.propertiesFile = file("../gradle.properties")
 
-apply from: rootProject.file("config.gradle")
+apply from: file('../config.gradle')
 
 apply plugin: 'eclipse'
 eclipse.project.name = "root"
 
-apply from: rootProject.file('publish.gradle')
+apply from: file('../publish.gradle')
