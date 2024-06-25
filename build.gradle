@@ -16,6 +16,10 @@ ext.propertiesFile = rootProject.file("gradle.properties")
 
 apply from: rootProject.file("config.gradle")
 
+task publishToMavenLocal {
+    dependsOn gradle.includedBuild("compiling").task(':publishToMavenLocal')
+}
+
 apply plugin: 'eclipse'
 eclipse.project.name = "root"
 
