@@ -3,7 +3,7 @@ package com.badlogic.gdx.jnigen.gradle;
 import java.io.File;
 
 import com.badlogic.gdx.jnigen.BuildTarget;
-import com.badlogic.gdx.utils.Os;
+import com.badlogic.gdx.jnigen.commons.Os;
 
 public class JnigenIOSJarTask extends JnigenJarTask {
 	public JnigenIOSJarTask() {

@@ -16,8 +16,9 @@
 
 package com.badlogic.gdx.jnigen;
 
-import com.badlogic.gdx.utils.Architecture;
-import com.badlogic.gdx.utils.Os;
+
+import com.badlogic.gdx.jnigen.commons.Architecture;
+import com.badlogic.gdx.jnigen.commons.Os;
 
 import java.util.function.BooleanSupplier;
 
