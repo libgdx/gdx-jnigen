@@ -1,8 +1,8 @@
-package com.badlogic.gdx.jnigen;
+package com.badlogic.jnigen.classes;
 
 import java.nio.Buffer;
 
-class JniGenTestClass {
+public class JniGenTestClass {
 
     public static native boolean testBoolean(boolean boolArg); /*
 		return boolArg;
