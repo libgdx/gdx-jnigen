@@ -35,8 +35,17 @@ subprojects
                 //Check if we are a gradle plugin, if we are skip mavenJava
                 if (!plugins.hasPlugin('java-gradle-plugin')) {
                     mavenJava(MavenPublication) {
-
                         from components.java
+
+                        if (project.getPluginManager().hasPlugin("com.badlogicgames.gdx.gdx-jnigen")) {
+                            artifact jnigenJarNativesDesktop { }
+                            ['arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'].each { id ->
+                                artifact "jnigenJarNativesAndroid${id}" { }
+                            }
+
+                            artifact jnigenJarNativesIOS { }
+                        }
+
                         versionMapping {
                             usage('java-api') {
                                 fromResolutionOf('runtimeClasspath')
