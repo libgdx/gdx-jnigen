@@ -35,6 +35,12 @@
     #error Could not determine byte order
 #endif
 
+#define GET_FFI_TYPE_SIGN(type) \
+    &ffi_type_sint8 == type || &ffi_type_sint16 == type || &ffi_type_sint32 == type || &ffi_type_sint64 == type || &ffi_type_double == type || &ffi_type_float == type
+
+#define CHECK_BOUNDS_FFI_TYPE(type, value) \
+    CHECK_BOUNDS_FOR_NUMBER(value, type->size, GET_FFI_TYPE_SIGN(type));
+
 jmethodID dispatchCallbackMethod = NULL;
 jmethodID getExceptionStringMethod = NULL;
 jclass globalClass = NULL;
@@ -61,6 +67,40 @@ static inline size_t getOffsetForField(ffi_type* struct_type, uint32_t index) {
     }
 
     return offset;
+}
+
+// We do inline to silence compiler warnings, but it shouldn't actually inline
+static inline void calculateAlignmentAndOffset(ffi_type* type, bool isStruct) {
+    int index = 0;
+    ffi_type* current_element = type->elements[index];
+    size_t struct_size = 0;
+    size_t struct_alignment = 0;
+    while (current_element != NULL) {
+        size_t alignment = current_element->alignment;
+        if (alignment > struct_alignment)
+            struct_alignment = alignment;
+
+        if (isStruct) {
+            if (struct_size % alignment != 0) {
+                struct_size += alignment - (struct_size % alignment);
+            }
+            struct_size += current_element->size;
+        } else {
+            if (current_element->size > struct_size) {
+                struct_size = current_element->size;
+            }
+        }
+
+        index++;
+        current_element = type->elements[index];
+    }
+
+    if (isStruct && struct_size % struct_alignment != 0) {
+       struct_size += struct_alignment - (struct_size % struct_alignment);
+    }
+
+    type->alignment = struct_alignment;
+    type->size = struct_size;
 }
 
 void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
@@ -166,6 +206,62 @@ JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_reExpor
 #endif // __linux__
 }
 
+ffi_type* getFFITypeForNativeType(native_type* nativeType) {
+    switch (nativeType->type) {
+        case VOID_TYPE:
+            return &ffi_type_void;
+        case POINTER_TYPE:
+            return &ffi_type_pointer;
+        case FLOAT_TYPE:
+            return &ffi_type_float;
+        case DOUBLE_TYPE:
+            return &ffi_type_double;
+        case INT_TYPE:
+            switch (nativeType->size) {
+                case 1:
+                    return nativeType->sign ? &ffi_type_sint8 : &ffi_type_uint8;
+                case 2:
+                    return nativeType->sign ? &ffi_type_sint16 : &ffi_type_uint16;
+                case 4:
+                    return nativeType->sign ? &ffi_type_sint32 : &ffi_type_uint32;
+                case 8:
+                    return nativeType->sign ? &ffi_type_sint64 : &ffi_type_uint64;
+            }
+            return NULL;
+        case UNION_TYPE:
+        case STRUCT_TYPE:
+            ffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));
+            type->type = FFI_TYPE_STRUCT;
+            type->elements = (ffi_type**)malloc(sizeof(ffi_type*) * (nativeType->field_count + 1));
+
+            for (int i = 0; i < nativeType->field_count; i++) {
+                type->elements[i] = getFFITypeForNativeType(nativeType->fields[i]);
+            }
+
+            type->elements[nativeType->field_count] = NULL;
+            calculateAlignmentAndOffset(type, nativeType->type == STRUCT_TYPE);
+            return type;
+    }
+    return NULL;
+}
+
+void freeNativeTypeRecursive(native_type* nativeType) {
+    if (nativeType->type == UNION_TYPE || nativeType->type == STRUCT_TYPE) {
+        for (int i = 0; i < nativeType->field_count; i++) {
+            freeNativeTypeRecursive(nativeType->fields[i]);
+        }
+    }
+
+    free(nativeType);
+}
+
+JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_convertNativeTypeToFFIType(JNIEnv* env, jclass clazz, jlong natTypeJ) {
+    native_type* nativeType = (native_type*) natTypeJ;
+    ffi_type* ffiType = getFFITypeForNativeType(nativeType);
+    freeNativeTypeRecursive(nativeType);
+    return (jlong) ffiType;
+}
+
 JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_nativeCreateCif(JNIEnv* env, jclass clazz, jlong returnType, jobject obj_parameters, jint size) {
 	char* parameters = (char*)(obj_parameters?env->GetDirectBufferAddress(obj_parameters):0);
 
@@ -184,11 +280,11 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_createClos
     size_t argsSize = 0;
     for (size_t i = 0; i < cif->nargs; i++) {
         ffi_type* type = cif->arg_types[i];
-            if(type->type == FFI_TYPE_STRUCT) {
-                argsSize += sizeof(void*);
-            } else {
-                argsSize += type->size;
-            }
+        if(type->type == FFI_TYPE_STRUCT) {
+            argsSize += sizeof(void*);
+        } else {
+            argsSize += type->size;
+        }
     }
 
 

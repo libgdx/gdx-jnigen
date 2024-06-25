@@ -323,32 +323,38 @@ public class Manager {
             BlockComment getFFITypeNativeMethod = new BlockComment();
             ffiTypeClass.addOrphanComment(getFFITypeNativeMethod);
 
-            String nativeGetFFIMethodName = "getFFIType";
+            String nativeGetFFIMethodName = "getNativeType";
 
-            MethodDeclaration getFFITypeMethod = ffiTypeClass.addMethod("getFFITypeNative", Keyword.PRIVATE, Keyword.NATIVE, Keyword.STATIC);
+            MethodDeclaration getFFITypeMethod = ffiTypeClass.addMethod("getNativeType", Keyword.PRIVATE, Keyword.NATIVE, Keyword.STATIC);
             getFFITypeMethod.setBody(null).setType(long.class).addParameter(int.class, "id");
             StringBuilder ffiTypeNativeBody = new StringBuilder("JNI\n");
-            ffiTypeNativeBody.append("static ffi_type* ").append(nativeGetFFIMethodName).append("(int id) {\n");
+            ffiTypeNativeBody.append("static native_type* ").append(nativeGetFFIMethodName).append("(int id) {\n");
+            ffiTypeNativeBody.append("native_type* nativeType = (native_type*)malloc(sizeof(native_type));\n");
             ffiTypeNativeBody.append("switch(id) {\n");
             BlockStmt staticInit = ffiTypeClass.addStaticInitializer();
 
             // ptr and void
-            ffiTypeNativeBody.append("\tcase ").append(VOID_FFI_ID).append(":\n").append("\t\treturn &ffi_type_void;\n");
-            staticInit.addStatement("ffiIdMap.put(" + VOID_FFI_ID + ", CHandler.constructCTypeFromFFIType(\"void\", getFFITypeNative(" + VOID_FFI_ID + ")));");
-            ffiTypeNativeBody.append("\tcase ").append(POINTER_FFI_ID).append(":\n").append("\t\treturn &ffi_type_pointer;\n");
-            staticInit.addStatement("ffiIdMap.put(" + POINTER_FFI_ID + ", CHandler.constructCTypeFromFFIType(\"void*\", getFFITypeNative(" + POINTER_FFI_ID + ")));");
+            ffiTypeNativeBody.append("\tcase ").append(VOID_FFI_ID).append(":\n")
+                    .append("\t\t").append("nativeType->type = VOID_TYPE;").append("\n")
+                    .append("\t\treturn nativeType;\n");
+            staticInit.addStatement("ffiIdMap.put(" + VOID_FFI_ID + ", CHandler.constructCTypeFromNativeType(\"void\", getNativeType(" + VOID_FFI_ID + ")));");
+            ffiTypeNativeBody.append("\tcase ").append(POINTER_FFI_ID).append(":\n")
+                    .append("\t\t").append("nativeType->type = POINTER_TYPE;").append("\n")
+                    .append("\t\treturn nativeType;\n");
+            staticInit.addStatement("ffiIdMap.put(" + POINTER_FFI_ID + ", CHandler.constructCTypeFromNativeType(\"void*\", getNativeType(" + POINTER_FFI_ID + ")));");
 
             for (int i = 0; i < knownCTypes.size(); i++) {
                 String cType = knownCTypes.get(i);
-                staticInit.addStatement("ffiIdMap.put(" + i + ", CHandler.constructCTypeFromFFIType(\"" + cType + "\", getFFITypeNative(" + i + ")));");
+                staticInit.addStatement("ffiIdMap.put(" + i + ", CHandler.constructCTypeFromNativeType(\"" + cType + "\", getNativeType(" + i + ")));");
                 staticInit.addStatement("CHandler.registerCType(ffiIdMap.get(" + i + "));");
                 ffiTypeNativeBody.append("\tcase ").append(i).append(":\n");
-                ffiTypeNativeBody.append("\t\treturn GET_FFI_TYPE(").append(cType).append(");\n");
+                ffiTypeNativeBody.append("\t\tGET_NATIVE_TYPE(").append(cType).append(", nativeType);\n");
+                ffiTypeNativeBody.append("\t\treturn nativeType;\n");
             }
             for (int i = 0; i < orderedStackElements.size(); i++) {
                 int id = i + knownCTypes.size();
                 StackElementType stackElementType = orderedStackElements.get(i);
-                staticInit.addStatement("ffiIdMap.put(" + id + ", CHandler.constructStackElementCTypeFromFFIType(null, getFFITypeNative(" + id + ")));");
+                staticInit.addStatement("ffiIdMap.put(" + id + ", CHandler.constructStackElementCTypeFromNativeType(null, getNativeType(" + id + ")));");
                 ffiTypeNativeBody.append("\tcase ").append(id).append(":\n");
                 ffiTypeNativeBody.append(stackElementType.getFFITypeBody(nativeGetFFIMethodName));
             }

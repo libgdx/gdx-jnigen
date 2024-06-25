@@ -92,11 +92,15 @@ public class CHandler {
         }
     }
 
-    public static CTypeInfo constructStackElementCTypeFromFFIType(String name, long ffiType) {
+    public static native long convertNativeTypeToFFIType(long nativeType);
+
+    public static CTypeInfo constructStackElementCTypeFromNativeType(String name, long nativeType) {
+        long ffiType = convertNativeTypeToFFIType(nativeType);
         return new CTypeInfo(name, ffiType, CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType), true, CHandler.isVoid(ffiType));
     }
 
-    public static CTypeInfo constructCTypeFromFFIType(String name, long ffiType) {
+    public static CTypeInfo constructCTypeFromNativeType(String name, long nativeType) {
+        long ffiType = convertNativeTypeToFFIType(nativeType);
         return new CTypeInfo(name, ffiType, CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType), false, CHandler.isVoid(ffiType));
     }
 
