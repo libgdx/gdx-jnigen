@@ -16,8 +16,6 @@
 
 package com.badlogic.gdx.utils;
 
-import com.badlogic.gdx.jnigen.CHandler;
-
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;

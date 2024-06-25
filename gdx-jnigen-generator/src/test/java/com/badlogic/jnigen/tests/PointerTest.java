@@ -1,11 +1,10 @@
 package com.badlogic.jnigen.tests;
 
-import com.badlogic.gdx.jnigen.closure.ClosureObject;
-import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
-import com.badlogic.gdx.jnigen.pointer.EnumPointer;
-import com.badlogic.gdx.jnigen.pointer.FloatPointer;
-import com.badlogic.gdx.jnigen.pointer.PointerPointer;
-import com.badlogic.gdx.jnigen.pointer.VoidPointer;
+import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
+import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.PointerPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.jnigen.generated.TestData;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerArg;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerReturn;

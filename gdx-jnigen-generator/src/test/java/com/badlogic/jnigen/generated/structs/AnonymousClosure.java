@@ -1,16 +1,16 @@
 package com.badlogic.jnigen.generated.structs;
 
-import com.badlogic.gdx.jnigen.CHandler;
-import com.badlogic.gdx.jnigen.pointer.Struct;
-import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
+import com.badlogic.gdx.jnigen.runtime.CHandler;
+import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
+import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.jnigen.generated.FFITypes;
-import com.badlogic.gdx.jnigen.closure.ClosureObject;
-import com.badlogic.gdx.jnigen.closure.Closure;
-import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
-import com.badlogic.gdx.jnigen.c.CTypeInfo;
-import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
+import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
+import com.badlogic.gdx.jnigen.runtime.closure.Closure;
+import com.badlogic.gdx.jnigen.runtime.ffi.JavaTypeWrapper;
+import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;
+import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
 
-public final class AnonymousClosure extends Struct {
+public final class AnonymousClosure extends com.badlogic.gdx.jnigen.runtime.pointer.Struct {
 
     private final static int __size;
 
@@ -85,32 +85,32 @@ public final class AnonymousClosure extends Struct {
         }
     }
 
-    public interface someClosure extends Closure {
+    public interface someClosure extends com.badlogic.gdx.jnigen.runtime.closure.Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(-1), FFITypes.getCTypeInfo(3) };
+        com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] __ffi_cache = new com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] { FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(-1), FFITypes.getCTypeInfo(3) };
 
         int someClosure_call(CSizedIntPointer arg0, double arg1);
 
-        default CTypeInfo[] functionSignature() {
+        default com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+        default void invoke(com.badlogic.gdx.jnigen.runtime.ffi.JavaTypeWrapper[] parameters, com.badlogic.gdx.jnigen.runtime.ffi.JavaTypeWrapper returnType) {
             returnType.setValue(someClosure_call(new CSizedIntPointer(parameters[0].asLong(), false, "int"), (double) parameters[1].asDouble()));
         }
     }
 
-    public interface anotherClosure extends Closure {
+    public interface anotherClosure extends com.badlogic.gdx.jnigen.runtime.closure.Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(4), FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(3) };
+        com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] __ffi_cache = new com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] { FFITypes.getCTypeInfo(4), FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(3) };
 
         float anotherClosure_call(int arg0, double arg1);
 
-        default CTypeInfo[] functionSignature() {
+        default com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] functionSignature() {
             return __ffi_cache;
         }
 
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+        default void invoke(com.badlogic.gdx.jnigen.runtime.ffi.JavaTypeWrapper[] parameters, com.badlogic.gdx.jnigen.runtime.ffi.JavaTypeWrapper returnType) {
             returnType.setValue(anotherClosure_call((int) parameters[0].asLong(), (double) parameters[1].asDouble()));
         }
     }

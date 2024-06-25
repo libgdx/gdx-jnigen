@@ -1,7 +1,7 @@
 package com.badlogic.jnigen.tests;
 
-import com.badlogic.gdx.jnigen.closure.ClosureObject;
-import com.badlogic.gdx.jnigen.pointer.EnumPointer;
+import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
+import com.badlogic.gdx.jnigen.runtime.pointer.EnumPointer;
 import com.badlogic.jnigen.generated.TestData;
 import com.badlogic.jnigen.generated.enums.TestEnum;
 import com.badlogic.jnigen.generated.enums.TestEnum.TestEnumPointer;

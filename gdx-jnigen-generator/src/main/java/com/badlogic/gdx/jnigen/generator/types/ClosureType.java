@@ -1,10 +1,6 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
-import com.badlogic.gdx.jnigen.CHandler;
-import com.badlogic.gdx.jnigen.c.CTypeInfo;
-import com.badlogic.gdx.jnigen.closure.Closure;
-import com.badlogic.gdx.jnigen.closure.ClosureObject;
-import com.badlogic.gdx.jnigen.ffi.JavaTypeWrapper;
+import com.badlogic.gdx.jnigen.generator.ClassNameConstants;
 import com.badlogic.gdx.jnigen.generator.Manager;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
@@ -40,7 +36,7 @@ public class ClosureType implements MappedType, WritableClass {
     public ClassOrInterfaceDeclaration generateClass() {
         return new ClassOrInterfaceDeclaration()
                 .setInterface(true)
-                .addExtendedType(Closure.class)
+                .addExtendedType(ClassNameConstants.CLOSURE_CLASS)
                 .setModifier(Keyword.PUBLIC, true)
                 .setName(signature.getName());
     }
@@ -54,16 +50,16 @@ public class ClosureType implements MappedType, WritableClass {
             throw new IllegalArgumentException("Unions are not allowed to be passed via stack from/to a closure, failing closure: " + name);
         }
 
-        cu.addImport(Closure.class);
-        cu.addImport(JavaTypeWrapper.class);
-        cu.addImport(CTypeInfo.class);
+        cu.addImport(ClassNameConstants.CLOSURE_CLASS);
+        cu.addImport(ClassNameConstants.JAVATYPEWRAPPER_CLASS);
+        cu.addImport(ClassNameConstants.CTYPEINFO_CLASS);
 
         NodeList<Expression> arrayInitializerExpr = new NodeList<>();
         ArrayCreationExpr arrayCreationExpr = new ArrayCreationExpr();
-        arrayCreationExpr.setElementType(CTypeInfo.class);
+        arrayCreationExpr.setElementType(ClassNameConstants.CTYPEINFO_CLASS);
         arrayCreationExpr.setInitializer(new ArrayInitializerExpr(arrayInitializerExpr));
 
-        closureClass.addFieldWithInitializer(CTypeInfo[].class, "__ffi_cache", arrayCreationExpr);
+        closureClass.addFieldWithInitializer(ClassNameConstants.CTYPEINFO_CLASS + "[]", "__ffi_cache", arrayCreationExpr);
 
         MethodDeclaration callMethod = closureClass.addMethod(name + "_call");
         callMethod.setBody(null);
@@ -84,12 +80,12 @@ public class ClosureType implements MappedType, WritableClass {
         arrayInitializerExpr.add(0, getTypeID);
 
         closureClass.addMethod("functionSignature", Keyword.DEFAULT)
-                .setType(CTypeInfo[].class)
+                .setType(ClassNameConstants.CTYPEINFO_CLASS + "[]")
                 .createBody().addStatement("return __ffi_cache;");
 
         MethodDeclaration invokeMethod = closureClass.addMethod("invoke", Keyword.DEFAULT);
-        invokeMethod.addParameter(JavaTypeWrapper[].class, "parameters");
-        invokeMethod.addParameter(JavaTypeWrapper.class, "returnType");
+        invokeMethod.addParameter(ClassNameConstants.JAVATYPEWRAPPER_CLASS + "[]", "parameters");
+        invokeMethod.addParameter(ClassNameConstants.JAVATYPEWRAPPER_CLASS, "returnType");
         BlockStmt invokeBody = new BlockStmt();
         MethodCallExpr callExpr = new MethodCallExpr(callMethod.getNameAsString());
         for (int i = 0; i < arguments.length; i++) {
@@ -142,8 +138,8 @@ public class ClosureType implements MappedType, WritableClass {
 
     @Override
     public void importType(CompilationUnit cu) {
-        cu.addImport(ClosureObject.class);
-        cu.addImport(CHandler.class);
+        cu.addImport(ClassNameConstants.CLOSUREOBJECT_CLASS);
+        cu.addImport(ClassNameConstants.CHANDLER_CLASS);
         if (cu.getClassByName(parent.abstractType()).isPresent())
             return;
         cu.addImport(classFile() + "." + signature.getName());

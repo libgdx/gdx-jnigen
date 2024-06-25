@@ -1,9 +1,9 @@
 package com.badlogic.jnigen.tests;
 
-import com.badlogic.gdx.jnigen.CHandler;
-import com.badlogic.gdx.jnigen.c.CXXException;
-import com.badlogic.gdx.jnigen.closure.ClosureObject;
-import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
+import com.badlogic.gdx.jnigen.runtime.CHandler;
+import com.badlogic.gdx.jnigen.runtime.c.CXXException;
+import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
+import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
 import com.badlogic.jnigen.generated.TestData;
 import org.junit.jupiter.api.Test;
 

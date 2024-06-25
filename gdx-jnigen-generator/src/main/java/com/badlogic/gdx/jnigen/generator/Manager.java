@@ -1,7 +1,5 @@
 package com.badlogic.gdx.jnigen.generator;
 
-import com.badlogic.gdx.jnigen.CHandler;
-import com.badlogic.gdx.jnigen.c.CTypeInfo;
 import com.badlogic.gdx.jnigen.generator.types.ClosureType;
 import com.badlogic.gdx.jnigen.generator.types.EnumType;
 import com.badlogic.gdx.jnigen.generator.types.FunctionType;
@@ -308,7 +306,8 @@ public class Manager {
 
             // FFI Type test
             CompilationUnit ffiTypeCU = new CompilationUnit(basePackage);
-            ffiTypeCU.addImport(CHandler.class);
+            ffiTypeCU.addImport(ClassNameConstants.CHANDLER_CLASS);
+            ffiTypeCU.addImport(ClassNameConstants.CTYPEINFO_CLASS);
             ClassOrInterfaceDeclaration ffiTypeClass = ffiTypeCU.addClass("FFITypes", Keyword.PUBLIC);
             addJNIComment(ffiTypeClass, "#include <jnigen.h>", "#include <" + parsedCHeader + ">");
             ffiTypeClass.addMethod("init", Keyword.PUBLIC, Keyword.STATIC);
@@ -317,7 +316,7 @@ public class Manager {
             ffiTypeClass.addFieldWithInitializer("HashMap<Integer, CTypeInfo>", "ffiIdMap", StaticJavaParser.parseExpression("new HashMap<>()"), Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
 
             ffiTypeClass.addMethod("getCTypeInfo", Keyword.PUBLIC, Keyword.STATIC)
-                    .setType(CTypeInfo.class)
+                    .setType(ClassNameConstants.CTYPEINFO_CLASS)
                     .addParameter(int.class, "id")
                     .createBody().addStatement("return ffiIdMap.get(id);");
 

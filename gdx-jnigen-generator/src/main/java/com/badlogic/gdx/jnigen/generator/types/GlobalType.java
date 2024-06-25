@@ -1,7 +1,6 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
-import com.badlogic.gdx.jnigen.CHandler;
-import com.badlogic.gdx.jnigen.c.CXXException;
+import com.badlogic.gdx.jnigen.generator.ClassNameConstants;
 import com.badlogic.gdx.jnigen.generator.Manager;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
@@ -38,7 +37,7 @@ public class GlobalType implements MappedType {
 
     public void write(CompilationUnit cu, HashMap<MethodDeclaration, String> patchNativeMethods) {
         ClassOrInterfaceDeclaration global = cu.addClass(globalName, Keyword.PUBLIC, Keyword.FINAL);
-        cu.addImport(CXXException.class);
+        cu.addImport(ClassNameConstants.CXXEXCEPTION_CLASS);
         cu.addImport(IllegalArgumentException.class);
         global.addStaticInitializer().addStatement("init(IllegalArgumentException.class, CXXException.class);");
         global.addOrphanComment(new BlockComment("JNI\n#include <jnigen.h>\n"

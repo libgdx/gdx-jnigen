@@ -1,10 +1,8 @@
 package com.badlogic.jnigen.tests;
 
-import com.badlogic.gdx.jnigen.CHandler;
-import com.badlogic.gdx.jnigen.closure.ClosureObject;
-import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
-import com.badlogic.gdx.jnigen.pointer.FloatPointer;
-import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
+import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
+import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer;
 import com.badlogic.jnigen.generated.TestData;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructReturn;
 import com.badlogic.jnigen.generated.structs.SpecialStruct;

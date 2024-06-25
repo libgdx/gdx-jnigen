@@ -1,7 +1,7 @@
 package com.badlogic.jnigen.tests;
 
-import com.badlogic.gdx.jnigen.gc.GCHandler;
-import com.badlogic.gdx.jnigen.pointer.Pointing;
+import com.badlogic.gdx.jnigen.runtime.gc.GCHandler;
+import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
