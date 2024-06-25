@@ -5,6 +5,7 @@ import com.badlogic.gdx.jnigen.runtime.c.CXXException;
 import com.badlogic.gdx.jnigen.runtime.closure.Closure;
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.runtime.ffi.ClosureInfo;
+import com.badlogic.gdx.utils.SharedLibraryLoader;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 public class CHandler {
 
     static {
+        new SharedLibraryLoader().load("jnigen-runtime");
         try {
             boolean res = init(CHandler.class.getDeclaredMethod("dispatchCallback", ClosureInfo.class, ByteBuffer.class),
                     CHandler.class.getDeclaredMethod("getExceptionString", Throwable.class));
