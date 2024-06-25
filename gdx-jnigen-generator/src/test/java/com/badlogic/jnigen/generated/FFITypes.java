@@ -1,8 +1,8 @@
 package com.badlogic.jnigen.generated;
 
-import com.badlogic.gdx.jnigen.CHandler;
+import com.badlogic.gdx.jnigen.runtime.CHandler;
+import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;
 import java.util.HashMap;
-import com.badlogic.gdx.jnigen.c.CTypeInfo;
 
 public class FFITypes {
 
@@ -15,7 +15,7 @@ public class FFITypes {
 
     private final static HashMap<Integer, CTypeInfo> ffiIdMap = new HashMap<>();
 
-    public static CTypeInfo getCTypeInfo(int id) {
+    public static com.badlogic.gdx.jnigen.runtime.c.CTypeInfo getCTypeInfo(int id) {
         return ffiIdMap.get(id);
     }
 

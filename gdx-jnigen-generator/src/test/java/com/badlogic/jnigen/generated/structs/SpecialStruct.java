@@ -1,13 +1,13 @@
 package com.badlogic.jnigen.generated.structs;
 
-import com.badlogic.gdx.jnigen.CHandler;
-import com.badlogic.gdx.jnigen.pointer.Struct;
-import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
+import com.badlogic.gdx.jnigen.runtime.CHandler;
+import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
+import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.jnigen.generated.FFITypes;
-import com.badlogic.gdx.jnigen.pointer.FloatPointer;
-import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
 
-public final class SpecialStruct extends Struct {
+public final class SpecialStruct extends com.badlogic.gdx.jnigen.runtime.pointer.Struct {
 
     private final static int __size;
 

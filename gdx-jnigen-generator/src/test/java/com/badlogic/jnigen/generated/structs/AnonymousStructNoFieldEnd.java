@@ -1,11 +1,11 @@
 package com.badlogic.jnigen.generated.structs;
 
-import com.badlogic.gdx.jnigen.CHandler;
-import com.badlogic.gdx.jnigen.pointer.Struct;
-import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
+import com.badlogic.gdx.jnigen.runtime.CHandler;
+import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
+import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.jnigen.generated.FFITypes;
 
-public final class AnonymousStructNoFieldEnd extends Struct {
+public final class AnonymousStructNoFieldEnd extends com.badlogic.gdx.jnigen.runtime.pointer.Struct {
 
     private final static int __size;
 

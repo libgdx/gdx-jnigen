@@ -1,8 +1,7 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
-import com.badlogic.gdx.jnigen.c.CEnum;
+import com.badlogic.gdx.jnigen.generator.ClassNameConstants;
 import com.badlogic.gdx.jnigen.generator.Manager;
-import com.badlogic.gdx.jnigen.pointer.EnumPointer;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Modifier.Keyword;
@@ -61,9 +60,9 @@ public class EnumType implements MappedType {
     }
 
     public void write(CompilationUnit cu) {
-        cu.addImport(EnumPointer.class);
+        cu.addImport(ClassNameConstants.ENUMPOINTER_CLASS);
         EnumDeclaration declaration = cu.addEnum(javaName);
-        declaration.addImplementedType(CEnum.class);
+        declaration.addImplementedType(ClassNameConstants.CENUM_CLASS);
         constants.entrySet().stream()
                 .sorted(Comparator.comparingInt(Entry::getKey))
                 .forEach(stringIntegerEntry ->

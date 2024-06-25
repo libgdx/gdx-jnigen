@@ -1,6 +1,6 @@
 package com.badlogic.jnigen.tests;
 
-import com.badlogic.gdx.jnigen.util.Utils;
+import com.badlogic.gdx.jnigen.runtime.util.Utils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -1,10 +1,10 @@
 package com.badlogic.jnigen.tests;
 
-import com.badlogic.gdx.jnigen.CHandler;
-import com.badlogic.gdx.jnigen.c.CTypeInfo;
-import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
-import com.badlogic.gdx.jnigen.pointer.DoublePointer;
-import com.badlogic.gdx.jnigen.pointer.FloatPointer;
+import com.badlogic.gdx.jnigen.runtime.CHandler;
+import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;
+import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.DoublePointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

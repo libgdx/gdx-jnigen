@@ -1,12 +1,12 @@
 package com.badlogic.jnigen.generated.structs;
 
-import com.badlogic.gdx.jnigen.CHandler;
-import com.badlogic.gdx.jnigen.pointer.Struct;
-import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
+import com.badlogic.gdx.jnigen.runtime.CHandler;
+import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
+import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.jnigen.generated.structs.AnonymousStructField.inner;
 
-public final class AnonymousStructField extends Struct {
+public final class AnonymousStructField extends com.badlogic.gdx.jnigen.runtime.pointer.Struct {
 
     private final static int __size;
 
@@ -81,7 +81,7 @@ public final class AnonymousStructField extends Struct {
         }
     }
 
-    public final static class inner extends Struct {
+    public final static class inner extends com.badlogic.gdx.jnigen.runtime.pointer.Struct {
 
         private final static int __size;
 

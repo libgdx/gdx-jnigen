@@ -1,18 +1,11 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
+import com.badlogic.gdx.jnigen.generator.ClassNameConstants;
 import com.badlogic.gdx.jnigen.generator.Manager;
-import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
-import com.badlogic.gdx.jnigen.pointer.DoublePointer;
-import com.badlogic.gdx.jnigen.pointer.EnumPointer;
-import com.badlogic.gdx.jnigen.pointer.FloatPointer;
-import com.badlogic.gdx.jnigen.pointer.PointerPointer;
-import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
-import com.badlogic.gdx.jnigen.pointer.VoidPointer;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
@@ -62,17 +55,17 @@ public class PointerType implements MappedType {
         if (isStackElementPointer())
             pointingTo.getMappedType().importType(cu);
         else if (isFloatPointer())
-            cu.addImport(FloatPointer.class);
+            cu.addImport(ClassNameConstants.FLOATPOINTER_CLASS);
         else if (isDoublePointer())
-            cu.addImport(DoublePointer.class);
+            cu.addImport(ClassNameConstants.DOUBLEPOINTER_CLASS);
         else if (isIntPointer())
-            cu.addImport(CSizedIntPointer.class);
+            cu.addImport(ClassNameConstants.CSIZEDINTPOINTER_CLASS);
         else if (isVoidPointer())
-            cu.addImport(VoidPointer.class);
+            cu.addImport(ClassNameConstants.VOIDPOINTER_CLASS);
         else if (isEnumPointer())
             pointingTo.getMappedType().importType(cu);
         else if (isPointerPointer())
-            cu.addImport(PointerPointer.class);
+            cu.addImport(ClassNameConstants.POINTERPOINTER_CLASS);
         else
             throw new IllegalArgumentException("Type " + pointingTo.getTypeKind() + " can't be pointerized");
         pointingTo.getMappedType().importType(cu);
@@ -91,19 +84,19 @@ public class PointerType implements MappedType {
     @Override
     public String abstractType() {
         if (isIntPointer())
-            return CSizedIntPointer.class.getSimpleName();
+            return "CSizedIntPointer";
         if (isFloatPointer())
-            return FloatPointer.class.getSimpleName();
+            return "FloatPointer";
         if (isDoublePointer())
-            return DoublePointer.class.getSimpleName();
+            return "DoublePointer";
         if (isVoidPointer())
-            return VoidPointer.class.getSimpleName();
+            return "VoidPointer";
         if (isEnumPointer())
             return pointingTo.getMappedType().abstractType() + "." + pointingTo.getMappedType().abstractType() + "Pointer";
         if (isStackElementPointer())
             return pointingTo.getMappedType().abstractType() + "." + pointingTo.getMappedType().abstractType() + "Pointer";
         if (isPointerPointer())
-            return PointerPointer.class.getSimpleName() + "<" + pointingTo.getMappedType().abstractType() + ">";
+            return "PointerPointer<" + pointingTo.getMappedType().abstractType() + ">";
 
         throw new IllegalArgumentException();
     }
@@ -111,7 +104,7 @@ public class PointerType implements MappedType {
     @Override
     public String instantiationType() {
         if (isPointerPointer())
-            return PointerPointer.class.getSimpleName() + "<>";
+            return "PointerPointer<>";
         return MappedType.super.instantiationType();
     }
 

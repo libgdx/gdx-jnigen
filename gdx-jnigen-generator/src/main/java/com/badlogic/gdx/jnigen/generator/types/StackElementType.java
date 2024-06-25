@@ -1,10 +1,7 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
-import com.badlogic.gdx.jnigen.CHandler;
+import com.badlogic.gdx.jnigen.generator.ClassNameConstants;
 import com.badlogic.gdx.jnigen.generator.Manager;
-import com.badlogic.gdx.jnigen.pointer.Struct;
-import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
-import com.badlogic.gdx.jnigen.pointer.Union;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -69,11 +66,11 @@ public class StackElementType implements MappedType, WritableClass {
     public void write(CompilationUnit compilationUnit, ClassOrInterfaceDeclaration structClass) {
         String structPointerRef = javaTypeName + "." + pointerName;
 
-        compilationUnit.addImport(CHandler.class);
-        compilationUnit.addImport(isStruct ? Struct.class : Union.class);
-        compilationUnit.addImport(StackElementPointer.class);
+        compilationUnit.addImport(ClassNameConstants.CHANDLER_CLASS);
+        compilationUnit.addImport(isStruct ? ClassNameConstants.STRUCT_CLASS : ClassNameConstants.UNION_CLASS);
+        compilationUnit.addImport(ClassNameConstants.STACKELEMENTPOINTER_CLASS);
 
-        structClass.addExtendedType(isStruct ? Struct.class : Union.class);
+        structClass.addExtendedType(isStruct ? ClassNameConstants.STRUCT_CLASS : ClassNameConstants.UNION_CLASS);
         structClass.addField(int.class, "__size", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
         structClass.addField(long.class, "__ffi_type", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
 
