@@ -13,13 +13,13 @@ dependencies {
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly fileTree(dir: file("build/libs/"), include: '*natives-desktop.jar')
-    testImplementation project(":gdx-jnigen-runtime")
+    testImplementation project(path: ":gdx-jnigen-runtime")
+    testImplementation project(path: ":gdx-jnigen-runtime", configuration: "archives")
 }
 
 
 task copyTestFiles(type: Copy) {
     from("src/test/resources/")
-    from(project(":gdx-jnigen-runtime").file("src/main/resources/"))
     into("jni/")
 }
 
@@ -37,15 +37,8 @@ jnigen {
     }
 
     all {
-        def name = it.os.name().toLowerCase()
-        def arch = it.architecture.name().toLowerCase() + (it.architecture == x86 && it.bitness != x32 ? "_" : "") + it.bitness.toSuffix()
-        def combined = name + "_" + arch
-
-        headerDirs += [project(":gdx-jnigen-runtime").file("build/libffi-build/${combined}/include/"),
-                       file("src/test/resources/").absolutePath]
         cFlags += " -std=c11 -fexceptions "
         cppFlags += " -std=c++11 -fexceptions "
-        libraries += " ${project(":gdx-jnigen-runtime").file("build/libffi-build/${combined}/lib/libffi.a").absolutePath} "
     }
 
     generator {
@@ -55,20 +48,21 @@ jnigen {
         options = ["-I" + file("src/test/resources/").absolutePath]
     }
 
-    add(Linux)
+    add(Linux, x32, x86)
     add(Linux, x32, ARM)
-    add(Linux, x64)
-    add(Linux, x64, ARM)
     add(Linux, x32, RISCV)
+    add(Linux, x64, x86)
+    add(Linux, x64, ARM)
     add(Linux, x64, RISCV)
     add(Linux, x64, LOONGARCH)
-    add(MacOsX, x64)
+    add(MacOsX, x64, x86)
     add(MacOsX, x64, ARM)
-    add(Windows)
-    add(Windows, x64)
+    add(Windows, x32, x86)
     add(Windows, x32, ARM)
+    add(Windows, x64, x86)
     add(Windows, x64, ARM)
     add(Android)
+    add(IOS)
 }
 
 tasks.named("jnigen").get().dependsOn(compileTestJava)

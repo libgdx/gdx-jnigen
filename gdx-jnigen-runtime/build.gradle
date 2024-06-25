@@ -164,6 +164,53 @@ task build_ios {
     }
 }
 
+task copyCFiles(type: Copy) {
+    from("src/main/resources/")
+    into("jni/")
+}
+
+tasks.named("jnigen").get().dependsOn(copyCFiles)
+
+jnigen {
+    sharedLibName = "jnigen-runtime"
+
+    all {
+        def name = it.os.name().toLowerCase()
+        def arch = it.architecture.name().toLowerCase() + (it.architecture == x86 && it.bitness != x32 ? "_" : "") + it.bitness.toSuffix()
+        def combined = name + "_" + arch
+
+        headerDirs += [file("build/libffi-build/${combined}/include/")]
+        cFlags += " -std=c11 -fexceptions "
+        cppFlags += " -std=c++11 -fexceptions "
+        libraries += " ${file("build/libffi-build/${combined}/lib/libffi.a").absolutePath} "
+    }
+
+    add(Linux, x32, x86)
+    add(Linux, x32, ARM)
+    add(Linux, x32, RISCV)
+    add(Linux, x64, x86)
+    add(Linux, x64, ARM)
+    add(Linux, x64, RISCV)
+    add(Linux, x64, LOONGARCH)
+    add(MacOsX, x64, x86)
+    add(MacOsX, x64, ARM)
+    add(Windows, x32, x86)
+    add(Windows, x32, ARM)
+    add(Windows, x64, x86)
+    add(Windows, x64, ARM)
+    add(Android)
+    add(IOS)
+}
+
+artifacts {
+    archives jnigenJarNativesDesktop
+    ['arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'].each { id ->
+        archives "jnigenJarNativesAndroid${id}" { }
+    }
+
+    archives jnigenJarNativesIOS
+}
+
 eclipse {
     project {
         name = "gdx-jnigen-runtime"
