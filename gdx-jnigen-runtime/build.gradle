@@ -5,6 +5,10 @@ plugins {
     id "de.undercouch.download" version "5.0.1"
 }
 
+dependencies {
+    api project(":gdx-jnigen-loader")
+}
+
 tasks.register("fetchLibFFI", Download) {
     src 'https://github.com/libffi/libffi/releases/download/v3.4.4/libffi-3.4.4.tar.gz'
     dest 'build/libFFI.tar.gz'
