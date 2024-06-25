@@ -63,11 +63,11 @@ jnigen {
         def combined = name + "_" + arch
 
         headerDirs += [project(":gdx-jnigen-loader").file("src/main/resources/").absolutePath,
-                       project(":gdx-jnigen-loader").file("build/${combined}/include/"),
+                       project(":gdx-jnigen-loader").file("build/libffi-build/${combined}/include/"),
                        file("src/test/resources/").absolutePath]
         cFlags += " -std=c11 -fexceptions "
         cppFlags += " -std=c++11 -fexceptions "
-        libraries += " ${project(":gdx-jnigen-loader").file("build/${combined}/lib/libffi.a").absolutePath} "
+        libraries += " ${project(":gdx-jnigen-loader").file("build/libffi-build/${combined}/lib/libffi.a").absolutePath} "
     }
 
     add(Linux)

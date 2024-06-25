@@ -63,6 +63,8 @@ def createBuildTask(String platformName, String architecture, String specialFlag
         dependsOn("extractLibFFI")
         doLast {
             def tmpDir = Files.createTempDirectory(platformName + "_" + architecture).resolve("libFFI")
+            def outDir = file("build/libffi-build/" + platformName + "_" + architecture)
+            outDir.mkdirs()
             copy {
                 from 'build/libFFI'
                 into tmpDir
@@ -72,7 +74,7 @@ def createBuildTask(String platformName, String architecture, String specialFlag
                 commandLine = "./configure"
                 environment "CFLAGS", specialFlags + " -fexceptions"
                 environment "LDFLAGS", specialFlags + " -fexceptions"
-                args = ["--prefix=${new File(buildDir,  platformName + "_" + architecture)}"] + specialArgs
+                args = ["--prefix=${outDir.absolutePath}"] + specialArgs
             }
             exec {
                 workingDir = tmpDir.toFile()
