@@ -9,20 +9,6 @@
 
 #include <CHandler.h>
 
-
-#define ATTACH_ENV()                                                    \
-    bool _hadToAttach = false;                                          \
-    JNIEnv* env;                                                        \
-    if (gJVM->GetEnv((void**)&env, JNI_VERSION_1_6) == JNI_EDETACHED) { \
-        gJVM->AttachCurrentThread((void**)&env, NULL);                  \
-        _hadToAttach = true;                                            \
-    }
-
-#define DETACH_ENV()                 \
-    if (_hadToAttach) {              \
-        gJVM->DetachCurrentThread(); \
-    }
-
 #ifdef __BYTE_ORDER__
     #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
         #define ENDIAN_INTCPY(dest, dest_size, src, src_size) memcpy(dest, src, dest_size > src_size ? src_size : dest_size)
@@ -130,12 +116,12 @@ void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
     if(exc != NULL) {
         env->ExceptionClear();
         if (ignoreCXXExceptionMessage)
-            throw JavaExceptionMarker(exc, "Java-Side exception");
+            throw JavaExceptionMarker(gJVM, exc, "Java-Side exception");
         jstring message = (jstring)env->CallStaticObjectMethod(globalClass, getExceptionStringMethod, exc);
         const char* cStringMessage = env->GetStringUTFChars(message, NULL);
         std::string cxxMessage(cStringMessage);
         env->ReleaseStringUTFChars(message, cStringMessage);
-        throw JavaExceptionMarker(exc, cxxMessage);
+        throw JavaExceptionMarker(gJVM, exc, cxxMessage);
     }
 
     ffi_type* rtype = cif->rtype;
@@ -144,18 +130,6 @@ void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
     } else {
         ENDIAN_INTCPY(result, rtype->size, &ret, sizeof(jlong));
     }
-    DETACH_ENV()
-}
-
-JavaExceptionMarker::JavaExceptionMarker(jthrowable exc, const std::string& message) : std::runtime_error(message) {
-    ATTACH_ENV() // TODO: We could save this by doing this in the caller, but that seems overoptimization?
-    javaExc = (jthrowable)env->NewGlobalRef(exc);
-    DETACH_ENV()
-}
-
-JavaExceptionMarker::~JavaExceptionMarker() _NOEXCEPT {
-    ATTACH_ENV() // TODO: Figure out, whether this is an issue during full-crash
-    env->DeleteGlobalRef(javaExc);
     DETACH_ENV()
 }
 
