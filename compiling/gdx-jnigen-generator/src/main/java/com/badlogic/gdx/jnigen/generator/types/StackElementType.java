@@ -220,31 +220,23 @@ public class StackElementType implements MappedType, WritableClass {
         }
 
         StringBuilder generateFFIMethodBody = new StringBuilder();
-        generateFFIMethodBody.append("\t{\n\t\tffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));\n");
-        generateFFIMethodBody.append("\t\ttype->type = FFI_TYPE_STRUCT;\n");
-        generateFFIMethodBody.append("\t\ttype->elements = (ffi_type**)malloc(sizeof(ffi_type*) * ").append(unwrappedFields.size() + 1).append(");\n");
+        if (isStruct())  {
+            generateFFIMethodBody.append("\t\tnativeType->type = STRUCT_TYPE;\n");
+        } else {
+            generateFFIMethodBody.append("\t\tnativeType->type = UNION_TYPE;\n");
+        }
+        generateFFIMethodBody.append("\t\tnativeType->field_count = ").append(unwrappedFields.size()).append(";\n");
+        generateFFIMethodBody.append("\t\tnativeType->fields = (native_type**)malloc(sizeof(native_type*) * ").append(unwrappedFields.size()).append(");\n");
 
         for (int i = 0; i < unwrappedFields.size(); i++) {
             NamedType field = unwrappedFields.get(i);
-            if (field.getDefinition().getTypeKind() == TypeKind.POINTER || field.getDefinition().getTypeKind() == TypeKind.CLOSURE) {
-                generateFFIMethodBody.append("\t\ttype->elements[").append(i).append("] = &ffi_type_pointer;\n");
-            } else if (field.getDefinition().getTypeKind() == TypeKind.STACK_ELEMENT) {
-                int fieldStructID = field.getDefinition().getMappedType().typeID();
-                generateFFIMethodBody.append("\t\ttype->elements[").append(i).append("] = ")
-                        .append(ffiResolveFunctionName).append("(")
-                        .append(fieldStructID)
-                        .append(");\n");
-            } else if (field.getDefinition().getTypeKind() == TypeKind.ENUM) {
-                generateFFIMethodBody.append("\t\ttype->elements[").append(i).append("] = GET_FFI_TYPE(int);\n");
-            } else {
-                generateFFIMethodBody.append("\t\ttype->elements[").append(i).append("] = GET_FFI_TYPE(")
-                        .append(field.getDefinition().getTypeName())
-                        .append(");\n");
-            }
+            int fieldStructID = field.getDefinition().getMappedType().typeID();
+            generateFFIMethodBody.append("\t\tnativeType->fields[").append(i).append("] = ")
+                    .append(ffiResolveFunctionName).append("(")
+                    .append(fieldStructID)
+                    .append(");\n");
         }
-        generateFFIMethodBody.append("\t\ttype->elements[").append(unwrappedFields.size()).append("] = NULL;\n");
-        generateFFIMethodBody.append("\t\tcalculateAlignmentAndOffset(type, ").append(isStruct()).append(");\n");
-        generateFFIMethodBody.append("\t\treturn type;\n\t}\n");
+        generateFFIMethodBody.append("\t\treturn nativeType;\n");
 
         return generateFFIMethodBody.toString();
     }
