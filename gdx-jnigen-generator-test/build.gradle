@@ -14,7 +14,6 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly fileTree(dir: file("build/libs/"), include: '*natives-desktop.jar')
     testImplementation project(":gdx-jnigen-runtime")
-    testImplementation project(":gdx-jnigen-loader")
 }
 
 
