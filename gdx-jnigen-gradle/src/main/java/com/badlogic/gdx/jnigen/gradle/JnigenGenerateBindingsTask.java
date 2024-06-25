@@ -1,7 +1,6 @@
 package com.badlogic.gdx.jnigen.gradle;
 
 import com.badlogic.gdx.jnigen.generator.Generator;
-import com.badlogic.gdx.jnigen.util.Utils;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 

@@ -16,6 +16,9 @@
 
 package com.badlogic.gdx.utils;
 
+import com.badlogic.gdx.jnigen.commons.Architecture;
+import com.badlogic.gdx.jnigen.commons.Os;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;

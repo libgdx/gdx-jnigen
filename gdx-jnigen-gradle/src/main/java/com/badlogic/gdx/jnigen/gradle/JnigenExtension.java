@@ -19,8 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.badlogic.gdx.jnigen.BuildTarget;
-import com.badlogic.gdx.utils.Architecture;
-import com.badlogic.gdx.utils.Os;
+import com.badlogic.gdx.jnigen.commons.Architecture;
+import com.badlogic.gdx.jnigen.commons.Os;
 
 /**
  * @author Desu

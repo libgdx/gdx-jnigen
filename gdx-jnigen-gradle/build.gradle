@@ -6,7 +6,6 @@ dependencies {
     implementation project(":gdx-jnigen")
     implementation gradleApi()
     implementation project(":gdx-jnigen-generator")
-    implementation project(':gdx-jnigen-loader')
 }
 
 gradlePlugin {
