@@ -1,0 +1,170 @@
+import java.nio.file.Files
+
+
+plugins {
+    id "de.undercouch.download" version "5.0.1"
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.register("fetchLibFFI", Download) {
+    src 'https://github.com/libffi/libffi/releases/download/v3.4.4/libffi-3.4.4.tar.gz'
+    dest 'build/libFFI.tar.gz'
+    onlyIfModified true
+    useETag "all"
+}
+
+tasks.register("extractLibFFI", Copy) {
+    doFirst {
+        delete 'build/libFFI/'
+        mkdir 'build/libFFI/'
+    }
+    dependsOn 'fetchLibFFI'
+    inputs.file('build/libFFI.tar.gz')
+    outputs.dir('build/libFFI/')
+    from tarTree(resources.gzip('build/libFFI.tar.gz'))
+    into 'build/libFFI/'
+    eachFile { file ->
+        file.path = file.relativePath.segments[1..-1].join('/')
+    }
+}
+
+task copyIOSFiles {
+    inputs.dir("build/libFFI")
+    outputs.dir("build/libFFI-iOS")
+    dependsOn("extractLibFFI")
+    doLast {
+        def tmpDir = Files.createTempDirectory("ios_files").resolve("libFFI")
+        copy {
+            from 'build/libFFI'
+            into tmpDir
+        }
+        exec {
+            workingDir = tmpDir
+            commandLine = "python3"
+            args = ["generate-darwin-source-and-headers.py", "--only-ios"]
+        }
+
+        copy {
+            from tmpDir.toFile().absolutePath + '/darwin_common/src/'
+            from tmpDir.toFile().absolutePath + '/darwin_ios/src/'
+            into 'build/libFFI-iOS'
+        }
+        copy {
+            from tmpDir.toFile().absolutePath + '/darwin_common/include/'
+            from tmpDir.toFile().absolutePath + '/darwin_ios/include/'
+            into 'build/libFFI-iOS/include'
+        }
+    }
+}
+
+def createBuildTask(String platformName, String architecture, String specialFlags = "", List<String> specialArgs = []) {
+    task("build_${platformName}_${architecture}") {
+        dependsOn("extractLibFFI")
+        doLast {
+            def tmpDir = Files.createTempDirectory(platformName + "_" + architecture).resolve("libFFI")
+            def outDir = file("build/libffi-build/" + platformName + "_" + architecture)
+            outDir.mkdirs()
+            copy {
+                from 'build/libFFI'
+                into tmpDir
+            }
+            exec {
+                workingDir = tmpDir.toFile()
+                commandLine = "./configure"
+                environment "CFLAGS", specialFlags + " -fexceptions"
+                environment "LDFLAGS", specialFlags + " -fexceptions"
+                args = ["--prefix=${outDir.absolutePath}"] + specialArgs
+            }
+            exec {
+                workingDir = tmpDir.toFile()
+                commandLine = "make"
+                args = ["-j${Runtime.getRuntime().availableProcessors()}"]
+            }
+            exec {
+                workingDir = tmpDir.toFile()
+                commandLine = "make"
+                args = ["install"]
+            }
+            delete tmpDir
+        }
+    }
+}
+
+task build_mac {
+    dependsOn createBuildTask("macosx", "arm64", "-arch arm64", ["--host=arm64-apple-darwin"])
+    dependsOn createBuildTask("macosx", "x86_64", "-arch x86_64", ["--host=x86_64-apple-darwin"])
+}
+
+task build_linux {
+    dependsOn createBuildTask("linux", "x86", "-fPIC", ["--host=i686-linux-gnu"])
+    dependsOn createBuildTask("linux", "x86_64", "-fPIC", ["--host=x86_64-linux-gnu"])
+    dependsOn createBuildTask("linux", "arm", "-fPIC", ["--host=arm-linux-gnueabihf"])
+    dependsOn createBuildTask("linux", "arm64", "-fPIC", ["--host=aarch64-linux-gnu"])
+}
+
+task build_windows {
+    dependsOn createBuildTask("windows", "x86", "", ["--host=i686-w64-mingw32"])
+    dependsOn createBuildTask("windows", "x86_64", "", ["--host=x86_64-w64-mingw32"])
+    dependsOn createBuildTask("windows", "arm", "", ["--host=armv7-w64-mingw32"])
+    dependsOn createBuildTask("windows", "arm64", "", ["--host=aarch64-w64-mingw32"])
+}
+
+task build_ios {
+    dependsOn("copyIOSFiles")
+    doLast {
+        def srcDir = file("build/libFFI-iOS")
+        def tempDirectory = Files.createTempDirectory("libFFI-iOS-build")
+
+        def files = []
+        srcDir.eachFileRecurse {
+            if (it.name.endsWith(".c") || it.name.endsWith(".S"))
+                files << it
+        }
+
+        [iphoneos: "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/",
+         iphonesimulator: "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk"]
+                .forEach { target, sysroot ->
+                    def objectFiles = []
+                    def outDirectory = file("build/ios_${target}")
+                    outDirectory.deleteDir()
+                    outDirectory.mkdirs()
+
+                    def archs = target == "iphoneos" ? ["arm64"] : ["arm64", "x86_64"]
+                    for (arch in archs) {
+                        files.each { cFile ->
+                            def objectFile = "${new File(outDirectory, "${cFile.name}.${arch}.o")}"
+                            objectFiles << objectFile
+
+                            exec {
+                                workingDir tempDirectory
+                                commandLine = "clang"
+                                args = ["-arch", arch, "-isysroot", sysroot, "-I${file("build/libFFI-iOS/include").absolutePath}", "-c", cFile.absolutePath, "-o", objectFile]
+                            }
+                        }
+                    }
+
+                    exec {
+                        workingDir outDirectory
+                        commandLine = "libtool"
+                        args = [ "-static", "-o", "libffi.a"] + objectFiles
+                    }
+                }
+        def outDirectoryFramework = file("build/ios_xcframework")
+        outDirectoryFramework.deleteDir()
+        outDirectoryFramework.mkdirs()
+        exec {
+            workingDir outDirectoryFramework
+            commandLine = "xcodebuild"
+            args = ["-create-xcframework", "-library", file("build/ios_iphoneos/libffi.a"), "-headers", file("build/libFFI-iOS/include"), "-library", file("build/ios_iphonesimulator/libffi.a"),
+                    "-headers", file("build/libFFI-iOS/include"), "-output", new File(outDirectoryFramework, "libFFI.xcframework")]
+        }
+    }
+}
+
+eclipse {
+    project {
+        name = "gdx-jnigen-runtime"
+    }
+}

@@ -1,13 +1,13 @@
 package com.badlogic.jnigen.generated.structs;
 
-import com.badlogic.gdx.jnigen.CHandler;
-import com.badlogic.gdx.jnigen.pointer.Union;
-import com.badlogic.gdx.jnigen.pointer.StackElementPointer;
+import com.badlogic.gdx.jnigen.runtime.CHandler;
+import com.badlogic.gdx.jnigen.runtime.pointer.Union;
+import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.jnigen.generated.FFITypes;
-import com.badlogic.gdx.jnigen.pointer.CSizedIntPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 
-public final class TestUnion extends Union {
+public final class TestUnion extends com.badlogic.gdx.jnigen.runtime.pointer.Union {
 
     private final static int __size;
 
