@@ -3,6 +3,7 @@ package com.badlogic.jnigen.tests;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.gc.GCHandler;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
+import com.badlogic.jnigen.generated.TestData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,8 +13,7 @@ public class BaseTest {
     @BeforeAll
     public static void setUp() {
         new SharedLibraryLoader().load("test-natives");
-        CHandler.init();
-        com.badlogic.jnigen.generated.FFITypes.init();
+        TestData.initialize();
     }
 
     @BeforeEach
