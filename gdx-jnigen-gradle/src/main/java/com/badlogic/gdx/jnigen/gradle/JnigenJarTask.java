@@ -4,10 +4,10 @@ import java.io.File;
 
 import javax.inject.Inject;
 
+import com.badlogic.gdx.jnigen.commons.Os;
 import org.gradle.api.tasks.bundling.Jar;
 
 import com.badlogic.gdx.jnigen.BuildTarget;
-import com.badlogic.gdx.utils.Os;
 
 /**
  * @author Desu

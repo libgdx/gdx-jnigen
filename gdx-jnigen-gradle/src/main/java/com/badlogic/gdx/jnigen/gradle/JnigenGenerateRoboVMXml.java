@@ -18,6 +18,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import com.badlogic.gdx.jnigen.commons.Os;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 import org.slf4j.Logger;
@@ -26,7 +27,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.badlogic.gdx.jnigen.BuildTarget;
-import com.badlogic.gdx.utils.Os;
 import com.badlogic.gdx.jnigen.gradle.JnigenExtension.RoboVMXml.RoboVMXmlLib;
 
 /**
