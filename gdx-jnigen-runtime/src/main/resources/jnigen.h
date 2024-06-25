@@ -36,30 +36,17 @@ typedef struct _native_type {
     _native_type** fields;
 } native_type;
 
-static inline void set_double_type(native_type* nat_type) {
-    nat_type->type = DOUBLE_TYPE;
-    nat_type->size = 8;
-    nat_type->sign = true;
-}
-
-static inline void set_float_type(native_type* nat_type) {
-    nat_type->type = FLOAT_TYPE;
-    nat_type->size = 4;
-    nat_type->sign = true;
-}
-
-static inline void set_int_type(native_type* nat_type, size_t size, bool sign) {
-    nat_type->type = INT_TYPE;
+static inline void set_native_type(native_type* nat_type, native_type_id id, size_t size, bool sign) {
+    nat_type->type = id;
     nat_type->size = size;
     nat_type->sign = sign;
 }
 
-
 #define GET_NATIVE_TYPE(type, nat_type) \
     _Generic((type){0}, \
-        double: set_double_type(nat_type), \
-        float: set_float_type(nat_type), \
-        default: set_int_type(nat_type, sizeof(type), IS_SIGNED_TYPE(type)) \
+        double: set_native_type(nat_type, DOUBLE_TYPE, 8, true), \
+        float: set_native_type(nat_type, FLOAT_TYPE, 4, true), \
+        default: set_native_type(nat_type, INT_TYPE, sizeof(type), IS_SIGNED_TYPE(type)) \
     )
 
 #define IS_SIGNED_TYPE(type) (((type)-1) < 0)
