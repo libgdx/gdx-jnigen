@@ -64,6 +64,7 @@ def createBuildTask(String platformName, String architecture, String specialFlag
                     String customCC = null,
                     File outDir = file("build/libffi-build/" + platformName + "_" + architecture)) {
     task("build_${platformName}_${architecture}") {
+        group("libffi")
         dependsOn("extractLibFFI")
         doLast {
             def tmpDir = Files.createTempDirectory(platformName + "_" + architecture).resolve("libFFI")
@@ -97,11 +98,13 @@ def createBuildTask(String platformName, String architecture, String specialFlag
 }
 
 task build_mac {
+    group("libffi")
     dependsOn createBuildTask("macosx", "arm64", "-arch arm64", ["--host=arm64-apple-darwin"])
     dependsOn createBuildTask("macosx", "x86_64", "-arch x86_64", ["--host=x86_64-apple-darwin"])
 }
 
 task build_linux {
+    group("libffi")
     dependsOn createBuildTask("linux", "x86", "-fPIC", ["--host=i686-linux-gnu"])
     dependsOn createBuildTask("linux", "x86_64", "-fPIC", ["--host=x86_64-linux-gnu"])
     dependsOn createBuildTask("linux", "arm", "-fPIC", ["--host=arm-linux-gnueabihf"])
@@ -109,6 +112,7 @@ task build_linux {
 }
 
 task build_windows {
+    group("libffi")
     dependsOn createBuildTask("windows", "x86", "", ["--host=i686-w64-mingw32"])
     dependsOn createBuildTask("windows", "x86_64", "", ["--host=x86_64-w64-mingw32"])
     dependsOn createBuildTask("windows", "arm", "", ["--host=armv7-w64-mingw32"])
@@ -116,6 +120,7 @@ task build_windows {
 }
 
 task build_android {
+    group("libffi")
     def osPath = "darwin-x86_64"
     def basePath = System.getenv("NDK_HOME") + "/toolchains/llvm/prebuilt/${osPath}/bin/"
     ["x86": "i686-linux-android", "x86_64": "x86_64-linux-android", "armeabi-v7a": "armv7a-linux-androideabi",
@@ -128,6 +133,7 @@ task build_android {
 }
 
 task build_ios {
+    group("libffi")
     dependsOn("generateIOSFiles")
     doLast {
         def srcDir = file("build/libFFI-iOS")
