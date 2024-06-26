@@ -31,6 +31,7 @@ jobs:
           sudo mv /Applications/Xcode_14.3.1.app /Applications/Xcode.app
           sudo xcode-select -switch /Applications/Xcode.app
           /usr/bin/xcodebuild -version
+          ./gradlew build_ios
           ./gradlew jniGen jnigenBuildIOS
 
       - name: Pack artifacts
@@ -69,6 +70,7 @@ jobs:
           sudo mv /Applications/Xcode_14.3.1.app /Applications/Xcode.app
           sudo xcode-select -switch /Applications/Xcode.app
           /usr/bin/xcodebuild -version
+          ./gradlew build_macos
           ./gradlew jniGen jnigenBuildMacOsX64 jnigenBuildMacOsXARM64
 
       - name: Pack artifacts
@@ -133,10 +135,12 @@ jobs:
           sudo apt install -y --force-yes gcc g++
           sudo apt install -y --force-yes gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libc6-dev-arm64-cross
           sudo apt install -y --force-yes gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf libc6-dev-armhf-cross
+          sudo apt install -y --force-yes gcc-riscv64-linux-gnu g++-riscv64-linux-gnu libc6-dev-riscv64-cross
 
       - name: Build Linux natives
         run: |
-          ./gradlew jniGen jnigenBuildLinux64 jnigenBuildLinuxARM jnigenBuildLinuxARM64
+          ./gradlew build_linux
+          ./gradlew jniGen jnigenBuildLinux64 jnigenBuildLinuxARM jnigenBuildLinuxARM64 jnigenBuildLinuxRISCV64
 
       - name: Pack artifacts
         run: |
@@ -173,6 +177,7 @@ jobs:
 
       - name: Build Windows natives
         run: |
+          ./gradlew build_windows
           ./gradlew jniGen jnigenBuildWindows64 jnigenBuildWindows
 
       - name: Pack artifacts
@@ -212,6 +217,7 @@ jobs:
 
       - name: Build Android natives
         run: |
+          ./gradlew build_android
           ./gradlew jniGen jnigenBuildAndroid
 
       - name: Pack artifacts
