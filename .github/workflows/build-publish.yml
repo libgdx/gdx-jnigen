@@ -178,7 +178,7 @@ jobs:
       - name: Build Windows natives
         run: |
           ./gradlew build_windows
-          ./gradlew jniGen jnigenBuildWindows64 jnigenBuildWindows jnigenBuildWindowsARM64
+          ./gradlew jniGen jnigenBuildWindows64 jnigenBuildWindows
 
       - name: Pack artifacts
         run: |
