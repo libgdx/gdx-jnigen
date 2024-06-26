@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 
 #define RANDOM_MACRO 5
 #ifdef __cplusplus
