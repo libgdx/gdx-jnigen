@@ -24,7 +24,8 @@ task copyTestFiles(type: Copy) {
 }
 
 test {
-    dependsOn(":gdx-jnigen-generator-test:jnigenBuild", ":gdx-jnigen-generator-test:jnigenJarNativesDesktop")
+    // TODO: Figure out how to force build natives?
+    dependsOn(":gdx-jnigen-generator-test:jnigenJarNativesDesktop")
     useJUnitPlatform()
     outputs.upToDateWhen {false}
 }
