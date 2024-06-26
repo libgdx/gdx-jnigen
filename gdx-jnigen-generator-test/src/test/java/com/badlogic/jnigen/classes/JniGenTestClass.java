@@ -4,6 +4,10 @@ import java.nio.Buffer;
 
 public class JniGenTestClass {
 
+    /*JNI
+     #include <stdio.h>
+    */
+
     public static native boolean testBoolean(boolean boolArg); /*
 		return boolArg;
 	*/
