@@ -1,4 +1,5 @@
 import java.nio.file.Files
+import java.util.function.Supplier
 
 plugins {
     id "com.badlogicgames.gdx.gdx-jnigen"
@@ -61,7 +62,7 @@ task generateIOSFiles {
 }
 
 def createBuildTask(String platformName, String architecture, String specialFlags = "", List<String> specialArgs = [],
-                    String customCC = null,
+                    Supplier<String> customCC = null,
                     File outDir = file("build/libffi-build/" + platformName + "_" + architecture)) {
     task("build_${platformName}_${architecture}") {
         group("libffi")
@@ -78,8 +79,9 @@ def createBuildTask(String platformName, String architecture, String specialFlag
                 commandLine = "./configure"
                 environment "CFLAGS", specialFlags + " -fexceptions"
                 environment "LDFLAGS", specialFlags + " -fexceptions"
-                if (customCC != null)
-                    environment "CC", customCC
+                if (customCC != null) {
+                    environment "CC", customCC.get()
+                }
                 args = ["--prefix=${outDir.absolutePath}", "--disable-shared", "--disable-multi-os-directory"] + specialArgs
             }
             exec {
@@ -122,13 +124,22 @@ task build_windows {
 
 task build_android {
     group("libffi")
-    def osPath = "darwin-x86_64"
-    def basePath = System.getenv("NDK_HOME") + "/toolchains/llvm/prebuilt/${osPath}/bin/"
+
     ["x86": "i686-linux-android", "x86_64": "x86_64-linux-android", "armeabi-v7a": "armv7a-linux-androideabi",
      "arm64-v8a": "aarch64-linux-android"]
     .forEach {arch, target ->
-        dependsOn createBuildTask("android", arch, "-fPIC", ["--host=${target}", "--target=${target}"],
-                basePath + "${target}21-clang", file("build/libffi-build/android/${arch}"))
+        def getCC = {
+            if (!new File(System.getenv("NDK_HOME") + "/toolchains/llvm/prebuilt/").exists())
+                throw new IllegalArgumentException("NDK_HOME ${System.getenv("NDK_HOME")} does not point to a valid NDK")
+            def osPath = new File(System.getenv("NDK_HOME") + "/toolchains/llvm/prebuilt/").listFiles()[0].getName()
+            def basePath = System.getenv("NDK_HOME") + "/toolchains/llvm/prebuilt/${osPath}/bin/"
+            def executable = basePath + "${target}21-clang"
+            if (!new File(executable).exists())
+                throw new IllegalArgumentException("File ${executable} does not exist")
+
+            return executable
+        }
+        dependsOn createBuildTask("android", arch, "-fPIC", ["--host=${target}", "--target=${target}"], getCC, file("build/libffi-build/android/${arch}"))
 
     }
 }
