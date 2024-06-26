@@ -2,6 +2,7 @@ name: Build and publish
 
 on:
   push:
+    branches: [ feat/c-runtime ]
   release:
     types: [ published ]
 
@@ -283,7 +284,7 @@ jobs:
           unzip -o natives-android.zip
 
       - name: Snapshot build deploy
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository_owner == 'libgdx'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/c-runtime' && github.repository_owner == 'libgdx'
         run: ./gradlew build publish
         env:
           ORG_GRADLE_PROJECT_NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
