@@ -31,9 +31,9 @@ tasks.register("extractLibFFI", Copy) {
     }
 }
 
-task copyIOSFiles {
-    inputs.dir("build/libFFI")
-    outputs.dir("build/libFFI-iOS")
+task generateIOSFiles {
+    inputs.dir("build/libFFI/")
+    outputs.dir("build/libFFI-iOS/")
     dependsOn("extractLibFFI")
     doLast {
         def tmpDir = Files.createTempDirectory("ios_files").resolve("libFFI")
@@ -113,7 +113,7 @@ task build_windows {
 }
 
 task build_ios {
-    dependsOn("copyIOSFiles")
+    dependsOn("generateIOSFiles")
     doLast {
         def srcDir = file("build/libFFI-iOS")
         def tempDirectory = Files.createTempDirectory("libFFI-iOS-build")
@@ -169,6 +169,12 @@ task copyCFiles(type: Copy) {
     into("jni/")
 }
 
+task copyIOSFiles(type: Copy) {
+    dependsOn("generateIOSFiles")
+    from("build/libFFI-iOS/")
+    into("jni/libFFI-iOS/")
+}
+
 tasks.named("jnigen").get().dependsOn(copyCFiles)
 
 jnigen {
@@ -181,6 +187,7 @@ jnigen {
 
         headerDirs += [file("build/libffi-build/${combined}/include/")]
         cFlags += " -std=c11 -fexceptions "
+        cExcludes += ["libFFI-iOS/"]
         cppFlags += " -std=c++11 -fexceptions "
         libraries += " ${file("build/libffi-build/${combined}/lib/libffi.a").absolutePath} "
     }
@@ -199,8 +206,17 @@ jnigen {
     add(Windows, x64, x86)
     add(Windows, x64, ARM)
     add(Android)
-    add(IOS)
+    add(IOS) {
+        // Gnu11 is the only one that compiles for whatever reason
+        cFlags += " -std=gnu11 -fexceptions "
+        cIncludes += ["**/*.S"]
+        cExcludes = []
+        headerDirs = [file("jni/libFFI-iOS/include/")]
+        libraries = ""
+    }
 }
+
+tasks.named("jnigenBuildIOS").get().dependsOn(copyIOSFiles)
 
 artifacts {
     archives jnigenJarNativesDesktop
