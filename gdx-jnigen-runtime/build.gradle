@@ -112,6 +112,7 @@ task build_linux {
     dependsOn createBuildTask("linux", "arm", "-fPIC", ["--host=arm-linux-gnueabihf"])
     dependsOn createBuildTask("linux", "arm64", "-fPIC", ["--host=aarch64-linux-gnu"])
     dependsOn createBuildTask("linux", "riscv64", "-fPIC", ["--host=riscv64-linux-gnu"])
+    dependsOn createBuildTask("linux", "loongarch64", "-fPIC", ["--host=loongarch64-unknown-linux-gnu"])
 }
 
 task build_windows {
