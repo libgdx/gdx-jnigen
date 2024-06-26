@@ -97,7 +97,7 @@ def createBuildTask(String platformName, String architecture, String specialFlag
     }
 }
 
-task build_mac {
+task build_macos {
     group("libffi")
     dependsOn createBuildTask("macosx", "arm64", "-arch arm64", ["--host=arm64-apple-darwin"])
     dependsOn createBuildTask("macosx", "x86_64", "-arch x86_64", ["--host=x86_64-apple-darwin"])
@@ -109,6 +109,7 @@ task build_linux {
     dependsOn createBuildTask("linux", "x86_64", "-fPIC", ["--host=x86_64-linux-gnu"])
     dependsOn createBuildTask("linux", "arm", "-fPIC", ["--host=arm-linux-gnueabihf"])
     dependsOn createBuildTask("linux", "arm64", "-fPIC", ["--host=aarch64-linux-gnu"])
+    dependsOn createBuildTask("linux", "riscv64", "-fPIC", ["--host=riscv64-linux-gnu"])
 }
 
 task build_windows {
@@ -215,7 +216,6 @@ jnigen {
 
     add(Linux, x32, x86)
     add(Linux, x32, ARM)
-    add(Linux, x32, RISCV)
     add(Linux, x64, x86)
     add(Linux, x64, ARM)
     add(Linux, x64, RISCV)
