@@ -1,8 +1,7 @@
 package com.badlogic.jnigen.tests;
 
-import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.gc.GCHandler;
-import com.badlogic.gdx.utils.SharedLibraryLoader;
+import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
 import com.badlogic.jnigen.generated.TestData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
