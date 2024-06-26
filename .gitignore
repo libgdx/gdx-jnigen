@@ -32,6 +32,7 @@ hs_err_pid*
 build/
 jni/
 libs/
+obj/
 
 # Ignore Gradle GUI config
 gradle-app.setting
