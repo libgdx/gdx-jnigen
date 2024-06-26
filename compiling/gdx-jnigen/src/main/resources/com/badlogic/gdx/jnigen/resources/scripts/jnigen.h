@@ -75,6 +75,42 @@ static inline void set_native_type(native_type* nat_type, native_type_id id, siz
     nat_type->sign = sign;
 }
 
+#define IS_SIGNED_TYPE(type) (((type)-1) < 0)
+
+#ifdef __cplusplus
+template<typename T>
+struct native_type_traits;
+
+template<>
+struct native_type_traits<double> {
+    static void get(native_type* nat_type) {
+        set_native_type(nat_type, DOUBLE_TYPE, sizeof(double), true);
+    }
+};
+
+template<>
+struct native_type_traits<float> {
+    static void get(native_type* nat_type) {
+        set_native_type(nat_type, FLOAT_TYPE, sizeof(float), true);
+    }
+};
+
+template<typename T>
+struct native_type_traits {
+    static void get(native_type* nat_type) {
+        set_native_type(nat_type, INT_TYPE, sizeof(T), std::is_signed<T>::value);
+    }
+};
+
+template<typename T>
+void get_native_type(native_type* nat_type) {
+    native_type_traits<T>::get(nat_type);
+}
+
+#define GET_NATIVE_TYPE(type, nat_type) get_native_type<type>(nat_type)
+
+#else // C code
+
 #define GET_NATIVE_TYPE(type, nat_type) \
     _Generic((type){0}, \
         double: set_native_type(nat_type, DOUBLE_TYPE, 8, true), \
@@ -82,7 +118,7 @@ static inline void set_native_type(native_type* nat_type, native_type_id id, siz
         default: set_native_type(nat_type, INT_TYPE, sizeof(type), IS_SIGNED_TYPE(type)) \
     )
 
-#define IS_SIGNED_TYPE(type) (((type)-1) < 0)
+#endif //__cplusplus
 
 #define CHECK_AND_THROW_C_TYPE(env, type, value, argument_index, returnAction) \
     bool _signed##argument_index = IS_SIGNED_TYPE(type); \
