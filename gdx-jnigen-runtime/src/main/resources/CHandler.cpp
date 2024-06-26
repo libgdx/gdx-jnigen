@@ -172,7 +172,7 @@ JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_reExpor
     void* handle = dlopen(libPath, RTLD_NOW | RTLD_GLOBAL);
     if (handle == NULL)
         printf("Error: %s\n", dlerror());
-	env->ReleaseStringUTFChars(obj_libPath, libPath);
+    env->ReleaseStringUTFChars(obj_libPath, libPath);
 
 	return handle != NULL;
 #else
@@ -310,13 +310,13 @@ JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_setStac
 JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getPointerPart(JNIEnv* env, jclass clazz, jlong pointer, jint size, jint offset) {
     char* ptr = reinterpret_cast<char*>(pointer);
     jlong ret = 0;
-    ENDIAN_INTCPY(&ret, sizeof(jlong), ptr + offset, size);
+    ENDIAN_INTCPY(&ret, sizeof(jlong), ptr + offset, (size_t)size);
     return ret;
 }
 
 JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_setPointerPart(JNIEnv* env, jclass clazz, jlong pointer, jint size, jint offset, jlong value) {
     char* ptr = reinterpret_cast<char*>(pointer);
-    ENDIAN_INTCPY(ptr + offset, size, &value, sizeof(jlong));
+    ENDIAN_INTCPY(ptr + offset, (size_t)size, &value, sizeof(jlong));
 }
 
 JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_setPointerAsString(JNIEnv* env, jclass clazz, jlong pointer, jstring obj_string) {
