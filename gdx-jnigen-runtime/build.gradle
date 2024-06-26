@@ -60,12 +60,13 @@ task generateIOSFiles {
     }
 }
 
-def createBuildTask(String platformName, String architecture, String specialFlags = "", List<String> specialArgs = []) {
+def createBuildTask(String platformName, String architecture, String specialFlags = "", List<String> specialArgs = [],
+                    String customCC = null,
+                    File outDir = file("build/libffi-build/" + platformName + "_" + architecture)) {
     task("build_${platformName}_${architecture}") {
         dependsOn("extractLibFFI")
         doLast {
             def tmpDir = Files.createTempDirectory(platformName + "_" + architecture).resolve("libFFI")
-            def outDir = file("build/libffi-build/" + platformName + "_" + architecture)
             outDir.mkdirs()
             copy {
                 from 'build/libFFI'
@@ -76,6 +77,8 @@ def createBuildTask(String platformName, String architecture, String specialFlag
                 commandLine = "./configure"
                 environment "CFLAGS", specialFlags + " -fexceptions"
                 environment "LDFLAGS", specialFlags + " -fexceptions"
+                if (customCC != null)
+                    environment "CC", customCC
                 args = ["--prefix=${outDir.absolutePath}", "--disable-shared", "--disable-multi-os-directory"] + specialArgs
             }
             exec {
@@ -110,6 +113,18 @@ task build_windows {
     dependsOn createBuildTask("windows", "x86_64", "", ["--host=x86_64-w64-mingw32"])
     dependsOn createBuildTask("windows", "arm", "", ["--host=armv7-w64-mingw32"])
     dependsOn createBuildTask("windows", "arm64", "", ["--host=aarch64-w64-mingw32"])
+}
+
+task build_android {
+    def osPath = "darwin-x86_64"
+    def basePath = System.getenv("NDK_HOME") + "/toolchains/llvm/prebuilt/${osPath}/bin/"
+    ["x86": "i686-linux-android", "x86_64": "x86_64-linux-android", "armeabi-v7a": "armv7a-linux-androideabi",
+     "arm64-v8a": "aarch64-linux-android"]
+    .forEach {arch, target ->
+        dependsOn createBuildTask("android", arch, "-fPIC", ["--host=${target}", "--target=${target}"],
+                basePath + "${target}21-clang", file("build/libffi-build/android/${arch}"))
+
+    }
 }
 
 task build_ios {
@@ -205,7 +220,16 @@ jnigen {
     add(Windows, x32, ARM)
     add(Windows, x64, x86)
     add(Windows, x64, ARM)
-    add(Android)
+    add(Android) {
+        linkerFlags += " -stdlib=libc++\nLOCAL_WHOLE_STATIC_LIBRARIES := static_libffi\nAPP_STL := c++_shared"
+        androidAndroidMk += [
+                "include \$(CLEAR_VARS)",
+                "LOCAL_MODULE := static_libffi",
+                "LOCAL_SRC_FILES := \$(realpath ${file("build/libffi-build/android").absoluteFile}/\$(TARGET_ARCH_ABI)/lib/libffi.a)",
+                "LOCAL_EXPORT_C_INCLUDES := \$(realpath ${file("build/libffi-build/android").absoluteFile}/\$(TARGET_ARCH_ABI)/include)",
+                "include \$(PREBUILT_STATIC_LIBRARY)"
+        ]
+    }
     add(IOS) {
         // Gnu11 is the only one that compiles for whatever reason
         cFlags += " -std=gnu11 -fexceptions "
