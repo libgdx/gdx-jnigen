@@ -71,7 +71,8 @@ tasks.named("jnigen").get().dependsOn(copyTestFiles)
 // TODO: FIGURE OUT WHY THIS MAKES THE JVM CRASH AFTER A WHILE
 //compileTestJava.dependsOn(":gdx-jnigen-generator-test:jnigenGenerateBindings")
 
-jnigenJarNativesDesktop.mustRunAfter jnigenBuild
+// TODO: FIGURE OUT HOW TO ENFORCE ORDER
+//jnigenJarNativesDesktop.mustRunAfter jnigenBuild
 
 eclipse {
     project {
