@@ -76,7 +76,7 @@ def createBuildTask(String platformName, String architecture, String specialFlag
                 commandLine = "./configure"
                 environment "CFLAGS", specialFlags + " -fexceptions"
                 environment "LDFLAGS", specialFlags + " -fexceptions"
-                args = ["--prefix=${outDir.absolutePath}"] + specialArgs
+                args = ["--prefix=${outDir.absolutePath}", "--disable-shared", "--disable-multi-os-directory"] + specialArgs
             }
             exec {
                 workingDir = tmpDir.toFile()
