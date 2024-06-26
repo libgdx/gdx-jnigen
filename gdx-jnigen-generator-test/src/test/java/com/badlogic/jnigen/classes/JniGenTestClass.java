@@ -45,9 +45,9 @@ public class JniGenTestClass {
 			printf("char: %c\n", charArg);
 			printf("short: %d\n" , shortArg);
 			printf("int: %d\n", intArg);
-			printf("long: %l\n", longArg);
+			printf("long: %ld\n", longArg);
 			printf("float: %f\n", floatArg);
-			printf("double: %d\n", doubleArg);
+			printf("double: %f\n", doubleArg);
 			printf("byteBuffer: %d\n", byteBuffer [0]);
 			printf("bool[0]: %s\n", boolArray [ 0]?"true" : "false");
 			printf("char[0]: %c\n", charArray [0]);
