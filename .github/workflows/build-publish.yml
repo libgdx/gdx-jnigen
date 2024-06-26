@@ -107,7 +107,7 @@ jobs:
           unzip \
           xz-utils \
           maven \
-          ant sudo locales make
+          ant sudo locales make texinfo
 
           # set Locale to en_US.UTF-8 (avoids hang during compilation)
           locale-gen en_US.UTF-8
@@ -178,7 +178,7 @@ jobs:
       - name: Build Windows natives
         run: |
           ./gradlew build_windows
-          ./gradlew jniGen jnigenBuildWindows64 jnigenBuildWindows jnigenBuildWindowsARM jnigenBuildWindowsARM64
+          ./gradlew jniGen jnigenBuildWindows64 jnigenBuildWindows jnigenBuildWindowsARM64
 
       - name: Pack artifacts
         run: |
