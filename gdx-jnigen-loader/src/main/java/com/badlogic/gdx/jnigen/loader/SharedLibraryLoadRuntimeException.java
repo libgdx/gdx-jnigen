@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.utils;
+package com.badlogic.gdx.jnigen.loader;
 
 /** Typed runtime exception used in jnigen's SharedLibraryLoader
  * 
