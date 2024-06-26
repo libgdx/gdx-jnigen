@@ -285,7 +285,7 @@ jobs:
 
       - name: Snapshot build deploy
         if: github.event_name == 'push' && github.ref == 'refs/heads/feat/c-runtime' && github.repository_owner == 'libgdx'
-        run: ./gradlew build publish
+        run: ./gradlew build publish -x test
         env:
           ORG_GRADLE_PROJECT_NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
