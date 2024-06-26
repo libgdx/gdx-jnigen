@@ -5,11 +5,19 @@
 #include <string>
 #include <jni.h>
 
+// Helper macro for platform-specific thread attachment
+// Stolen from https://github.com/rednblackgames/gdx-miniaudio
+#ifdef __ANDROID__
+#define THREAD_ATTACH_MACRO gJVM->AttachCurrentThread(&env, NULL);
+#else
+#define THREAD_ATTACH_MACRO gJVM->AttachCurrentThread((void**)&env, NULL);
+#endif
+
 #define ATTACH_ENV()                                                    \
     bool _hadToAttach = false;                                          \
     JNIEnv* env;                                                        \
     if (gJVM->GetEnv((void**)&env, JNI_VERSION_1_6) == JNI_EDETACHED) { \
-        gJVM->AttachCurrentThread((void**)&env, NULL);                  \
+        THREAD_ATTACH_MACRO                                             \
         _hadToAttach = true;                                            \
     }
 
