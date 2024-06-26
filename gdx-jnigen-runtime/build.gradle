@@ -118,7 +118,6 @@ task build_windows {
     group("libffi")
     dependsOn createBuildTask("windows", "x86", "", ["--host=i686-w64-mingw32"])
     dependsOn createBuildTask("windows", "x86_64", "", ["--host=x86_64-w64-mingw32"])
-    dependsOn createBuildTask("windows", "arm", "", ["--host=armv7-w64-mingw32"])
     dependsOn createBuildTask("windows", "arm64", "", ["--host=aarch64-w64-mingw32"])
 }
 
@@ -234,7 +233,6 @@ jnigen {
     add(MacOsX, x64, x86)
     add(MacOsX, x64, ARM)
     add(Windows, x32, x86)
-    add(Windows, x32, ARM)
     add(Windows, x64, x86)
     add(Windows, x64, ARM)
     add(Android) {
