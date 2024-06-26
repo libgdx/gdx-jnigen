@@ -67,7 +67,7 @@ jnigen {
 
 tasks.named("jnigen").get().dependsOn(compileTestJava)
 tasks.named("jnigen").get().dependsOn(copyTestFiles)
-compileTestJava.dependsOn(":gdx-jnigen-generator-test:jnigenGenerateBindings")
+//compileTestJava.dependsOn(":gdx-jnigen-generator-test:jnigenGenerateBindings")
 
 jnigenJarNativesDesktop.mustRunAfter jnigenBuild
 
