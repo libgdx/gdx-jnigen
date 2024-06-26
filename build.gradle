@@ -20,6 +20,10 @@ task publishToMavenLocal {
     dependsOn gradle.includedBuild("compiling").task(':publishToMavenLocal')
 }
 
+task publish {
+    dependsOn gradle.includedBuild("compiling").task(':publish')
+}
+
 apply plugin: 'eclipse'
 eclipse.project.name = "root"
 
