@@ -57,7 +57,6 @@ jnigen {
     add(MacOsX, x64, x86)
     add(MacOsX, x64, ARM)
     add(Windows, x32, x86)
-    add(Windows, x32, ARM)
     add(Windows, x64, x86)
     add(Windows, x64, ARM)
     add(Android)
