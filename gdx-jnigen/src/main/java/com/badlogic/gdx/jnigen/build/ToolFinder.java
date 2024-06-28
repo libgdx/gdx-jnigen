@@ -1,0 +1,45 @@
+package com.badlogic.gdx.jnigen.build;
+
+import com.badlogic.gdx.utils.Os;
+import com.badlogic.gdx.utils.SharedLibraryLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.Set;
+
+public class ToolFinder {
+
+    private static final Logger logger = LoggerFactory.getLogger(ToolFinder.class);
+
+    public static File getToolFile (String toolPathOrName, RuntimeEnv env, boolean failOnNotFound) {
+        boolean found = false;
+
+        File absoluteFile = new File(toolPathOrName);
+        if (absoluteFile.exists() && absoluteFile.isFile()) {
+            return absoluteFile;
+        }
+
+        Set<String> paths = env.getPaths();
+        for (String path : paths) {
+            File file = new File(path, toolPathOrName);
+            if (file.exists() && file.isFile()) {
+                return file;
+            }
+        }
+
+        if (failOnNotFound && !found) {
+
+            //Lets do a last ditch for windows friendly support
+            if (SharedLibraryLoader.os == Os.Windows && !toolPathOrName.endsWith(".exe")) {
+                return getToolFile(toolPathOrName + ".exe", env, failOnNotFound);
+            }
+
+            logger.error("Failure to find tool {}. Make sure that its available on your path", toolPathOrName);
+            throw new RuntimeException("Tool was not found");
+        }
+
+        return null;
+    }
+
+}
