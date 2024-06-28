@@ -94,6 +94,11 @@ public class BuildTarget {
 	/** Minimum supported iOS version, will default to iOS 12*/
 	public String minIOSVersion = "12.0";
 
+	/**
+	 * If this is a release build or not
+	 */
+	public boolean release;
+
 	/** Creates a new build target. See members of this class for a description of the parameters. */
 	public BuildTarget(Os targetType, Architecture.Bitness bitness, String[] cIncludes, String[] cExcludes, String[] cppIncludes, String[] cppExcludes, String[] headerDirs, String compilerPrefix, String cFlags, String cppFlags, String linkerFlags, String msvcPreLinkerFlags) {
 		if (targetType == null) throw new IllegalArgumentException("targetType must not be null");
@@ -374,4 +379,15 @@ public class BuildTarget {
 
 		throw new RuntimeException("Unknown target type");
 	}
+
+	@Override
+	public String toString () {
+		return "BuildTarget{" +
+				"os=" + os +
+				", bitness=" + bitness +
+				", architecture=" + architecture +
+				", compilerABIType=" + compilerABIType +
+				'}';
+	}
+
 }

@@ -141,6 +141,7 @@ public class JnigenExtension {
 			throw new RuntimeException("Android and iOS must not have is64Bit or isARM or isRISCV.");
 
 		BuildTarget target = BuildTarget.newDefaultTarget(type, bitness, architecture, abiType);
+		target.release = release;
 
 		if (all != null)
 			all.execute(target);
