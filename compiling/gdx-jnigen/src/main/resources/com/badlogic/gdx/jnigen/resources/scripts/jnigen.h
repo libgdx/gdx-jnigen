@@ -43,7 +43,7 @@ class JavaExceptionMarker : public std::runtime_error {
             DETACH_ENV()
         }
 
-        ~JavaExceptionMarker() noexcept {
+        ~JavaExceptionMarker() throw() {
             ATTACH_ENV() // TODO: Figure out, whether this is an issue during full-crash
             env->DeleteGlobalRef(javaExc);
             DETACH_ENV()
