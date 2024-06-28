@@ -17,6 +17,7 @@ import java.util.List;
 public class GNUToolchain extends BaseToolchain {
 
     private static final Logger logger = LoggerFactory.getLogger(GNUToolchain.class);
+
     private File cCompilerExecutable;
     private File cppCompilerExecutable;
     private File linkerExecutable;
@@ -37,7 +38,7 @@ public class GNUToolchain extends BaseToolchain {
         //Don't strip on Mac or in non release mode
         stripperExecutable = ToolFinder.getToolFile(stripper, ENV, target.release || target.os == Os.MacOsX);
 
-        logger.info("Toolchain is valid.\ncCompiler: {}\ncppCompiler: {}\nlinker: {}", cCompilerExecutable, cppCompilerExecutable, linkerExecutable);
+        logger.info("Toolchain is valid.\ncCompiler: {}\ncppCompiler: {}\nlinker: {}\nstripper: {}", cCompilerExecutable, cppCompilerExecutable, linkerExecutable, stripperExecutable);
     }
 
 
@@ -67,16 +68,16 @@ public class GNUToolchain extends BaseToolchain {
         ArrayList<String> perFileArgs = new ArrayList<String>();
         perFileArgs.addAll(args);
 
-        for (File buildCppFile : buildCppFiles) {
+        for (File buildCFile : buildCFiles) {
             perFileArgs.clear();
             perFileArgs.addAll(args);
 
-            perFileArgs.add(buildCppFile.getAbsolutePath());
+            perFileArgs.add(buildCFile.getAbsolutePath());
             perFileArgs.add("-o");
-            perFileArgs.add(new File(buildDirectory, toObjectFile(buildCppFile.getName())).getAbsolutePath());
+            perFileArgs.add(new File(buildDirectory, toObjectFile(buildCFile.getName())).getAbsolutePath());
 
-            logger.info("Compiling CPP File {}", buildCppFile.getAbsolutePath());
-            ToolchainExecutor.execute(cppCompilerExecutable, config.jniDir.file(), perFileArgs, createToolChainCallback("CPP Compile"));
+            logger.info("Compiling C File {}", buildCFile.getAbsolutePath());
+            ToolchainExecutor.execute(cCompilerExecutable, config.jniDir.file(), perFileArgs, createToolChainCallback("C Compile"));
         }
     }
 
@@ -144,7 +145,7 @@ public class GNUToolchain extends BaseToolchain {
             args.addAll(stringFlagsToArgs(target.libraries));
         }
 
-        ToolchainExecutor.execute(linkerExecutable, config.jniDir.file(), args, createToolChainCallback("Link"));
+        ToolchainExecutor.execute(linkerExecutable, config.buildDir.file(), args, createToolChainCallback("Link"));
     }
 
     private void strip () {

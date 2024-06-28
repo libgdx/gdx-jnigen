@@ -187,7 +187,7 @@ public class BuildTarget {
                 BuildTarget target = new BuildTarget(Os.Windows, Architecture.Bitness._32, new String[]{"**/*.c"}, new String[0], new String[]{"**/*.cpp"},
                         new String[0], new String[0], "", "/O2 /W4 /fp:fast /arch:IA32",
                         "/O2 /W4 /fp:fast /arch:IA32",
-                        "/DLL", null);
+                        "/DLL", "/MT");
 				target.cCompiler = "cl.exe";
 				target.cppCompiler = "cl.exe";
 				target.compilerABIType = abiType;
@@ -199,7 +199,7 @@ public class BuildTarget {
 				BuildTarget target = new BuildTarget(Os.Windows, Architecture.Bitness._64, new String[]{"**/*.c"}, new String[0], new String[]{"**/*.cpp"},
                         new String[0], new String[0], "", "/O2 /W4 /fp:fast /arch:AVX2",
                         "/O2 /W4 /fp:fast /arch:AVX2",
-                        "", null);
+                        "", "/MT");
 				target.compilerABIType = abiType;
 				target.cCompiler = "cl.exe";
 				target.cppCompiler = "cl.exe";
@@ -211,7 +211,7 @@ public class BuildTarget {
                 BuildTarget target = new BuildTarget(Os.Windows, Architecture.Bitness._32, new String[]{"**/*.c"}, new String[0], new String[]{"**/*.cpp"},
                         new String[0], new String[0], "", "/O2 /W4 /fp:fast /arch:IA32",
                         "/O2 /W4 /fp:fast /arch:IA32",
-                        "", null);
+                        "", "/MT");
 				target.cCompiler = "cl.exe";
 				target.cppCompiler = "cl.exe";
                 target.architecture = Architecture.ARM;
@@ -224,7 +224,7 @@ public class BuildTarget {
                 BuildTarget target = new BuildTarget(Os.Windows, Architecture.Bitness._64, new String[]{"**/*.c"}, new String[0], new String[]{"**/*.cpp"},
                         new String[0], new String[0], "", "/O2 /W4 /fp:fast /arch:ARM64",
                         "/O2 /W4 /fp:fast /arch:ARM64",
-                        "", null);
+                        "", "/MT");
 				target.cCompiler = "cl.exe";
 				target.cppCompiler = "cl.exe";
                 target.architecture = Architecture.ARM;

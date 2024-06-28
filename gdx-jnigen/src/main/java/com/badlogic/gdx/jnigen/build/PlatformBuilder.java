@@ -169,20 +169,18 @@ public class PlatformBuilder {
     public static void main (String[] args) {
         BuildConfig buildConfig = new BuildConfig("test", "tmp/gdx-jnigen", "libtemp/libs", "tmpjni/jni");
 
-        BuildTarget win64 = BuildTarget.newDefaultTarget(Os.Windows, Architecture.Bitness._64, SharedLibraryLoader.architecture);
-        BuildTarget win32 = BuildTarget.newDefaultTarget(Os.Windows, Architecture.Bitness._32, SharedLibraryLoader.architecture);
-
-
-        BuildTarget linux64 = BuildTarget.newDefaultTarget(Os.Linux, Architecture.Bitness._32, SharedLibraryLoader.architecture);
-        BuildTarget linux32 = BuildTarget.newDefaultTarget(Os.Linux, Architecture.Bitness._64, SharedLibraryLoader.architecture);
-
+        BuildTarget win64 = BuildTarget.newDefaultTarget(Os.Windows, Architecture.Bitness._64, SharedLibraryLoader.architecture, CompilerABIType.MSVC);
+        BuildTarget win32 = BuildTarget.newDefaultTarget(Os.Windows, Architecture.Bitness._32, SharedLibraryLoader.architecture, CompilerABIType.MSVC);
+        BuildTarget win32Arm = BuildTarget.newDefaultTarget(Os.Windows, Architecture.Bitness._32, Architecture.ARM, CompilerABIType.MSVC);
+        BuildTarget win64Arm = BuildTarget.newDefaultTarget(Os.Windows, Architecture.Bitness._64, Architecture.ARM, CompilerABIType.MSVC);
 
         BuildTarget[] target =  new BuildTarget[] {
-                win32,
                 win64,
+                win32,
+//
+                win64Arm,
+                win32Arm
 
-                linux32,
-                linux64,
         };
         PlatformBuilder platformBuilder = new PlatformBuilder();
         platformBuilder.build(Os.Windows, buildConfig, target);

@@ -23,14 +23,21 @@ public class RuntimeEnv {
 
     private void addToPathFromSystemEnv (String envKey) {
         String env = System.getenv(envKey);
-        if (env == null) {
-            logger.warn("Path is null {}", envKey);
-            return;
-        }
+        addToPath(env);
+    }
 
-        String[] split = env.split(File.pathSeparator);
+    public void addToPath (String encodedPath) {
+        String[] split = splitToPaths(encodedPath);
         paths.addAll(Arrays.asList(split));
     }
 
+    public String[] splitToPaths (String encodedPath) {
+        if (encodedPath == null) {
+            logger.warn("Path is null {}", encodedPath);
+            return null;
+        }
 
+        String[] split = encodedPath.split(File.pathSeparator);
+        return split;
+    }
 }

@@ -4,7 +4,6 @@ JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_JniGenTestClass_testBool
 
 
 //@line:7
-asdfasdf
 		return boolArg;
 
 
