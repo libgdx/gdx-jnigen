@@ -116,7 +116,7 @@ struct AnonymousClosure
 
 struct forwardDeclStruct;
 
-void ensureParsed(AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested, struct forwardDeclStruct);
+void ensureParsed(AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested, struct forwardDeclStruct*);
 void weirdPointer(FILE *_file);
 void constArrayParameter(const TestStruct structs[]);
 void** voidPointerPointer(void** test);
