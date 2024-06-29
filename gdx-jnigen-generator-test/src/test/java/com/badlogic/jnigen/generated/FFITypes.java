@@ -73,15 +73,15 @@ switch(id) {
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 2;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
-		nativeType->fields[0] = getNativeType(21);
+		nativeType->fields[0] = getNativeType(22);
 		nativeType->fields[1] = getNativeType(5);
 		return nativeType;
 	case 13:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 3;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 3);
-		nativeType->fields[0] = getNativeType(22);
-		nativeType->fields[1] = getNativeType(22);
+		nativeType->fields[0] = getNativeType(23);
+		nativeType->fields[1] = getNativeType(23);
 		nativeType->fields[2] = getNativeType(5);
 		return nativeType;
 	case 14:
@@ -152,12 +152,17 @@ switch(id) {
 		return nativeType;
 	case 21:
 		nativeType->type = STRUCT_TYPE;
+		nativeType->field_count = 0;
+		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 0);
+		return nativeType;
+	case 22:
+		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 2;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
 		nativeType->fields[0] = getNativeType(5);
 		nativeType->fields[1] = getNativeType(4);
 		return nativeType;
-	case 22:
+	case 23:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 2;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
@@ -210,5 +215,6 @@ switch(id) {
         ffiIdMap.put(20, CHandler.constructStackElementCTypeFromNativeType(null, getNativeType(20)));
         ffiIdMap.put(21, CHandler.constructStackElementCTypeFromNativeType(null, getNativeType(21)));
         ffiIdMap.put(22, CHandler.constructStackElementCTypeFromNativeType(null, getNativeType(22)));
+        ffiIdMap.put(23, CHandler.constructStackElementCTypeFromNativeType(null, getNativeType(23)));
     }
 }
