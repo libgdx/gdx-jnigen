@@ -15,6 +15,8 @@ public class RuntimeEnv {
     public RuntimeEnv () {
         addToPathFromSystemEnv("Path");
         addToPathFromSystemEnv("PATH");
+
+        addToPathFromSystemEnv("NDK_HOME");
     }
 
     public Set<String> getPaths () {
@@ -28,7 +30,9 @@ public class RuntimeEnv {
 
     public void addToPath (String encodedPath) {
         String[] split = splitToPaths(encodedPath);
-        paths.addAll(Arrays.asList(split));
+        if (split != null) {
+            paths.addAll(Arrays.asList(split));
+        }
     }
 
     public String[] splitToPaths (String encodedPath) {

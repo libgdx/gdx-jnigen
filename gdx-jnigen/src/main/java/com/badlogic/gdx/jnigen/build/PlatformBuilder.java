@@ -174,16 +174,19 @@ public class PlatformBuilder {
         BuildTarget win32Arm = BuildTarget.newDefaultTarget(Os.Windows, Architecture.Bitness._32, Architecture.ARM, CompilerABIType.MSVC);
         BuildTarget win64Arm = BuildTarget.newDefaultTarget(Os.Windows, Architecture.Bitness._64, Architecture.ARM, CompilerABIType.MSVC);
 
-        BuildTarget[] target =  new BuildTarget[] {
-                win64,
-                win32,
-//
-                win64Arm,
-                win32Arm
+        BuildTarget android = BuildTarget.newDefaultTarget(Os.Android, null, null);
 
+        BuildTarget[] target =  new BuildTarget[] {
+//                win64,
+//                win32,
+//
+//                win64Arm,
+//                win32Arm
+
+                android
         };
         PlatformBuilder platformBuilder = new PlatformBuilder();
-        platformBuilder.build(Os.Windows, buildConfig, target);
+        platformBuilder.build(Os.Android, buildConfig, target);
     }
 
 

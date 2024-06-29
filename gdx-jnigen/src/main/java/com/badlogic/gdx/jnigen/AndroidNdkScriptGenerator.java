@@ -84,6 +84,7 @@ public class AndroidNdkScriptGenerator {
 			headerDirs.append(headerDir);
 			headerDirs.append(" ");
 		}
+		headerDirs.append(" jni-headers .");
 
 		template = template.replace("%sharedLibName%", config.sharedLibName);
 		template = template.replace("%headerDirs%", headerDirs);

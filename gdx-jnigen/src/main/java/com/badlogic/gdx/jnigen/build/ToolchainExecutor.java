@@ -26,6 +26,7 @@ public class ToolchainExecutor {
         try {
             ProcessBuilder processBuilder = new ProcessBuilder(executable.getAbsolutePath());
             processBuilder.directory(workingDirectory);
+            processBuilder.redirectErrorStream(true);
 
             processBuilder.command().addAll(args);
 

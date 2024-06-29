@@ -31,12 +31,12 @@ public class GNUToolchain extends BaseToolchain {
         String stripper = target.compilerPrefix + "strip" + target.compilerSuffix;
 
         //Check that these actually exist!
-        cCompilerExecutable = ToolFinder.getToolFile(cCompiler, ENV, true);
-        cppCompilerExecutable = ToolFinder.getToolFile(cppCompiler, ENV, true);
-        linkerExecutable = ToolFinder.getToolFile(linker, ENV, true);
+        cCompilerExecutable = ToolFinder.getToolFile(cCompiler, ENV, ".exe", true);
+        cppCompilerExecutable = ToolFinder.getToolFile(cppCompiler, ENV, ".exe", true);
+        linkerExecutable = ToolFinder.getToolFile(linker, ENV, ".exe", true);
 
         //Don't strip on Mac or in non release mode
-        stripperExecutable = ToolFinder.getToolFile(stripper, ENV, target.release || target.os == Os.MacOsX);
+        stripperExecutable = ToolFinder.getToolFile(stripper, ENV, ".exe", target.release || target.os == Os.MacOsX);
 
         logger.info("Toolchain is valid.\ncCompiler: {}\ncppCompiler: {}\nlinker: {}\nstripper: {}", cCompilerExecutable, cppCompilerExecutable, linkerExecutable, stripperExecutable);
     }

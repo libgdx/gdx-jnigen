@@ -13,6 +13,10 @@ public class ToolFinder {
     private static final Logger logger = LoggerFactory.getLogger(ToolFinder.class);
 
     public static File getToolFile (String toolPathOrName, RuntimeEnv env, boolean failOnNotFound) {
+        return getToolFile(toolPathOrName, env, null, failOnNotFound);
+    }
+
+    public static File getToolFile (String toolPathOrName, RuntimeEnv env, String optionalFallbackSuffix, boolean failOnNotFound) {
         boolean found = false;
 
         File absoluteFile = new File(toolPathOrName);
@@ -28,11 +32,11 @@ public class ToolFinder {
             }
         }
 
-        if (failOnNotFound && !found) {
+        if (failOnNotFound && !found && optionalFallbackSuffix != null) {
 
             //Lets do a last ditch for windows friendly support
-            if (SharedLibraryLoader.os == Os.Windows && !toolPathOrName.endsWith(".exe")) {
-                return getToolFile(toolPathOrName + ".exe", env, failOnNotFound);
+            if (SharedLibraryLoader.os == Os.Windows && !toolPathOrName.endsWith(optionalFallbackSuffix)) {
+                return getToolFile(toolPathOrName + optionalFallbackSuffix, env, optionalFallbackSuffix, failOnNotFound);
             }
 
             logger.error("Failure to find tool {}. Make sure that its available on your path", toolPathOrName);
