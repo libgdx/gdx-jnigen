@@ -169,23 +169,27 @@ public class PlatformBuilder {
     public static void main (String[] args) {
         BuildConfig buildConfig = new BuildConfig("test", "tmp/gdx-jnigen", "libtemp/libs", "tmpjni/jni");
 
-        BuildTarget win64 = BuildTarget.newDefaultTarget(Os.Windows, Architecture.Bitness._64, SharedLibraryLoader.architecture, CompilerABIType.MSVC);
-        BuildTarget win32 = BuildTarget.newDefaultTarget(Os.Windows, Architecture.Bitness._32, SharedLibraryLoader.architecture, CompilerABIType.MSVC);
-        BuildTarget win32Arm = BuildTarget.newDefaultTarget(Os.Windows, Architecture.Bitness._32, Architecture.ARM, CompilerABIType.MSVC);
-        BuildTarget win64Arm = BuildTarget.newDefaultTarget(Os.Windows, Architecture.Bitness._64, Architecture.ARM, CompilerABIType.MSVC);
+        CompilerABIType abiType = CompilerABIType.MSVC;
+
+        BuildTarget win64 = BuildTarget.newDefaultTarget(Os.Windows, Architecture.Bitness._64, SharedLibraryLoader.architecture, abiType);
+        BuildTarget win32 = BuildTarget.newDefaultTarget(Os.Windows, Architecture.Bitness._32, SharedLibraryLoader.architecture, abiType);
+        BuildTarget win32Arm = BuildTarget.newDefaultTarget(Os.Windows, Architecture.Bitness._32, Architecture.ARM, abiType);
+        BuildTarget win64Arm = BuildTarget.newDefaultTarget(Os.Windows, Architecture.Bitness._64, Architecture.ARM, abiType);
 
         BuildTarget android = BuildTarget.newDefaultTarget(Os.Android, null, null);
 
         BuildTarget[] target =  new BuildTarget[] {
 //                win64,
 //                win32,
-//
+
 //                win64Arm,
 //                win32Arm
 
                 android
         };
         PlatformBuilder platformBuilder = new PlatformBuilder();
+
+        //Invoke this, it will go find all android targets configured
         platformBuilder.build(Os.Android, buildConfig, target);
     }
 

@@ -56,7 +56,7 @@ public class AndroidToolchain extends BaseToolchain {
             template += "\n" + extra;
         }
 
-        config.jniDir.child("Application.mk").writeString(template, false);
+        config.buildDir.child("android32").child("Application.mk").writeString(template, false);
 
         // create Android.mk file
         template = new FileDescriptor("com/badlogic/gdx/jnigen/resources/scripts/Android.mk.template", FileDescriptor.FileType.Classpath)
@@ -87,6 +87,7 @@ public class AndroidToolchain extends BaseToolchain {
         }
         headerDirs.append("jni-headers");
         headerDirs.append(" jni-headers/" + target.os.getJniPlatform());
+        headerDirs.append(" jni-headers/" + "linux");
         headerDirs.append(" .");
 
         template = template.replace("%sharedLibName%", config.sharedLibName);
@@ -98,12 +99,15 @@ public class AndroidToolchain extends BaseToolchain {
         for (String extra : target.androidAndroidMk)
             template += "\n" + extra;
 
-        config.jniDir.child("Android.mk").writeString(template, false);
+        config.buildDir.child("android32").child("Android.mk").writeString(template, false);
 
         ArrayList<String> args = new ArrayList<>();
+        args.add("NDK_PROJECT_PATH=" + buildDirectory.getAbsolutePath());
+        args.add("APP_BUILD_SCRIPT=" + new File(buildDirectory, "Android.mk").getAbsolutePath());
+        args.add("NDK_OUT=" + buildDirectory.getAbsolutePath());
+        args.add("NDK_LIBS_OUT=" + libsDirectory.getAbsolutePath());
         ToolchainExecutor.execute(ndkExecutable, config.jniDir.file(), args, createToolChainCallback("Android compile"));
 
-        System.out.println("hiya");
     }
 
 }

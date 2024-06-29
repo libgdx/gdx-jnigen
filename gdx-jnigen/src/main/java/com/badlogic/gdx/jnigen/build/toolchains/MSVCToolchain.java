@@ -319,7 +319,7 @@ public class MSVCToolchain extends BaseToolchain {
 
         logger.info("Linking Target {}", target);
 
-        ToolchainExecutor.execute(linkerExecutable, config.buildDir.file(), args, createToolChainCallback("Link"));
+        ToolchainExecutor.execute(linkerExecutable, libsDirectory, args, createToolChainCallback("Link"));
     }
 
 }
