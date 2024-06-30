@@ -1,0 +1,276 @@
+<project name="%projectName%" basedir="." default="postcompile">
+    <!-- include the environment -->
+    <property environment="env"/>
+    <!-- output directory for temporary object files -->
+    <property name="buildDir" value="%buildDir%"/>
+    <!-- output directory for the shared library -->
+    <property name="libsDir" value="%libsDir%"/>
+    <!-- the name of the shared library -->
+    <property name="libName" value="%libName%"/>
+    <!-- the jni header jniPlatform to use -->
+    <property name="jniPlatform" value="%jniPlatform%"/>
+    <!-- the command to use when archiving files -->
+    <property name="archiver" value="%archiver%"/>
+
+    <!-- define cl options and files to compile -->
+    <property name="gcc-opts" value="%cFlags%"/>
+    <fileset id="gcc-files" dir="./">
+        <exclude name="target/"/>
+        %cIncludes%
+        %cExcludes%
+    </fileset>
+
+    <!-- define g++ compiler options and files to compile -->
+    <property name="g++-opts" value="%cppFlags%"/>
+    <fileset id="g++-files" dir="./">
+        <exclude name="target/"/>
+        %cppIncludes%
+        %cppExcludes%
+    </fileset>
+
+    <!-- define linker options -->
+    <property name="msvc-prelinker-flags" value="%msvcPreLinkerFlags%"/>
+    <property name="linker-opts" value="%linkerFlags%"/>
+    <property name="libraries" value="%libraries%"/>
+
+
+    <!-- cleans the build directory, removes all object files and shared libs -->
+    <target name="clean">
+        <delete includeemptydirs="true" quiet="true">
+            <fileset dir="${buildDir}"/>
+            <fileset dir="${libsDir}" includes="**/*" excludes="**/.svn"/>
+        </delete>
+    </target>
+
+    <!--   find vsvarsall on path, if not fail out -->
+    <target name="vcvarsall-find">
+        <condition property="vcvarsall-found">
+            <and>
+                <or>
+                    <!-- Include both b/c Windows might be either -->
+                    <available file="vcvarsall.bat" filepath="${env.PATH}"/>
+                    <available file="vcvarsall.bat" filepath="${env.Path}"/>
+                </or>
+            </and>
+        </condition>
+        <condition property="has-vcvarsall">
+            <equals arg1="${vcvarsall-found}" arg2="true"/>
+        </condition>
+        <fail message="vcvarsall not found. Make sure its on Path" unless="has-vcvarsall"/>
+    </target>
+
+
+    <!-- Execute vcvarsall.bat and capture the output. Modify the output into local variables because each shell
+     is a fresh environment and vars are discarded-->
+    <target name="vcvarsall-exec" depends="vcvarsall-find">
+        <exec executable="cmd" outputproperty="vcvarsOutput" failonerror="true">
+            <arg line="/c call vcvarsall.bat %vcvarsallArch% &amp;&amp; set"/>
+        </exec>
+
+        <!-- Extract out the MSVC vars and store so we can use them later on -->
+        <loadresource property="MSVC-INCLUDE" quiet="true">
+            <string value="${vcvarsOutput}"/>
+            <filterchain>
+                <containsregex pattern="^INCLUDE="/>
+                <replaceregex pattern="^INCLUDE=(.*)" replace="\1"/>
+            </filterchain>
+        </loadresource>
+        <loadresource property="MSVC-LIB" quiet="true">
+            <string value="${vcvarsOutput}"/>
+            <filterchain>
+                <containsregex pattern="^LIB="/>
+                <replaceregex pattern="^LIB=(.*)" replace="\1"/>
+            </filterchain>
+        </loadresource>
+        <loadresource property="MSVC-PATH" quiet="true">
+            <string value="${vcvarsOutput}"/>
+            <filterchain>
+                <containsregex pattern="^(?i)PATH="/>
+                <replaceregex pattern="^(?i)PATH=(.*)" replace="\1"/>
+            </filterchain>
+        </loadresource>
+
+
+        <!--        The following is a bunch of nonsense, might not be the best way, but only solution I found for string wrangling with pure ant,
+         pretty nasty stuff-->
+        <echo file="msvc-temp.txt" append="false">${MSVC-INCLUDE}</echo>
+        <replaceregexp file="msvc-temp.txt"
+                       match="([^;]+)"
+                       replace="/I&quot;\1&quot;"
+                       flags="g"
+                       byLine="true"
+        />
+        <replaceregexp file="msvc-temp.txt"
+                       match=";"
+                       replace=" "
+                       flags="g"
+                       byLine="true"
+        />
+        <!--        regexes are causing new lines to be entered, anyone know why? Killing them this way-->
+        <replaceregexp file="msvc-temp.txt"
+                       match="\r\n|\r|\n"
+                       replace=""
+                       flags="g"/>
+        <loadfile property="MSVC-INCLUDE-FORMATTED" srcFile="msvc-temp.txt"/>
+
+
+        <echo file="msvc-temp-lib.txt" append="false">${MSVC-LIB}</echo>
+        <replaceregexp file="msvc-temp-lib.txt"
+                       match="([^;]+)"
+                       replace="/LIBPATH:&quot;\1&quot;"
+                       flags="g"
+                       byLine="true"
+        />
+        <replaceregexp file="msvc-temp-lib.txt"
+                       match=";"
+                       replace=" "
+                       flags="g"
+                       byLine="true"
+        />
+        <replaceregexp file="msvc-temp-lib.txt"
+                       match="\r\n|\r|\n"
+                       replace=""
+                       flags="g"/>
+        <loadfile property="MSVC-LIB-FORMATTED" srcFile="msvc-temp-lib.txt"/>
+
+
+        <property name="outputFileCl" value="msvc-cl.txt"/>
+        <exec executable="cmd.exe" failonerror="false">
+            <env key="PATH" value="${MSVC-PATH}"/>
+            <arg line="/c where cl.exe > ${outputFileCl}"/>
+        </exec>
+
+        <!--        There are potentially many cls found do to mcvarsall multiplatform host support, we just pick first one-->
+        <replaceregexp file="${outputFileCl}"
+                       match="^([^\r\n]+)[\r\n]?.*"
+                       replace="\1"
+                       flags="s"/>
+
+        <loadfile property="cl" srcFile="${outputFileCl}">
+        </loadfile>
+        <condition property="cl-exists">
+            <isset property="cl"/>
+        </condition>
+
+        <!-- Fail the build if the compiler doesn't exist -->
+        <fail message="cl.exe cannot be found."
+              unless="cl-exists"/>
+        <property name="has-compiler" value="true"/>
+    </target>
+
+    <target name="precompile" depends="vcvarsall-exec">
+        %precompile%
+    </target>
+
+    <target name="create-build-dir" depends="precompile" if="has-compiler">
+        <!-- FIXME this is pretty nasty :/ -->
+        <copy todir="${buildDir}">
+            <fileset refid="g++-files"/>
+            <fileset refid="gcc-files"/>
+        </copy>
+        <delete>
+            <fileset dir="${buildDir}">
+                <include name="*"/>
+                <exclude name="*.o"/>
+            </fileset>
+        </delete>
+    </target>
+
+
+    <!-- compiles all C and C++ files to object files in the build directory -->
+    <target name="compile" depends="create-build-dir" if="has-compiler">
+        <mkdir dir="${buildDir}"/>
+
+        <apply failonerror="true" executable="${cl}" dest="${buildDir}" verbose="true">
+
+            <arg line="${g++-opts}"/>
+            <arg line="${MSVC-INCLUDE-FORMATTED}"/>
+            <arg value="/Ijni-headers/"/>
+            <arg value="/Ijni-headers/${jniPlatform}"/>
+            <arg value="/I."/>
+            %headerDirs%
+            <srcfile/>
+            <arg value="/Fo:${buildDir}/"/>
+            <arg value="/c"/>
+            <arg value="/EHsc"/>
+            <targetfile/>
+            <fileset refid="g++-files"/>
+            <compositemapper>
+                <mapper type="glob" from="*" to="*.obj"/>
+            </compositemapper>
+        </apply>
+        <apply failonerror="true" executable="${cl}" dest="${buildDir}" verbose="true">
+            <arg line="${gcc-opts}"/>
+            <arg line="${MSVC-INCLUDE-FORMATTED}"/>
+            <arg value="/Ijni-headers"/>
+            <arg value="/Ijni-headers/${jniPlatform}"/>
+            <arg value="/I."/>
+            %headerDirs%
+            <srcfile/>
+            <arg value="/Fo:${buildDir}/"/>
+            <arg value="/c"/>
+            <arg value="/EHsc"/>
+            <targetfile/>
+            <fileset refid="gcc-files"/>
+            <compositemapper>
+                <mapper type="glob" from="*" to="*.obj"/>
+            </compositemapper>
+        </apply>
+    </target>
+
+    <!-- links the shared library based on the previously compiled object files -->
+    <target name="link" depends="compile" if="has-compiler">
+
+        <condition property="linkerBuildFlags" value="/LD">
+            <istrue value="${release}"/>
+        </condition>
+        <condition property="linkerBuildFlags" value="/LDd /Zi">
+            <not>
+                <istrue value="${release}"/>
+            </not>
+        </condition>
+
+
+        <condition property="linkerLinkerFlags" value="/RELEASE /NOCOFFGRPINFO ">
+            <istrue value="${release}"/>
+        </condition>
+        <condition property="linkerLinkerFlags" value="/DEBUG">
+            <not>
+                <istrue value="${release}"/>
+            </not>
+        </condition>
+
+        <fileset dir="${buildDir}" id="objFileSet">
+            <patternset>
+                <include name="**/*.obj"/>
+            </patternset>
+        </fileset>
+        <pathconvert pathsep=" " property="objFiles" refid="objFileSet"/>
+        <mkdir dir="${libsDir}"/>
+
+        <exec executable="${cl}" failonerror="true" dir="${buildDir}">
+
+            <arg line="${linkerBuildFlags}"/>
+            <arg line="${msvc-prelinker-flags}"/>
+            <arg value="/Fe${libName}"/>
+            <arg line="${objFiles}"/>
+
+            <arg value="/link"/>
+            <arg line="${linkerLinkerFlags}"/>
+            <arg line="${MSVC-LIB-FORMATTED}"/>
+            <arg line="${linker-opts}"/>
+            <arg line="${libraries}"/>
+
+        </exec>
+    </target>
+
+
+    <!-- No idea why, can't get linker to output to specific directory other than buildDir -->
+    <target name="move-file" depends="link">
+        <move file="${buildDir}/${libName}" todir="${libsDir}"/>
+    </target>
+
+    <target name="postcompile" depends="move-file">
+        %postcompile%
+    </target>
+</project>
