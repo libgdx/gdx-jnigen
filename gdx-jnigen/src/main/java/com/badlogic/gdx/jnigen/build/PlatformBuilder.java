@@ -181,16 +181,16 @@ public class PlatformBuilder {
         BuildTarget[] target =  new BuildTarget[] {
 //                win64,
 //                win32,
-
+//
 //                win64Arm,
-//                win32Arm
+//                win32Arm,
 
                 android
         };
         PlatformBuilder platformBuilder = new PlatformBuilder();
 
         //Invoke this, it will go find all android targets configured
-        platformBuilder.build(Os.Android, buildConfig, target);
+        platformBuilder.build(Os.Windows, buildConfig, target);
     }
 
 
