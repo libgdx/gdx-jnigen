@@ -71,9 +71,10 @@ public class AntScriptGenerator {
 
 		// copy jni headers
 		copyJniHeaders(config.jniDir.path());
-
-		new FileDescriptor("com/badlogic/gdx/jnigen/resources/scripts/jnigen.h", FileType.Classpath).copyTo(config.jniDir
-				.child("jnigen.h"));
+		if (!config.jniDir.child("jnigen.h").exists()) {
+			new FileDescriptor("com/badlogic/gdx/jnigen/resources/scripts/jnigen.h", FileType.Classpath).copyTo(
+					config.jniDir.child("jnigen.h"));
+		}
 
 		// copy memcpy_wrap.c, needed if your build platform uses the latest glibc, e.g. Ubuntu 12.10
 		if (!config.jniDir.child("memcpy_wrap.c").exists()) {
