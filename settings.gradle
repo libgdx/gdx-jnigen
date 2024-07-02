@@ -1,3 +1,4 @@
-include ':gdx-jnigen'
-include ':gdx-jnigen-gradle'
+includeBuild("compiling")
 include ':gdx-jnigen-loader'
+include ':gdx-jnigen-runtime'
+include ':gdx-jnigen-generator-test'

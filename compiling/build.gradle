@@ -1,0 +1,34 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+ext.propertiesFile = file("../gradle.properties")
+
+apply from: file('../config.gradle')
+
+apply plugin: 'eclipse'
+eclipse.project.name = "root"
+
+apply from: file('../publish.gradle')
+
+task publishToMavenLocal {
+    subprojects.each { subproject ->
+        dependsOn subproject.tasks.named("publishToMavenLocal")
+    }
+}
+
+task publish {
+    subprojects.each { subproject ->
+        dependsOn subproject.tasks.named("publish")
+    }
+}

@@ -1,0 +1,276 @@
+import java.nio.file.Files
+import java.util.function.Supplier
+
+plugins {
+    id "com.badlogicgames.gdx.gdx-jnigen"
+    id "de.undercouch.download" version "5.0.1"
+}
+
+dependencies {
+    api project(":gdx-jnigen-loader")
+}
+
+tasks.register("fetchLibFFI", Download) {
+    src 'https://github.com/libffi/libffi/releases/download/v3.4.4/libffi-3.4.4.tar.gz'
+    dest 'build/libFFI.tar.gz'
+    onlyIfModified true
+    useETag "all"
+}
+
+tasks.register("extractLibFFI", Copy) {
+    doFirst {
+        delete 'build/libFFI/'
+        mkdir 'build/libFFI/'
+    }
+    dependsOn 'fetchLibFFI'
+    inputs.file('build/libFFI.tar.gz')
+    outputs.dir('build/libFFI/')
+    from tarTree(resources.gzip('build/libFFI.tar.gz'))
+    into 'build/libFFI/'
+    eachFile { file ->
+        file.path = file.relativePath.segments[1..-1].join('/')
+    }
+}
+
+task generateIOSFiles {
+    inputs.dir("build/libFFI/")
+    outputs.dir("build/libFFI-iOS/")
+    dependsOn("extractLibFFI")
+    doLast {
+        def tmpDir = Files.createTempDirectory("ios_files").resolve("libFFI")
+        copy {
+            from 'build/libFFI'
+            into tmpDir
+        }
+        exec {
+            workingDir = tmpDir
+            commandLine = "python3"
+            args = ["generate-darwin-source-and-headers.py", "--only-ios"]
+        }
+
+        copy {
+            from tmpDir.toFile().absolutePath + '/darwin_common/src/'
+            from tmpDir.toFile().absolutePath + '/darwin_ios/src/'
+            into 'build/libFFI-iOS'
+        }
+        copy {
+            from tmpDir.toFile().absolutePath + '/darwin_common/include/'
+            from tmpDir.toFile().absolutePath + '/darwin_ios/include/'
+            into 'build/libFFI-iOS/include'
+        }
+    }
+}
+
+def createBuildTask(String platformName, String architecture, String specialFlags = "", List<String> specialArgs = [],
+                    Supplier<String> customCC = null,
+                    File outDir = file("build/libffi-build/" + platformName + "_" + architecture)) {
+    task("build_${platformName}_${architecture}") {
+        group("libffi")
+        dependsOn("extractLibFFI")
+        doLast {
+            def tmpDir = Files.createTempDirectory(platformName + "_" + architecture).resolve("libFFI")
+            outDir.mkdirs()
+            copy {
+                from 'build/libFFI'
+                into tmpDir
+            }
+            exec {
+                workingDir = tmpDir.toFile()
+                commandLine = "./configure"
+                environment "CFLAGS", specialFlags + " -fexceptions"
+                environment "LDFLAGS", specialFlags + " -fexceptions"
+                if (customCC != null) {
+                    environment "CC", customCC.get()
+                }
+                args = ["--prefix=${outDir.absolutePath}", "--disable-shared", "--disable-multi-os-directory"] + specialArgs
+            }
+            exec {
+                workingDir = tmpDir.toFile()
+                commandLine = "make"
+                args = ["-j${Runtime.getRuntime().availableProcessors()}"]
+            }
+            exec {
+                workingDir = tmpDir.toFile()
+                commandLine = "make"
+                args = ["install"]
+            }
+            delete tmpDir
+        }
+    }
+}
+
+task build_macos {
+    group("libffi")
+    dependsOn createBuildTask("macosx", "arm64", "-arch arm64", ["--host=arm64-apple-darwin"])
+    dependsOn createBuildTask("macosx", "x86_64", "-arch x86_64", ["--host=x86_64-apple-darwin"])
+}
+
+task build_linux {
+    group("libffi")
+    dependsOn createBuildTask("linux", "x86", "-fPIC", ["--host=i686-linux-gnu"])
+    dependsOn createBuildTask("linux", "x86_64", "-fPIC", ["--host=x86_64-linux-gnu"])
+    dependsOn createBuildTask("linux", "arm", "-fPIC", ["--host=arm-linux-gnueabihf"])
+    dependsOn createBuildTask("linux", "arm64", "-fPIC", ["--host=aarch64-linux-gnu"])
+    dependsOn createBuildTask("linux", "riscv64", "-fPIC", ["--host=riscv64-linux-gnu"])
+    //dependsOn createBuildTask("linux", "loongarch64", "-fPIC", ["--host=loongarch64-unknown-linux-gnu"])
+}
+
+task build_windows {
+    group("libffi")
+    dependsOn createBuildTask("windows", "x86", "", ["--host=i686-w64-mingw32"])
+    dependsOn createBuildTask("windows", "x86_64", "", ["--host=x86_64-w64-mingw32"])
+    dependsOn createBuildTask("windows", "arm64", "", ["--host=aarch64-w64-mingw32"])
+}
+
+task build_android {
+    group("libffi")
+
+    ["x86": "i686-linux-android", "x86_64": "x86_64-linux-android", "armeabi-v7a": "armv7a-linux-androideabi",
+     "arm64-v8a": "aarch64-linux-android"]
+    .forEach {arch, target ->
+        def getCC = {
+            if (!new File(System.getenv("NDK_HOME") + "/toolchains/llvm/prebuilt/").exists())
+                throw new IllegalArgumentException("NDK_HOME ${System.getenv("NDK_HOME")} does not point to a valid NDK")
+            def osPath = new File(System.getenv("NDK_HOME") + "/toolchains/llvm/prebuilt/").listFiles()[0].getName()
+            def basePath = System.getenv("NDK_HOME") + "/toolchains/llvm/prebuilt/${osPath}/bin/"
+            def executable = basePath + "${target}21-clang"
+            if (!new File(executable).exists())
+                throw new IllegalArgumentException("File ${executable} does not exist")
+
+            return executable
+        }
+        dependsOn createBuildTask("android", arch, "-fPIC", ["--host=${target}", "--target=${target}"], getCC, file("build/libffi-build/android/${arch}"))
+
+    }
+}
+
+task build_ios {
+    group("libffi")
+    dependsOn("generateIOSFiles")
+    doLast {
+        def srcDir = file("build/libFFI-iOS")
+        def tempDirectory = Files.createTempDirectory("libFFI-iOS-build")
+
+        def files = []
+        srcDir.eachFileRecurse {
+            if (it.name.endsWith(".c") || it.name.endsWith(".S"))
+                files << it
+        }
+
+        [iphoneos: "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/",
+         iphonesimulator: "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk"]
+                .forEach { target, sysroot ->
+                    def objectFiles = []
+                    def outDirectory = file("build/ios_${target}")
+                    outDirectory.deleteDir()
+                    outDirectory.mkdirs()
+
+                    def archs = target == "iphoneos" ? ["arm64"] : ["arm64", "x86_64"]
+                    for (arch in archs) {
+                        files.each { cFile ->
+                            def objectFile = "${new File(outDirectory, "${cFile.name}.${arch}.o")}"
+                            objectFiles << objectFile
+
+                            exec {
+                                workingDir tempDirectory
+                                commandLine = "clang"
+                                args = ["-arch", arch, "-isysroot", sysroot, "-I${file("build/libFFI-iOS/include").absolutePath}", "-c", cFile.absolutePath, "-o", objectFile]
+                            }
+                        }
+                    }
+
+                    exec {
+                        workingDir outDirectory
+                        commandLine = "libtool"
+                        args = [ "-static", "-o", "libffi.a"] + objectFiles
+                    }
+                }
+        def outDirectoryFramework = file("build/ios_xcframework")
+        outDirectoryFramework.deleteDir()
+        outDirectoryFramework.mkdirs()
+        exec {
+            workingDir outDirectoryFramework
+            commandLine = "xcodebuild"
+            args = ["-create-xcframework", "-library", file("build/ios_iphoneos/libffi.a"), "-headers", file("build/libFFI-iOS/include"), "-library", file("build/ios_iphonesimulator/libffi.a"),
+                    "-headers", file("build/libFFI-iOS/include"), "-output", new File(outDirectoryFramework, "libFFI.xcframework")]
+        }
+    }
+}
+
+task copyCFiles(type: Copy) {
+    from("src/main/resources/")
+    into("jni/")
+}
+
+task copyIOSFiles(type: Copy) {
+    dependsOn("generateIOSFiles")
+    from("build/libFFI-iOS/")
+    into("jni/libFFI-iOS/")
+}
+
+tasks.named("jnigen").get().dependsOn(copyCFiles)
+
+jnigen {
+    sharedLibName = "jnigen-runtime"
+
+    all {
+        def name = it.os.name().toLowerCase()
+        def arch = it.architecture.name().toLowerCase() + (it.architecture == x86 && it.bitness != x32 ? "_" : "") + it.bitness.toSuffix()
+        def combined = name + "_" + arch
+
+        headerDirs += [file("build/libffi-build/${combined}/include/")]
+        cFlags += " -std=c11 -fexceptions "
+        cExcludes += ["libFFI-iOS/"]
+        cppFlags += " -std=c++11 -fexceptions "
+        libraries += " ${file("build/libffi-build/${combined}/lib/libffi.a").absolutePath} "
+    }
+
+    add(Linux, x32, x86)
+    add(Linux, x32, ARM)
+    add(Linux, x64, x86)
+    add(Linux, x64, ARM)
+    add(Linux, x64, RISCV)
+    add(Linux, x64, LOONGARCH)
+    add(MacOsX, x64, x86)
+    add(MacOsX, x64, ARM)
+    add(Windows, x32, x86)
+    add(Windows, x64, x86)
+    add(Windows, x64, ARM)
+    add(Android) {
+        androidApplicationMk += "APP_PLATFORM := android-19\nAPP_STRIP_MODE := none"
+        linkerFlags += " -stdlib=libc++\nLOCAL_WHOLE_STATIC_LIBRARIES := static_libffi\nAPP_STL := c++_shared"
+        androidAndroidMk += [
+                "include \$(CLEAR_VARS)",
+                "LOCAL_MODULE := static_libffi",
+                "LOCAL_SRC_FILES := \$(realpath ${file("build/libffi-build/android").absoluteFile}/\$(TARGET_ARCH_ABI)/lib/libffi.a)",
+                "LOCAL_EXPORT_C_INCLUDES := \$(realpath ${file("build/libffi-build/android").absoluteFile}/\$(TARGET_ARCH_ABI)/include)",
+                "include \$(PREBUILT_STATIC_LIBRARY)"
+        ]
+    }
+    add(IOS) {
+        // Gnu11 is the only one that compiles for whatever reason
+        cFlags += " -std=gnu11 -fexceptions "
+        cIncludes += ["**/*.S"]
+        // DON'T COMMENT THIS OUT
+        cExcludes = ["**/dlmalloc.c"]
+        headerDirs = [file("jni/libFFI-iOS/include/")]
+        libraries = ""
+    }
+}
+
+tasks.named("jnigenBuildIOS").get().dependsOn(copyIOSFiles)
+
+artifacts {
+    archives jnigenJarNativesDesktop
+    ['arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'].each { id ->
+        archives "jnigenJarNativesAndroid${id}" { }
+    }
+
+    archives jnigenJarNativesIOS
+}
+
+eclipse {
+    project {
+        name = "gdx-jnigen-runtime"
+    }
+}

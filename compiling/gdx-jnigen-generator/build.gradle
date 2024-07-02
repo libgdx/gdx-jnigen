@@ -1,0 +1,12 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.bytedeco:llvm-platform:16.0.4-1.5.9'
+    implementation 'com.github.javaparser:javaparser-core:3.25.9'
+}
