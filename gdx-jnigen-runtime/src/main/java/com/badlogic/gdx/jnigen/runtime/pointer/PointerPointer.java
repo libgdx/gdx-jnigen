@@ -23,7 +23,7 @@ public class PointerPointer<T extends Pointing> extends Pointing {
     }
 
     public PointerPointer(int size, boolean freeOnGC, boolean guard, PointerDereferenceSupplier<T> supplier) {
-        super(size, freeOnGC, guard);
+        super(size * __pointer_size, freeOnGC, guard);
         this.supplier = supplier;
     }
 
