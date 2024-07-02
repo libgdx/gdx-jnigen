@@ -208,6 +208,27 @@ task copyIOSFiles(type: Copy) {
     into("jni/libFFI-iOS/")
 }
 
+task extractAndroidCXXLibs() {
+    doLast {
+        if (!new File(System.getenv("NDK_HOME") + "/toolchains/llvm/prebuilt/").exists())
+            throw new IllegalArgumentException("NDK_HOME ${System.getenv("NDK_HOME")} does not point to a valid NDK")
+        def osPath = new File(System.getenv("NDK_HOME") + "/toolchains/llvm/prebuilt/").listFiles()[0].getName()
+        def basePath = System.getenv("NDK_HOME") + "/toolchains/llvm/prebuilt/${osPath}/sysroot/usr/lib/"
+
+        ["x86": "i686-linux-android", "x86_64": "x86_64-linux-android", "armeabi-v7a": "arm-linux-androideabi",
+         "arm64-v8a": "aarch64-linux-android"]
+        .forEach { arch, path ->
+            def sourcePath = "$basePath/$path/libc++_shared.so"
+            if (!new File(sourcePath).exists())
+                throw new IllegalArgumentException("Path ${sourcePath} does not exist")
+            copy {
+                from sourcePath
+                into file("libs/$arch/")
+            }
+        }
+    }
+}
+
 tasks.named("jnigen").get().dependsOn(copyCFiles)
 
 jnigen {
@@ -259,6 +280,7 @@ jnigen {
 }
 
 tasks.named("jnigenBuildIOS").get().dependsOn(copyIOSFiles)
+tasks.named("jnigenBuildAndroid").get().finalizedBy(extractAndroidCXXLibs)
 
 artifacts {
     archives jnigenJarNativesDesktop
