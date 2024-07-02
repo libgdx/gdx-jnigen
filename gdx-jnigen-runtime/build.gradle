@@ -251,7 +251,8 @@ jnigen {
         // Gnu11 is the only one that compiles for whatever reason
         cFlags += " -std=gnu11 -fexceptions "
         cIncludes += ["**/*.S"]
-        cExcludes = []
+        // DON'T COMMENT THIS OUT
+        cExcludes = ["**/dlmalloc.c"]
         headerDirs = [file("jni/libFFI-iOS/include/")]
         libraries = ""
     }
