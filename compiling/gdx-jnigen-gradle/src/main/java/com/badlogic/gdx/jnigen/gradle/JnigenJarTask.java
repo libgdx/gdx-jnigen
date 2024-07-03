@@ -43,7 +43,7 @@ public class JnigenJarTask extends Jar {
 			getArchiveClassifier().set("natives-" + abi);
 		}
 		
-		String path = ext.subProjectDir + ext.libsDir + File.separatorChar + targetFolder + File.separatorChar + target.getSharedLibFilename(ext.sharedLibName);
+		String path = ext.subProjectDir + ext.libsDir + File.separatorChar + targetFolder + File.separatorChar;
 		from(path);
 	}
 }
