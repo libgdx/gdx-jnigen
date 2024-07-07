@@ -6,6 +6,7 @@ public class JniGenTestClass {
 
     /*JNI
      #include <stdio.h>
+     #include <inttypes.h>
     */
 
     public static native boolean testBoolean(boolean boolArg); /*
@@ -49,7 +50,7 @@ public class JniGenTestClass {
 			printf("char: %c\n", charArg);
 			printf("short: %d\n" , shortArg);
 			printf("int: %d\n", intArg);
-			printf("long: %ld\n", longArg);
+			printf("long: %" PRId64 "\n", longArg);
 			printf("float: %f\n", floatArg);
 			printf("double: %f\n", doubleArg);
 			printf("byteBuffer: %d\n", byteBuffer [0]);
