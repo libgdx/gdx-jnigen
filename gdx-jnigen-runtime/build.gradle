@@ -107,12 +107,10 @@ task build_macos {
 
 task build_linux {
     group("libffi")
-    dependsOn createBuildTask("linux", "x86", "-fPIC", ["--host=i686-linux-gnu"])
     dependsOn createBuildTask("linux", "x86_64", "-fPIC", ["--host=x86_64-linux-gnu"])
     dependsOn createBuildTask("linux", "arm", "-fPIC", ["--host=arm-linux-gnueabihf"])
     dependsOn createBuildTask("linux", "arm64", "-fPIC", ["--host=aarch64-linux-gnu"])
     dependsOn createBuildTask("linux", "riscv64", "-fPIC", ["--host=riscv64-linux-gnu"])
-    //dependsOn createBuildTask("linux", "loongarch64", "-fPIC", ["--host=loongarch64-unknown-linux-gnu"])
 }
 
 task build_windows {
@@ -246,12 +244,10 @@ jnigen {
         libraries += " ${file("build/libffi-build/${combined}/lib/libffi.a").absolutePath} "
     }
 
-    add(Linux, x32, x86)
     add(Linux, x32, ARM)
     add(Linux, x64, x86)
     add(Linux, x64, ARM)
     add(Linux, x64, RISCV)
-    add(Linux, x64, LOONGARCH)
     add(MacOsX, x64, x86)
     add(MacOsX, x64, ARM)
     add(Windows, x32, x86)

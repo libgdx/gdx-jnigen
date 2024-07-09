@@ -144,7 +144,7 @@ jobs:
       - name: Build Linux natives
         run: |
           ./gradlew build_linux
-          ./gradlew jniGen jnigenBuildLinux jnigenBuildLinux64 jnigenBuildLinuxARM jnigenBuildLinuxARM64 jnigenBuildLinuxRISCV64
+          ./gradlew jniGen jnigenBuildLinux64 jnigenBuildLinuxARM jnigenBuildLinuxARM64 jnigenBuildLinuxRISCV64
 
       - name: Pack artifacts
         run: |
