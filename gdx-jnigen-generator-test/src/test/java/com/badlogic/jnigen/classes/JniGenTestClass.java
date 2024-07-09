@@ -6,6 +6,7 @@ public class JniGenTestClass {
 
     /*JNI
      #include <stdio.h>
+     #define __STDC_FORMAT_MACROS
      #include <inttypes.h>
     */
 
