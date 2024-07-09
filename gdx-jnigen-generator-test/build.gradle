@@ -49,12 +49,10 @@ jnigen {
         options = ["-I" + file("src/test/resources/").absolutePath]
     }
 
-    add(Linux, x32, x86)
     add(Linux, x32, ARM)
     add(Linux, x64, x86)
     add(Linux, x64, ARM)
     add(Linux, x64, RISCV)
-    add(Linux, x64, LOONGARCH)
     add(MacOsX, x64, x86)
     add(MacOsX, x64, ARM)
     add(Windows, x32, x86)
