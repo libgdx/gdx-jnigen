@@ -292,7 +292,7 @@ public class BuildTarget {
 		if (type == Os.Android) {
 			BuildTarget android = new BuildTarget(Os.Android, Architecture.Bitness._32, new String[] {"**/*.c"}, new String[0],
 				new String[] {"**/*.cpp"}, new String[0], new String[0], "", "-O2 -Wall -D__ANDROID__", "-O2 -Wall -D__ANDROID__",
-				"-lm");
+				"-lm -Wl,-z,max-page-size=0x4000");
 			return android;
 		}
 
