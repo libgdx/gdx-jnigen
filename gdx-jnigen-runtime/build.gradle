@@ -196,7 +196,7 @@ task build_ios {
 }
 
 task copyCFiles(type: Copy) {
-    from("src/main/resources/")
+    from("src/main/native/")
     into("jni/")
 }
 
