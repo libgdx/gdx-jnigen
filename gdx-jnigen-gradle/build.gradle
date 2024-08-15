@@ -10,7 +10,12 @@ dependencies {
 gradlePlugin {
     plugins {
         register('gdxJniGen') {
+
             id = 'com.badlogicgames.gdx.gdx-jnigen'
+
+            displayName = POM_NAME
+            description = POM_DESCRIPTION
+
             implementationClass = 'com.badlogic.gdx.jnigen.gradle.JnigenPlugin'
         }
     }
