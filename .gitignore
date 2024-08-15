@@ -57,3 +57,4 @@ gradle-app.setting
 .settings
 bin
 out/
+local.properties

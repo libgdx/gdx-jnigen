@@ -6,16 +6,7 @@ subprojects
     afterEvaluate { project ->
         publishing {
             publications {
-                mavenJava(MavenPublication) {
-                    from components.java
-                    versionMapping {
-                        usage('java-api') {
-                            fromResolutionOf('runtimeClasspath')
-                        }
-                        usage('java-runtime') {
-                            fromResolutionResult()
-                        }
-                    }
+                withType(MavenPublication) {
                     pom {
                         name = POM_NAME
                         description = POM_DESCRIPTION
@@ -41,12 +32,23 @@ subprojects
                         }
                     }
                 }
+                mavenJava(MavenPublication) {
+                    from components.java
+                    versionMapping {
+                        usage('java-api') {
+                            fromResolutionOf('runtimeClasspath')
+                        }
+                        usage('java-runtime') {
+                            fromResolutionResult()
+                        }
+                    }
+                }
             }
 
             repositories {
                 maven {
                     url = version.endsWith('SNAPSHOT') ? getSnapshotRepositoryUrl() : getReleaseRepositoryUrl()
-                    
+
                     if (getRepositoryUsername() || getRepositoryPassword())
                     {
                         credentials {
