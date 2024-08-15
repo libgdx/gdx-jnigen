@@ -32,14 +32,18 @@ subprojects
                         }
                     }
                 }
-                mavenJava(MavenPublication) {
-                    from components.java
-                    versionMapping {
-                        usage('java-api') {
-                            fromResolutionOf('runtimeClasspath')
-                        }
-                        usage('java-runtime') {
-                            fromResolutionResult()
+                //Check if we are a gradle plugin, if we are skip mavenJava
+                if (!plugins.hasPlugin('java-gradle-plugin')) {
+                    mavenJava(MavenPublication) {
+
+                        from components.java
+                        versionMapping {
+                            usage('java-api') {
+                                fromResolutionOf('runtimeClasspath')
+                            }
+                            usage('java-runtime') {
+                                fromResolutionResult()
+                            }
                         }
                     }
                 }
