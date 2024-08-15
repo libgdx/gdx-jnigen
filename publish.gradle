@@ -62,7 +62,7 @@ subprojects
 
         signing {
             useGpgCmd()
-            sign publishing.publications.mavenJava
+            sign publishing.publications
         }
 
         //Simply using "required" in signing block doesn't work because taskGraph isn't ready yet.
