@@ -7,6 +7,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class BaseTest {
 
     @BeforeAll
@@ -15,14 +18,26 @@ public class BaseTest {
         TestData.initialize();
     }
 
+    @SuppressWarnings("all")
     @BeforeEach
     @AfterEach
     public void emptyGC() {
         long time = System.currentTimeMillis();
         while (GCHandler.nativeObjectCount() != 0) {
-            if (System.currentTimeMillis() - time > 1000)
+            if (System.currentTimeMillis() - time > 5000)
                 throw new RuntimeException("GC timed out");
+
             System.gc();
+            System.runFinalization();
+
+            if (System.currentTimeMillis() - time > 1000) {
+                try {
+                    final List<long[]> memhog = new LinkedList<>();
+                    while(true) {
+                        memhog.add(new long[102400]);
+                    }
+                } catch(OutOfMemoryError ignored) {}
+            }
         }
     }
 }
