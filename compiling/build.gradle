@@ -21,6 +21,9 @@ eclipse.project.name = "root"
 
 apply from: file('../publish.gradle')
 
+if (file('../override.gradle').exists())
+    apply from: file('../override.gradle')
+
 task publishToMavenLocal {
     subprojects.each { subproject ->
         dependsOn subproject.tasks.named("publishToMavenLocal")
