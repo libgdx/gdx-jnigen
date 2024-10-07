@@ -1,5 +1,5 @@
 plugins {
-    id "com.badlogicgames.gdx.gdx-jnigen"
+    id "com.badlogicgames.gdx.jnigen-gradle"
 }
 
 sourceCompatibility = 1.8
@@ -13,8 +13,8 @@ dependencies {
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly fileTree(dir: file("build/libs/"), include: '*natives-desktop.jar')
-    testImplementation project(path: ":gdx-jnigen-runtime")
-    testImplementation project(path: ":gdx-jnigen-runtime", configuration: "archives")
+    testImplementation project(path: ":jnigen-runtime")
+    testImplementation project(path: ":jnigen-runtime", configuration: "archives")
 }
 
 

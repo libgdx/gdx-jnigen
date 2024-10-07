@@ -3,16 +3,16 @@ plugins {
 }
 
 dependencies {
-    implementation project(":gdx-jnigen")
+    implementation project(":jnigen-core")
     implementation gradleApi()
-    implementation project(":gdx-jnigen-generator")
+    implementation project(":jnigen-generator")
 }
 
 gradlePlugin {
     plugins {
         register('gdxJniGen') {
 
-            id = 'com.badlogicgames.gdx.gdx-jnigen'
+            id = 'com.badlogicgames.gdx.jnigen-gradle'
 
             displayName = POM_NAME
             description = POM_DESCRIPTION

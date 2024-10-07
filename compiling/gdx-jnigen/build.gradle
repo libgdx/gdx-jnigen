@@ -1,6 +1,6 @@
 dependencies {
     implementation "com.github.javaparser:javaparser-core:3.14.14"
-    api project(':gdx-jnigen-commons')
+    api project(':jnigen-commons')
 }
 
 eclipse {
