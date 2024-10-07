@@ -57,7 +57,7 @@ jnigen {
     add(MacOsX, x64, ARM)
     add(Windows, x32, x86)
     add(Windows, x64, x86)
-    add(Windows, x64, ARM)
+    //add(Windows, x64, ARM)
     add(Android) {
         linkerFlags += " -stdlib=libc++\nAPP_STL := c++_shared "
     }
