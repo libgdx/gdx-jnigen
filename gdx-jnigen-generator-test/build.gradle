@@ -1,5 +1,5 @@
 plugins {
-    id "com.badlogicgames.gdx.jnigen-gradle"
+    id "com.badlogicgames.jnigen.jnigen-gradle"
 }
 
 sourceCompatibility = 1.8
@@ -25,7 +25,7 @@ task copyTestFiles(type: Copy) {
 
 test {
     // TODO: Figure out how to force build natives?
-    dependsOn(":gdx-jnigen-generator-test:jnigenJarNativesDesktop")
+    dependsOn(":jnigen-generator-test:jnigenJarNativesDesktop")
     useJUnitPlatform()
     outputs.upToDateWhen {false}
 }

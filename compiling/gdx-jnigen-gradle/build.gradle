@@ -12,7 +12,7 @@ gradlePlugin {
     plugins {
         register('gdxJniGen') {
 
-            id = 'com.badlogicgames.gdx.jnigen-gradle'
+            id = 'com.badlogicgames.jnigen.jnigen-gradle'
 
             displayName = POM_NAME
             description = POM_DESCRIPTION

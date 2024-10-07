@@ -2,7 +2,7 @@ import java.nio.file.Files
 import java.util.function.Supplier
 
 plugins {
-    id "com.badlogicgames.gdx.jnigen-gradle"
+    id "com.badlogicgames.jnigen.jnigen-gradle"
     id "de.undercouch.download" version "5.0.1"
 }
 

@@ -37,7 +37,7 @@ subprojects
                     mavenJava(MavenPublication) {
                         from components.java
 
-                        if (project.getPluginManager().hasPlugin("com.badlogicgames.gdx.gdx-jnigen")) {
+                        if (project.getPluginManager().hasPlugin("com.badlogicgames.jnigen.jnigen-gradle")) {
                             artifact jnigenJarNativesDesktop { }
                             ['arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'].each { id ->
                                 artifact "jnigenJarNativesAndroid${id}" { }

@@ -25,7 +25,7 @@ We recommend you look at some existing projects for examples:
 ```gradle
 // Apply jnigen plugin
 plugins {
-    id "com.badlogicgames.gdx.gdx-jnigen"
+    id "com.badlogicgames.jnigen.jnigen-gradle"
 }
 
 // ...
