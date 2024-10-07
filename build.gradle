@@ -28,3 +28,6 @@ apply plugin: 'eclipse'
 eclipse.project.name = "root"
 
 apply from: rootProject.file('publish.gradle')
+
+if (rootProject.file('override.gradle').exists())
+    apply from: rootProject.file('override.gradle')
