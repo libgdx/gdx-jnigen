@@ -2,7 +2,7 @@ name: Build and publish
 
 on:
   push:
-    branches: [ feat/c-runtime ]
+    branches: [ master ]
   release:
     types: [ published ]
 
