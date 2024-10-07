@@ -252,7 +252,7 @@ jnigen {
     add(MacOsX, x64, ARM)
     add(Windows, x32, x86)
     add(Windows, x64, x86)
-    add(Windows, x64, ARM)
+    //add(Windows, x64, ARM)
     add(Android) {
         androidApplicationMk += "APP_PLATFORM := android-19\nAPP_STRIP_MODE := none"
         linkerFlags += " -stdlib=libc++\nLOCAL_WHOLE_STATIC_LIBRARIES := static_libffi\nAPP_STL := c++_shared"
