@@ -2,7 +2,7 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 dependencies {
-    api "com.badlogicgames.gdx:gdx-jnigen-commons"
+    api "com.badlogicgames.gdx:jnigen-commons"
 }
 
 eclipse {

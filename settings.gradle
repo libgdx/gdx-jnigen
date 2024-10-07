@@ -2,3 +2,7 @@ includeBuild("compiling")
 include ':gdx-jnigen-loader'
 include ':gdx-jnigen-runtime'
 include ':gdx-jnigen-generator-test'
+
+project(":gdx-jnigen-loader").name = "jnigen-loader"
+project(":gdx-jnigen-runtime").name = "jnigen-runtime"
+project(":gdx-jnigen-generator-test").name = "jnigen-generator-test"

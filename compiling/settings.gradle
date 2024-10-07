@@ -2,3 +2,8 @@ include ':gdx-jnigen'
 include ':gdx-jnigen-gradle'
 include ':gdx-jnigen-generator'
 include ':gdx-jnigen-commons'
+
+project(":gdx-jnigen").name = "jnigen-core"
+project(":gdx-jnigen-gradle").name = "jnigen-gradle"
+project(":gdx-jnigen-generator").name = "jnigen-generator"
+project(":gdx-jnigen-commons").name = "jnigen-commons"
