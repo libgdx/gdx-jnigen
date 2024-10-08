@@ -170,7 +170,7 @@ import com.badlogic.gdx.jnigen.parsing.RobustJavaMethodParser;
  * new NativeCodeGenerator().generate(&quot;src&quot;, &quot;bin&quot;, &quot;jni&quot;);
  * </pre>
  * 
- * <p>To automatically compile and load the native code, see the classes {@link AntScriptGenerator}, {@link BuildExecutor} and
+ * <p>To automatically compile and load the native code, {@link BuildExecutor} and
  * SharedLibraryLoader classes. </p>
  * 
  * @author mzechner */
@@ -184,7 +184,6 @@ public class NativeCodeGenerator {
 	FileDescriptor jniDir;
 	String[] includes;
 	String[] excludes;
-	AntPathMatcher matcher = new AntPathMatcher();
 	JavaMethodParser javaMethodParser = new RobustJavaMethodParser();
 	CMethodParser cMethodParser = new JniHeaderCMethodParser();
 	CMethodParserResult cResult;
@@ -246,13 +245,13 @@ public class NativeCodeGenerator {
 		for (FileDescriptor file : files) {
 			if (file.isDirectory()) {
 				if (file.path().contains(".svn")) continue;
-				if (excludes != null && matcher.match(file.path(), excludes)) continue;
+				if (excludes != null && AntPathMatcher.match(file.path(), excludes)) continue;
 				processDirectory(file);
 			} else {
 				if (file.extension().equals("java")) {
 					if (file.name().contains("NativeCodeGenerator")) continue;
-					if (includes != null && !matcher.match(file.path(), includes)) continue;
-					if (excludes != null && matcher.match(file.path(), excludes)) continue;
+					if (includes != null && !AntPathMatcher.match(file.path(), includes)) continue;
+					if (excludes != null && AntPathMatcher.match(file.path(), excludes)) continue;
 					String className = getNativeClassFileName(file);
 					FileDescriptor cppFile = new FileDescriptor(jniDir + "/" + className + ".cpp");
 					if (file.lastModified() < cppFile.lastModified()) {
@@ -343,9 +342,9 @@ public class NativeCodeGenerator {
 
 			if (segment instanceof JavaMethod) {
 				JavaMethod javaMethod = (JavaMethod)segment;
-				if (javaMethod.getNativeCode() == null)
-					continue;
-
+				if (javaMethod.getNativeCode() == null) {
+					throw new RuntimeException("Method '" + javaMethod.getName() + "' has no body");
+				}
 				CMethod cMethod = findCMethod(javaMethod, cMethods);
 				if (cMethod == null)
 					throw new RuntimeException("Couldn't find C method for Java method '" + javaMethod.getClassName() + "#"

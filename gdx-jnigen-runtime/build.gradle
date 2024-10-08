@@ -244,16 +244,16 @@ jnigen {
         libraries += " ${file("build/libffi-build/${combined}/lib/libffi.a").absolutePath} "
     }
 
-    add(Linux, x32, ARM)
-    add(Linux, x64, x86)
-    add(Linux, x64, ARM)
-    add(Linux, x64, RISCV)
-    add(MacOsX, x64, x86)
-    add(MacOsX, x64, ARM)
-    add(Windows, x32, x86)
-    add(Windows, x64, x86)
+    addLinux(x32, ARM)
+    addLinux(x64, x86)
+    addLinux(x64, ARM)
+    addLinux(x64, RISCV)
+    addMac(x64, x86)
+    addMac(x64, ARM)
+    addWindows(x32, x86)
+    addWindows(x64, x86)
     //add(Windows, x64, ARM)
-    add(Android) {
+    addAndroid() {
         androidApplicationMk += "APP_PLATFORM := android-19\nAPP_STRIP_MODE := none"
         linkerFlags += " -stdlib=libc++\nLOCAL_WHOLE_STATIC_LIBRARIES := static_libffi\nAPP_STL := c++_shared"
         androidAndroidMk += [
@@ -264,7 +264,7 @@ jnigen {
                 "include \$(PREBUILT_STATIC_LIBRARY)"
         ]
     }
-    add(IOS) {
+    addIOS() {
         // Gnu11 is the only one that compiles for whatever reason
         cFlags += " -std=gnu11 -fexceptions "
         cIncludes += ["**/*.S"]
@@ -275,16 +275,16 @@ jnigen {
     }
 }
 
-tasks.named("jnigenBuildIOS").get().dependsOn(copyIOSFiles)
-tasks.named("jnigenBuildAndroid").get().finalizedBy(extractAndroidCXXLibs)
+//tasks.named("jnigenBuildIOS").get().dependsOn(copyIOSFiles)
+//tasks.named("jnigenBuildAndroid").get().finalizedBy(extractAndroidCXXLibs)
 
 artifacts {
-    archives jnigenJarNativesDesktop
+//    archives jnigenJarNativesDesktop
     ['arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'].each { id ->
-        archives "jnigenJarNativesAndroid${id}" { }
+//        archives "jnigenJarNativesAndroid${id}" { }
     }
 
-    archives jnigenJarNativesIOS
+//    archives jnigenJarNativesIOS
 }
 
 eclipse {
