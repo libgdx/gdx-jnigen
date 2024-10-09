@@ -275,8 +275,14 @@ jnigen {
     }
 }
 
-//tasks.named("jnigenBuildIOS").get().dependsOn(copyIOSFiles)
-//tasks.named("jnigenBuildAndroid").get().finalizedBy(extractAndroidCXXLibs)
+tasks.named("jnigenBuildAllIOS").get().dependsOn(copyIOSFiles)
+
+tasks.named("jnigenBuildAllAndroid").get().finalizedBy(extractAndroidCXXLibs)
+tasks.forEach {
+    if (it.name.startsWith("jnigenBuildAndroid")) {
+        it.dependsOn(extractAndroidCXXLibs)
+    }
+}
 
 artifacts {
 //    archives jnigenJarNativesDesktop
