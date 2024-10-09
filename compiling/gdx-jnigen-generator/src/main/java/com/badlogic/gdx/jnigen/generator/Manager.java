@@ -192,14 +192,14 @@ public class Manager {
         String methodString = method.toString(new DefaultPrinterConfiguration().removeOption(new DefaultConfigurationOption(
                 ConfigOption.PRINT_COMMENTS)));
 
-        String lineToPatch = Arrays.stream(classString.split("\n"))
+        String lineToPatch = Arrays.stream(classString.split("\r\n|\n"))
                 .filter(line -> line.contains(methodString)).findFirst().orElse(null);
         if (lineToPatch == null)
             throw new IllegalArgumentException("Failed to find native method: " + method.toString() + " in " + classString);
 
         String offset = lineToPatch.replace(lineToPatch.trim(), "");
         String newLine = lineToPatch + "/*\n";
-        newLine += Arrays.stream(nativeCode.split("\n"))
+        newLine += Arrays.stream(nativeCode.split("\r\n|\n"))
                 .map(s -> offset + "\t" + s)
                 .collect(Collectors.joining("\n"));
 
