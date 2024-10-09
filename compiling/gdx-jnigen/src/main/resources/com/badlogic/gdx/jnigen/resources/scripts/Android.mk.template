@@ -6,8 +6,9 @@ LOCAL_C_INCLUDES := %headerDirs%
  
 LOCAL_CFLAGS := $(LOCAL_C_INCLUDES:%=-I%) %cFlags%
 LOCAL_CPPFLAGS := $(LOCAL_C_INCLUDES:%=-I%) %cppFlags%
-LOCAL_LDLIBS := %linkerFlags%
+LOCAL_LDFLAGS := %linkerFlags%
+LOCAL_LDLIBS := %libraries%
 LOCAL_ARM_MODE  := arm
- 
-LOCAL_SRC_FILES := %srcFiles% 
+
+LOCAL_SRC_FILES := %srcFiles%
 include $(BUILD_SHARED_LIBRARY)

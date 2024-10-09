@@ -1,7 +1,21 @@
 package com.badlogic.gdx.jnigen.commons;
 
 public enum Architecture {
-	x86, ARM, RISCV,LOONGARCH;
+
+	x86("x86"),
+	ARM("Arm"),
+	RISCV("Riscv"),
+	LOONGARCH("LoongArch");
+
+	private final String displayName;
+
+	Architecture (String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getDisplayName () {
+		return displayName;
+	}
 
 	public String toSuffix() {
 		if (this == x86) return "";

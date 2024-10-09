@@ -49,7 +49,7 @@ import java.util.StringTokenizer;
  * @since 16.07.2003 */
 public class AntPathMatcher {
 
-	public boolean isPattern (String str) {
+	public static boolean isPattern (String str) {
 		return (str.indexOf('*') != -1 || str.indexOf('?') != -1);
 	}
 
@@ -71,7 +71,7 @@ public class AntPathMatcher {
 		return tokens.toArray(new String[tokens.size()]);
 	}
 
-	public boolean match (String file, String[] patterns) {
+	public static boolean match (String file, String[] patterns) {
 		if (patterns == null || patterns.length == 0) return true;
 		for (String pattern : patterns) {
 			if (match(pattern, file)) {
@@ -81,7 +81,7 @@ public class AntPathMatcher {
 		return false;
 	}
 
-	public boolean match (String pattern, String str) {
+	public static boolean match (String pattern, String str) {
 		if (str.startsWith("/") != pattern.startsWith("/")) {
 			return false;
 		}
@@ -200,7 +200,7 @@ public class AntPathMatcher {
 	 * @param pattern pattern to match against. Must not be <code>null</code>.
 	 * @param str string which must be matched against the pattern. Must not be <code>null</code>.
 	 * @return <code>true</code> if the string matches against the pattern, or <code>false</code> otherwise. */
-	private boolean matchStrings (String pattern, String str) {
+	private static boolean matchStrings (String pattern, String str) {
 		char[] patArr = pattern.toCharArray();
 		char[] strArr = str.toCharArray();
 		int patIdxStart = 0;

@@ -1,369 +1,320 @@
 package com.badlogic.gdx.jnigen.gradle;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Predicate;
-
-import javax.inject.Inject;
-
+import com.badlogic.gdx.jnigen.BuildTarget;
+import com.badlogic.gdx.jnigen.RobovmBuildConfig;
+import com.badlogic.gdx.jnigen.commons.*;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.badlogic.gdx.jnigen.BuildTarget;
-import com.badlogic.gdx.jnigen.commons.Architecture;
-import com.badlogic.gdx.jnigen.commons.Os;
+import javax.inject.Inject;
+import java.io.File;
+import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * @author Desu
  */
 public class JnigenExtension {
-	private static final Logger log = LoggerFactory.getLogger(JnigenExtension.class);
+    private static final Logger log = LoggerFactory.getLogger(JnigenExtension.class);
 
-	public static final Architecture.Bitness x32 = Architecture.Bitness._32;
-	public static final Architecture.Bitness x64 = Architecture.Bitness._64;
-	public static final Architecture.Bitness x128 = Architecture.Bitness._128;
-	public static final Architecture x86 = Architecture.x86;
-	public static final Architecture ARM = Architecture.ARM;
-	public static final Architecture RISCV = Architecture.RISCV;
-	public static final Architecture LOONGARCH = Architecture.LOONGARCH;
-	public static final Os Windows = Os.Windows;
-	public static final Os Linux = Os.Linux;
-	public static final Os MacOsX = Os.MacOsX;
-	public static final Os Android = Os.Android;
-	public static final Os IOS = Os.IOS;
+    public static final Architecture.Bitness x32 = Architecture.Bitness._32;
+    public static final Architecture.Bitness x64 = Architecture.Bitness._64;
+    public static final Architecture.Bitness x128 = Architecture.Bitness._128;
+    public static final Architecture x86 = Architecture.x86;
+    public static final Architecture ARM = Architecture.ARM;
+    public static final Architecture RISCV = Architecture.RISCV;
+    public static final Architecture LOONGARCH = Architecture.LOONGARCH;
 
-	final Project project;
+    public static final CompilerABIType MSVC = CompilerABIType.MSVC;
+    public static final CompilerABIType GCC_CLANG = CompilerABIType.GCC_CLANG;
+    public static final Os Windows = Os.Windows;
+    public static final Os Linux = Os.Linux;
+    public static final Os MacOsX = Os.MacOsX;
+    public static final Os Android = Os.Android;
+    public static final Os IOS = Os.IOS;
 
-	/**
-	 * Gradle Tasks are executed in the main project working directory. Supply
-	 * actual subproject path where necessary.
-	 */
-	String subProjectDir;
+    public static final AndroidABI ABI_ARMEABI_V7A = AndroidABI.ABI_ARMEABI_V7A;
+    public static final AndroidABI ABI_x86f = AndroidABI.ABI_x86;
+    public static final AndroidABI ABI_ARM64_V8A = AndroidABI.ABI_ARM64_V8A;
+    public static final AndroidABI ABI_x86_64 = AndroidABI.ABI_x86_64;
 
-	String sharedLibName = null;
-	String temporaryDir = "target";
-	String libsDir = "libs";
-	String jniDir = "jni";
-	
-	/**
-	 * If we should build with release flag set.<br/>
-	 * This strips debug symbols.
-	 */
-	boolean release = true;
+    public static final TargetType DEVICE = TargetType.DEVICE;
+    public static final TargetType SIMULATOR = TargetType.SIMULATOR;
 
-	NativeCodeGeneratorConfig nativeCodeGeneratorConfig;
-	List<BuildTarget> targets = new ArrayList<>();
-	Action<BuildTarget> all = null;
 
-	Task jarAndroidNatives = null;
-	JnigenJarTask jarDesktopNatives = null;
+    final Project project;
 
-	RoboVMXml robovm = new RoboVMXml();
+    /**
+     * Gradle Tasks are executed in the main project working directory. Supply
+     * actual subproject path where necessary.
+     */
+    String subProjectDir;
+
+    String sharedLibName = null;
+    String temporaryDir = "build/jnigen/target";
+    String libsDir = "build/jnigen/libs";
+    String jniDir = "build/jnigen/jni";
+
+    /**
+     * If we should build with release flag set.<br/>
+     * This strips debug symbols.
+     */
+    boolean release = true;
+
+    boolean multiThreadedCompile = true;
+
+    NativeCodeGeneratorConfig nativeCodeGeneratorConfig;
+    public List<BuildTarget> targets = new ArrayList<>();
+    Action<BuildTarget> all = null;
+
+    Action<RobovmBuildConfig> robovm;
 	JnigenBindingGeneratorExtension generator = new JnigenBindingGeneratorExtension();
 
-	@Inject
-	public JnigenExtension(Project project) {
-		this.project = project;
-		this.subProjectDir = project.getProjectDir().getAbsolutePath() + File.separator;
-		this.nativeCodeGeneratorConfig = new NativeCodeGeneratorConfig(project, subProjectDir);
-	}
+    @Inject
+    public JnigenExtension (Project project) {
+        this.project = project;
+        this.subProjectDir = project.getProjectDir().getAbsolutePath() + File.separator;
+        this.nativeCodeGeneratorConfig = new NativeCodeGeneratorConfig(project);
+    }
 
-	public void generator(Action<JnigenBindingGeneratorExtension> container) {
+    public void generator(Action<JnigenBindingGeneratorExtension> container) {
 		container.execute(generator);
 	}
 
-	public void nativeCodeGenerator(Action<NativeCodeGeneratorConfig> container) {
-		container.execute(nativeCodeGeneratorConfig);
-	}
+    public void nativeCodeGenerator (Action<NativeCodeGeneratorConfig> container) {
+        container.execute(nativeCodeGeneratorConfig);
+    }
 
-	public void all(Action<BuildTarget> container) {
-		this.all = container;
-	}
+    public void all (Action<BuildTarget> container) {
+        this.all = container;
+    }
 
-	public void robovm(Action<RoboVMXml> action) {
-		action.execute(robovm);
-	}
+    public void robovm (Action<RobovmBuildConfig> robovmConfigContainer) {
+        this.robovm = robovmConfigContainer;
+    }
 
-	public void add(Os type) {
-		add(type, Architecture.Bitness._32);
-	}
 
-	public void add(Os type, Architecture.Bitness bitness) {
-		add(type, bitness, Architecture.x86);
-	}
+    public void addLinux (Architecture.Bitness bitness, Architecture architecture) {
+        addLinux(bitness, architecture, null);
+    }
 
-	public void add(Os type, Architecture.Bitness bitness, Architecture architecture) {
-		add(type, bitness, architecture, null);
-	}
+    public void addLinux (Architecture.Bitness bitness, Architecture architecture, Action<BuildTarget> container) {
+        add(Linux, bitness, architecture, CompilerABIType.GCC_CLANG, TargetType.DEVICE, null, container);
+    }
 
-	@Deprecated
-	public void add(Os type, boolean is64Bit) {
-		add(type, is64Bit, false, null);
-	}
 
-	@Deprecated
-	public void add(Os type, boolean is64Bit, boolean isARM) {
-		add(type, is64Bit, isARM, null);
-	}
+    public void addIOS () {
+        addIOS(x64, x86, SIMULATOR);
+        addIOS(x64, ARM, DEVICE);
+        addIOS(x64, ARM, SIMULATOR);
+    }
 
-	public void add(Os type, Action<BuildTarget> container) {
-		add(type, Architecture.Bitness._32, Architecture.x86, container);
-	}
+    public void addIOS (Action<BuildTarget> container) {
+        addIOS(x64, x86, SIMULATOR, container);
+        addIOS(x64, ARM, DEVICE, container);
+        addIOS(x64, ARM, SIMULATOR, container);
+    }
 
-	@Deprecated
-	public void add(Os type, boolean is64Bit, Action<BuildTarget> container) {
-		add(type, is64Bit, false, container);
-	}
 
-	public void add(Os type, Architecture.Bitness bitness, Action<BuildTarget> container) {
-		add(type, bitness, Architecture.x86, container);
-	}
 
-	@Deprecated
-	public void add(Os type, boolean is64Bit, boolean isARM, Action<BuildTarget> container) {
-		add(type, is64Bit ? Architecture.Bitness._64 : Architecture.Bitness._32, isARM ? Architecture.ARM : Architecture.x86, container);
-	}
+    public void addIOS (Architecture.Bitness bitness, Architecture architecture, TargetType targetType) {
+        addIOS(bitness, architecture, targetType, null);
+    }
 
-	public void add(Os type, Architecture.Bitness bitness, Architecture architecture, Action<BuildTarget> container) {
-		String name = type + architecture.toSuffix().toUpperCase() + bitness.toSuffix();
+    public void addIOS (Architecture.Bitness bitness, Architecture architecture, TargetType targetType, Action<BuildTarget> container) {
+        add(Os.IOS, bitness, architecture, CompilerABIType.GCC_CLANG, targetType, null, container);
+    }
 
-		if(get(type, bitness, architecture) != null)
-			throw new RuntimeException("Attempt to add duplicate build target " + name);
-		if((type == Android || type == IOS) && bitness != Architecture.Bitness._32 && architecture != Architecture.x86)
-			throw new RuntimeException("Android and iOS must not have is64Bit or isARM or isRISCV.");
+    public void addMac (Architecture.Bitness bitness, Architecture architecture) {
+        addMac(bitness, architecture, null);
+    }
 
-		BuildTarget target = BuildTarget.newDefaultTarget(type, bitness, architecture);
+    public void addMac (Architecture.Bitness bitness, Architecture architecture, Action<BuildTarget> container) {
+        add(Os.MacOsX, bitness, architecture, GCC_CLANG, TargetType.DEVICE, null, container);
+    }
 
-		if (all != null)
-			all.execute(target);
-		if (container != null)
-			container.execute(target);
+    public void addWindows (Architecture.Bitness bitness, Architecture architecture) {
+        addWindows(bitness, architecture, GCC_CLANG, null);
+    }
 
-		targets.add(target);
+    public void addWindows (Architecture.Bitness bitness, Architecture architecture, Action<BuildTarget> container) {
+        addWindows(bitness, architecture, GCC_CLANG, null);
+    }
 
-		Task jnigenTask = project.getTasks().getByName("jnigen");
-		Task jnigenBuildTask = project.getTasks().getByName("jnigenBuild");
-		Task builtTargetTask = project.getTasks().create("jnigenBuild" + name,
-				JnigenBuildTargetTask.class, this, target);
-		builtTargetTask.dependsOn(jnigenTask);
+    public void addWindows (Architecture.Bitness bitness, Architecture architecture, CompilerABIType compilerABIType) {
+        addWindows(bitness, architecture, compilerABIType, null);
+    }
 
-		if (!target.excludeFromMasterBuildFile && target.canBuild.getAsBoolean())
-			jnigenBuildTask.dependsOn(builtTargetTask);
-		
-		if(type == Android) {
-			if(jarAndroidNatives == null) {
-				jarAndroidNatives = project.getTasks().create("jnigenJarNativesAndroid");
-				jarAndroidNatives.setGroup("jnigen");
-				jarAndroidNatives.setDescription("Assembles all jar archives containing the native libraries for Android.");
-			}
-			
-			String[] abis = target.androidABIs;
-			
-			// If we have an "all" abi, add tasks for all known abis.
-			if(Arrays.asList(abis).contains("all")) {
-				List<String> tmp = new ArrayList<>(Arrays.asList(abis));
-				tmp.remove("all");
-				tmp.add("armeabi");
-				tmp.add("armeabi-v7a");
-				tmp.add("x86");
-				tmp.add("x86_64");
-				tmp.add("arm64-v8a");
-				abis = tmp.toArray(new String[tmp.size()]);
-			}
-			
-			JnigenJarTask[] jarAndroidNativesABIs = new JnigenJarTask[abis.length];
-			for(int i = 0; i < abis.length; i++) {
-				jarAndroidNativesABIs[i] = project.getTasks().create("jnigenJarNativesAndroid"+abis[i], JnigenJarTask.class, type);
-				jarAndroidNativesABIs[i].add(target, this, abis[i]);
-				
-				jarAndroidNatives.dependsOn(jarAndroidNativesABIs[i]);
-			}
-		} else if (type == IOS) {
-			JnigenGenerateRoboVMXml generateRoboVMXml = project.getTasks().create("jnigenGenerateRoboVMXml",
-					JnigenGenerateRoboVMXml.class, this);
+    public void addWindows (Architecture.Bitness bitness, Architecture architecture, CompilerABIType compilerABIType, Action<BuildTarget> container) {
+        add(Os.Windows, bitness, architecture, compilerABIType, TargetType.DEVICE, null, container);
+    }
 
-			JnigenIOSJarTask jarIOSNatives = project.getTasks().create("jnigenJarNativesIOS", JnigenIOSJarTask.class);
-			jarIOSNatives.add(target, this);
+    public void addAndroid () {
+        addAndroid(null, null);
+    }
 
-			jarIOSNatives.dependsOn(generateRoboVMXml);
-		}
-		else {
-			if(jarDesktopNatives == null)
-				jarDesktopNatives = project.getTasks().create("jnigenJarNativesDesktop", JnigenJarTask.class, type);
-			jarDesktopNatives.add(target, this);
-		}
-	}
+    public void addAndroid (Action<BuildTarget> container) {
+        addAndroid(null, container);
+    }
 
-	public BuildTarget get(Os type) {
-		return get(type, Architecture.Bitness._32, Architecture.x86, null);
-	}
+    public void addAndroid (AndroidABI abi) {
+        addAndroid(abi, null);
+    }
 
-	public BuildTarget get(Os type, Architecture.Bitness bitness) {
-		return get(type, bitness, Architecture.x86);
-	}
+    public void addAndroid (AndroidABI abi, Action<BuildTarget> container) {
+        if (abi == null) {
+            for (AndroidABI value : AndroidABI.values()) {
+                //Add them all!
+                addAndroid(value, container);
+            }
+        } else {
+            //bitness and arch doesn't mean anything for android
+            add(Os.Android, Architecture.Bitness._32, Architecture.x86, CompilerABIType.GCC_CLANG, DEVICE, abi, container);
+        }
+    }
 
-	@Deprecated
-	public BuildTarget get(Os type, boolean is64Bit) {
-		return get(type, is64Bit, false, null);
-	}
+    public void add (Os targetOs, Architecture.Bitness bitness, Architecture architecture, CompilerABIType abiType, TargetType targetType, AndroidABI androidABI, Action<BuildTarget> container) {
+        String name = targetOs + architecture.toSuffix().toUpperCase() + bitness.toSuffix();
 
-	@Deprecated
-	public BuildTarget get(Os type, boolean is64Bit, boolean isARM) {
-		return get(type, is64Bit, isARM, null);
-	}
+        if (get(targetOs, bitness, architecture, androidABI, targetType, container) != null)
+            throw new RuntimeException("Attempt to add duplicate build target " + name);
+        if ((targetOs == Android) && bitness != Architecture.Bitness._32 && architecture != Architecture.x86)
+            throw new RuntimeException("Android and iOS must not have is64Bit or isARM or isRISCV.");
 
-	public BuildTarget get(Os type, Architecture.Bitness bitness, Architecture architecture) {
-		return get(type, bitness, architecture, null);
-	}
+        BuildTarget target = BuildTarget.newDefaultTarget(targetOs, bitness, architecture, abiType, targetType);
+        target.release = release;
 
-	public BuildTarget get(Os type, Action<BuildTarget> container) {
-		return get(type, Architecture.Bitness._32, Architecture.x86, container);
-	}
+        if (all != null)
+            all.execute(target);
+        if (container != null)
+            container.execute(target);
 
-	@Deprecated
-	public BuildTarget get(Os type, boolean is64Bit, Action<BuildTarget> container) {
-		return get(type, is64Bit, false, container);
-	}
+        if (target.excludeFromMasterBuildFile) {
+            return;
+        }
+        targets.add(target);
+        target.setAndroidOverrideABI(androidABI);
 
-	@Deprecated
-	public BuildTarget get(Os type, boolean is64Bit, boolean isARM, Action<BuildTarget> container) {
-		return get(type, is64Bit ? Architecture.Bitness._64 : Architecture.Bitness._32, isARM ? Architecture.ARM : Architecture.x86, container);
-	}
+        checkForTasksToAdd(target);
 
-	public BuildTarget get(Os type, Architecture.Bitness bitness, Architecture architecture, Action<BuildTarget> container) {
-		for(BuildTarget target : targets) {
-			if(target.os == type && target.bitness == bitness && target.architecture == architecture) {
-				if(container != null)
-					container.execute(target);
-				return target;
-			}
-		}
-		return null;
-	}
-	
-	public void each(Predicate<BuildTarget> condition, Action<BuildTarget> container) {
-		for(BuildTarget target : targets) {
-			if(condition.test(target))
-				container.execute(target);
-		}
-	}
+    }
 
-	class NativeCodeGeneratorConfig {
-		SourceSet sourceSet;
-		private String[] sourceDirs;
-		String jniDir = "jni";
-		String[] includes = null;
-		String[] excludes = null;
+    private Set<Os> osLevelTargetsSeen = new HashSet<>();
+    private Set<Platform> platformLevelTargetsSeen = new HashSet<>();
 
-		public NativeCodeGeneratorConfig(Project project, String subProjectDir) {
-			JavaPluginConvention javaPlugin = project.getConvention().getPlugin(JavaPluginConvention.class);
-			SourceSetContainer sourceSets = javaPlugin.getSourceSets();
-			sourceSet = sourceSets.findByName("main");
-		}
+    private void checkForTasksToAdd (BuildTarget target) {
 
-		@Override
-		public String toString() {
-			return "NativeCodeGeneratorConfig[sourceDir=`" + Arrays.toString(sourceDirs) + "`, sourceSet=`" + sourceSet + "`, jniDir=`"
-					+ jniDir + "`, includes=`" + Arrays.toString(includes)
-					+ "`, excludes=`" + Arrays.toString(excludes) + "`]";
-		}
+        Os os = target.os;
+        Platform platform = os.getPlatform();
+        Architecture architecture = target.architecture;
+        Architecture.Bitness bitness = target.bitness;
 
-		/**
-		 * This method is deprecated in favor of {@link NativeCodeGeneratorConfig#setSourceDirs(String[])}
-		 */
-		@Deprecated
-		public void setSourceDir(String sourceDir) {
-			this.sourceDirs = new String[]{sourceDir};
-		}
+        JnigenTask jnigenTask = (JnigenTask) project.getTasks().getByName("jnigen");
 
-		public void setSourceDirs(String[] sourceDirs) {
-			this.sourceDirs = sourceDirs;
-		}
+        if (!osLevelTargetsSeen.contains(os)) {
+            osLevelTargetsSeen.add(os);
+            JnigenBuildTask jnigenBuildTask = project.getTasks().create("jnigenBuildAll" + os.name(), JnigenBuildTask.class, this);
+            jnigenBuildTask.setOsToBuild(os);
+            jnigenBuildTask.dependsOn(jnigenTask);
+        }
 
-		public String[] getSourceDirs()
-		{
-			//If already set, use provided value
-			if(sourceDirs != null) {
-				return sourceDirs;
-			}
+        if (target.os == Android) {
+            JnigenBuildTask jnigenBuildTask = project.getTasks().create("jnigenBuild" + os.name() + "_" + target.getTargetAndroidABI().getAbiString(), JnigenBuildTask.class, this);
+            jnigenBuildTask.setBuildTarget(target);
+            jnigenBuildTask.dependsOn(jnigenTask);
 
-			sourceDirs = sourceSet.getJava().getSrcDirs().stream().map(File::getPath).toArray(String[]::new);
-			return sourceDirs;
-		}
-	}
-	
-	class RoboVMXml {
-		/**
-		 * Use an existing robovm.xml file instead of generating one.
-		 */
-		private File manualFile = null;
-		private List<String> forceLinkClasses = new ArrayList<>();
-		private List<RoboVMXmlLib> extraLibs = new ArrayList<>();
-		private List<String> extraXCFrameworks = new ArrayList<>();
+            //Add the package task, android does separate artifacts
 
-		public File getManualFile() {
-			return manualFile;
-		}
+           JnigenPackageTask jnigenPackageTask = project.getTasks().create("jnigenPackage" + platform.name() + "_" + target.getTargetAndroidABI().getAbiString(), JnigenPackageTask.class, this);
+           jnigenPackageTask.configure(target.getTargetAndroidABI(), platform);
 
-		public List<String> getForceLinkClasses() {
-			return forceLinkClasses;
-		}
+        } else if (target.os == Os.IOS) {
+            //Nope! No platform specific builds for ios, because theyend up in framework.
+            //Don't want to have to do a separate task after for combining the framework
+        } else {
+            JnigenBuildTask jnigenBuildTask = project.getTasks().create("jnigenBuild" + os.name() + "_" + architecture.getDisplayName() + bitness.name(), JnigenBuildTask.class, this);
+            jnigenBuildTask.setBuildTarget(target);
+            jnigenBuildTask.dependsOn(jnigenTask);
+        }
 
-		public List<RoboVMXmlLib> getExtraLibs() {
-			return extraLibs;
-		}
+        if (!platformLevelTargetsSeen.contains(platform)) {
+            platformLevelTargetsSeen.add(platform);
 
-		public List<String> getExtraXCFrameworks() {
-			return extraXCFrameworks;
-		}
+            JnigenPackageTask jnigenPackageTask = project.getTasks().create("jnigenPackageAll" + platform.name(), JnigenPackageTask.class, this);
+            jnigenPackageTask.configure(null, platform);
+        }
 
-		public void manualFile(File manualFile) {
-			if (!forceLinkClasses.isEmpty() || !extraLibs.isEmpty())
-				throw new RuntimeException("robovm cannot use both manualFile and gradle overrides");
-			this.manualFile = manualFile;
-		}
+    }
 
-		public void forceLinkClasses(String[] forceLinkClasses) {
-			if (manualFile != null)
-				throw new RuntimeException("robovm cannot use both manualFile and gradle overrides");
-			this.forceLinkClasses.addAll(Arrays.asList(forceLinkClasses));
-		}
+    public BuildTarget get (Os type, Architecture.Bitness bitness, Architecture architecture, AndroidABI androidABI, TargetType targetType, Action<BuildTarget> container) {
+        for (BuildTarget target : targets) {
+            if (
+                    target.os == type &&
+                            target.bitness == bitness &&
+                            target.architecture == architecture &&
+                            target.getTargetAndroidABI() == androidABI &&
+                            target.targetType == targetType) {
+                if (container != null)
+                    container.execute(target);
+                return target;
+            }
+        }
+        return null;
+    }
 
-		public void extraLib(String path) {
-			if (manualFile != null)
-				throw new RuntimeException("robovm cannot use both manualFile and gradle overrides");
-			extraLibs.add(new RoboVMXmlLib(path, null));
-		}
+    public void each (Predicate<BuildTarget> condition, Action<BuildTarget> container) {
+        for (BuildTarget target : targets) {
+            if (condition.test(target))
+                container.execute(target);
+        }
+    }
 
-		public void extraLib(String path, String variant) {
-			if (manualFile != null)
-				throw new RuntimeException("robovm cannot use both manualFile and gradle overrides");
-			extraLibs.add(new RoboVMXmlLib(path, variant));
-		}
+    class NativeCodeGeneratorConfig {
+        SourceSet sourceSet;
+        private String[] sourceDirs;
+        String[] includes = null;
+        String[] excludes = null;
 
-		public void extraXCFramework(String path) {
-			if (manualFile != null)
-				throw new RuntimeException("robovm cannot use both manualFile and gradle overrides");
-			extraXCFrameworks.add(path);
-		}
+        public NativeCodeGeneratorConfig (Project project) {
+            JavaPluginConvention javaPlugin = project.getConvention().getPlugin(JavaPluginConvention.class);
+            SourceSetContainer sourceSets = javaPlugin.getSourceSets();
+            sourceSet = sourceSets.findByName("main");
+        }
 
-		class RoboVMXmlLib {
-			String path;
-			String variant;
+        @Override
+        public String toString () {
+            return "NativeCodeGeneratorConfig[sourceDir=`" + Arrays.toString(sourceDirs) + "`, sourceSet=`" + sourceSet + "`, jniDir=`"
+                    + jniDir + "`, includes=`" + Arrays.toString(includes)
+                    + "`, excludes=`" + Arrays.toString(excludes) + "`]";
+        }
 
-			public RoboVMXmlLib(String path, String variant) {
-				this.path = path;
-				this.variant = variant;
-			}
-		}
-	}
+        /**
+         * This method is deprecated in favor of {@link NativeCodeGeneratorConfig#setSourceDirs(String[])}
+         */
+        @Deprecated
+        public void setSourceDir (String sourceDir) {
+            this.sourceDirs = new String[]{sourceDir};
+        }
+
+        public void setSourceDirs (String[] sourceDirs) {
+            this.sourceDirs = sourceDirs;
+        }
+
+        public String[] getSourceDirs () {
+            //If already set, use provided value
+            if (sourceDirs != null) {
+                return sourceDirs;
+            }
+
+            sourceDirs = sourceSet.getJava().getSrcDirs().stream().map(File::getPath).toArray(String[]::new);
+            return sourceDirs;
+        }
+    }
+
+
 }
