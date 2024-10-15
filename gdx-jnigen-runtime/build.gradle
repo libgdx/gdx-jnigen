@@ -237,7 +237,8 @@ jnigen {
         def arch = it.architecture.name().toLowerCase() + (it.architecture == x86 && it.bitness != x32 ? "_" : "") + it.bitness.toSuffix()
         def combined = name + "_" + arch
 
-        headerDirs += [file("build/libffi-build/${combined}/include/")]
+        headerDirs += [file("build/libffi-build/${combined}/include/"), "jni/"]
+        cppIncludes += ["jni/*.cpp"]
         cFlags += " -std=c11 -fexceptions "
         cExcludes += ["libFFI-iOS/"]
         cppFlags += " -std=c++11 -fexceptions "
@@ -284,14 +285,23 @@ tasks.forEach {
     }
 }
 
+
 artifacts {
-//    archives jnigenPackageAllDesktop.outputs
-//    ['arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'].each { id ->
-//        archives "${id}" { }
-//    }
-//
-//    archives jnigenPackageAllIOS
+    jnigenPackageAllAndroid.getOutputs().getFiles().each {
+        println "Adding as artifact ${it.getName()}"
+        archives it
+    }
+    jnigenPackageAllIOS.getOutputs().getFiles().each {
+        println "Adding as artifact ${it.getName()}"
+        archives it
+    }
+    jnigenPackageAllDesktop.getOutputs().getFiles().each {
+        println "Adding as artifact ${it.getName()}"
+        archives it
+    }
 }
+
+
 
 eclipse {
     project {
