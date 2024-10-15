@@ -20,12 +20,13 @@ public class DesktopPackaging extends PlatformPackager {
             targetBinaries.add(buildTarget.getTargetBinaryFile(buildConfig));
         }
 
+
         File outputJar = new File(buildConfig.libsDir.file().getAbsoluteFile(), buildConfig.targetJarBaseName + "-natives-desktop.jar");
 
         try {
-            Util.JarFiles(outputJar, targetBinaries);
+            Util.JarFiles(outputJar, targetBinaries, buildConfig.errorOnPackageMissingNative);
         } catch (IOException e) {
-            logger.error("Exception when packing", e);
+            logger.error("Exception when packing.", e);
             throw new RuntimeException(e);
         }
 

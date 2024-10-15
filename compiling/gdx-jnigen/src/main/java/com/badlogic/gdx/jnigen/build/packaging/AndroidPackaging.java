@@ -33,7 +33,7 @@ public class AndroidPackaging extends PlatformPackager {
             }
 
             try {
-                Util.JarFiles(outputJar, Collections.singletonList(abiFile));
+                Util.JarFiles(outputJar, Collections.singletonList(abiFile), buildConfig.errorOnPackageMissingNative);
             } catch (IOException e) {
                 logger.error("Exception when packing", e);
                 throw new RuntimeException(e);

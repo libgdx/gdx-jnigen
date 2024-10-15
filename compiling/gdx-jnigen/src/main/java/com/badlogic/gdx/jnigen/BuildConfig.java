@@ -65,6 +65,12 @@ public class BuildConfig {
     public boolean multiThreadedCompile = true;
 
     /**
+     * Whether to fail the platform packaging tasks if a target is missing.
+     * I.e. jnigenPackageAllDesktop but MacOS build is missing
+     */
+    public boolean errorOnPackageMissingNative = false;
+
+    /**
      * Creates a new BuildConfig. The build directory, the libs directory and the jni directory are assumed to be "target", "libs"
      * and "jni". All paths are relative to the application's working directory.
      *

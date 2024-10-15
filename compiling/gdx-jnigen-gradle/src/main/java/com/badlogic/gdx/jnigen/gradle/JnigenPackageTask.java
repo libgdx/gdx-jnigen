@@ -58,6 +58,8 @@ public class JnigenPackageTask extends DefaultTask {
         buildConfig = new BuildConfig(ext.sharedLibName, ext.subProjectDir + ext.temporaryDir, ext.subProjectDir + ext.libsDir, ext.subProjectDir + ext.jniDir, robovmBuildConfig, new FileDescriptor(ext.subProjectDir));
         buildConfig.targetJarBaseName = ext.sharedLibName;
 
+        buildConfig.errorOnPackageMissingNative = getProject().hasProperty("jnigen.packageErrorOnMissingNatives");
+
         packager = new Packager();
 
         //add outputs manually here. This is only really required for publishing support
