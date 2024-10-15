@@ -45,23 +45,31 @@ public class IOSPackaging extends PlatformPackager {
                 JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream);
 
                 //add the framework
-                Path sourcePath = frameworkFolder.file().toPath();
-                Files.walk(sourcePath).forEach(path -> {
-                    try {
-                        String entryName = sourcePath.relativize(path).toString().replace("\\", "/");
-                        JarEntry entry = new JarEntry("META-INF/robovm/ios/libs/" + buildConfig.sharedLibName + ".xcframework/" + entryName + (Files.isDirectory(path) ? "/" : ""));
-                        jarOutputStream.putNextEntry(entry);
+                if (frameworkFolder.file().exists()) {
+                    Path sourcePath = frameworkFolder.file().toPath();
+                    Files.walk(sourcePath).forEach(path -> {
+                        try {
+                            String entryName = sourcePath.relativize(path).toString().replace("\\", "/");
+                            JarEntry entry = new JarEntry("META-INF/robovm/ios/libs/" + buildConfig.sharedLibName + ".xcframework/" + entryName + (Files.isDirectory(path) ? "/" : ""));
+                            jarOutputStream.putNextEntry(entry);
 
-                        // Only copy file contents for regular files
-                        if (Files.isRegularFile(path)) {
-                            Files.copy(path, jarOutputStream);
+                            // Only copy file contents for regular files
+                            if (Files.isRegularFile(path)) {
+                                Files.copy(path, jarOutputStream);
+                            }
+
+                            jarOutputStream.closeEntry();
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
-
-                        jarOutputStream.closeEntry();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    });
+                } else {
+                    if (buildConfig.errorOnPackageMissingNative) {
+                        throw new RuntimeException("Framework folder does not exist: " + frameworkFolder);
+                    } else {
+                        logger.error("Framework folder does not exist: {}", frameworkFolder);
                     }
-                });
+                }
 
                 //Add the robovm.xml
                 File robovmXMl = new File(buildConfig.buildDir.file(), "robovm.xml");

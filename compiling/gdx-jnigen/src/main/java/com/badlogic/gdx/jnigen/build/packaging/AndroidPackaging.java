@@ -29,7 +29,6 @@ public class AndroidPackaging extends PlatformPackager {
 
             if (!abiFile.exists()) {
                 logger.warn("No build found for abi {}. If this is a specific abi, this could be due to building with a newer NDK", abi);
-                continue;
             }
 
             try {
