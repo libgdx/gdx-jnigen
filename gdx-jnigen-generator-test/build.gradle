@@ -12,20 +12,14 @@ repositories {
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    testRuntimeOnly fileTree(dir: file("build/libs/"), include: '*natives-desktop.jar')
+    testRuntimeOnly fileTree(dir: file("build/jnigen/libs"), include: '*natives-desktop.jar')
     testImplementation project(path: ":jnigen-runtime")
     testImplementation project(path: ":jnigen-runtime", configuration: "archives")
 }
 
 
-task copyTestFiles(type: Copy) {
-    from("src/test/resources/")
-    into("jni/")
-}
-
 test {
-    // TODO: Figure out how to force build natives?
-//    dependsOn(":jnigen-generator-test:jnigenJarNativesDesktop")
+    dependsOn "jnigenSequence"
     useJUnitPlatform()
     outputs.upToDateWhen {false}
 }
@@ -40,6 +34,9 @@ jnigen {
     all {
         cFlags += " -std=c11 -fexceptions "
         cppFlags += " -std=c++11 -fexceptions "
+
+        headerDirs += ["src/test/resources/"]
+        cppIncludes += ["src/test/resources/*.cpp"]
     }
 
     generator {
@@ -64,14 +61,13 @@ jnigen {
     addIOS()
 }
 
-tasks.named("jnigen").get().dependsOn(compileTestJava)
-tasks.named("jnigen").get().dependsOn(copyTestFiles)
+tasks.register("jnigenSequence") {
+    dependsOn "compileTestJava"
+    dependsOn "jnigen"
+    dependsOn "jnigenBuildAllWindows"
+    dependsOn "jnigenPackageAllDesktop"
+}
 
-// TODO: FIGURE OUT WHY THIS MAKES THE JVM CRASH AFTER A WHILE
-//compileTestJava.dependsOn(":gdx-jnigen-generator-test:jnigenGenerateBindings")
-
-// TODO: FIGURE OUT HOW TO ENFORCE ORDER
-//jnigenJarNativesDesktop.mustRunAfter jnigenBuild
 
 eclipse {
     project {

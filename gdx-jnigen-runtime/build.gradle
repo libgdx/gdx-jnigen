@@ -285,12 +285,12 @@ tasks.forEach {
 }
 
 artifacts {
-//    archives jnigenJarNativesDesktop
-    ['arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'].each { id ->
-//        archives "jnigenJarNativesAndroid${id}" { }
-    }
-
-//    archives jnigenJarNativesIOS
+//    archives jnigenPackageAllDesktop.outputs
+//    ['arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'].each { id ->
+//        archives "${id}" { }
+//    }
+//
+//    archives jnigenPackageAllIOS
 }
 
 eclipse {
