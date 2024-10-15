@@ -75,7 +75,13 @@ jnigen {
 tasks.register("jnigenSequence") {
     dependsOn "compileTestJava"
     dependsOn "jnigen"
-    dependsOn "jnigenBuildAllWindows"
+    if (HostDetection.os === Os.Windows) {
+        dependsOn "jnigenBuildAllWindows"
+    } else if (HostDetection.os === Os.Linux) {
+        dependsOn "jnigenBuildAllLinux"
+    } else if (HostDetection.os === Os.MacOsX) {
+        dependsOn "jnigenBuildAllMacOsX"
+    }
     dependsOn "jnigenPackageAllDesktop"
 }
 
