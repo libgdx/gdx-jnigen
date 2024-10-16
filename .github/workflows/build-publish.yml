@@ -36,7 +36,7 @@ jobs:
           sudo xcode-select -switch /Applications/Xcode.app
           /usr/bin/xcodebuild -version
           ./gradlew build_ios
-          ./gradlew jniGen jnigenBuildAllIOS
+          ./gradlew jnigen-runtime:jniGen jnigen-runtime:jnigenBuildAllIOS
 
       - name: Pack artifacts
         run: |
@@ -75,7 +75,7 @@ jobs:
           sudo xcode-select -switch /Applications/Xcode.app
           /usr/bin/xcodebuild -version
           ./gradlew build_macos
-          ./gradlew jniGen jnigenBuildAllMacOsX
+          ./gradlew jnigen-runtime:jniGen jnigen-runtime:jnigenBuildAllMacOsX
 
       - name: Pack artifacts
         run: |
@@ -144,7 +144,7 @@ jobs:
       - name: Build Linux natives
         run: |
           ./gradlew build_linux
-          ./gradlew jniGen jnigenBuildAllLinux 
+          ./gradlew jnigen-runtime:jnigen jnigen-runtime:jnigenBuildAllLinux 
 
       - name: Pack artifacts
         run: |
@@ -182,7 +182,7 @@ jobs:
       - name: Build Windows natives
         run: |
           ./gradlew build_windows
-          ./gradlew jniGen jnigenBuildAllWindows
+          ./gradlew jnigen-runtime:jnigen jnigen-runtime:jnigenBuildAllWindows
 
       - name: Pack artifacts
         run: |
@@ -222,7 +222,7 @@ jobs:
       - name: Build Android natives
         run: |
           ./gradlew build_android
-          ./gradlew jniGen jnigenBuildAllAndroid 
+          ./gradlew jnigen-runtime:jnigen jnigen-runtime:jnigenBuildAllAndroid 
 
       - name: Pack artifacts
         run: |
@@ -287,7 +287,7 @@ jobs:
           unzip -o natives-android.zip
 
       - name: Package All
-        run: ./gradlew jnigenPackageAll
+        run: ./gradlew jnigen-runtime:jnigenPackageAll
 
       - name: Snapshot build deploy
         if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository_owner == 'libgdx'
