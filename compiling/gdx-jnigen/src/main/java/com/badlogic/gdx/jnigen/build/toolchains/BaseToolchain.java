@@ -21,6 +21,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class BaseToolchain {
 
@@ -136,7 +138,8 @@ public abstract class BaseToolchain {
         try {
             sourceJniGeneratedCFiles = collectFiles(jniDir.toPath(), jniCIncludes, jniCExcludes);
             sourceIncludedCFiles = collectFiles(config.projectDir.file().toPath(), cIncludes, cExcludes);
-            logger.info("Collected C files {}", sourceJniGeneratedCFiles);
+            logger.info("Collected C files {}", Stream.concat(sourceJniGeneratedCFiles.stream(), sourceIncludedCFiles.stream()).collect(
+                    Collectors.toList()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -157,7 +160,8 @@ public abstract class BaseToolchain {
         try {
             sourceJniGeneratedCPPFiles = collectFiles(jniDir.toPath(), jniCPPIncludes, jniCPPExcludes);
             sourceIncludedCPPFiles = collectFiles(config.projectDir.file().toPath(), cppIncludes, cppExcludes);
-            logger.info("Collected CPP files {}", sourceJniGeneratedCPPFiles);
+            logger.info("Collected CPP files {}", Stream.concat(sourceJniGeneratedCPPFiles.stream(), sourceIncludedCPPFiles.stream()).collect(
+                    Collectors.toList()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
