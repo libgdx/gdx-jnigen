@@ -11,7 +11,7 @@ dependencies {
 }
 
 tasks.register("fetchLibFFI", Download) {
-    src 'https://github.com/libffi/libffi/releases/download/v3.4.4/libffi-3.4.4.tar.gz'
+    src 'https://github.com/libffi/libffi/releases/download/v3.4.6/libffi-3.4.6.tar.gz'
     dest 'build/libFFI.tar.gz'
     onlyIfModified true
     useETag "all"
