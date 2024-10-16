@@ -34,9 +34,6 @@ plugins {
 jnigen {
     // Your shared library name
     sharedLibName = "example"
-    //temporaryDir = "target"
-    //libsDir = "libs"
-    //jniDir = "jni"
 
     // Shared configuration for all BuildTargets. Executed first
     // See all BuildTarget options here: https://github.com/libgdx/gdx-jnigen/blob/master/gdx-jnigen/src/main/java/com/badlogic/gdx/jnigen/BuildTarget.java
@@ -69,30 +66,49 @@ jnigen {
     // All BuildTarget options can be further customized in an OS+Arch specific manner within a {} block
 
     // Add windows 32-bit BuildTarget and customize it
-    add(Windows, x32) {
+    addWindows(x32, x86) {
         //cFlags += " -fextraflag=fake "
         //compilerPrefix = "someprefix-";
         //cIncludes += "windowsspecificdir/*.c"
     }
-    add(Windows, x64)
-    add(Linux, x32)
-    add(Linux, x64)
-    add(Linux, x32, ARM)
-    add(Linux, x64, ARM)
-    add(MacOsX, x64)
-    add(MacOsX, x64, ARM)
-    add(Android) {
-        // Add extra content to the generated Application.mk file
-        //androidApplicationMk += "APP_STL := c++_static"
-        // Specify which ABIs to build
-        //androidABIs = ["armeabi", "armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+    
+    //Add windows 64 bit, x86, MSVC toolchain 
+    addWindows(x64, x86, MSVC) {
+        msvcPreLinkerFlags += "/MD"
     }
-    add(IOS) {
+    
+    addWindows(x64, x86)    
+    addLinux(x32, x86)
+    addLinux(x64, x86)
+    addLinux(x32, ARM)
+    addLinux(x64, ARM)
+    addMac(x64, x86)
+    addMac(x64, ARM)
+    
+    //Auto add all possible ABIs 
+    addAndroid() {
+        // Add extra content to the generated Application.mk file
+        //androidApplicationMk += ["APP_STL := c++_static"]
+    }
+    
+    //Add specific android ABI
+    addAndroid(AndroidABI.ABI_ARM64_V8A)
+    
+    //Auto add all possible iOS targets, including sim 
+    addIOS() {
         // Define ios framework bundle identifier
         // xcframeworkBundleIdentifier = "com.badlogic.gdx.JniGen
         // Deinfe minimum supported iOS version
         // minIOSVersion = "11.0"
     }
+ 
+    
+    //Add specific ios device target
+    addIOS(x64, ARM, DEVICE)
+    
+    //Add ios 64 bit x86 simulator target
+    addIOS(x64, x86, SIMULATOR)
+
 
     // Customize each BuildTarget that matches the condition
     each({ it.os != Android && !it.isARM }) {
