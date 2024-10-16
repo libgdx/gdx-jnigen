@@ -1,3 +1,14 @@
+[3.0.0]
+- [FEATURE] Automatic java jnigen code generation from header files. https://github.com/libgdx/gdx-jnigen/pull/75
+- [BREAKING CHANGE] packages renamed to com.badlogic.gdx.jnigen base https://github.com/libgdx/gdx-jnigen/issues/60
+- [BREAKING CHANGE] Gradle tasks for building have all changed.
+- Ant removed, tools chains and packaging handled entirely by jnigen
+- Multi threading support in compilation
+- Gradle plugin auto configures natives artifacts for publishing to maven
+- GHA gradle task, for auto generating GHA script to build natives on GH based on current configuration
+- Ability to configure each platform, each abi, each slice independently.
+- MSVC support added for building with MSVC tool chains on windows
+
 [2.5.2]
 - [BREAKING CHANGE] Increased default `minIOSVersion` to iOS 12. Default can be overridden with `minIOSVersion = "11.0"`
 - Compile all files that are defined by cIncludes/cExcludes/cppIncludes/cppExcludes
