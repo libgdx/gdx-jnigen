@@ -18,8 +18,8 @@ See the libGDX Wiki for usage: https://libgdx.com/wiki/utils/jnigen
 We recommend you look at some existing projects for examples:
 - [gdx](https://github.com/libgdx/libgdx/blob/master/gdx/build.gradle) (Uses jnigen 2.x)
 - [gdx-freetype](https://github.com/libgdx/libgdx/blob/master/extensions/gdx-freetype/build.gradle) (Uses jnigen 2.x)
-- [gdx-bullet](https://github.com/libgdx/libgdx/blob/master/extensions/gdx-bullet/build.gradle) (User jnigen 2.x)
-- [gdx-video-desktop](https://github.com/libgdx/gdx-video/blob/master/gdx-video-desktop/build.gradle) (User jnigen 2.x)
+- [gdx-bullet](https://github.com/libgdx/libgdx/blob/master/extensions/gdx-bullet/build.gradle) (Uses jnigen 2.x)
+- [gdx-video-desktop](https://github.com/libgdx/gdx-video/blob/master/gdx-video-desktop/build.gradle) (Uses jnigen 2.x)
 - [Jamepad](https://github.com/libgdx/Jamepad/blob/master/build.gradle) (Uses jnigen 2.x)
 
 
