@@ -26,7 +26,7 @@ public class JnigenTask extends DefaultTask {
 
         setGroup("jnigen");
         setDescription("Generates jnigen native code files and build scripts.");
-        dependsOn(ext.nativeCodeGeneratorConfig.sourceSet.getRuntimeClasspath());
+        getProject().afterEvaluate(project -> dependsOn(ext.nativeCodeGeneratorConfig.sourceSet.getRuntimeClasspath()));
     }
 
     @TaskAction
