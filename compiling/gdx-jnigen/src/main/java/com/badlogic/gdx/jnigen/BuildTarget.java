@@ -434,7 +434,7 @@ public class BuildTarget {
         if (osTarget == Os.Android) {
             BuildTarget android = new BuildTarget(Os.Android, Architecture.Bitness._32, new String[]{""}, new String[0],
                     new String[]{""}, new String[0], new String[0], "", "-O2 -Wall -D__ANDROID__", "-O2 -Wall -D__ANDROID__",
-                    "-lm", null);
+                    "-lm -Wl,-z,max-page-size=0x4000", null);
             return android;
         }
 
