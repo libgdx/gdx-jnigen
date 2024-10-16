@@ -222,17 +222,12 @@ tasks.forEach {
 
 
 artifacts {
-    jnigenPackageAllAndroid.getOutputs().getFiles().each {
-        println "Adding as artifact ${it.getName()}"
-        archives it
-    }
-    jnigenPackageAllIOS.getOutputs().getFiles().each {
-        println "Adding as artifact ${it.getName()}"
-        archives it
-    }
-    jnigenPackageAllDesktop.getOutputs().getFiles().each {
-        println "Adding as artifact ${it.getName()}"
-        archives it
+    [jnigenPackageAllAndroid, jnigenPackageAllIOS, jnigenPackageAllDesktop].forEach {packageTask ->
+        packageTask.getOutputs().getFiles().each { file ->
+            archives(file) {
+                builtBy(packageTask)
+            }
+        }
     }
 }
 
