@@ -150,8 +150,23 @@ public class PlatformBuilder {
     public static void copyHeaders (FileDescriptor jniDir) {
         //copy headers to jni dir
         final String pack = "com/badlogic/gdx/jnigen/resources/headers";
-        String files[] = {"classfile_constants.h", "jawt.h", "jdwpTransport.h", "jni.h", "jnigen.h", "linux/jawt_md.h", "linux/jni_md.h",
-                "mac/jni_md.h", "win32/jawt_md.h", "win32/jni_md.h"};
+        String files[] = {
+                "classfile_constants.h",
+                "jawt.h",
+                "jdwpTransport.h",
+                "jnigen.h",
+
+                "linux/jawt_md.h",
+                "linux/jni_md.h",
+                "linux/jni.h",
+
+                "mac/jni_md.h",
+                "mac/jni.h",
+
+                "win32/jawt_md.h",
+                "win32/jni_md.h",
+                "win32/jni.h"
+        };
 
         for (String file : files) {
             FileDescriptor source = new FileDescriptor(pack, FileDescriptor.FileType.Classpath).child(file);
