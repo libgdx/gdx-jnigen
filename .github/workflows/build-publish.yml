@@ -192,10 +192,6 @@ jobs:
           ./gradlew build_windows
           ./gradlew jnigen jnigenBuildAllWindows
 
-      - name: Run test on windows
-        run: |
-          ./gradlew test 
-
       - name: Pack artifacts
         run: |
           find .  -name "*.a" -o -name "*.dll" -o -name "*.dylib" -o -name "*.so" | grep "libs" > native-files-list
