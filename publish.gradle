@@ -38,12 +38,12 @@ subprojects
                         from components.java
 
                         if (project.getPluginManager().hasPlugin("com.badlogicgames.jnigen.jnigen-gradle")) {
-                            artifact jnigenJarNativesDesktop { }
-                            ['arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'].each { id ->
-                                artifact "jnigenJarNativesAndroid${id}" { }
-                            }
-
-                            artifact jnigenJarNativesIOS { }
+//                            artifact jnigenJarNativesDesktop { }
+//                            ['arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'].each { id ->
+//                                artifact "jnigenJarNativesAndroid${id}" { }
+//                            }
+//
+//                            artifact jnigenJarNativesIOS { }
                         }
 
                         versionMapping {

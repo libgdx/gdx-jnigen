@@ -1,3 +1,6 @@
+import com.badlogic.gdx.jnigen.commons.HostDetection
+import com.badlogic.gdx.jnigen.commons.Os
+
 plugins {
     id "com.badlogicgames.jnigen.jnigen-gradle"
 }
@@ -7,25 +10,27 @@ targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
 }
 
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    testRuntimeOnly fileTree(dir: file("build/libs/"), include: '*natives-desktop.jar')
-    testImplementation project(path: ":jnigen-runtime")
-    testImplementation project(path: ":jnigen-runtime", configuration: "archives")
+    testRuntimeOnly fileTree(dir: file("build/jnigen/libs"), include: '*natives-desktop.jar')
+    if (HostDetection.os === Os.Windows) {
+        testImplementation "com.badlogicgames.jnigen:jnigen-runtime:3.0.0-SNAPSHOT"
+        testImplementation "com.badlogicgames.jnigen:jnigen-runtime:3.0.0-SNAPSHOT:natives-desktop"
+    } else {
+        testImplementation project(path: ":jnigen-runtime")
+        testImplementation project(path: ":jnigen-runtime", configuration: "archives")
+    }
 }
 
-
-task copyTestFiles(type: Copy) {
-    from("src/test/resources/")
-    into("jni/")
-}
 
 test {
-    // TODO: Figure out how to force build natives?
-    dependsOn(":jnigen-generator-test:jnigenJarNativesDesktop")
+    dependsOn "jnigenSequence"
     useJUnitPlatform()
     outputs.upToDateWhen {false}
 }
@@ -40,6 +45,9 @@ jnigen {
     all {
         cFlags += " -std=c11 -fexceptions "
         cppFlags += " -std=c++11 -fexceptions "
+
+        headerDirs += ["src/test/resources/"]
+        cppIncludes += ["src/test/resources/*.cpp"]
     }
 
     generator {
@@ -49,29 +57,35 @@ jnigen {
         options = ["-I" + file("src/test/resources/").absolutePath]
     }
 
-    add(Linux, x32, ARM)
-    add(Linux, x64, x86)
-    add(Linux, x64, ARM)
-    add(Linux, x64, RISCV)
-    add(MacOsX, x64, x86)
-    add(MacOsX, x64, ARM)
-    add(Windows, x32, x86)
-    add(Windows, x64, x86)
+    addLinux(x32, ARM)
+    addLinux(x64, x86)
+    addLinux(x64, ARM)
+    addLinux(x64, RISCV)
+    addMac(x64, x86)
+    addMac(x64, ARM)
+    addWindows(x32, x86)
+    addWindows(x64, x86)
     //add(Windows, x64, ARM)
-    add(Android) {
-        linkerFlags += " -stdlib=libc++\nAPP_STL := c++_shared "
+    addAndroid() {
+        androidApplicationMk += "APP_STL := c++_shared"
+        linkerFlags += " -stdlib=libc++\n"
     }
-    add(IOS)
+    addIOS()
 }
 
-tasks.named("jnigen").get().dependsOn(compileTestJava)
-tasks.named("jnigen").get().dependsOn(copyTestFiles)
+tasks.register("jnigenSequence") {
+    dependsOn "compileTestJava"
+    dependsOn "jnigen"
+    if (HostDetection.os === Os.Windows) {
+        dependsOn "jnigenBuildAllWindows"
+    } else if (HostDetection.os === Os.Linux) {
+        dependsOn "jnigenBuildAllLinux"
+    } else if (HostDetection.os === Os.MacOsX) {
+        dependsOn "jnigenBuildAllMacOsX"
+    }
+    dependsOn "jnigenPackageAllDesktop"
+}
 
-// TODO: FIGURE OUT WHY THIS MAKES THE JVM CRASH AFTER A WHILE
-//compileTestJava.dependsOn(":gdx-jnigen-generator-test:jnigenGenerateBindings")
-
-// TODO: FIGURE OUT HOW TO ENFORCE ORDER
-//jnigenJarNativesDesktop.mustRunAfter jnigenBuild
 
 eclipse {
     project {

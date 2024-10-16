@@ -2,7 +2,7 @@ name: Build and publish
 
 on:
   push:
-    branches: [ master ]
+    branches: [ msvc-support ]
   release:
     types: [ published ]
 
@@ -36,7 +36,7 @@ jobs:
           sudo xcode-select -switch /Applications/Xcode.app
           /usr/bin/xcodebuild -version
           ./gradlew build_ios
-          ./gradlew jniGen jnigenBuildIOS
+          ./gradlew jniGen jnigenBuildAllIOS
 
       - name: Pack artifacts
         run: |
@@ -75,7 +75,11 @@ jobs:
           sudo xcode-select -switch /Applications/Xcode.app
           /usr/bin/xcodebuild -version
           ./gradlew build_macos
-          ./gradlew jniGen jnigenBuildMacOsX64 jnigenBuildMacOsXARM64
+          ./gradlew jniGen jnigenBuildAllMacOsX
+
+      - name: Run test on macos
+        run: |
+          ./gradlew test 
 
       - name: Pack artifacts
         run: |
@@ -144,7 +148,11 @@ jobs:
       - name: Build Linux natives
         run: |
           ./gradlew build_linux
-          ./gradlew jniGen jnigenBuildLinux64 jnigenBuildLinuxARM jnigenBuildLinuxARM64 jnigenBuildLinuxRISCV64
+          ./gradlew jnigen jnigenBuildAllLinux 
+
+      - name: Run test on linux
+        run: |
+          ./gradlew test 
 
       - name: Pack artifacts
         run: |
@@ -182,7 +190,7 @@ jobs:
       - name: Build Windows natives
         run: |
           ./gradlew build_windows
-          ./gradlew jniGen jnigenBuildWindows64 jnigenBuildWindows
+          ./gradlew jnigen jnigenBuildAllWindows
 
       - name: Pack artifacts
         run: |
@@ -222,7 +230,7 @@ jobs:
       - name: Build Android natives
         run: |
           ./gradlew build_android
-          ./gradlew jniGen jnigenBuildAndroid
+          ./gradlew jnigen jnigenBuildAllAndroid 
 
       - name: Pack artifacts
         run: |
@@ -286,8 +294,11 @@ jobs:
           unzip -o natives-windows.zip
           unzip -o natives-android.zip
 
+      - name: Package All
+        run: ./gradlew jnigenPackageAll
+
       - name: Snapshot build deploy
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository_owner == 'libgdx'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/msvc-support' && github.repository_owner == 'libgdx'
         run: ./gradlew build publish -x test
         env:
           ORG_GRADLE_PROJECT_NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}

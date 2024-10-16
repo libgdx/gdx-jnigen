@@ -45,7 +45,7 @@ public class BasicTest extends BaseTest {
             throw new IllegalArgumentException("TEST");
         });
         CSizedIntPointer pointer = TestData.returnThrownCauseMessage(closureObject);
-        assertTrue(pointer.getString().startsWith("java.lang.IllegalArgumentException: TEST\n"));
+        assertTrue(pointer.getString().startsWith("java.lang.IllegalArgumentException: TEST"));
 
         closureObject.free();
     }
@@ -58,7 +58,7 @@ public class BasicTest extends BaseTest {
         CHandler.setDisableCXXExceptionMessage(true);
         assertEquals("Java-Side exception", TestData.returnThrownCauseMessage(closureObject).getString());
         CHandler.setDisableCXXExceptionMessage(false);
-        assertTrue(TestData.returnThrownCauseMessage(closureObject).getString().startsWith("java.lang.IllegalArgumentException: TEST\n"));
+        assertTrue(TestData.returnThrownCauseMessage(closureObject).getString().startsWith("java.lang.IllegalArgumentException: TEST"));
         closureObject.free();
     }
 }

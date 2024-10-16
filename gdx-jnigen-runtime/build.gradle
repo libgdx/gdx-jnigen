@@ -11,7 +11,7 @@ dependencies {
 }
 
 tasks.register("fetchLibFFI", Download) {
-    src 'https://github.com/libffi/libffi/releases/download/v3.4.4/libffi-3.4.4.tar.gz'
+    src 'https://github.com/libffi/libffi/releases/download/v3.4.6/libffi-3.4.6.tar.gz'
     dest 'build/libFFI.tar.gz'
     onlyIfModified true
     useETag "all"
@@ -144,67 +144,11 @@ task build_android {
 
 task build_ios {
     group("libffi")
-    dependsOn("generateIOSFiles")
-    doLast {
-        def srcDir = file("build/libFFI-iOS")
-        def tempDirectory = Files.createTempDirectory("libFFI-iOS-build")
-
-        def files = []
-        srcDir.eachFileRecurse {
-            if (it.name.endsWith(".c") || it.name.endsWith(".S"))
-                files << it
-        }
-
-        [iphoneos: "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/",
-         iphonesimulator: "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk"]
-                .forEach { target, sysroot ->
-                    def objectFiles = []
-                    def outDirectory = file("build/ios_${target}")
-                    outDirectory.deleteDir()
-                    outDirectory.mkdirs()
-
-                    def archs = target == "iphoneos" ? ["arm64"] : ["arm64", "x86_64"]
-                    for (arch in archs) {
-                        files.each { cFile ->
-                            def objectFile = "${new File(outDirectory, "${cFile.name}.${arch}.o")}"
-                            objectFiles << objectFile
-
-                            exec {
-                                workingDir tempDirectory
-                                commandLine = "clang"
-                                args = ["-arch", arch, "-isysroot", sysroot, "-I${file("build/libFFI-iOS/include").absolutePath}", "-c", cFile.absolutePath, "-o", objectFile]
-                            }
-                        }
-                    }
-
-                    exec {
-                        workingDir outDirectory
-                        commandLine = "libtool"
-                        args = [ "-static", "-o", "libffi.a"] + objectFiles
-                    }
-                }
-        def outDirectoryFramework = file("build/ios_xcframework")
-        outDirectoryFramework.deleteDir()
-        outDirectoryFramework.mkdirs()
-        exec {
-            workingDir outDirectoryFramework
-            commandLine = "xcodebuild"
-            args = ["-create-xcframework", "-library", file("build/ios_iphoneos/libffi.a"), "-headers", file("build/libFFI-iOS/include"), "-library", file("build/ios_iphonesimulator/libffi.a"),
-                    "-headers", file("build/libFFI-iOS/include"), "-output", new File(outDirectoryFramework, "libFFI.xcframework")]
-        }
-    }
+    dependsOn createBuildTask("iphoneos", "arm64", "-arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/", ["--host=arm64-apple-ios"])
+    dependsOn createBuildTask("iphonesimulator", "arm64", "-arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/", ["--host=arm64-apple-ios-simulator"])
+    dependsOn createBuildTask("iphonesimulator", "x86_64", "-arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk", ["--host=x86_64-apple-ios-simulator"])
 }
 
-task copyCFiles(type: Copy) {
-    from("src/main/native/")
-    into("jni/")
-}
-
-task copyIOSFiles(type: Copy) {
-    dependsOn("generateIOSFiles")
-    from("build/libFFI-iOS/")
-    into("jni/libFFI-iOS/")
-}
 
 task extractAndroidCXXLibs() {
     doLast {
@@ -227,35 +171,37 @@ task extractAndroidCXXLibs() {
     }
 }
 
-tasks.named("jnigen").get().dependsOn(copyCFiles)
-
 jnigen {
     sharedLibName = "jnigen-runtime"
 
     all {
         def name = it.os.name().toLowerCase()
+        if (it.os == IOS)
+            name = it.targetType.platformName
+
         def arch = it.architecture.name().toLowerCase() + (it.architecture == x86 && it.bitness != x32 ? "_" : "") + it.bitness.toSuffix()
         def combined = name + "_" + arch
 
-        headerDirs += [file("build/libffi-build/${combined}/include/")]
+        headerDirs += ["build/libffi-build/${combined}/include/", "src/main/native"]
+        cppIncludes += ["src/main/native/*.cpp"]
         cFlags += " -std=c11 -fexceptions "
-        cExcludes += ["libFFI-iOS/"]
         cppFlags += " -std=c++11 -fexceptions "
-        libraries += " ${file("build/libffi-build/${combined}/lib/libffi.a").absolutePath} "
+        libraries += file("build/libffi-build/${combined}/lib/libffi.a").absolutePath
     }
 
-    add(Linux, x32, ARM)
-    add(Linux, x64, x86)
-    add(Linux, x64, ARM)
-    add(Linux, x64, RISCV)
-    add(MacOsX, x64, x86)
-    add(MacOsX, x64, ARM)
-    add(Windows, x32, x86)
-    add(Windows, x64, x86)
+    addLinux(x32, ARM)
+    addLinux(x64, x86)
+    addLinux(x64, ARM)
+    addLinux(x64, RISCV)
+    addMac(x64, x86)
+    addMac(x64, ARM)
+    addWindows(x32, x86)
+    addWindows(x64, x86)
     //add(Windows, x64, ARM)
-    add(Android) {
-        androidApplicationMk += "APP_PLATFORM := android-19\nAPP_STRIP_MODE := none"
-        linkerFlags += " -stdlib=libc++\nLOCAL_WHOLE_STATIC_LIBRARIES := static_libffi\nAPP_STL := c++_shared"
+    addAndroid() {
+        libraries = ""
+        androidApplicationMk += "APP_PLATFORM := android-19\nAPP_STRIP_MODE := none\nAPP_STL := c++_shared"
+        linkerFlags += " -stdlib=libc++\nLOCAL_WHOLE_STATIC_LIBRARIES := static_libffi"
         androidAndroidMk += [
                 "include \$(CLEAR_VARS)",
                 "LOCAL_MODULE := static_libffi",
@@ -264,28 +210,28 @@ jnigen {
                 "include \$(PREBUILT_STATIC_LIBRARY)"
         ]
     }
-    add(IOS) {
-        // Gnu11 is the only one that compiles for whatever reason
-        cFlags += " -std=gnu11 -fexceptions "
-        cIncludes += ["**/*.S"]
-        // DON'T COMMENT THIS OUT
-        cExcludes = ["**/dlmalloc.c"]
-        headerDirs = [file("jni/libFFI-iOS/include/")]
-        libraries = ""
+    addIOS()
+}
+
+jnigenBuildAllAndroid.dependsOn(extractAndroidCXXLibs)
+tasks.forEach {
+    if (it.name.startsWith("jnigenBuildAndroid")) {
+        it.dependsOn(extractAndroidCXXLibs)
     }
 }
 
-tasks.named("jnigenBuildIOS").get().dependsOn(copyIOSFiles)
-tasks.named("jnigenBuildAndroid").get().finalizedBy(extractAndroidCXXLibs)
 
 artifacts {
-    archives jnigenJarNativesDesktop
-    ['arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'].each { id ->
-        archives "jnigenJarNativesAndroid${id}" { }
+    [jnigenPackageAllAndroid, jnigenPackageAllIOS, jnigenPackageAllDesktop].forEach {packageTask ->
+        packageTask.getOutputs().getFiles().each { file ->
+            archives(file) {
+                builtBy(packageTask)
+            }
+        }
     }
-
-    archives jnigenJarNativesIOS
 }
+
+
 
 eclipse {
     project {

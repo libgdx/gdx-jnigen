@@ -17,6 +17,7 @@
 package com.badlogic.gdx.jnigen.loader;
 
 import com.badlogic.gdx.jnigen.commons.Architecture;
+import com.badlogic.gdx.jnigen.commons.HostDetection;
 import com.badlogic.gdx.jnigen.commons.Os;
 
 import java.io.Closeable;
@@ -39,80 +40,6 @@ import java.util.zip.ZipFile;
  * @author mzechner
  * @author Nathan Sweet */
 public class SharedLibraryLoader {
-
-	static public Os os;
-	static public Architecture.Bitness bitness = Architecture.Bitness._32;
-	static public Architecture architecture = Architecture.x86;
-
-	static {
-		if (System.getProperty("os.name").contains("Windows"))
-			os = Os.Windows;
-		else if (System.getProperty("os.name").contains("Linux"))
-			os = Os.Linux;
-		else if (System.getProperty("os.name").contains("Mac"))
-			os = Os.MacOsX;
-
-		if (System.getProperty("os.arch").startsWith("arm") || System.getProperty("os.arch").startsWith("aarch64"))
-			architecture = Architecture.ARM;
-		else if (System.getProperty("os.arch").startsWith("riscv"))
-			architecture = Architecture.RISCV;
-		else if (System.getProperty("os.arch").startsWith("loongarch"))
-			architecture = Architecture.LOONGARCH;
-
-		if (System.getProperty("os.arch").contains("64") || System.getProperty("os.arch").startsWith("armv8"))
-			bitness = Architecture.Bitness._64;
-		else if (System.getProperty("os.arch").contains("128"))
-			bitness = Architecture.Bitness._128;
-
-		boolean isMOEiOS = System.getProperty("moe.platform.name") != null;
-		String vm = System.getProperty("java.runtime.name");
-		if (vm != null && vm.contains("Android Runtime")) {
-			os = Os.Android;
-			bitness = Architecture.Bitness._32;
-			architecture = Architecture.x86;
-		}
-		if (isMOEiOS || (os != Os.Android && os != Os.Windows && os != Os.Linux && os != Os.MacOsX)) {
-			os = Os.IOS;
-			bitness = Architecture.Bitness._32;
-			architecture = Architecture.x86;
-		}
-	}
-
-	/**
-	 * @deprecated Use {@link #os} as {@code SharedLibraryLoader.os == Os.Windows} instead.
-	 */
-	@Deprecated
-	static public boolean isWindows = os == Os.Windows;
-	/**
-	 * @deprecated Use {@link #os} as {@code SharedLibraryLoader.os == Os.Linux} instead.
-	 */
-	@Deprecated
-	static public boolean isLinux = os == Os.Linux;
-	/**
-	 * @deprecated Use {@link #os} as {@code SharedLibraryLoader.os == Os.MacOsX} instead.
-	 */
-	@Deprecated
-	static public boolean isMac = os == Os.MacOsX;
-	/**
-	 * @deprecated Use {@link #os} as {@code SharedLibraryLoader.os == Os.IOS} instead.
-	 */
-	@Deprecated
-	static public boolean isIos = os == Os.IOS;
-	/**
-	 * @deprecated Use {@link #os} as {@code SharedLibraryLoader.os == Os.Android} instead.
-	 */
-	@Deprecated
-	static public boolean isAndroid = os == Os.Android;
-	/**
-	 * @deprecated Use {@link #architecture} as {@code SharedLibraryLoader.architecture == Architecture.ARM} instead.
-	 */
-	@Deprecated
-	static public boolean isARM = architecture == Architecture.ARM;
-	/**
-	 * @deprecated Use {@link #bitness} as {@code SharedLibraryLoader.bitness == Architecture.Bitness._64} instead.
-	 */
-	@Deprecated
-	static public boolean is64Bit = bitness == Architecture.Bitness._64;
 
 	static private final HashSet<String> loadedLibraries = new HashSet<>();
 	static private final Random random = new Random();
@@ -152,29 +79,29 @@ public class SharedLibraryLoader {
 
 	/** Maps a platform independent library name to a platform dependent name. */
 	public String mapLibraryName (String libraryName) {
-		if (os == Os.Android)
+		if (HostDetection.os == Os.Android)
 			return libraryName;
-		return os.getLibPrefix() + libraryName + architecture.toSuffix() + bitness.toSuffix() + "." + os.getLibExtension();
+		return HostDetection.os.getLibPrefix() + libraryName + HostDetection.architecture.toSuffix() + HostDetection.bitness.toSuffix() + "." + HostDetection.os.getLibExtension();
 	}
 
 	/** Loads a shared library for the platform the application is running on.
 	 * @param libraryName The platform independent library name. If not contain a prefix (eg lib) or suffix (eg .dll). */
 	public void load (String libraryName) {
 		// in case of iOS, it's unnecessary to dlopen
-		if (os == Os.IOS) return;
+		if (HostDetection.os == Os.IOS) return;
 
 		synchronized (SharedLibraryLoader.class) {
 			if (isLoaded(libraryName)) return;
 			String platformName = mapLibraryName(libraryName);
 			try {
-				if (os == Os.Android)
+				if (HostDetection.os == Os.Android)
 					System.loadLibrary(platformName);
 				else
 					loadFile(platformName);
 				setLoaded(libraryName);
 			} catch (Throwable ex) {
 				throw new SharedLibraryLoadRuntimeException("Couldn't load shared library '" + platformName + "' for target: "
-					+ (os == Os.Android ? "Android" : (System.getProperty("os.name") + ", " + architecture.name() + ", " + bitness.name().substring(1) + "-bit")),
+					+ (HostDetection.os == Os.Android ? "Android" : (System.getProperty("os.name") + ", " + HostDetection.architecture.name() + ", " + HostDetection.bitness.name().substring(1) + "-bit")),
 						ex);
 			}
 		}

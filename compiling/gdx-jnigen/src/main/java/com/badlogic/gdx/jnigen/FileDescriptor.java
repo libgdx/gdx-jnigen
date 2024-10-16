@@ -69,7 +69,7 @@ public class FileDescriptor {
 		this.type = FileType.Absolute;
 	}
 
-	protected FileDescriptor (String fileName, FileType type) {
+	public FileDescriptor (String fileName, FileType type) {
 		this.type = type;
 		file = new File(fileName);
 	}
