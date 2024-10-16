@@ -95,6 +95,7 @@ public class JnigenPlugin implements Plugin<Project> {
                 @Override
                 public void execute (MavenArtifact mavenArtifact) {
                     mavenArtifact.setClassifier(classifier);
+                    mavenArtifact.builtBy(packageByName);
                 }
             });
         } catch (Exception e) {
