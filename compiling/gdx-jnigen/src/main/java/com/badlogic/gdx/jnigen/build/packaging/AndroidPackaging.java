@@ -25,14 +25,24 @@ public class AndroidPackaging extends PlatformPackager {
 
             File targetBinaryFolder = abi.getTargetBinaryFile(buildConfig).getParentFile();
 
-            File abiFile = new File(targetBinaryFolder, abiString + File.separator + "lib" + buildConfig.sharedLibName + ".so");
+            File abiFile = new File(targetBinaryFolder, abiString + File.separator);
 
             if (!abiFile.exists()) {
                 logger.warn("No build found for abi {}. If this is a specific abi, this could be due to building with a newer NDK", abi);
             }
 
+            if (!abiFile.isDirectory()) {
+                logger.warn("{} is not an directory?", abiFile);
+            }
+
+            File[] files = abiFile.listFiles((dir, name) -> name.endsWith(".so"));
+            if (files == null || files.length == 0) {
+                logger.warn("No files found for abi {}. If this is a specific abi, this could be due to building with a newer NDK", abi);
+                files = new File[0];
+            }
+
             try {
-                Util.JarFiles(outputJar, Collections.singletonList(abiFile), buildConfig.errorOnPackageMissingNative);
+                Util.JarFiles(outputJar, Arrays.asList(files), buildConfig.errorOnPackageMissingNative);
             } catch (IOException e) {
                 logger.error("Exception when packing", e);
                 throw new RuntimeException(e);
