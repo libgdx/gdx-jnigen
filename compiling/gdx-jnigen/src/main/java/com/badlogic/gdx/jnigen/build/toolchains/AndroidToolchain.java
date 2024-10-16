@@ -84,9 +84,7 @@ public class AndroidToolchain extends BaseToolchain {
             headerDirs.append(convertToAbsoluteRelativeTo(config.projectDir, headerDir));
             headerDirs.append(" ");
         }
-        headerDirs.append(convertToAbsoluteRelativeTo(config.jniDir, "jni-headers"));
-        headerDirs.append(" " + convertToAbsoluteRelativeTo(config.jniDir, "jni-headers/" + target.os.getJniPlatform()));
-        headerDirs.append(" " + convertToAbsoluteRelativeTo(config.jniDir, "jni-headers/" + "linux"));
+
         headerDirs.append(" " + convertToAbsoluteRelativeTo(config.jniDir, "."));
 
         template = template.replace("%sharedLibName%", config.sharedLibName);
