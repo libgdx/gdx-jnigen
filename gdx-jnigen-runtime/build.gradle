@@ -276,9 +276,8 @@ jnigen {
     }
 }
 
-tasks.named("jnigenBuildAllIOS").get().dependsOn(copyIOSFiles)
-
-tasks.named("jnigenBuildAllAndroid").get().finalizedBy(extractAndroidCXXLibs)
+jnigenBuildAllIOS.dependsOn(copyIOSFiles)
+jnigenBuildAllAndroid.dependsOn(extractAndroidCXXLibs)
 tasks.forEach {
     if (it.name.startsWith("jnigenBuildAndroid")) {
         it.dependsOn(extractAndroidCXXLibs)
