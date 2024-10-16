@@ -195,16 +195,6 @@ task build_ios {
     }
 }
 
-task copyCFiles(type: Copy) {
-    from("src/main/native/")
-    into("jni/")
-}
-
-task copyIOSFiles(type: Copy) {
-    dependsOn("generateIOSFiles")
-    from("build/libFFI-iOS/")
-    into("jni/libFFI-iOS/")
-}
 
 task extractAndroidCXXLibs() {
     doLast {
@@ -227,8 +217,6 @@ task extractAndroidCXXLibs() {
     }
 }
 
-tasks.named("jnigen").get().dependsOn(copyCFiles)
-
 jnigen {
     sharedLibName = "jnigen-runtime"
 
@@ -237,12 +225,12 @@ jnigen {
         def arch = it.architecture.name().toLowerCase() + (it.architecture == x86 && it.bitness != x32 ? "_" : "") + it.bitness.toSuffix()
         def combined = name + "_" + arch
 
-        headerDirs += [file("build/libffi-build/${combined}/include/"), "jni/"]
+        headerDirs += ["build/libffi-build/${combined}/include/", "jni/"]
         cppIncludes += ["jni/*.cpp"]
         cFlags += " -std=c11 -fexceptions "
         cExcludes += ["libFFI-iOS/"]
         cppFlags += " -std=c++11 -fexceptions "
-        libraries += " ${file("build/libffi-build/${combined}/lib/libffi.a").absolutePath} "
+        libraries += "build/libffi-build/${combined}/lib/libffi.a"
     }
 
     addLinux(x32, ARM)
@@ -271,12 +259,12 @@ jnigen {
         cIncludes += ["**/*.S"]
         // DON'T COMMENT THIS OUT
         cExcludes = ["**/dlmalloc.c"]
-        headerDirs = [file("jni/libFFI-iOS/include/")]
+        headerDirs = ["build/libFFI-iOS/include"]
         libraries = ""
     }
 }
 
-jnigenBuildAllIOS.dependsOn(copyIOSFiles)
+//jnigenBuildAllIOS.dependsOn(generateIOSFiles)
 jnigenBuildAllAndroid.dependsOn(extractAndroidCXXLibs)
 tasks.forEach {
     if (it.name.startsWith("jnigenBuildAndroid")) {
