@@ -67,7 +67,8 @@ jnigen {
     addWindows(x64, x86)
     //add(Windows, x64, ARM)
     addAndroid() {
-        linkerFlags += " -stdlib=libc++\nAPP_STL := c++_shared "
+        androidApplicationMk += "APP_STL := c++_shared"
+        linkerFlags += " -stdlib=libc++\n"
     }
     addIOS()
 }
