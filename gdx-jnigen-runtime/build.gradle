@@ -182,10 +182,9 @@ jnigen {
         def arch = it.architecture.name().toLowerCase() + (it.architecture == x86 && it.bitness != x32 ? "_" : "") + it.bitness.toSuffix()
         def combined = name + "_" + arch
 
-        headerDirs += ["build/libffi-build/${combined}/include/", "jni/"]
-        cppIncludes += ["jni/*.cpp"]
+        headerDirs += ["build/libffi-build/${combined}/include/", "src/main/native"]
+        cppIncludes += ["src/main/native/*.cpp"]
         cFlags += " -std=c11 -fexceptions "
-        cExcludes += ["libFFI-iOS/"]
         cppFlags += " -std=c++11 -fexceptions "
         libraries += file("build/libffi-build/${combined}/lib/libffi.a").absolutePath
     }
