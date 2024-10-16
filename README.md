@@ -34,6 +34,9 @@ plugins {
 jnigen {
     // Your shared library name
     sharedLibName = "example"
+    
+    //Enable multi threading compilation
+    multiThreadedCompile = true
 
     // Shared configuration for all BuildTargets. Executed first
     // See all BuildTarget options here: https://github.com/libgdx/gdx-jnigen/blob/master/gdx-jnigen/src/main/java/com/badlogic/gdx/jnigen/BuildTarget.java
