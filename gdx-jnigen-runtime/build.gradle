@@ -144,55 +144,9 @@ task build_android {
 
 task build_ios {
     group("libffi")
-    dependsOn("generateIOSFiles")
-    doLast {
-        def srcDir = file("build/libFFI-iOS")
-        def tempDirectory = Files.createTempDirectory("libFFI-iOS-build")
-
-        def files = []
-        srcDir.eachFileRecurse {
-            if (it.name.endsWith(".c") || it.name.endsWith(".S"))
-                files << it
-        }
-
-        [iphoneos: "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/",
-         iphonesimulator: "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk"]
-                .forEach { target, sysroot ->
-                    def objectFiles = []
-                    def outDirectory = file("build/ios_${target}")
-                    outDirectory.deleteDir()
-                    outDirectory.mkdirs()
-
-                    def archs = target == "iphoneos" ? ["arm64"] : ["arm64", "x86_64"]
-                    for (arch in archs) {
-                        files.each { cFile ->
-                            def objectFile = "${new File(outDirectory, "${cFile.name}.${arch}.o")}"
-                            objectFiles << objectFile
-
-                            exec {
-                                workingDir tempDirectory
-                                commandLine = "clang"
-                                args = ["-arch", arch, "-isysroot", sysroot, "-I${file("build/libFFI-iOS/include").absolutePath}", "-c", cFile.absolutePath, "-o", objectFile]
-                            }
-                        }
-                    }
-
-                    exec {
-                        workingDir outDirectory
-                        commandLine = "libtool"
-                        args = [ "-static", "-o", "libffi.a"] + objectFiles
-                    }
-                }
-        def outDirectoryFramework = file("build/ios_xcframework")
-        outDirectoryFramework.deleteDir()
-        outDirectoryFramework.mkdirs()
-        exec {
-            workingDir outDirectoryFramework
-            commandLine = "xcodebuild"
-            args = ["-create-xcframework", "-library", file("build/ios_iphoneos/libffi.a"), "-headers", file("build/libFFI-iOS/include"), "-library", file("build/ios_iphonesimulator/libffi.a"),
-                    "-headers", file("build/libFFI-iOS/include"), "-output", new File(outDirectoryFramework, "libFFI.xcframework")]
-        }
-    }
+    dependsOn createBuildTask("iphoneos", "arm64", "-arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/", ["--host=arm64-apple-ios"])
+    dependsOn createBuildTask("iphonesimulator", "arm64", "-arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/", ["--host=arm64-apple-ios-simulator"])
+    dependsOn createBuildTask("iphonesimulator", "x86_64", "-arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk", ["--host=x86_64-apple-ios-simulator"])
 }
 
 
@@ -222,6 +176,9 @@ jnigen {
 
     all {
         def name = it.os.name().toLowerCase()
+        if (it.os == IOS)
+            name = it.targetType.platformName
+
         def arch = it.architecture.name().toLowerCase() + (it.architecture == x86 && it.bitness != x32 ? "_" : "") + it.bitness.toSuffix()
         def combined = name + "_" + arch
 
@@ -253,18 +210,9 @@ jnigen {
                 "include \$(PREBUILT_STATIC_LIBRARY)"
         ]
     }
-    addIOS() {
-        // Gnu11 is the only one that compiles for whatever reason
-        cFlags += " -std=gnu11 -fexceptions "
-        cIncludes += ["**/*.S"]
-        // DON'T COMMENT THIS OUT
-        cExcludes = ["**/dlmalloc.c"]
-        headerDirs = ["build/libFFI-iOS/include"]
-        libraries = ""
-    }
+    addIOS()
 }
 
-//jnigenBuildAllIOS.dependsOn(generateIOSFiles)
 jnigenBuildAllAndroid.dependsOn(extractAndroidCXXLibs)
 tasks.forEach {
     if (it.name.startsWith("jnigenBuildAndroid")) {
