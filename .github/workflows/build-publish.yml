@@ -290,7 +290,7 @@ jobs:
         run: ./gradlew jnigen-runtime:jnigenPackageAll
 
       - name: Snapshot build deploy
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository_owner == 'libgdx'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/msvc-support' && github.repository_owner == 'libgdx'
         run: ./gradlew build publish -x test
         env:
           ORG_GRADLE_PROJECT_NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
