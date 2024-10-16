@@ -16,12 +16,14 @@ See the libGDX Wiki for usage: https://libgdx.com/wiki/utils/jnigen
 ## gdx-jnigen-gradle quickstart
 
 We recommend you look at some existing projects for examples:
-- [gdx](https://github.com/libgdx/libgdx/blob/master/gdx/build.gradle)
-- [gdx-freetype](https://github.com/libgdx/libgdx/blob/master/extensions/gdx-freetype/build.gradle)
-- [gdx-bullet](https://github.com/libgdx/libgdx/blob/master/extensions/gdx-bullet/build.gradle)
-- [gdx-video-desktop](https://github.com/libgdx/gdx-video/blob/master/gdx-video-desktop/build.gradle)
-- [Jamepad](https://github.com/libgdx/Jamepad/blob/master/build.gradle)
+- [gdx](https://github.com/libgdx/libgdx/blob/master/gdx/build.gradle) (Uses jnigen 2.x)
+- [gdx-freetype](https://github.com/libgdx/libgdx/blob/master/extensions/gdx-freetype/build.gradle) (Uses jnigen 2.x)
+- [gdx-bullet](https://github.com/libgdx/libgdx/blob/master/extensions/gdx-bullet/build.gradle) (User jnigen 2.x)
+- [gdx-video-desktop](https://github.com/libgdx/gdx-video/blob/master/gdx-video-desktop/build.gradle) (User jnigen 2.x)
+- [Jamepad](https://github.com/libgdx/Jamepad/blob/master/build.gradle) (Uses jnigen 2.x)
 
+
+## Configuring 
 ```gradle
 // Apply jnigen plugin
 plugins {
@@ -132,3 +134,49 @@ jnigen {
     }
 }
 ```
+
+## Building
+
+After the Gradle plugin is configured, jnigen will automatically generate and register
+appropriate tasks for building.
+
+### Generation
+`jnigen`
+Required to be run before any other jnigen tasks, must be run any time source is changed
+or config is changed
+
+e.g. `./gradlew jnigen`
+
+### Compilation
+
+`jnigenBuildXXX`
+Execute the native compilation for the targets you want. Replace `XXX` with the target name.
+
+e.g. `./gradlew jnigenBuildAllWindows` Build all windows targets
+
+e.g. `./gradlew jnigenBuildLinuxArm_64` Build the 64-bit ARM Linux target only
+
+
+### Packaging
+`jnigenPackageXXX`
+Package the native libraries into a jar. Replace `XXX` with the target name.
+
+e.g. `./gradlew jnigenPackageAll` Package all targets into their jars
+
+e.g. `./gradlew jnigenPackageAllIOS` Package the iOS targets into their jar
+
+e.g. `./gradlew jnigenPackageAllAndroid`    Package the Android targets into their jars
+
+
+### Publishing
+
+Jnigen automatically generates publishing tasks that integrate with the maven publishing plugin.
+If you are setup to publish to a maven repository, you can simply run:
+
+`./gradlew publish`
+
+Your artifacts will be published using `groupid:artifactid-platform:version:classifierXXX` as the coordinates.
+
+replace classifierXXX with the target name.
+
+e.g. natives-desktop, natives-ios, natives-android-arm64-v8a 
