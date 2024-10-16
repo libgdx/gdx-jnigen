@@ -2,8 +2,8 @@ package com.badlogic.gdx.jnigen.commons;
 
 public enum TargetType {
 
-    SIMULATOR("simulator", "iphoneos"),
-    DEVICE("device", "iphonesimulator");
+    SIMULATOR("simulator", "iphonesimulator"),
+    DEVICE("device", "iphoneos");
 
     private final String targetTypeBuildDirName;
     private final String platformName;
