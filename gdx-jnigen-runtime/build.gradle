@@ -230,7 +230,7 @@ jnigen {
         cFlags += " -std=c11 -fexceptions "
         cExcludes += ["libFFI-iOS/"]
         cppFlags += " -std=c++11 -fexceptions "
-        libraries += "build/libffi-build/${combined}/lib/libffi.a"
+        libraries += file("build/libffi-build/${combined}/lib/libffi.a").absolutePath
     }
 
     addLinux(x32, ARM)
