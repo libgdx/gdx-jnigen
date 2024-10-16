@@ -27,7 +27,6 @@ public enum Os {
         if (this == Os.Linux) return "linux";
         if (this == Os.MacOsX) return "mac";
         if (this == Os.IOS) return "mac";
-        if (this == Os.Android) return "android";
         return "";
     }
 
