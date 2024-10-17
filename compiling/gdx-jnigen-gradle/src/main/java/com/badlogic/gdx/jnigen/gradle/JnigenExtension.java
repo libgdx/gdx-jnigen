@@ -4,6 +4,7 @@ import com.badlogic.gdx.jnigen.BuildTarget;
 import com.badlogic.gdx.jnigen.RobovmBuildConfig;
 import com.badlogic.gdx.jnigen.commons.*;
 import org.gradle.api.Action;
+import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
@@ -240,6 +241,13 @@ public class JnigenExtension {
             JnigenBuildTask jnigenBuildTask = project.getTasks().create("jnigenBuild" + os.name() + "_" + architecture.getDisplayName() + bitness.name(), JnigenBuildTask.class, this);
             jnigenBuildTask.setBuildTarget(target);
             jnigenBuildTask.dependsOn(jnigenTask);
+
+            if (HostDetection.os == os && HostDetection.architecture == architecture && HostDetection.bitness == bitness) {
+                DefaultTask hostTask = project.getTasks().create("jnigenBuildHost", DefaultTask.class);
+                hostTask.dependsOn(jnigenBuildTask);
+                hostTask.setGroup("jnigen");
+                hostTask.setDescription("Builds only the host architecture");
+            }
         }
 
         if (!platformLevelTargetsSeen.contains(platform)) {
