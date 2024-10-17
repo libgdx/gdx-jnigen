@@ -1,0 +1,32 @@
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Add VCVarsall To path
+        shell: pwsh
+        run: |
+          echo "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+
+      - uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+%steps%
+
+      - name: Choco install Zip
+        run: choco install zip
+
+      - name: Pack artifacts
+        shell: bash
+        run: |
+          find .  -name "*.a" -o -name "*.dll" -o -name "*.dylib" -o -name "*.so" | grep "libs" > native-files-list
+          zip natives-windows -@ < native-files-list
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: natives-windows.zip
+          path: natives-windows.zip

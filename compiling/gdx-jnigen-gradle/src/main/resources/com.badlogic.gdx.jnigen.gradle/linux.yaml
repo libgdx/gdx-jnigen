@@ -1,0 +1,69 @@
+  build-linux:
+    runs-on: ubuntu-20.04
+    container:
+      image: ubuntu:18.04
+    steps:
+      - name: Install dependencies into minimal dockerfile
+        run: |
+          # ubuntu dockerfile is very minimal (only 122 packages are installed)
+          # need to install updated git (from official git ppa)
+          apt update
+          apt install -y software-properties-common
+          add-apt-repository ppa:git-core/ppa -y
+          # install dependencies expected by other steps
+          apt update
+          apt install -y git \
+          curl \
+          ca-certificates \
+          wget \
+          bzip2 \
+          zip \
+          unzip \
+          xz-utils \
+          maven \
+          ant sudo locales
+
+          # set Locale to en_US.UTF-8 (avoids hang during compilation)
+          locale-gen en_US.UTF-8
+          echo "LANG=en_US.UTF-8" >> $GITHUB_ENV
+          echo "LANGUAGE=en_US.UTF-8" >> $GITHUB_ENV
+          echo "LC_ALL=en_US.UTF-8" >> $GITHUB_ENV
+
+      - name: Install cross-compilation toolchains
+        run: |
+          sudo apt update
+          sudo apt install -y --force-yes gcc g++
+          sudo apt install -y --force-yes gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libc6-dev-arm64-cross
+          sudo apt install -y --force-yes gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf libc6-dev-armhf-cross
+          sudo apt install -y --force-yes gcc-riscv64-linux-gnu g++-riscv64-linux-gnu libc6-dev-riscv64-cross
+          sudo apt install -y --force-yes mingw-w64 lib32z1
+
+      - name: Download Android NDK
+        run: |
+          mkdir -p $HOME/android-ndk
+          cd $HOME/android-ndk
+          wget https://dl.google.com/android/repository/android-ndk-r25c-linux.zip -O android-ndk.zip
+          echo "769ee342ea75f80619d985c2da990c48b3d8eaf45f48783a2d48870d04b46108  android-ndk.zip" | sha256sum --check
+          unzip android-ndk.zip
+          echo "NDK_HOME=$HOME/android-ndk/android-ndk-r25c" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+%steps%
+
+
+      - name: Pack artifacts
+        run: |
+          find .  -name "*.a" -o -name "*.dll" -o -name "*.dylib" -o -name "*.so" | grep "libs" > native-files-list
+          zip natives-linux -@ < native-files-list
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: natives-linux.zip
+          path: natives-linux.zip

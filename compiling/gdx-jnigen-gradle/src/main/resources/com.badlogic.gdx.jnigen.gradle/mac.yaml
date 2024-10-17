@@ -1,0 +1,31 @@
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - name: Setup Xcode SDK
+        run: |
+          # See https://github.com/actions/virtual-environments/issues/2557
+          sudo mv /Library/Developer/CommandLineTools/SDKs/* /tmp
+          sudo mv /Applications/Xcode.app /Applications/Xcode.app.bak
+          sudo mv /Applications/Xcode_14.3.1.app /Applications/Xcode.app
+          sudo xcode-select -switch /Applications/Xcode.app
+          /usr/bin/xcodebuild -version
+
+      - uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+%steps%
+
+      - name: Pack artifacts
+        run: |
+          find .  -name "*.a" -o -name "*.dll" -o -name "*.dylib" -o -name "*.so" -o -name "*.xcframework" | grep "libs" > native-files-list
+          zip natives-mac -@ < native-files-list
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: natives-mac.zip
+          path: natives-mac.zip
