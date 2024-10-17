@@ -75,10 +75,7 @@ jnigen {
 
 tasks.register("jnigenSequence") {
     dependsOn "jnigenBuildHost"
-    finalizedBy "jnigenPackageAllDesktop"
-
     dependsOn(":jnigen-runtime:jnigenBuildHost")
-    project(":jnigen-runtime").tasks.named("jnigenPackageAllDesktop").get().mustRunAfter(":jnigen-runtime:jnigenBuildHost")
 }
 
 
