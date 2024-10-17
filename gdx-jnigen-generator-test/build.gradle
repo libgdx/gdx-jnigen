@@ -30,7 +30,7 @@ dependencies {
 
 
 test {
-    dependsOn "jnigenSequence"
+    dependsOn "jnigenSequence", "jnigenPackageAllDesktop"
     useJUnitPlatform()
     outputs.upToDateWhen {false}
 }
@@ -74,16 +74,11 @@ jnigen {
 }
 
 tasks.register("jnigenSequence") {
-    dependsOn "compileTestJava"
-    dependsOn "jnigen"
-    if (HostDetection.os === Os.Windows) {
-        dependsOn "jnigenBuildAllWindows"
-    } else if (HostDetection.os === Os.Linux) {
-        dependsOn "jnigenBuildAllLinux"
-    } else if (HostDetection.os === Os.MacOsX) {
-        dependsOn "jnigenBuildAllMacOsX"
-    }
-    dependsOn "jnigenPackageAllDesktop"
+    dependsOn "jnigenBuildHost"
+    finalizedBy "jnigenPackageAllDesktop"
+
+    dependsOn(":jnigen-runtime:jnigenBuildHost")
+    project(":jnigen-runtime").tasks.named("jnigenPackageAllDesktop").get().mustRunAfter(":jnigen-runtime:jnigenBuildHost")
 }
 
 
