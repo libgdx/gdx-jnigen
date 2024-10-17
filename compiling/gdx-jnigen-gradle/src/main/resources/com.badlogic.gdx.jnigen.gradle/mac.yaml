@@ -10,7 +10,7 @@
           sudo xcode-select -switch /Applications/Xcode.app
           /usr/bin/xcodebuild -version
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:

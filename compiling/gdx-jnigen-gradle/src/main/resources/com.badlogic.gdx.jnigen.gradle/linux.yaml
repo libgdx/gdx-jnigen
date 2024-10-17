@@ -47,7 +47,7 @@
           unzip android-ndk.zip
           echo "NDK_HOME=$HOME/android-ndk/android-ndk-r25c" >> $GITHUB_ENV
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
