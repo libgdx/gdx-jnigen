@@ -4,6 +4,7 @@ import com.badlogic.gdx.jnigen.BuildTarget;
 import com.badlogic.gdx.jnigen.RobovmBuildConfig;
 import com.badlogic.gdx.jnigen.commons.*;
 import org.gradle.api.Action;
+import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
@@ -205,7 +206,7 @@ public class JnigenExtension {
     }
 
     private Set<Os> osLevelTargetsSeen = new HashSet<>();
-    private Set<Platform> platformLevelTargetsSeen = new HashSet<>();
+    private Map<Platform, JnigenPackageTask> platformLevelTargetsSeen = new HashMap<>();
 
     private void checkForTasksToAdd (BuildTarget target) {
 
@@ -216,11 +217,20 @@ public class JnigenExtension {
 
         JnigenTask jnigenTask = (JnigenTask) project.getTasks().getByName("jnigen");
 
+        if (!platformLevelTargetsSeen.containsKey(platform)) {
+            JnigenPackageTask jnigenPackageTask = project.getTasks().create("jnigenPackageAll" + platform.name(), JnigenPackageTask.class, this);
+            jnigenPackageTask.configure(null, platform);
+
+            platformLevelTargetsSeen.put(platform, jnigenPackageTask);
+        }
+
         if (!osLevelTargetsSeen.contains(os)) {
             osLevelTargetsSeen.add(os);
             JnigenBuildTask jnigenBuildTask = project.getTasks().create("jnigenBuildAll" + os.name(), JnigenBuildTask.class, this);
             jnigenBuildTask.setOsToBuild(os);
             jnigenBuildTask.dependsOn(jnigenTask);
+
+            platformLevelTargetsSeen.get(platform).mustRunAfter(jnigenBuildTask);
         }
 
         if (target.os == Android) {
@@ -233,6 +243,8 @@ public class JnigenExtension {
            JnigenPackageTask jnigenPackageTask = project.getTasks().create("jnigenPackage" + platform.name() + "_" + target.getTargetAndroidABI().getAbiString(), JnigenPackageTask.class, this);
            jnigenPackageTask.configure(target.getTargetAndroidABI(), platform);
 
+           jnigenPackageTask.mustRunAfter(jnigenBuildTask);
+           platformLevelTargetsSeen.get(platform).mustRunAfter(jnigenBuildTask);
         } else if (target.os == Os.IOS) {
             //Nope! No platform specific builds for ios, because theyend up in framework.
             //Don't want to have to do a separate task after for combining the framework
@@ -240,15 +252,15 @@ public class JnigenExtension {
             JnigenBuildTask jnigenBuildTask = project.getTasks().create("jnigenBuild" + os.name() + "_" + architecture.getDisplayName() + bitness.name(), JnigenBuildTask.class, this);
             jnigenBuildTask.setBuildTarget(target);
             jnigenBuildTask.dependsOn(jnigenTask);
+
+            platformLevelTargetsSeen.get(platform).mustRunAfter(jnigenBuildTask);
+            if (HostDetection.os == os && HostDetection.architecture == architecture && HostDetection.bitness == bitness) {
+                DefaultTask hostTask = project.getTasks().create("jnigenBuildHost", DefaultTask.class);
+                hostTask.dependsOn(jnigenBuildTask);
+                hostTask.setGroup("jnigen");
+                hostTask.setDescription("Builds only the host architecture");
+            }
         }
-
-        if (!platformLevelTargetsSeen.contains(platform)) {
-            platformLevelTargetsSeen.add(platform);
-
-            JnigenPackageTask jnigenPackageTask = project.getTasks().create("jnigenPackageAll" + platform.name(), JnigenPackageTask.class, this);
-            jnigenPackageTask.configure(null, platform);
-        }
-
     }
 
     public BuildTarget get (Os type, Architecture.Bitness bitness, Architecture architecture, AndroidABI androidABI, TargetType targetType, Action<BuildTarget> container) {
