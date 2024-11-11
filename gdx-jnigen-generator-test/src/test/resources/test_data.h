@@ -268,6 +268,7 @@ const char* returnThrownCauseMessage(methodWithThrowingCallback fnPtr);
 char* returnString(void);
 bool validateString(char* str);
 
+void call_callback_in_thread(void* (*thread_callback)(void*));
 #ifdef __cplusplus
 }
 #endif

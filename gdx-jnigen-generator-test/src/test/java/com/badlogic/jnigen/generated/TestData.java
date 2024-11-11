@@ -885,6 +885,16 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
+    public static void call_callback_in_thread(ClosureObject<thread_callback> thread_callback) {
+        call_callback_in_thread_internal(thread_callback.getFnPtr());
+    }
+
+    static private native void call_callback_in_thread_internal(long thread_callback);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	call_callback_in_thread((void *(*)(void *))thread_callback);
+    	HANDLE_JAVA_EXCEPTION_END()
+    */
+
     public interface methodWithCallbackBooleanArg extends com.badlogic.gdx.jnigen.runtime.closure.Closure {
 
         com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] __ffi_cache = new com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(0) };
@@ -1351,6 +1361,21 @@ static jclass cxxExceptionClass = NULL;
 
         default void invoke(com.badlogic.gdx.jnigen.runtime.ffi.JavaTypeWrapper[] parameters, com.badlogic.gdx.jnigen.runtime.ffi.JavaTypeWrapper returnType) {
             methodWithIntPtrPtrArg_call(new PointerPointer<>(parameters[0].asLong(), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, owned2, "int")).setBackingCType("int"));
+        }
+    }
+
+    public interface thread_callback extends com.badlogic.gdx.jnigen.runtime.closure.Closure {
+
+        com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] __ffi_cache = new com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] { FFITypes.getCTypeInfo(-1), FFITypes.getCTypeInfo(-1) };
+
+        VoidPointer thread_callback_call(VoidPointer arg0);
+
+        default com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(com.badlogic.gdx.jnigen.runtime.ffi.JavaTypeWrapper[] parameters, com.badlogic.gdx.jnigen.runtime.ffi.JavaTypeWrapper returnType) {
+            returnType.setValue(thread_callback_call(new VoidPointer(parameters[0].asLong(), false)));
         }
     }
 

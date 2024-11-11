@@ -414,4 +414,21 @@ void ensureParsed(AnonymousStructNoField, AnonymousStructField, AnonymousStructF
 void weirdPointer(FILE *_file) {}
 void constArrayParameter(const TestStruct structs[]) {}
 
+#ifdef _WIN32
+#include <windows.h>
+
+void call_callback_in_thread(void* (*thread_callback)(void*)) {
+    HANDLE thread = CreateThread(NULL, 0, thread_callback, NULL, 0, NULL);
+    WaitForSingleObject(thread, INFINITE);
+    CloseHandle(thread);
+}
+#else
+#include <pthread.h>
+
+void call_callback_in_thread(void* (*thread_callback)(void*)) {
+    pthread_t thread;
+    pthread_create(&thread, NULL, thread_callback, NULL);
+    pthread_join(thread, NULL);
+}
+#endif
 
