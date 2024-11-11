@@ -207,6 +207,9 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_clone
 JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_convertNativeTypeToFFIType
   (JNIEnv *, jclass, jlong);
 
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved);
+JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *reserved);
+
 #ifdef __cplusplus
 }
 #endif

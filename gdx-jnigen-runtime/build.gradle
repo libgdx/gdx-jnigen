@@ -184,6 +184,7 @@ jnigen {
 
         headerDirs += ["build/libffi-build/${combined}/include/", "src/main/native"]
         cppIncludes += ["src/main/native/*.cpp"]
+        cIncludes += ["src/main/native/*.c"]
         cFlags += " -std=c11 -fexceptions "
         cppFlags += " -std=c++11 -fexceptions "
         libraries += file("build/libffi-build/${combined}/lib/libffi.a").absolutePath
