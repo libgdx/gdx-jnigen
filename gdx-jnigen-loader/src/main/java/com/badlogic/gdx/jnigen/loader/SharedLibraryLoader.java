@@ -44,6 +44,18 @@ public class SharedLibraryLoader {
 	static private final HashSet<String> loadedLibraries = new HashSet<>();
 	static private final Random random = new Random();
 
+	static private AndroidLibraryLoader androidLibraryLoader = new AndroidLibraryLoader() {
+		@Override
+		public void load(String name) {
+			System.loadLibrary(name);
+		}
+	};
+
+	/** Sets a custom library loader for Android. */
+	public static void setAndroidLibraryLoader(AndroidLibraryLoader loader) {
+		androidLibraryLoader = loader;
+	}
+
 	private String nativesJar;
 
 	public SharedLibraryLoader () {
@@ -95,7 +107,7 @@ public class SharedLibraryLoader {
 			String platformName = mapLibraryName(libraryName);
 			try {
 				if (HostDetection.os == Os.Android)
-					System.loadLibrary(platformName);
+					androidLibraryLoader.load(platformName);
 				else
 					loadFile(platformName);
 				setLoaded(libraryName);
