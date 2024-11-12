@@ -18,6 +18,6 @@ package com.badlogic.gdx.jnigen.loader;
 /** Loader for native libraries in Android. */
 public interface AndroidLibraryLoader {
 
-    /** Loads a native library. */
-    void load(String name);
+	/** Loads a native library. */
+	void load(String name);
 }
