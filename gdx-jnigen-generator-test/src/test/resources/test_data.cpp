@@ -417,8 +417,14 @@ void constArrayParameter(const TestStruct structs[]) {}
 #ifdef _WIN32
 #include <windows.h>
 
+DWORD WINAPI thread_wrapper(LPVOID param) {
+    auto callback = static_cast<void* (*)(void*)>(param);
+    callback(nullptr);
+    return 0;
+}
+
 void call_callback_in_thread(void* (*thread_callback)(void*)) {
-    HANDLE thread = CreateThread(NULL, 0, thread_callback, NULL, 0, NULL);
+    HANDLE thread = CreateThread(NULL, 0, thread_wrapper, reinterpret_cast<LPVOID>(thread_callback), 0, NULL);
     WaitForSingleObject(thread, INFINITE);
     CloseHandle(thread);
 }
