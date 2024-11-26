@@ -418,7 +418,7 @@ void constArrayParameter(const TestStruct structs[]) {}
 #include <windows.h>
 
 DWORD WINAPI thread_wrapper(LPVOID param) {
-    auto callback = static_cast<void* (*)(void*)>(param);
+    auto callback = reinterpret_cast<void* (*)(void*)>(param);
     callback(nullptr);
     return 0;
 }
