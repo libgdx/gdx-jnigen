@@ -26,7 +26,7 @@ DWORD envTls = TLS_OUT_OF_INDEXES;
 BOOL WINAPI DllMain(HINSTANCE hDLL, DWORD fdwReason, LPVOID lpvReserved) {
     // Docs say no cleanup when lpvReserved != NULL
     if (fdwReason == DLL_THREAD_DETACH && lpvReserved == NULL) {
-        ThreadData* t_data = (ThreadData*)TlsGetValue(envTLS);
+        ThreadData* t_data = (ThreadData*)TlsGetValue(envTls);
         detach_jni_env(t_data);
     }
 
@@ -34,11 +34,11 @@ BOOL WINAPI DllMain(HINSTANCE hDLL, DWORD fdwReason, LPVOID lpvReserved) {
 }
 
 void init_tls() {
-    if (envTLS != TLS_OUT_OF_INDEXES) {
+    if (envTls != TLS_OUT_OF_INDEXES) {
         HANDLE_RESULT(-1, "TLS got double initialized")
     }
-    envTLS = TlsAlloc();
-    if (envTLS == TLS_OUT_OF_INDEXES) {
+    envTls = TlsAlloc();
+    if (envTls == TLS_OUT_OF_INDEXES) {
         HANDLE_RESULT(-1, "Failed to allocate TLS")
     }
 }
@@ -51,9 +51,9 @@ void cleanup_tls() {
 }
 
 void set_tls(ThreadData* t_data) {
-    if (envTLS == TLS_OUT_OF_INDEXES) 
+    if (envTls == TLS_OUT_OF_INDEXES)
         init_tls();
-    BOOL res = TlsSetValue(envTLS, (LPVOID)data);;
+    BOOL res = TlsSetValue(envTls, (LPVOID)t_data);;
     HANDLE_RESULT(res, "Failed to set thread data")
 }
 
