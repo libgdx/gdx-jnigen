@@ -21,7 +21,7 @@ dependencies {
     testRuntimeOnly fileTree(dir: file("build/jnigen/libs"), include: '*natives-desktop.jar')
     if (HostDetection.os === Os.Windows) {
         testImplementation "com.badlogicgames.jnigen:jnigen-runtime:3.0.0-SNAPSHOT"
-        testImplementation "com.badlogicgames.jnigen:jnigen-runtime:3.0.0-SNAPSHOT:natives-desktop"
+        testImplementation "com.badlogicgames.jnigen:jnigen-runtime-platform:3.0.0-SNAPSHOT:natives-desktop"
     } else {
         testImplementation project(path: ":jnigen-runtime")
         testImplementation project(path: ":jnigen-runtime", configuration: "archives")
