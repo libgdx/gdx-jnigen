@@ -16,7 +16,7 @@ extern "C" {
 #define SIGNED_DOUBLE -10.5
 #define UNSIGNED_HEX_INT 0x5B
 #define SIGNED_HEX_INT -0x5B
-#define boolean 10
+#define final 10
 #define special1 10L
 #define special2 10LLU
 #define special3 10.5
@@ -268,6 +268,7 @@ const char* returnThrownCauseMessage(methodWithThrowingCallback fnPtr);
 char* returnString(void);
 bool validateString(char* str);
 
+void call_callback_in_thread(void* (*thread_callback)(void*));
 #ifdef __cplusplus
 }
 #endif

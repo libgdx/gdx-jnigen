@@ -229,4 +229,17 @@ public class ClosureTest extends BaseTest {
         assertEquals(55.55, ret);
         closureObject.free();
     }
+
+    @Test
+    public void closureFromThread() {
+        AtomicReference<String> spawnedThreadName = new AtomicReference<>();
+        ClosureObject<thread_callback> closureObject = ClosureObject.fromClosure((arg) -> {
+            spawnedThreadName.set(Thread.currentThread().getName());
+            return arg;
+        });
+        call_callback_in_thread(closureObject);
+        assertNotEquals(spawnedThreadName.get(), Thread.currentThread().getName());
+        assertTrue(spawnedThreadName.get().startsWith("Thread-"));
+        closureObject.free();
+    }
 }

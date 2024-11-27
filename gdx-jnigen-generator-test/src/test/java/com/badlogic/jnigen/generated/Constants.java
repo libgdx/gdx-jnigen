@@ -18,7 +18,7 @@ public final class Constants {
 
     public static final byte UNSIGNED_INT = 10;
 
-    public static final byte boolean_r = 10;
+    public static final byte final_r = 10;
 
     public static final byte special1 = 10;
 

@@ -2,6 +2,7 @@
 #include <string.h>
 #include <ffi.h>
 #include <jnigen.h>
+#include <jni_env_tls.h>
 
 #ifdef __linux__
 #include <dlfcn.h>
@@ -90,7 +91,8 @@ static inline void calculateAlignmentAndOffset(ffi_type* type, bool isStruct) {
 }
 
 void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
-    ATTACH_ENV()
+    JNIEnv* env;
+    tls_attach_jni_env(gJVM, &env);
     closure_info* info = (closure_info*) user;
     char backingBuffer[info->argumentSize];
     jobject jBuffer = NULL;
@@ -130,7 +132,6 @@ void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
     } else {
         ENDIAN_INTCPY(result, rtype->size, &ret, sizeof(jlong));
     }
-    DETACH_ENV()
 }
 
 JNIEXPORT jint JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getPointerSize(JNIEnv* env, jclass clazz) {
@@ -372,3 +373,11 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_clone(JNIE
     return reinterpret_cast<jlong>(dst);
 }
 
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
+    init_tls();
+    return JNI_VERSION_1_6;
+}
+
+JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *reserved) {
+    cleanup_tls();
+}
