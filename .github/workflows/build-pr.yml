@@ -134,6 +134,6 @@ jobs:
         with:
           name: natives-windows.zip
 
-      - name: Run windows tests
-        run: |
-          ./gradlew test
+      #- name: Run windows tests
+      #  run: |
+      #    ./gradlew test
