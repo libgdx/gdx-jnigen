@@ -397,7 +397,7 @@ const char* returnThrownCauseMessage(methodWithThrowingCallback fnPtr) {
     try {
         fnPtr();
     } catch (const JavaExceptionMarker& e) {
-        return e.what();
+        return strdup(e.what());
     }
     return NULL;
 }
