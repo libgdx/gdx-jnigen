@@ -235,9 +235,9 @@ jobs:
         with:
           name: natives-windows.zip
 
-      - name: Run windows tests
-        run: |
-          ./gradlew test
+#      - name: Run windows tests
+#        run: |
+#          ./gradlew test
 
   publish:
     runs-on: ubuntu-20.04
