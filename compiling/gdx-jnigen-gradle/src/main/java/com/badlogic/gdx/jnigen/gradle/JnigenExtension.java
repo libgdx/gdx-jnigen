@@ -54,20 +54,20 @@ public class JnigenExtension {
      * Gradle Tasks are executed in the main project working directory. Supply
      * actual subproject path where necessary.
      */
-    String subProjectDir;
+    public String subProjectDir;
 
-    String sharedLibName = null;
-    String temporaryDir = "build/jnigen/target";
-    String libsDir = "build/jnigen/libs";
-    String jniDir = "build/jnigen/jni";
+    public String sharedLibName = null;
+    public String temporaryDir = "build/jnigen/target";
+    public String libsDir = "build/jnigen/libs";
+    public String jniDir = "build/jnigen/jni";
 
     /**
      * If we should build with release flag set.<br/>
      * This strips debug symbols.
      */
-    boolean release = true;
+    public boolean release = true;
 
-    boolean multiThreadedCompile = true;
+    public boolean multiThreadedCompile = true;
 
     NativeCodeGeneratorConfig nativeCodeGeneratorConfig;
     public List<BuildTarget> targets = new ArrayList<>();
@@ -286,7 +286,7 @@ public class JnigenExtension {
         }
     }
 
-    class NativeCodeGeneratorConfig {
+    public class NativeCodeGeneratorConfig {
         SourceSet sourceSet;
         private String[] sourceDirs;
         String[] includes = null;
