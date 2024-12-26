@@ -10,7 +10,7 @@
           sudo xcode-select -switch /Applications/Xcode.app
           /usr/bin/xcodebuild -version
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: 'recursive'
