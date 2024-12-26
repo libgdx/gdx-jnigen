@@ -287,10 +287,10 @@ public class JnigenExtension {
     }
 
     public class NativeCodeGeneratorConfig {
-        SourceSet sourceSet;
+        public SourceSet sourceSet;
+        public String[] includes = null;
+        public String[] excludes = null;
         private String[] sourceDirs;
-        String[] includes = null;
-        String[] excludes = null;
 
         public NativeCodeGeneratorConfig (Project project) {
             JavaPluginConvention javaPlugin = project.getConvention().getPlugin(JavaPluginConvention.class);
