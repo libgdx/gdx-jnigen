@@ -32,7 +32,7 @@ public class JnigenGenerateBindingsTask extends DefaultTask {
             conf.setDescription("LLVM dependencies for generator");
         });
 
-        getProject().getDependencies().add("generatorLLVM", "org.bytedeco:llvm-platform:16.0.4-1.5.9");
+        getProject().getDependencies().add("generatorLLVM", "org.bytedeco:llvm-platform:19.1.3-1.5.11");
 
         this.configuration = llvmConfiguration;
     }
@@ -68,6 +68,7 @@ public class JnigenGenerateBindingsTask extends DefaultTask {
         args.addAll(Arrays.asList(options));
 
         getProject().javaexec(spec -> {
+            spec.environment("LIBCLANG_DISABLE_CRASH_RECOVERY", "1");
             spec.setClasspath(filteredClasspath.plus(configuration));
             spec.getMainClass().set("com.badlogic.gdx.jnigen.generator.Generator");
             spec.args(args);
