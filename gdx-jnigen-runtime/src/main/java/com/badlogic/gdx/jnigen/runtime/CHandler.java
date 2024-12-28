@@ -127,7 +127,12 @@ public class CHandler {
 
     public static long getFFICifForSignature(CTypeInfo[] signature) {
         synchronized (classCifMap) {
-            return classCifMap.computeIfAbsent(signature, CHandler::generateFFICifForSignature);
+            Long cif = classCifMap.get(signature);
+            if (cif == null) {
+                cif = CHandler.generateFFICifForSignature(signature);
+                classCifMap.put(signature, cif);
+            }
+            return cif;
         }
     }
 

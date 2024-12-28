@@ -6,6 +6,9 @@ plugins {
     id "de.undercouch.download" version "5.0.1"
 }
 
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
 dependencies {
     api project(":jnigen-loader")
 }
