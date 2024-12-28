@@ -10,6 +10,7 @@ import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.expr.Expression;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,6 +23,13 @@ public class GlobalType implements MappedType {
 
     public GlobalType(String globalName) {
         this.globalName = globalName;
+    }
+
+    public GlobalType duplicate() {
+        GlobalType clone = new GlobalType(globalName);
+        clone.functions.addAll(functions);
+        clone.closures.putAll(closures);
+        return clone;
     }
 
     public void addClosure(ClosureType closureType) {

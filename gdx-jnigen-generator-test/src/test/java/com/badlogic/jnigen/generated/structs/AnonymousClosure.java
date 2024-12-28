@@ -9,6 +9,7 @@ import com.badlogic.gdx.jnigen.runtime.closure.Closure;
 import com.badlogic.gdx.jnigen.runtime.ffi.JavaTypeWrapper;
 import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;
 import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
+import com.badlogic.gdx.jnigen.runtime.ffi.ClosureEncoder;
 
 public final class AnonymousClosure extends com.badlogic.gdx.jnigen.runtime.pointer.Struct {
 
@@ -42,7 +43,7 @@ public final class AnonymousClosure extends com.badlogic.gdx.jnigen.runtime.poin
     }
 
     public ClosureObject<someClosure> someClosure() {
-        return CHandler.getClosureObject(getValue(0));
+        return CHandler.getClosureObject(getValue(0), someClosure::someClosure_downcall);
     }
 
     public void someClosure(ClosureObject<someClosure> someClosure) {
@@ -50,7 +51,7 @@ public final class AnonymousClosure extends com.badlogic.gdx.jnigen.runtime.poin
     }
 
     public ClosureObject<anotherClosure> anotherClosure() {
-        return CHandler.getClosureObject(getValue(1));
+        return CHandler.getClosureObject(getValue(1), anotherClosure::anotherClosure_downcall);
     }
 
     public void anotherClosure(ClosureObject<anotherClosure> anotherClosure) {
@@ -98,6 +99,20 @@ public final class AnonymousClosure extends com.badlogic.gdx.jnigen.runtime.poin
         default void invoke(com.badlogic.gdx.jnigen.runtime.ffi.JavaTypeWrapper[] parameters, com.badlogic.gdx.jnigen.runtime.ffi.JavaTypeWrapper returnType) {
             returnType.setValue(someClosure_call(new CSizedIntPointer(parameters[0].asLong(), false, "int"), (double) parameters[1].asDouble()));
         }
+
+        public static someClosure someClosure_downcall(long fnPtr) {
+            ClosureEncoder encoder = new ClosureEncoder(fnPtr, someClosure.__ffi_cache);
+            return (arg0, arg1) -> {
+                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
+                {
+                    useEncoder.setValue(0, arg0);
+                    useEncoder.setValue(1, arg1);
+                }
+                JavaTypeWrapper returnConvert = new JavaTypeWrapper(someClosure.__ffi_cache[someClosure.__ffi_cache.length - 1]);
+                returnConvert.setValue(useEncoder.invoke());
+                return (int) returnConvert.asLong();
+            };
+        }
     }
 
     public interface anotherClosure extends com.badlogic.gdx.jnigen.runtime.closure.Closure {
@@ -112,6 +127,20 @@ public final class AnonymousClosure extends com.badlogic.gdx.jnigen.runtime.poin
 
         default void invoke(com.badlogic.gdx.jnigen.runtime.ffi.JavaTypeWrapper[] parameters, com.badlogic.gdx.jnigen.runtime.ffi.JavaTypeWrapper returnType) {
             returnType.setValue(anotherClosure_call((int) parameters[0].asLong(), (double) parameters[1].asDouble()));
+        }
+
+        public static anotherClosure anotherClosure_downcall(long fnPtr) {
+            ClosureEncoder encoder = new ClosureEncoder(fnPtr, anotherClosure.__ffi_cache);
+            return (arg0, arg1) -> {
+                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
+                {
+                    useEncoder.setValue(0, arg0);
+                    useEncoder.setValue(1, arg1);
+                }
+                JavaTypeWrapper returnConvert = new JavaTypeWrapper(anotherClosure.__ffi_cache[anotherClosure.__ffi_cache.length - 1]);
+                returnConvert.setValue(useEncoder.invoke());
+                return (float) returnConvert.asFloat();
+            };
         }
     }
 }

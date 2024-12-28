@@ -6,6 +6,7 @@ import com.badlogic.gdx.jnigen.runtime.closure.Closure;
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.runtime.ffi.ClosureInfo;
 import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
+import com.badlogic.gdx.jnigen.runtime.util.DowncallClosureSupplier;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -79,6 +80,8 @@ public class CHandler {
         return toCallOn.invoke(parameter);
     }
 
+    public static native long dispatchCCall(long fnPtr, long cif, ByteBuffer parameter);
+
     public static CTypeInfo getCTypeInfo(String name) {
         synchronized (cTypeInfoMap) {
             CTypeInfo cTypeInfo = cTypeInfoMap.get(name);
@@ -145,7 +148,7 @@ public class CHandler {
         long fnPtr = createClosureForObject(cif, closureInfo, byteBuffer);
         long closurePtr = byteBuffer.getLong();
 
-        ClosureObject<T> closureObject = new ClosureObject<>(fnPtr, closurePtr, false);
+        ClosureObject<T> closureObject = new ClosureObject<>(object, fnPtr, closurePtr, false);
         synchronized (fnPtrClosureMap) {
             fnPtrClosureMap.put(fnPtr, closureObject);
         }
@@ -154,10 +157,15 @@ public class CHandler {
 
     public static native <T extends Closure> long createClosureForObject(long cifArg, ClosureInfo<T> object, ByteBuffer closureRet);
 
-    public static <T extends Closure> ClosureObject<T> getClosureObject(long fnPtr) {
+    public static <T extends Closure> ClosureObject<T> getClosureObject(long fnPtr, DowncallClosureSupplier<T> closureFallback) {
         synchronized (fnPtrClosureMap) {
+            ClosureObject<?> closureObject = fnPtrClosureMap.get(fnPtr);
+            if (closureObject == null) {
+                closureObject = new ClosureObject<>(closureFallback.get(fnPtr), fnPtr, 0, false);
+                fnPtrClosureMap.put(fnPtr, closureObject);
+            }
             //noinspection unchecked
-            return (ClosureObject<T>)fnPtrClosureMap.get(fnPtr);
+            return (ClosureObject<T>)closureObject;
         }
     }
 

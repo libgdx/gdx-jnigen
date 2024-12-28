@@ -5,14 +5,16 @@ import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 
 public final class ClosureObject<T extends Closure> extends Pointing {
 
+    private final T closure;
     private final long closurePtr;
 
     public static <T extends Closure> ClosureObject<T> fromClosure(T object) {
         return CHandler.createClosureForObject(object);
     }
 
-    public ClosureObject(long fnPtr, long closurePtr, boolean freeOnGC) {
+    public ClosureObject(T closure, long fnPtr, long closurePtr, boolean freeOnGC) {
         super(fnPtr, freeOnGC);
+        this.closure = closure;
         this.closurePtr = closurePtr;
     }
 
@@ -27,7 +29,7 @@ public final class ClosureObject<T extends Closure> extends Pointing {
         freed = true;
     }
 
-    public long getClosurePtr() {
-        return closurePtr;
+    public T getClosure() {
+        return closure;
     }
 }

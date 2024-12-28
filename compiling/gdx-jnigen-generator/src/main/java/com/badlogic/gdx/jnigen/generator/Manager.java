@@ -81,7 +81,7 @@ public class Manager {
         this.cTypeToJavaStringMapper.putAll(rollBackManager.cTypeToJavaStringMapper);
         this.typedefs.putAll(rollBackManager.typedefs);
         this.macros.putAll(rollBackManager.macros);
-        this.globalType = rollBackManager.globalType;
+        this.globalType = rollBackManager.globalType.duplicate();
     }
 
     public static void startNewManager() {
