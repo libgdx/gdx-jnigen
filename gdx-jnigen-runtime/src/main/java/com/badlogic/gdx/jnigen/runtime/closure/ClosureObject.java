@@ -22,7 +22,8 @@ public final class ClosureObject<T extends Closure> extends Pointing {
             throw new IllegalArgumentException("Closure already freed");
         if (closurePtr == 0)
             throw new IllegalArgumentException("Closure is not java closure: " + getPointer());
-        CHandler.freeClosure(this);
+        CHandler.deregisterFunctionPointer(getPointer());
+        CHandler.freeClosure(closurePtr);
         freed = true;
     }
 

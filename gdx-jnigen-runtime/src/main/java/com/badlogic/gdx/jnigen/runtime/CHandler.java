@@ -189,15 +189,14 @@ public class CHandler {
 
     public static native boolean isVoid(long type);
 
-    public static void freeClosure(ClosureObject<?> closureObject) {
+    public static void deregisterFunctionPointer(long fnPtr) {
         synchronized (fnPtrClosureMap) {
-            fnPtrClosureMap.remove(closureObject.getPointer());
+            fnPtrClosureMap.remove(fnPtr);
         }
-        freeClosure(closureObject.getClosurePtr());
     }
 
 
-    private static native void freeClosure(long closurePtr);
+    public static native void freeClosure(long closurePtr);
 
     public static native long malloc(long size);
 
