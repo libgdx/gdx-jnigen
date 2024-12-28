@@ -144,7 +144,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static void call_methodWithCallback(ClosureObject<methodWithCallback> fnPtr) {
-        call_methodWithCallback_internal(fnPtr.getFnPtr());
+        call_methodWithCallback_internal(fnPtr.getPointer());
     }
 
     static private native void call_methodWithCallback_internal(long fnPtr);/*
@@ -154,7 +154,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static void call_methodWithCallbackLongArg(ClosureObject<methodWithCallbackLongArg> fnPtr) {
-        call_methodWithCallbackLongArg_internal(fnPtr.getFnPtr());
+        call_methodWithCallbackLongArg_internal(fnPtr.getPointer());
     }
 
     static private native void call_methodWithCallbackLongArg_internal(long fnPtr);/*
@@ -164,7 +164,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static void call_methodWithCallbackIntArg(ClosureObject<methodWithCallbackIntArg> fnPtr) {
-        call_methodWithCallbackIntArg_internal(fnPtr.getFnPtr());
+        call_methodWithCallbackIntArg_internal(fnPtr.getPointer());
     }
 
     static private native void call_methodWithCallbackIntArg_internal(long fnPtr);/*
@@ -174,7 +174,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static void call_methodWithCallbackShortArg(ClosureObject<methodWithCallbackShortArg> fnPtr) {
-        call_methodWithCallbackShortArg_internal(fnPtr.getFnPtr());
+        call_methodWithCallbackShortArg_internal(fnPtr.getPointer());
     }
 
     static private native void call_methodWithCallbackShortArg_internal(long fnPtr);/*
@@ -184,7 +184,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static void call_methodWithCallbackByteArg(ClosureObject<methodWithCallbackByteArg> fnPtr) {
-        call_methodWithCallbackByteArg_internal(fnPtr.getFnPtr());
+        call_methodWithCallbackByteArg_internal(fnPtr.getPointer());
     }
 
     static private native void call_methodWithCallbackByteArg_internal(long fnPtr);/*
@@ -194,7 +194,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static void call_methodWithCallbackCharArg(ClosureObject<methodWithCallbackCharArg> fnPtr) {
-        call_methodWithCallbackCharArg_internal(fnPtr.getFnPtr());
+        call_methodWithCallbackCharArg_internal(fnPtr.getPointer());
     }
 
     static private native void call_methodWithCallbackCharArg_internal(long fnPtr);/*
@@ -204,7 +204,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static void call_methodWithCallbackBooleanArg(ClosureObject<methodWithCallbackBooleanArg> fnPtr) {
-        call_methodWithCallbackBooleanArg_internal(fnPtr.getFnPtr());
+        call_methodWithCallbackBooleanArg_internal(fnPtr.getPointer());
     }
 
     static private native void call_methodWithCallbackBooleanArg_internal(long fnPtr);/*
@@ -214,7 +214,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static void call_methodWithCallbackFloatArg(ClosureObject<methodWithCallbackFloatArg> fnPtr) {
-        call_methodWithCallbackFloatArg_internal(fnPtr.getFnPtr());
+        call_methodWithCallbackFloatArg_internal(fnPtr.getPointer());
     }
 
     static private native void call_methodWithCallbackFloatArg_internal(long fnPtr);/*
@@ -224,7 +224,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static void call_methodWithCallbackDoubleArg(ClosureObject<methodWithCallbackDoubleArg> fnPtr) {
-        call_methodWithCallbackDoubleArg_internal(fnPtr.getFnPtr());
+        call_methodWithCallbackDoubleArg_internal(fnPtr.getPointer());
     }
 
     static private native void call_methodWithCallbackDoubleArg_internal(long fnPtr);/*
@@ -234,7 +234,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static void call_methodWithCallbackAllArgs(ClosureObject<methodWithCallbackAllArgs> fnPtr) {
-        call_methodWithCallbackAllArgs_internal(fnPtr.getFnPtr());
+        call_methodWithCallbackAllArgs_internal(fnPtr.getPointer());
     }
 
     static private native void call_methodWithCallbackAllArgs_internal(long fnPtr);/*
@@ -244,7 +244,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static long call_methodWithCallbackLongReturn(ClosureObject<methodWithCallbackLongReturn> fnPtr) {
-        return call_methodWithCallbackLongReturn_internal(fnPtr.getFnPtr());
+        return call_methodWithCallbackLongReturn_internal(fnPtr.getPointer());
     }
 
     static private native long call_methodWithCallbackLongReturn_internal(long fnPtr);/*
@@ -255,7 +255,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static int call_methodWithCallbackIntReturn(ClosureObject<methodWithCallbackIntReturn> fnPtr) {
-        return call_methodWithCallbackIntReturn_internal(fnPtr.getFnPtr());
+        return call_methodWithCallbackIntReturn_internal(fnPtr.getPointer());
     }
 
     static private native int call_methodWithCallbackIntReturn_internal(long fnPtr);/*
@@ -266,7 +266,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static short call_methodWithCallbackShortReturn(ClosureObject<methodWithCallbackShortReturn> fnPtr) {
-        return call_methodWithCallbackShortReturn_internal(fnPtr.getFnPtr());
+        return call_methodWithCallbackShortReturn_internal(fnPtr.getPointer());
     }
 
     static private native short call_methodWithCallbackShortReturn_internal(long fnPtr);/*
@@ -277,7 +277,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static char call_methodWithCallbackCharReturn(ClosureObject<methodWithCallbackCharReturn> fnPtr) {
-        return call_methodWithCallbackCharReturn_internal(fnPtr.getFnPtr());
+        return call_methodWithCallbackCharReturn_internal(fnPtr.getPointer());
     }
 
     static private native char call_methodWithCallbackCharReturn_internal(long fnPtr);/*
@@ -288,7 +288,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static byte call_methodWithCallbackByteReturn(ClosureObject<methodWithCallbackByteReturn> fnPtr) {
-        return call_methodWithCallbackByteReturn_internal(fnPtr.getFnPtr());
+        return call_methodWithCallbackByteReturn_internal(fnPtr.getPointer());
     }
 
     static private native byte call_methodWithCallbackByteReturn_internal(long fnPtr);/*
@@ -299,7 +299,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static boolean call_methodWithCallbackBooleanReturn(ClosureObject<methodWithCallbackBooleanReturn> fnPtr) {
-        return call_methodWithCallbackBooleanReturn_internal(fnPtr.getFnPtr());
+        return call_methodWithCallbackBooleanReturn_internal(fnPtr.getPointer());
     }
 
     static private native boolean call_methodWithCallbackBooleanReturn_internal(long fnPtr);/*
@@ -310,7 +310,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static float call_methodWithCallbackFloatReturn(ClosureObject<methodWithCallbackFloatReturn> fnPtr) {
-        return call_methodWithCallbackFloatReturn_internal(fnPtr.getFnPtr());
+        return call_methodWithCallbackFloatReturn_internal(fnPtr.getPointer());
     }
 
     static private native float call_methodWithCallbackFloatReturn_internal(long fnPtr);/*
@@ -321,7 +321,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static double call_methodWithCallbackDoubleReturn(ClosureObject<methodWithCallbackDoubleReturn> fnPtr) {
-        return call_methodWithCallbackDoubleReturn_internal(fnPtr.getFnPtr());
+        return call_methodWithCallbackDoubleReturn_internal(fnPtr.getPointer());
     }
 
     static private native double call_methodWithCallbackDoubleReturn_internal(long fnPtr);/*
@@ -332,7 +332,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static void call_methodWithThrowingCallback(ClosureObject<methodWithThrowingCallback> fnPtr) {
-        call_methodWithThrowingCallback_internal(fnPtr.getFnPtr());
+        call_methodWithThrowingCallback_internal(fnPtr.getPointer());
     }
 
     static private native void call_methodWithThrowingCallback_internal(long fnPtr);/*
@@ -342,7 +342,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static void call_methodWithIntPtrPtrArg(ClosureObject<methodWithIntPtrPtrArg> fnPtr) {
-        call_methodWithIntPtrPtrArg_internal(fnPtr.getFnPtr());
+        call_methodWithIntPtrPtrArg_internal(fnPtr.getPointer());
     }
 
     static private native void call_methodWithIntPtrPtrArg_internal(long fnPtr);/*
@@ -352,7 +352,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static PointerPointer<CSizedIntPointer> call_methodWithIntPtrPtrRet(ClosureObject<methodWithIntPtrPtrRet> fnPtr) {
-        return new PointerPointer<>(call_methodWithIntPtrPtrRet_internal(fnPtr.getFnPtr()), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, owned2, "int")).setBackingCType("int");
+        return new PointerPointer<>(call_methodWithIntPtrPtrRet_internal(fnPtr.getPointer()), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, owned2, "int")).setBackingCType("int");
     }
 
     static private native long call_methodWithIntPtrPtrRet_internal(long fnPtr);/*
@@ -409,7 +409,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static TestStruct call_methodWithCallbackTestStructReturn(ClosureObject<methodWithCallbackTestStructReturn> fnPtr) {
-        return new TestStruct(call_methodWithCallbackTestStructReturn_internal(fnPtr.getFnPtr()), true);
+        return new TestStruct(call_methodWithCallbackTestStructReturn_internal(fnPtr.getPointer()), true);
     }
 
     static private native long call_methodWithCallbackTestStructReturn_internal(long fnPtr);/*
@@ -422,7 +422,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static TestStruct.TestStructPointer call_methodWithCallbackTestStructPointerReturn(ClosureObject<methodWithCallbackTestStructPointerReturn> fnPtr) {
-        return new TestStruct.TestStructPointer(call_methodWithCallbackTestStructPointerReturn_internal(fnPtr.getFnPtr()), false);
+        return new TestStruct.TestStructPointer(call_methodWithCallbackTestStructPointerReturn_internal(fnPtr.getPointer()), false);
     }
 
     static private native long call_methodWithCallbackTestStructPointerReturn_internal(long fnPtr);/*
@@ -433,7 +433,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static void call_methodWithCallbackTestStructArg(ClosureObject<methodWithCallbackTestStructArg> fnPtr) {
-        call_methodWithCallbackTestStructArg_internal(fnPtr.getFnPtr());
+        call_methodWithCallbackTestStructArg_internal(fnPtr.getPointer());
     }
 
     static private native void call_methodWithCallbackTestStructArg_internal(long fnPtr);/*
@@ -443,7 +443,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static void call_methodWithCallbackTestStructPointerArg(ClosureObject<methodWithCallbackTestStructPointerArg> fnPtr) {
-        call_methodWithCallbackTestStructPointerArg_internal(fnPtr.getFnPtr());
+        call_methodWithCallbackTestStructPointerArg_internal(fnPtr.getPointer());
     }
 
     static private native void call_methodWithCallbackTestStructPointerArg_internal(long fnPtr);/*
@@ -519,7 +519,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static TestEnum call_methodWithCallbackTestEnumReturn(ClosureObject<methodWithCallbackTestEnumReturn> fnPtr) {
-        return TestEnum.getByIndex((int) call_methodWithCallbackTestEnumReturn_internal(fnPtr.getFnPtr()));
+        return TestEnum.getByIndex((int) call_methodWithCallbackTestEnumReturn_internal(fnPtr.getPointer()));
     }
 
     static private native int call_methodWithCallbackTestEnumReturn_internal(long fnPtr);/*
@@ -530,7 +530,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static void call_methodWithCallbackTestEnumArg(ClosureObject<methodWithCallbackTestEnumArg> fnPtr) {
-        call_methodWithCallbackTestEnumArg_internal(fnPtr.getFnPtr());
+        call_methodWithCallbackTestEnumArg_internal(fnPtr.getPointer());
     }
 
     static private native void call_methodWithCallbackTestEnumArg_internal(long fnPtr);/*
@@ -540,7 +540,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static TestEnum.TestEnumPointer call_methodWithCallbackTestEnumPointerReturn(ClosureObject<methodWithCallbackTestEnumPointerReturn> fnPtr) {
-        return new TestEnum.TestEnumPointer(call_methodWithCallbackTestEnumPointerReturn_internal(fnPtr.getFnPtr()), false);
+        return new TestEnum.TestEnumPointer(call_methodWithCallbackTestEnumPointerReturn_internal(fnPtr.getPointer()), false);
     }
 
     static private native long call_methodWithCallbackTestEnumPointerReturn_internal(long fnPtr);/*
@@ -551,7 +551,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static void call_methodWithCallbackTestEnumPointerArg(ClosureObject<methodWithCallbackTestEnumPointerArg> fnPtr) {
-        call_methodWithCallbackTestEnumPointerArg_internal(fnPtr.getFnPtr());
+        call_methodWithCallbackTestEnumPointerArg_internal(fnPtr.getPointer());
     }
 
     static private native void call_methodWithCallbackTestEnumPointerArg_internal(long fnPtr);/*
@@ -585,7 +585,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static CSizedIntPointer call_methodWithCallbackIntPointerReturn(ClosureObject<methodWithCallbackIntPointerReturn> fnPtr, int val) {
-        return new CSizedIntPointer(call_methodWithCallbackIntPointerReturn_internal(fnPtr.getFnPtr(), val), false, "int");
+        return new CSizedIntPointer(call_methodWithCallbackIntPointerReturn_internal(fnPtr.getPointer(), val), false, "int");
     }
 
     static private native long call_methodWithCallbackIntPointerReturn_internal(long fnPtr, int val);/*
@@ -597,7 +597,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static int call_methodWithCallbackIntPointerArg(ClosureObject<methodWithCallbackIntPointerArg> fnPtr) {
-        return call_methodWithCallbackIntPointerArg_internal(fnPtr.getFnPtr());
+        return call_methodWithCallbackIntPointerArg_internal(fnPtr.getPointer());
     }
 
     static private native int call_methodWithCallbackIntPointerArg_internal(long fnPtr);/*
@@ -800,7 +800,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static TestUnion.TestUnionPointer call_methodWithCallbackTestUnionPointerReturn(ClosureObject<methodWithCallbackTestUnionPointerReturn> fnPtr) {
-        return new TestUnion.TestUnionPointer(call_methodWithCallbackTestUnionPointerReturn_internal(fnPtr.getFnPtr()), false);
+        return new TestUnion.TestUnionPointer(call_methodWithCallbackTestUnionPointerReturn_internal(fnPtr.getPointer()), false);
     }
 
     static private native long call_methodWithCallbackTestUnionPointerReturn_internal(long fnPtr);/*
@@ -811,7 +811,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static void call_methodWithCallbackTestUnionPointerArg(ClosureObject<methodWithCallbackTestUnionPointerArg> fnPtr) {
-        call_methodWithCallbackTestUnionPointerArg_internal(fnPtr.getFnPtr());
+        call_methodWithCallbackTestUnionPointerArg_internal(fnPtr.getPointer());
     }
 
     static private native void call_methodWithCallbackTestUnionPointerArg_internal(long fnPtr);/*
@@ -852,7 +852,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static CSizedIntPointer returnThrownCauseMessage(ClosureObject<methodWithThrowingCallback> fnPtr) {
-        return new CSizedIntPointer(returnThrownCauseMessage_internal(fnPtr.getFnPtr()), false, "const char");
+        return new CSizedIntPointer(returnThrownCauseMessage_internal(fnPtr.getPointer()), false, "const char");
     }
 
     static private native long returnThrownCauseMessage_internal(long fnPtr);/*
@@ -886,7 +886,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static void call_callback_in_thread(ClosureObject<thread_callback> thread_callback) {
-        call_callback_in_thread_internal(thread_callback.getFnPtr());
+        call_callback_in_thread_internal(thread_callback.getPointer());
     }
 
     static private native void call_callback_in_thread_internal(long thread_callback);/*

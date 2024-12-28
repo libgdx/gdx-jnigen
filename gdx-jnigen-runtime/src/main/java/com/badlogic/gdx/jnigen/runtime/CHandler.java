@@ -191,9 +191,9 @@ public class CHandler {
 
     public static void freeClosure(ClosureObject<?> closureObject) {
         synchronized (fnPtrClosureMap) {
-            fnPtrClosureMap.remove(closureObject.getFnPtr());
+            fnPtrClosureMap.remove(closureObject.getPointer());
         }
-        freeClosure(closureObject.getPointer());
+        freeClosure(closureObject.getClosurePtr());
     }
 
 

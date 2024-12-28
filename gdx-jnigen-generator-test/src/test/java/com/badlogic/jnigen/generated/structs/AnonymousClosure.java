@@ -46,7 +46,7 @@ public final class AnonymousClosure extends com.badlogic.gdx.jnigen.runtime.poin
     }
 
     public void someClosure(ClosureObject<someClosure> someClosure) {
-        setValue(someClosure.getFnPtr(), 0);
+        setValue(someClosure.getPointer(), 0);
     }
 
     public ClosureObject<anotherClosure> anotherClosure() {
@@ -54,7 +54,7 @@ public final class AnonymousClosure extends com.badlogic.gdx.jnigen.runtime.poin
     }
 
     public void anotherClosure(ClosureObject<anotherClosure> anotherClosure) {
-        setValue(anotherClosure.getFnPtr(), 1);
+        setValue(anotherClosure.getPointer(), 1);
     }
 
     public static final class AnonymousClosurePointer extends StackElementPointer<AnonymousClosure> {
