@@ -165,7 +165,7 @@ public class ClosureType implements MappedType, WritableClass {
 
     @Override
     public Expression toC(Expression cSend) {
-        MethodCallExpr methodCallExpr = new MethodCallExpr("getFnPtr");
+        MethodCallExpr methodCallExpr = new MethodCallExpr("getPointer");
         methodCallExpr.setScope(cSend);
         return methodCallExpr;
     }
