@@ -130,35 +130,35 @@ public final class GlobalArg extends com.badlogic.gdx.jnigen.runtime.pointer.Uni
     private final TestStruct __structVal = new TestStruct(getPointer(), false);
 
     public TestStruct.TestStructPointer structPtr() {
-        return new TestStruct.TestStructPointer(getValue(10), false);
+        return new TestStruct.TestStructPointer(getValue(11), false);
     }
 
     public void structPtr(TestStruct.TestStructPointer structPtr) {
-        setValue(structPtr.getPointer(), 10);
+        setValue(structPtr.getPointer(), 11);
     }
 
     public TestEnum enumVal() {
-        return TestEnum.getByIndex((int) getValue(11));
+        return TestEnum.getByIndex((int) getValue(12));
     }
 
     public void enumVal(TestEnum enumVal) {
-        setValue(enumVal.getIndex(), 11);
+        setValue(enumVal.getIndex(), 12);
     }
 
     public TestEnum.TestEnumPointer enumPtr() {
-        return new TestEnum.TestEnumPointer(getValue(12), false);
+        return new TestEnum.TestEnumPointer(getValue(13), false);
     }
 
     public void enumPtr(TestEnum.TestEnumPointer enumPtr) {
-        setValue(enumPtr.getPointer(), 12);
+        setValue(enumPtr.getPointer(), 13);
     }
 
     public TestUnion.TestUnionPointer unionPtr() {
-        return new TestUnion.TestUnionPointer(getValue(13), false);
+        return new TestUnion.TestUnionPointer(getValue(14), false);
     }
 
     public void unionPtr(TestUnion.TestUnionPointer unionPtr) {
-        setValue(unionPtr.getPointer(), 13);
+        setValue(unionPtr.getPointer(), 14);
     }
 
     public allArgs allArgs() {

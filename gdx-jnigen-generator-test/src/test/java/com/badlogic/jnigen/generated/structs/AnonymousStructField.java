@@ -46,11 +46,11 @@ public final class AnonymousStructField extends com.badlogic.gdx.jnigen.runtime.
     private final inner __inner = new inner(getPointer() + __inner_offset, false);
 
     public int externalValue() {
-        return (int) getValue(0);
+        return (int) getValue(1);
     }
 
     public void externalValue(int externalValue) {
-        setValue(externalValue, 0);
+        setValue(externalValue, 1);
     }
 
     public static final class AnonymousStructFieldPointer extends StackElementPointer<AnonymousStructField> {

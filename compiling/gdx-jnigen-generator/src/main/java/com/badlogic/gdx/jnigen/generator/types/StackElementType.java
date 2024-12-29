@@ -140,7 +140,10 @@ public class StackElementType implements MappedType, WritableClass {
                         Keyword.PRIVATE, Keyword.FINAL);
                 getBody.addStatement("return __" + field.getName() + ";");
                 getMethod.setBody(getBody);
-                index += field.getDefinition().getCount();
+                if (field.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY)
+                    index += field.getDefinition().getCount();
+                else
+                    index++;
                 continue;
             }
 
