@@ -39,8 +39,10 @@ public final class ClosureEncoder {
         this.fnPtr = closureEncoder.fnPtr;
         this.cif = closureEncoder.cif;
         this.cachedWrappers = new JavaTypeWrapper[closureEncoder.cachedWrappers.length];
-        System.arraycopy(closureEncoder.cachedWrappers, 0, this.cachedWrappers, 0,
-                closureEncoder.cachedWrappers.length);
+        for (int i = 0; i < cachedWrappers.length; i++) {
+            cachedWrappers[i] = closureEncoder.cachedWrappers[i].newJavaTypeWrapper();
+        }
+
         cachedBuffer = ByteBuffer.allocateDirect(closureEncoder.cachedBuffer.limit());
         cachedBuffer.order(ByteOrder.nativeOrder());
 
