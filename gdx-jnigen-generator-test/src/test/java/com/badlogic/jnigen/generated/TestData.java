@@ -1,6 +1,7 @@
 package com.badlogic.jnigen.generated;
 
 import com.badlogic.gdx.jnigen.runtime.c.CXXException;
+import com.badlogic.jnigen.generated.structs.GlobalArg;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoField;
 import com.badlogic.jnigen.generated.structs.AnonymousStructField;
 import com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray;
@@ -45,6 +46,19 @@ static jclass cxxExceptionClass = NULL;
     private static native void init(Class illegalArgumentException, Class cxxException);/*
     	illegalArgumentExceptionClass = (jclass)env->NewGlobalRef(illegalArgumentException);
     	cxxExceptionClass = (jclass)env->NewGlobalRef(cxxException);
+    */
+
+    public static GlobalArg getGlobalArgState() {
+        return new GlobalArg(getGlobalArgState_internal(), true);
+    }
+
+    static private native long getGlobalArgState_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	GlobalArg* _ret = (GlobalArg*)malloc(sizeof(GlobalArg));
+    	*_ret = getGlobalArgState();
+    	return (jlong)_ret;
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
     */
 
     public static void ensureParsed(AnonymousStructNoField arg0, AnonymousStructField arg1, AnonymousStructFieldArray arg2, AnonymousClosure arg3, AnonymousStructNoFieldEnd arg4, AnonymousStructNoFieldConsecutive arg5, AnonymousStructNoFieldNested arg6, forwardDeclStruct.forwardDeclStructPointer arg7) {
@@ -896,6 +910,358 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
+    public static ClosureObject<methodWithCallback> getVoidCallback() {
+        return CHandler.getClosureObject(getVoidCallback_internal(), methodWithCallback::methodWithCallback_downcall);
+    }
+
+    static private native long getVoidCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getVoidCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackLongArg> getLongArgCallback() {
+        return CHandler.getClosureObject(getLongArgCallback_internal(), methodWithCallbackLongArg::methodWithCallbackLongArg_downcall);
+    }
+
+    static private native long getLongArgCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getLongArgCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackIntArg> getIntArgCallback() {
+        return CHandler.getClosureObject(getIntArgCallback_internal(), methodWithCallbackIntArg::methodWithCallbackIntArg_downcall);
+    }
+
+    static private native long getIntArgCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getIntArgCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackShortArg> getShortArgCallback() {
+        return CHandler.getClosureObject(getShortArgCallback_internal(), methodWithCallbackShortArg::methodWithCallbackShortArg_downcall);
+    }
+
+    static private native long getShortArgCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getShortArgCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackByteArg> getByteArgCallback() {
+        return CHandler.getClosureObject(getByteArgCallback_internal(), methodWithCallbackByteArg::methodWithCallbackByteArg_downcall);
+    }
+
+    static private native long getByteArgCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getByteArgCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackCharArg> getCharArgCallback() {
+        return CHandler.getClosureObject(getCharArgCallback_internal(), methodWithCallbackCharArg::methodWithCallbackCharArg_downcall);
+    }
+
+    static private native long getCharArgCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getCharArgCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackBooleanArg> getBooleanArgCallback() {
+        return CHandler.getClosureObject(getBooleanArgCallback_internal(), methodWithCallbackBooleanArg::methodWithCallbackBooleanArg_downcall);
+    }
+
+    static private native long getBooleanArgCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getBooleanArgCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackFloatArg> getFloatArgCallback() {
+        return CHandler.getClosureObject(getFloatArgCallback_internal(), methodWithCallbackFloatArg::methodWithCallbackFloatArg_downcall);
+    }
+
+    static private native long getFloatArgCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getFloatArgCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackDoubleArg> getDoubleArgCallback() {
+        return CHandler.getClosureObject(getDoubleArgCallback_internal(), methodWithCallbackDoubleArg::methodWithCallbackDoubleArg_downcall);
+    }
+
+    static private native long getDoubleArgCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getDoubleArgCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackAllArgs> getAllArgsCallback() {
+        return CHandler.getClosureObject(getAllArgsCallback_internal(), methodWithCallbackAllArgs::methodWithCallbackAllArgs_downcall);
+    }
+
+    static private native long getAllArgsCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getAllArgsCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackLongReturn> getLongReturnCallback() {
+        return CHandler.getClosureObject(getLongReturnCallback_internal(), methodWithCallbackLongReturn::methodWithCallbackLongReturn_downcall);
+    }
+
+    static private native long getLongReturnCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getLongReturnCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackIntReturn> getIntReturnCallback() {
+        return CHandler.getClosureObject(getIntReturnCallback_internal(), methodWithCallbackIntReturn::methodWithCallbackIntReturn_downcall);
+    }
+
+    static private native long getIntReturnCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getIntReturnCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackShortReturn> getShortReturnCallback() {
+        return CHandler.getClosureObject(getShortReturnCallback_internal(), methodWithCallbackShortReturn::methodWithCallbackShortReturn_downcall);
+    }
+
+    static private native long getShortReturnCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getShortReturnCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackCharReturn> getCharReturnCallback() {
+        return CHandler.getClosureObject(getCharReturnCallback_internal(), methodWithCallbackCharReturn::methodWithCallbackCharReturn_downcall);
+    }
+
+    static private native long getCharReturnCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getCharReturnCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackByteReturn> getByteReturnCallback() {
+        return CHandler.getClosureObject(getByteReturnCallback_internal(), methodWithCallbackByteReturn::methodWithCallbackByteReturn_downcall);
+    }
+
+    static private native long getByteReturnCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getByteReturnCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackBooleanReturn> getBooleanReturnCallback() {
+        return CHandler.getClosureObject(getBooleanReturnCallback_internal(), methodWithCallbackBooleanReturn::methodWithCallbackBooleanReturn_downcall);
+    }
+
+    static private native long getBooleanReturnCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getBooleanReturnCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackFloatReturn> getFloatReturnCallback() {
+        return CHandler.getClosureObject(getFloatReturnCallback_internal(), methodWithCallbackFloatReturn::methodWithCallbackFloatReturn_downcall);
+    }
+
+    static private native long getFloatReturnCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getFloatReturnCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackDoubleReturn> getDoubleReturnCallback() {
+        return CHandler.getClosureObject(getDoubleReturnCallback_internal(), methodWithCallbackDoubleReturn::methodWithCallbackDoubleReturn_downcall);
+    }
+
+    static private native long getDoubleReturnCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getDoubleReturnCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithIntPtrPtrArg> getIntPtrPtrArgCallback() {
+        return CHandler.getClosureObject(getIntPtrPtrArgCallback_internal(), methodWithIntPtrPtrArg::methodWithIntPtrPtrArg_downcall);
+    }
+
+    static private native long getIntPtrPtrArgCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getIntPtrPtrArgCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithIntPtrPtrRet> getIntPtrPtrRetCallback() {
+        return CHandler.getClosureObject(getIntPtrPtrRetCallback_internal(), methodWithIntPtrPtrRet::methodWithIntPtrPtrRet_downcall);
+    }
+
+    static private native long getIntPtrPtrRetCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getIntPtrPtrRetCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackTestStructReturn> getTestStructReturnCallback() {
+        return CHandler.getClosureObject(getTestStructReturnCallback_internal(), methodWithCallbackTestStructReturn::methodWithCallbackTestStructReturn_downcall);
+    }
+
+    static private native long getTestStructReturnCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getTestStructReturnCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackTestStructPointerReturn> getTestStructPointerReturnCallback() {
+        return CHandler.getClosureObject(getTestStructPointerReturnCallback_internal(), methodWithCallbackTestStructPointerReturn::methodWithCallbackTestStructPointerReturn_downcall);
+    }
+
+    static private native long getTestStructPointerReturnCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getTestStructPointerReturnCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackTestStructArg> getTestStructArgCallback() {
+        return CHandler.getClosureObject(getTestStructArgCallback_internal(), methodWithCallbackTestStructArg::methodWithCallbackTestStructArg_downcall);
+    }
+
+    static private native long getTestStructArgCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getTestStructArgCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackTestStructPointerArg> getTestStructPointerArgCallback() {
+        return CHandler.getClosureObject(getTestStructPointerArgCallback_internal(), methodWithCallbackTestStructPointerArg::methodWithCallbackTestStructPointerArg_downcall);
+    }
+
+    static private native long getTestStructPointerArgCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getTestStructPointerArgCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackTestEnumReturn> getTestEnumReturnCallback() {
+        return CHandler.getClosureObject(getTestEnumReturnCallback_internal(), methodWithCallbackTestEnumReturn::methodWithCallbackTestEnumReturn_downcall);
+    }
+
+    static private native long getTestEnumReturnCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getTestEnumReturnCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackTestEnumArg> getTestEnumArgCallback() {
+        return CHandler.getClosureObject(getTestEnumArgCallback_internal(), methodWithCallbackTestEnumArg::methodWithCallbackTestEnumArg_downcall);
+    }
+
+    static private native long getTestEnumArgCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getTestEnumArgCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackTestEnumPointerReturn> getTestEnumPointerReturnCallback() {
+        return CHandler.getClosureObject(getTestEnumPointerReturnCallback_internal(), methodWithCallbackTestEnumPointerReturn::methodWithCallbackTestEnumPointerReturn_downcall);
+    }
+
+    static private native long getTestEnumPointerReturnCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getTestEnumPointerReturnCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackTestEnumPointerArg> getTestEnumPointerArgCallback() {
+        return CHandler.getClosureObject(getTestEnumPointerArgCallback_internal(), methodWithCallbackTestEnumPointerArg::methodWithCallbackTestEnumPointerArg_downcall);
+    }
+
+    static private native long getTestEnumPointerArgCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getTestEnumPointerArgCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackIntPointerReturn> getIntPointerReturnCallback() {
+        return CHandler.getClosureObject(getIntPointerReturnCallback_internal(), methodWithCallbackIntPointerReturn::methodWithCallbackIntPointerReturn_downcall);
+    }
+
+    static private native long getIntPointerReturnCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getIntPointerReturnCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackIntPointerArg> getIntPointerArgCallback() {
+        return CHandler.getClosureObject(getIntPointerArgCallback_internal(), methodWithCallbackIntPointerArg::methodWithCallbackIntPointerArg_downcall);
+    }
+
+    static private native long getIntPointerArgCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getIntPointerArgCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackTestUnionPointerReturn> getTestUnionPointerReturnCallback() {
+        return CHandler.getClosureObject(getTestUnionPointerReturnCallback_internal(), methodWithCallbackTestUnionPointerReturn::methodWithCallbackTestUnionPointerReturn_downcall);
+    }
+
+    static private native long getTestUnionPointerReturnCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getTestUnionPointerReturnCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<methodWithCallbackTestUnionPointerArg> getTestUnionPointerArgCallback() {
+        return CHandler.getClosureObject(getTestUnionPointerArgCallback_internal(), methodWithCallbackTestUnionPointerArg::methodWithCallbackTestUnionPointerArg_downcall);
+    }
+
+    static private native long getTestUnionPointerArgCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getTestUnionPointerArgCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
     public interface methodWithCallbackBooleanArg extends com.badlogic.gdx.jnigen.runtime.closure.Closure {
 
         com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] __ffi_cache = new com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(0) };
@@ -1117,7 +1483,7 @@ static jclass cxxExceptionClass = NULL;
 
     public interface methodWithCallbackTestStructArg extends com.badlogic.gdx.jnigen.runtime.closure.Closure {
 
-        com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] __ffi_cache = new com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(19) };
+        com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] __ffi_cache = new com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(20) };
 
         void methodWithCallbackTestStructArg_call(TestStruct arg0);
 
@@ -1790,7 +2156,7 @@ static jclass cxxExceptionClass = NULL;
 
     public interface methodWithCallbackTestStructReturn extends com.badlogic.gdx.jnigen.runtime.closure.Closure {
 
-        com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] __ffi_cache = new com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] { FFITypes.getCTypeInfo(19) };
+        com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] __ffi_cache = new com.badlogic.gdx.jnigen.runtime.c.CTypeInfo[] { FFITypes.getCTypeInfo(20) };
 
         TestStruct methodWithCallbackTestStructReturn_call();
 

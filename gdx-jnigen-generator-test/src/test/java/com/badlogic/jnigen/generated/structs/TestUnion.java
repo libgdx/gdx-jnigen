@@ -14,7 +14,7 @@ public final class TestUnion extends com.badlogic.gdx.jnigen.runtime.pointer.Uni
     private final static long __ffi_type;
 
     static {
-        __ffi_type = FFITypes.getCTypeInfo(20).getFfiType();
+        __ffi_type = FFITypes.getCTypeInfo(21).getFfiType();
         __size = CHandler.getSizeFromFFIType(__ffi_type);
     }
 
