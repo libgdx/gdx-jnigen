@@ -524,10 +524,6 @@ static double doubleReturnCallback(void) {
     return 2.71828;
 }
 
-static void throwingCallback(void) {
-    g_lastArg.longVal = 0xDEADBEEF;
-}
-
 static void intPtrPtrArgCallback(int** arg) {
     g_lastArg.intPtrPtr = arg;
 }

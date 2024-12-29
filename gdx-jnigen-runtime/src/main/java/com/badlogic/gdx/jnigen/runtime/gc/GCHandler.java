@@ -13,6 +13,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class GCHandler {
+    private static final boolean NO_GC_FREE = System.getProperty("com.badlogic.jnigen.gc_disabled", "false").equals("true");
+    private static final boolean ENABLE_GC_LOG = System.getProperty("com.badlogic.jnigen.gc_log", "false").equals("true");
     protected static final ReferenceQueue<Pointing> REFERENCE_QUEUE = new ReferenceQueue<>();
     private static final Set<PointingPhantomReference> referenceHolder = Collections.synchronizedSet(new HashSet<PointingPhantomReference>());
     private static final Map<Long, AtomicInteger> countMap = Collections.synchronizedMap(new HashMap<Long, AtomicInteger>());
@@ -26,11 +28,16 @@ public class GCHandler {
                     if (!referenceHolder.remove(releasedStructRef)) {
                         System.err.println("Reference holder did not contained released StructRef.");
                     }
-                    AtomicInteger counter = countMap.get(releasedStructRef.getPointer());
-                    int count = counter.decrementAndGet();
-                    if (count <= 0) {
-                        countMap.remove(releasedStructRef.getPointer());
-                        CHandler.free(releasedStructRef.getPointer());
+
+                    synchronized (countMap) {
+                        AtomicInteger counter = countMap.get(releasedStructRef.getPointer());
+                        int count = counter.decrementAndGet();
+                        if (count <= 0) {
+                            if (ENABLE_GC_LOG)
+                                System.out.println("Freeing Pointer: " + releasedStructRef.getPointer());
+                            countMap.remove(releasedStructRef.getPointer());
+                            CHandler.free(releasedStructRef.getPointer());
+                        }
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -53,14 +60,20 @@ public class GCHandler {
     }
 
     public static void enqueuePointer(Pointing pointing) {
+        if (NO_GC_FREE)
+            return;
+        if (ENABLE_GC_LOG)
+            System.out.println("Enqueuing Pointer: " + pointing.getPointer());
         PointingPhantomReference structPhantomReference = new PointingPhantomReference(pointing);
-        AtomicInteger counter = countMap.get(pointing.getPointer());
-        if (counter == null) {
-            counter = new AtomicInteger(0);
-            countMap.put(pointing.getPointer(), counter);
+        synchronized (countMap) {
+            AtomicInteger counter = countMap.get(pointing.getPointer());
+            if (counter == null) {
+                counter = new AtomicInteger(0);
+                countMap.put(pointing.getPointer(), counter);
+            }
+            counter.incrementAndGet();
         }
 
-        counter.incrementAndGet();
         referenceHolder.add(structPhantomReference);
     }
 
