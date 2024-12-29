@@ -6,6 +6,7 @@ import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;
 import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class ClosureEncoder {
@@ -29,6 +30,7 @@ public final class ClosureEncoder {
         
         cachedWrappers = wrappers;
         cachedBuffer = ByteBuffer.allocateDirect(parameterLength * 8);
+        cachedBuffer.order(ByteOrder.nativeOrder());
 
         locked = new AtomicBoolean(false);
     }
@@ -40,6 +42,7 @@ public final class ClosureEncoder {
         System.arraycopy(closureEncoder.cachedWrappers, 0, this.cachedWrappers, 0,
                 closureEncoder.cachedWrappers.length);
         cachedBuffer = ByteBuffer.allocateDirect(closureEncoder.cachedBuffer.limit());
+        cachedBuffer.order(ByteOrder.nativeOrder());
 
         locked = new AtomicBoolean(true);
     }
