@@ -70,7 +70,7 @@ public class StackElementType implements MappedType, WritableClass {
         compilationUnit.addImport(isStruct ? ClassNameConstants.STRUCT_CLASS : ClassNameConstants.UNION_CLASS);
         compilationUnit.addImport(ClassNameConstants.STACKELEMENTPOINTER_CLASS);
 
-        structClass.addExtendedType(isStruct ? ClassNameConstants.STRUCT_CLASS : ClassNameConstants.UNION_CLASS);
+        structClass.addExtendedType(isStruct ? "Struct" : "Union");
         structClass.addField(int.class, "__size", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
         structClass.addField(long.class, "__ffi_type", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
 
@@ -140,7 +140,10 @@ public class StackElementType implements MappedType, WritableClass {
                         Keyword.PRIVATE, Keyword.FINAL);
                 getBody.addStatement("return __" + field.getName() + ";");
                 getMethod.setBody(getBody);
-                index += field.getDefinition().getCount();
+                if (field.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY)
+                    index += field.getDefinition().getCount();
+                else
+                    index++;
                 continue;
             }
 

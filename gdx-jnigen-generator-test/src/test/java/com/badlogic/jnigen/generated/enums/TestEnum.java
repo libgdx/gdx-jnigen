@@ -1,8 +1,9 @@
 package com.badlogic.jnigen.generated.enums;
 
 import com.badlogic.gdx.jnigen.runtime.pointer.EnumPointer;
+import com.badlogic.gdx.jnigen.runtime.c.CEnum;
 
-public enum TestEnum implements com.badlogic.gdx.jnigen.runtime.c.CEnum {
+public enum TestEnum implements CEnum {
 
     FIRST(0), SECOND(1), THIRD(4);
 

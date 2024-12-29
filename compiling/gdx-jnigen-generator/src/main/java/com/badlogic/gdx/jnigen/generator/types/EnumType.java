@@ -61,8 +61,9 @@ public class EnumType implements MappedType {
 
     public void write(CompilationUnit cu) {
         cu.addImport(ClassNameConstants.ENUMPOINTER_CLASS);
+        cu.addImport(ClassNameConstants.CENUM_CLASS);
         EnumDeclaration declaration = cu.addEnum(javaName);
-        declaration.addImplementedType(ClassNameConstants.CENUM_CLASS);
+        declaration.addImplementedType("CEnum");
         constants.entrySet().stream()
                 .sorted(Comparator.comparingInt(Entry::getKey))
                 .forEach(stringIntegerEntry ->

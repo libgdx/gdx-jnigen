@@ -5,27 +5,31 @@ import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 
 public final class ClosureObject<T extends Closure> extends Pointing {
 
-    private final long fnPtr;
-
+    private final T closure;
+    private final long closurePtr;
 
     public static <T extends Closure> ClosureObject<T> fromClosure(T object) {
         return CHandler.createClosureForObject(object);
     }
 
-    public ClosureObject(long fnPtr, long closurePtr, boolean freeOnGC) {
-        super(closurePtr, freeOnGC);
-        this.fnPtr = fnPtr;
+    public ClosureObject(T closure, long fnPtr, long closurePtr, boolean freeOnGC) {
+        super(fnPtr, freeOnGC);
+        this.closure = closure;
+        this.closurePtr = closurePtr;
     }
 
     @Override
     public void free() {
         if (isFreed())
             throw new IllegalArgumentException("Closure already freed");
-        CHandler.freeClosure(this);
+        if (closurePtr == 0)
+            throw new IllegalArgumentException("Closure is not java closure: " + getPointer());
+        CHandler.deregisterFunctionPointer(getPointer());
+        CHandler.freeClosure(closurePtr);
         freed = true;
     }
 
-    public long getFnPtr() {
-        return fnPtr;
+    public T getClosure() {
+        return closure;
     }
 }

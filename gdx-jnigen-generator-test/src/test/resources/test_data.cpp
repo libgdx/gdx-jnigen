@@ -2,6 +2,12 @@
 #include <jnigen.h>
 #include "test_data.h"
 
+GlobalArg g_lastArg;
+
+GlobalArg getGlobalArgState(void) {
+    return g_lastArg;
+}
+
 void call_methodWithCallback(methodWithCallback fnPtr) {
     fnPtr();
 }
@@ -438,3 +444,291 @@ void call_callback_in_thread(void* (*thread_callback)(void*)) {
 }
 #endif
 
+static void voidCallback(void) {
+    g_lastArg.longVal = 1;
+}
+
+static void longArgCallback(uint64_t arg) {
+    g_lastArg.longVal = arg;
+}
+
+static void intArgCallback(int arg) {
+    g_lastArg.intVal = arg;
+}
+
+static void shortArgCallback(short arg) {
+    g_lastArg.shortVal = arg;
+}
+
+static void byteArgCallback(char arg) {
+    g_lastArg.byteVal = arg;
+}
+
+static void charArgCallback(uint16_t arg) {
+    g_lastArg.charVal = arg;
+}
+
+static void booleanArgCallback(bool arg) {
+    g_lastArg.boolVal = arg;
+}
+
+static void floatArgCallback(float arg) {
+    g_lastArg.floatVal = arg;
+}
+
+static void doubleArgCallback(double arg) {
+    g_lastArg.doubleVal = arg;
+}
+
+static void allArgsCallback(uint64_t arg1, int arg2, short arg3, char arg4,
+                          uint16_t arg5, bool arg6, float arg7, double arg8) {
+    g_lastArg.allArgs.arg1 = arg1;
+    g_lastArg.allArgs.arg2 = arg2;
+    g_lastArg.allArgs.arg3 = arg3;
+    g_lastArg.allArgs.arg4 = arg4;
+    g_lastArg.allArgs.arg5 = arg5;
+    g_lastArg.allArgs.arg6 = arg6;
+    g_lastArg.allArgs.arg7 = arg7;
+    g_lastArg.allArgs.arg8 = arg8;
+}
+
+static uint64_t longReturnCallback(void) {
+    return 123456789ULL;
+}
+
+static int intReturnCallback(void) {
+    return 42;
+}
+
+static short shortReturnCallback(void) {
+    return 100;
+}
+
+static uint16_t charReturnCallback(void) {
+    return 65;
+}
+
+static char byteReturnCallback(void) {
+    return 'X';
+}
+
+static bool booleanReturnCallback(void) {
+    return true;
+}
+
+static float floatReturnCallback(void) {
+    return 3.14159f;
+}
+
+static double doubleReturnCallback(void) {
+    return 2.71828;
+}
+
+static void throwingCallback(void) {
+    g_lastArg.longVal = 0xDEADBEEF;
+}
+
+static void intPtrPtrArgCallback(int** arg) {
+    g_lastArg.intPtrPtr = arg;
+}
+
+static int** intPtrPtrRetCallback(void) {
+    int* value = (int*)malloc(sizeof(int));
+    *value = 42;
+    int** ptr_to_ptr = (int**)malloc(sizeof(int*));
+    *ptr_to_ptr = value;
+    return ptr_to_ptr;
+}
+
+static TestStruct testStructReturnCallback(void) {
+    TestStruct result = {
+        .field1 = 0x1234567890ABCDEF,
+        .field2 = 0x12345678,
+        .field3 = 0x1234,
+        .field4 = 0x12
+    };
+    return result;
+}
+
+static TestStruct* testStructPointerReturnCallback(void) {
+    TestStruct* result = (TestStruct*) malloc(sizeof(TestStruct));
+    result->field1 = 0x1234567890ABCDEF;
+    result->field2 = 0x12345678;
+    result->field3 = 0x1234;
+    result->field4 = 0x12;
+    return result;
+}
+
+static void testStructArgCallback(TestStruct arg) {
+    g_lastArg.structVal = arg;
+}
+
+static void testStructPointerArgCallback(TestStruct* arg) {
+    g_lastArg.structPtr = arg;
+}
+
+static TestEnum testEnumReturnCallback(void) {
+    return THIRD;
+}
+
+static void testEnumArgCallback(TestEnum arg) {
+    g_lastArg.enumVal = arg;
+}
+
+static TestEnum* testEnumPointerReturnCallback(void) {
+    TestEnum* value = (TestEnum*)malloc(sizeof(TestEnum));
+    *value = SECOND;
+    return value;
+}
+
+static void testEnumPointerArgCallback(TestEnum* arg) {
+    g_lastArg.enumPtr = arg;
+}
+
+static int* intPointerReturnCallback(void) {
+    int* value = (int*)malloc(sizeof(int));
+    *value = 42;
+    return value;
+}
+
+static int intPointerArgCallback(int* arg) {
+    return *arg;
+}
+
+static TestUnion* testUnionPointerReturnCallback(void) {
+    TestUnion* value = (TestUnion*)malloc(sizeof(TestUnion));
+    value->uintType = 0x1234567890ABCDEF;
+    return value;
+}
+
+static void testUnionPointerArgCallback(TestUnion* arg) {
+    g_lastArg.unionPtr = arg;
+}
+
+methodWithCallback getVoidCallback(void) {
+    return voidCallback;
+}
+
+methodWithCallbackLongArg getLongArgCallback(void) {
+    return longArgCallback;
+}
+
+methodWithCallbackIntArg getIntArgCallback(void) {
+    return intArgCallback;
+}
+
+methodWithCallbackShortArg getShortArgCallback(void) {
+    return shortArgCallback;
+}
+
+methodWithCallbackByteArg getByteArgCallback(void) {
+    return byteArgCallback;
+}
+
+methodWithCallbackCharArg getCharArgCallback(void) {
+    return charArgCallback;
+}
+
+methodWithCallbackBooleanArg getBooleanArgCallback(void) {
+    return booleanArgCallback;
+}
+
+methodWithCallbackFloatArg getFloatArgCallback(void) {
+    return floatArgCallback;
+}
+
+methodWithCallbackDoubleArg getDoubleArgCallback(void) {
+    return doubleArgCallback;
+}
+
+methodWithCallbackAllArgs getAllArgsCallback(void) {
+    return allArgsCallback;
+}
+
+methodWithCallbackLongReturn getLongReturnCallback(void) {
+    return longReturnCallback;
+}
+
+methodWithCallbackIntReturn getIntReturnCallback(void) {
+    return intReturnCallback;
+}
+
+methodWithCallbackShortReturn getShortReturnCallback(void) {
+    return shortReturnCallback;
+}
+
+methodWithCallbackCharReturn getCharReturnCallback(void) {
+    return charReturnCallback;
+}
+
+methodWithCallbackByteReturn getByteReturnCallback(void) {
+    return byteReturnCallback;
+}
+
+methodWithCallbackBooleanReturn getBooleanReturnCallback(void) {
+    return booleanReturnCallback;
+}
+
+methodWithCallbackFloatReturn getFloatReturnCallback(void) {
+    return floatReturnCallback;
+}
+
+methodWithCallbackDoubleReturn getDoubleReturnCallback(void) {
+    return doubleReturnCallback;
+}
+
+methodWithIntPtrPtrArg getIntPtrPtrArgCallback(void) {
+    return intPtrPtrArgCallback;
+}
+
+methodWithIntPtrPtrRet getIntPtrPtrRetCallback(void) {
+    return intPtrPtrRetCallback;
+}
+
+methodWithCallbackTestStructReturn getTestStructReturnCallback(void) {
+    return testStructReturnCallback;
+}
+
+methodWithCallbackTestStructPointerReturn getTestStructPointerReturnCallback(void) {
+    return testStructPointerReturnCallback;
+}
+
+methodWithCallbackTestStructArg getTestStructArgCallback(void) {
+    return testStructArgCallback;
+}
+
+methodWithCallbackTestStructPointerArg getTestStructPointerArgCallback(void) {
+    return testStructPointerArgCallback;
+}
+
+methodWithCallbackTestEnumReturn getTestEnumReturnCallback(void) {
+    return testEnumReturnCallback;
+}
+
+methodWithCallbackTestEnumArg getTestEnumArgCallback(void) {
+    return testEnumArgCallback;
+}
+
+methodWithCallbackTestEnumPointerReturn getTestEnumPointerReturnCallback(void) {
+    return testEnumPointerReturnCallback;
+}
+
+methodWithCallbackTestEnumPointerArg getTestEnumPointerArgCallback(void) {
+    return testEnumPointerArgCallback;
+}
+
+methodWithCallbackIntPointerReturn getIntPointerReturnCallback(void) {
+    return intPointerReturnCallback;
+}
+
+methodWithCallbackIntPointerArg getIntPointerArgCallback(void) {
+    return intPointerArgCallback;
+}
+
+methodWithCallbackTestUnionPointerReturn getTestUnionPointerReturnCallback(void) {
+    return testUnionPointerReturnCallback;
+}
+
+methodWithCallbackTestUnionPointerArg getTestUnionPointerArgCallback(void) {
+    return testUnionPointerArgCallback;
+}

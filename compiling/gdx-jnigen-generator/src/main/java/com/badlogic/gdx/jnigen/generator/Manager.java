@@ -81,7 +81,7 @@ public class Manager {
         this.cTypeToJavaStringMapper.putAll(rollBackManager.cTypeToJavaStringMapper);
         this.typedefs.putAll(rollBackManager.typedefs);
         this.macros.putAll(rollBackManager.macros);
-        this.globalType = rollBackManager.globalType;
+        this.globalType = rollBackManager.globalType.duplicate();
     }
 
     public static void startNewManager() {
@@ -316,7 +316,7 @@ public class Manager {
             ffiTypeClass.addFieldWithInitializer("HashMap<Integer, CTypeInfo>", "ffiIdMap", StaticJavaParser.parseExpression("new HashMap<>()"), Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
 
             ffiTypeClass.addMethod("getCTypeInfo", Keyword.PUBLIC, Keyword.STATIC)
-                    .setType(ClassNameConstants.CTYPEINFO_CLASS)
+                    .setType("CTypeInfo")
                     .addParameter(int.class, "id")
                     .createBody().addStatement("return ffiIdMap.get(id);");
 

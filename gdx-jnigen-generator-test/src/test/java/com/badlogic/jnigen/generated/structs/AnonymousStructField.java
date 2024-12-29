@@ -6,7 +6,7 @@ import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.jnigen.generated.structs.AnonymousStructField.inner;
 
-public final class AnonymousStructField extends com.badlogic.gdx.jnigen.runtime.pointer.Struct {
+public final class AnonymousStructField extends Struct {
 
     private final static int __size;
 
@@ -46,11 +46,11 @@ public final class AnonymousStructField extends com.badlogic.gdx.jnigen.runtime.
     private final inner __inner = new inner(getPointer() + __inner_offset, false);
 
     public int externalValue() {
-        return (int) getValue(0);
+        return (int) getValue(1);
     }
 
     public void externalValue(int externalValue) {
-        setValue(externalValue, 0);
+        setValue(externalValue, 1);
     }
 
     public static final class AnonymousStructFieldPointer extends StackElementPointer<AnonymousStructField> {
@@ -81,14 +81,14 @@ public final class AnonymousStructField extends com.badlogic.gdx.jnigen.runtime.
         }
     }
 
-    public final static class inner extends com.badlogic.gdx.jnigen.runtime.pointer.Struct {
+    public final static class inner extends Struct {
 
         private final static int __size;
 
         private final static long __ffi_type;
 
         static {
-            __ffi_type = FFITypes.getCTypeInfo(22).getFfiType();
+            __ffi_type = FFITypes.getCTypeInfo(24).getFfiType();
             __size = CHandler.getSizeFromFFIType(__ffi_type);
         }
 

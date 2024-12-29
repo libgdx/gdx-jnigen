@@ -12,13 +12,20 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.ArrayAccessExpr;
 import com.github.javaparser.ast.expr.ArrayCreationExpr;
 import com.github.javaparser.ast.expr.ArrayInitializerExpr;
+import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
+import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.type.UnknownType;
 
 import java.util.Arrays;
 
@@ -36,9 +43,115 @@ public class ClosureType implements MappedType, WritableClass {
     public ClassOrInterfaceDeclaration generateClass() {
         return new ClassOrInterfaceDeclaration()
                 .setInterface(true)
-                .addExtendedType(ClassNameConstants.CLOSURE_CLASS)
+                .addExtendedType("Closure")
                 .setModifier(Keyword.PUBLIC, true)
                 .setName(signature.getName());
+    }
+
+    public void writeHelper(CompilationUnit cu, ClassOrInterfaceDeclaration closureHelperClass) {
+        importType(cu);
+        cu.addImport(ClassNameConstants.CLOSUREENCODER_CLASS);
+
+        MethodDeclaration downcallMethod = closureHelperClass.addMethod(getName() + "_downcall", Keyword.PUBLIC, Keyword.STATIC);
+        downcallMethod.addParameter(long.class, "fnPtr");
+        downcallMethod.setType(getName());
+
+        BlockStmt stmt = downcallMethod.createBody();
+
+        VariableDeclarationExpr encoderDeclaration = new VariableDeclarationExpr(
+                new VariableDeclarator()
+                        .setType("ClosureEncoder")
+                        .setName("encoder")
+                        .setInitializer(new ObjectCreationExpr()
+                                .setType("ClosureEncoder")
+                                .addArgument(new NameExpr("fnPtr"))
+                                .addArgument(new FieldAccessExpr(
+                                        new NameExpr(getName()),
+                                        "__ffi_cache"
+                                ))
+                        )
+        );
+
+        VariableDeclarationExpr useEncoderDeclaration = new VariableDeclarationExpr(
+                new VariableDeclarator()
+                        .setType("ClosureEncoder")
+                        .setName("useEncoder")
+                        .setInitializer(new MethodCallExpr(
+                                new NameExpr("encoder"),
+                                "lockOrDuplicate"
+                        ))
+        );
+
+        VariableDeclarationExpr returnConvertDeclaration = new VariableDeclarationExpr(
+                new VariableDeclarator()
+                        .setType("JavaTypeWrapper")
+                        .setName("returnConvert")
+                        .setInitializer(new ObjectCreationExpr()
+                                .setType("JavaTypeWrapper")
+                                .addArgument(new ArrayAccessExpr(
+                                        new FieldAccessExpr(
+                                                new NameExpr(getName()),
+                                                "__ffi_cache"
+                                        ),
+                                        new BinaryExpr(
+                                                new FieldAccessExpr(
+                                                        new NameExpr(getName()),
+                                                        "__ffi_cache.length"
+                                                ),
+                                                new IntegerLiteralExpr("1"),
+                                                BinaryExpr.Operator.MINUS
+                                        )
+                                ))
+                        )
+        );
+
+        BlockStmt arguments = new BlockStmt();
+        for (int i = 0; i < signature.getArguments().length; i++) {
+            NamedType argument = signature.getArguments()[i];
+            ExpressionStmt setValueStmt = new ExpressionStmt(
+                    new MethodCallExpr(new NameExpr("useEncoder"), "setValue")
+                            .addArgument(new IntegerLiteralExpr(i))
+                            .addArgument(new NameExpr(argument.getName()))
+            );
+            arguments.addStatement(setValueStmt);
+        }
+
+        ExpressionStmt returnSetValueStatement = new ExpressionStmt(
+                new MethodCallExpr(
+                        new NameExpr("returnConvert"),
+                        "setValue"
+                ).addArgument(new MethodCallExpr(
+                        new NameExpr("useEncoder"),
+                        "invoke"
+                ))
+        );
+
+        Statement returnStatement;
+        if (signature.getReturnType().getTypeKind() == TypeKind.VOID) {
+            returnStatement = new ReturnStmt();
+        } else {
+            returnStatement = new ReturnStmt(getMethodCallExpr(new NameExpr("returnConvert"), signature.getReturnType()));
+        }
+
+
+        LambdaExpr lambda = new LambdaExpr()
+                .setEnclosingParameters(true)
+                .setBody(new BlockStmt()
+                        .addStatement(new ExpressionStmt(useEncoderDeclaration))
+                        .addStatement(arguments)
+                        .addStatement(new ExpressionStmt(returnConvertDeclaration))
+                        .addStatement(returnSetValueStatement)
+                        .addStatement(returnStatement)
+                );
+
+        for (NamedType namedType : signature.getArguments()) {
+            namedType.getDefinition().getMappedType().importType(cu);
+            lambda.addAndGetParameter(new UnknownType(), namedType.getName());
+        }
+
+        ReturnStmt returnStmt = new ReturnStmt(lambda);
+        stmt.addStatement(new ExpressionStmt(encoderDeclaration));
+        stmt.addStatement(returnStmt);
     }
 
     @Override
@@ -56,10 +169,10 @@ public class ClosureType implements MappedType, WritableClass {
 
         NodeList<Expression> arrayInitializerExpr = new NodeList<>();
         ArrayCreationExpr arrayCreationExpr = new ArrayCreationExpr();
-        arrayCreationExpr.setElementType(ClassNameConstants.CTYPEINFO_CLASS);
+        arrayCreationExpr.setElementType("CTypeInfo");
         arrayCreationExpr.setInitializer(new ArrayInitializerExpr(arrayInitializerExpr));
 
-        closureClass.addFieldWithInitializer(ClassNameConstants.CTYPEINFO_CLASS + "[]", "__ffi_cache", arrayCreationExpr);
+        closureClass.addFieldWithInitializer("CTypeInfo[]", "__ffi_cache", arrayCreationExpr);
 
         MethodDeclaration callMethod = closureClass.addMethod(name + "_call");
         callMethod.setBody(null);
@@ -80,26 +193,19 @@ public class ClosureType implements MappedType, WritableClass {
         arrayInitializerExpr.add(0, getTypeID);
 
         closureClass.addMethod("functionSignature", Keyword.DEFAULT)
-                .setType(ClassNameConstants.CTYPEINFO_CLASS + "[]")
+                .setType("CTypeInfo[]")
                 .createBody().addStatement("return __ffi_cache;");
 
         MethodDeclaration invokeMethod = closureClass.addMethod("invoke", Keyword.DEFAULT);
-        invokeMethod.addParameter(ClassNameConstants.JAVATYPEWRAPPER_CLASS + "[]", "parameters");
-        invokeMethod.addParameter(ClassNameConstants.JAVATYPEWRAPPER_CLASS, "returnType");
+        invokeMethod.addParameter("JavaTypeWrapper[]", "parameters");
+        invokeMethod.addParameter("JavaTypeWrapper", "returnType");
         BlockStmt invokeBody = new BlockStmt();
         MethodCallExpr callExpr = new MethodCallExpr(callMethod.getNameAsString());
         for (int i = 0; i < arguments.length; i++) {
             NamedType type = arguments[i];
             TypeDefinition definition = type.getDefinition();
             ArrayAccessExpr arrayAccessExpr = new ArrayAccessExpr(new NameExpr("parameters"), new IntegerLiteralExpr(String.valueOf(i)));
-            String methodName = "asLong";
-            if (type.getDefinition().getTypeKind() == TypeKind.FLOAT)
-                methodName = "asFloat";
-            else if (type.getDefinition().getTypeKind() == TypeKind.DOUBLE)
-                methodName = "asDouble";
-            MethodCallExpr methodCallExpr = new MethodCallExpr(methodName);
-            methodCallExpr.setScope(arrayAccessExpr);
-            callExpr.addArgument(definition.getMappedType().fromC(methodCallExpr));
+            callExpr.addArgument(getMethodCallExpr(arrayAccessExpr, definition));
         }
 
         if (returnType.getTypeKind() == TypeKind.VOID) {
@@ -120,6 +226,19 @@ public class ClosureType implements MappedType, WritableClass {
         }
 
         invokeMethod.setBody(invokeBody);
+
+        writeHelper(cu, closureClass);
+    }
+
+    private static Expression getMethodCallExpr(Expression expression, TypeDefinition type) {
+        String methodName = "asLong";
+        if (type.getTypeKind() == TypeKind.FLOAT)
+            methodName = "asFloat";
+        else if (type.getTypeKind() == TypeKind.DOUBLE)
+            methodName = "asDouble";
+        MethodCallExpr methodCallExpr = new MethodCallExpr(methodName);
+        methodCallExpr.setScope(expression);
+        return type.getMappedType().fromC(methodCallExpr);
     }
 
     public String getName() {
@@ -160,12 +279,13 @@ public class ClosureType implements MappedType, WritableClass {
         MethodCallExpr methodCallExpr = new MethodCallExpr("getClosureObject");
         methodCallExpr.setScope(new NameExpr("CHandler"));
         methodCallExpr.addArgument(cRetrieved);
+        methodCallExpr.addArgument(getName() + "::" + getName() + "_downcall");
         return methodCallExpr;
     }
 
     @Override
     public Expression toC(Expression cSend) {
-        MethodCallExpr methodCallExpr = new MethodCallExpr("getFnPtr");
+        MethodCallExpr methodCallExpr = new MethodCallExpr("getPointer");
         methodCallExpr.setScope(cSend);
         return methodCallExpr;
     }
