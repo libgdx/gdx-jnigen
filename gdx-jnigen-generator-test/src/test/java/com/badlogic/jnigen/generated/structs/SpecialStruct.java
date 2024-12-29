@@ -7,7 +7,7 @@ import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
 
-public final class SpecialStruct extends com.badlogic.gdx.jnigen.runtime.pointer.Struct {
+public final class SpecialStruct extends Struct {
 
     private final static int __size;
 

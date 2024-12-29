@@ -7,7 +7,7 @@ import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 
-public final class TestUnion extends com.badlogic.gdx.jnigen.runtime.pointer.Union {
+public final class TestUnion extends Union {
 
     private final static int __size;
 

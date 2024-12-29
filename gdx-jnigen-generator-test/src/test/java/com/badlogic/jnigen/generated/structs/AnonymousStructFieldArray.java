@@ -6,7 +6,7 @@ import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner;
 
-public final class AnonymousStructFieldArray extends com.badlogic.gdx.jnigen.runtime.pointer.Struct {
+public final class AnonymousStructFieldArray extends Struct {
 
     private final static int __size;
 
@@ -81,7 +81,7 @@ public final class AnonymousStructFieldArray extends com.badlogic.gdx.jnigen.run
         }
     }
 
-    public final static class inner extends com.badlogic.gdx.jnigen.runtime.pointer.Struct {
+    public final static class inner extends Struct {
 
         private final static int __size;
 

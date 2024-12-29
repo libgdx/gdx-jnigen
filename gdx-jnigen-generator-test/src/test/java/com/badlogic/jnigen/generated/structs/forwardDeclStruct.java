@@ -5,7 +5,7 @@ import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.jnigen.generated.FFITypes;
 
-public final class forwardDeclStruct extends com.badlogic.gdx.jnigen.runtime.pointer.Struct {
+public final class forwardDeclStruct extends Struct {
 
     private final static int __size;
 

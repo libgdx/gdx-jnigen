@@ -15,7 +15,7 @@ public class FFITypes {
 
     private final static HashMap<Integer, CTypeInfo> ffiIdMap = new HashMap<>();
 
-    public static com.badlogic.gdx.jnigen.runtime.c.CTypeInfo getCTypeInfo(int id) {
+    public static CTypeInfo getCTypeInfo(int id) {
         return ffiIdMap.get(id);
     }
 

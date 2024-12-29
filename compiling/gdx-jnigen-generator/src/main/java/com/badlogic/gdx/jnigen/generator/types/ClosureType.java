@@ -43,7 +43,7 @@ public class ClosureType implements MappedType, WritableClass {
     public ClassOrInterfaceDeclaration generateClass() {
         return new ClassOrInterfaceDeclaration()
                 .setInterface(true)
-                .addExtendedType(ClassNameConstants.CLOSURE_CLASS)
+                .addExtendedType("Closure")
                 .setModifier(Keyword.PUBLIC, true)
                 .setName(signature.getName());
     }
@@ -169,10 +169,10 @@ public class ClosureType implements MappedType, WritableClass {
 
         NodeList<Expression> arrayInitializerExpr = new NodeList<>();
         ArrayCreationExpr arrayCreationExpr = new ArrayCreationExpr();
-        arrayCreationExpr.setElementType(ClassNameConstants.CTYPEINFO_CLASS);
+        arrayCreationExpr.setElementType("CTypeInfo");
         arrayCreationExpr.setInitializer(new ArrayInitializerExpr(arrayInitializerExpr));
 
-        closureClass.addFieldWithInitializer(ClassNameConstants.CTYPEINFO_CLASS + "[]", "__ffi_cache", arrayCreationExpr);
+        closureClass.addFieldWithInitializer("CTypeInfo[]", "__ffi_cache", arrayCreationExpr);
 
         MethodDeclaration callMethod = closureClass.addMethod(name + "_call");
         callMethod.setBody(null);
@@ -193,12 +193,12 @@ public class ClosureType implements MappedType, WritableClass {
         arrayInitializerExpr.add(0, getTypeID);
 
         closureClass.addMethod("functionSignature", Keyword.DEFAULT)
-                .setType(ClassNameConstants.CTYPEINFO_CLASS + "[]")
+                .setType("CTypeInfo[]")
                 .createBody().addStatement("return __ffi_cache;");
 
         MethodDeclaration invokeMethod = closureClass.addMethod("invoke", Keyword.DEFAULT);
-        invokeMethod.addParameter(ClassNameConstants.JAVATYPEWRAPPER_CLASS + "[]", "parameters");
-        invokeMethod.addParameter(ClassNameConstants.JAVATYPEWRAPPER_CLASS, "returnType");
+        invokeMethod.addParameter("JavaTypeWrapper[]", "parameters");
+        invokeMethod.addParameter("JavaTypeWrapper", "returnType");
         BlockStmt invokeBody = new BlockStmt();
         MethodCallExpr callExpr = new MethodCallExpr(callMethod.getNameAsString());
         for (int i = 0; i < arguments.length; i++) {

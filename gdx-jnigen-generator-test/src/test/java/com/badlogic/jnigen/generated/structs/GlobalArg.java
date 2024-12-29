@@ -12,7 +12,7 @@ import com.badlogic.jnigen.generated.structs.TestUnion;
 import com.badlogic.jnigen.generated.structs.GlobalArg.allArgs;
 import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
 
-public final class GlobalArg extends com.badlogic.gdx.jnigen.runtime.pointer.Union {
+public final class GlobalArg extends Union {
 
     private final static int __size;
 
@@ -195,7 +195,7 @@ public final class GlobalArg extends com.badlogic.gdx.jnigen.runtime.pointer.Uni
         }
     }
 
-    public final static class allArgs extends com.badlogic.gdx.jnigen.runtime.pointer.Struct {
+    public final static class allArgs extends Struct {
 
         private final static int __size;
 
