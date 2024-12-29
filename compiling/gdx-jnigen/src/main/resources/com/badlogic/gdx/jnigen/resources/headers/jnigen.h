@@ -127,7 +127,7 @@ void get_native_type(native_type* nat_type) {
     int _size##argument_index = sizeof(type); \
     if (!CHECK_BOUNDS_FOR_NUMBER(value, _size##argument_index, _signed##argument_index)) { \
         char buffer[1024]; \
-        snprintf(buffer, sizeof(buffer), "Value %" PRId64 " is out of bound for size %d and signess %d on argument %d", (jlong)value, _size##argument_index, _signed##argument_index, argument_index); \
+        snprintf(buffer, sizeof(buffer), "Value %" PRId64 " is out of bound for size %d and signess %d on argument %d", (sint64_t)value, _size##argument_index, _signed##argument_index, argument_index); \
         env->ThrowNew(illegalArgumentExceptionClass, buffer); \
         returnAction; \
     }

@@ -15,7 +15,7 @@
 
 #define HANDLE_RESULT(res, msg) \
     if (res != JNI_OK) { \
-        fprintf(stderr, msg ": %d", res); \
+        fprintf(stderr, msg ": %d", (int)res); \
         fflush(stderr); \
         exit(1); \
     }

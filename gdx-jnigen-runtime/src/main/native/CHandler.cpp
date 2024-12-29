@@ -140,7 +140,6 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_dispatchCC
     ffi_cif* cif = (ffi_cif*) cif_j;
 
     void** decodedArguments = (void**)alloca(cif->nargs * (sizeof(void*)));
-    int arg_size = 0;
     for (int i = 0; i < cif->nargs; ++i) {
         ffi_type* arg = cif->arg_types[i];
         if (arg->type == FFI_TYPE_STRUCT) {
