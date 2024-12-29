@@ -147,21 +147,24 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_dispatchCC
             decodedArguments[i] = arguments[i];
         } else {
             decodedArguments[i] = alloca(arg->size);
-            ENDIAN_INTCPY(decodedArguments[i], arg->size, arguments[i], 8);
+            ENDIAN_INTCPY(decodedArguments[i], arg->size, &arguments[i], 8);
         }
     }
 
-    void* result;
-    ffi_call(cif, (void (*)())fnPtr, &result, decodedArguments);
+    void* result = (void*)alloca(cif->rtype->size);
+    ffi_call(cif, (void (*)())fnPtr, result, decodedArguments);
 
     ffi_type* rtype = cif->rtype;
+
+    if (rtype->type == FFI_TYPE_VOID)
+        return 0;
     if(rtype->type == FFI_TYPE_STRUCT) {
         void* struct_ret = malloc(rtype->size);
         memcpy(struct_ret, result, rtype->size);
         return (jlong) struct_ret;
     } else {
         jlong ret = 0;
-        ENDIAN_INTCPY(&ret, sizeof(jlong), &result, rtype->size);
+        ENDIAN_INTCPY(&ret, sizeof(jlong), result, rtype->size);
         return ret;
     }
 }
