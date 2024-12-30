@@ -196,6 +196,7 @@ typedef int* (*methodWithCallbackIntPointerReturn)(void);
 typedef int (*methodWithCallbackIntPointerArg)(int*);
 typedef TestUnion* (*methodWithCallbackTestUnionPointerReturn)(void);
 typedef void (*methodWithCallbackTestUnionPointerArg)(TestUnion*);
+typedef void (*methodWithCallbackCallThrowingCallback)(methodWithThrowingCallback);
 
 // Function declarations
 void call_methodWithCallback(methodWithCallback fnPtr);
@@ -327,6 +328,7 @@ methodWithCallbackIntPointerReturn getIntPointerReturnCallback(void);
 methodWithCallbackIntPointerArg getIntPointerArgCallback(void);
 methodWithCallbackTestUnionPointerReturn getTestUnionPointerReturnCallback(void);
 methodWithCallbackTestUnionPointerArg getTestUnionPointerArgCallback(void);
+methodWithCallbackCallThrowingCallback getCallThrowingCallbackCallback(void);
 
 #ifdef __cplusplus
 }

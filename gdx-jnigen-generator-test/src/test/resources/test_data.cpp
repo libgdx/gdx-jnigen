@@ -601,6 +601,10 @@ static void testUnionPointerArgCallback(TestUnion* arg) {
     g_lastArg.unionPtr = arg;
 }
 
+static void testCallThrowingCallback(methodWithThrowingCallback fnPtr) {
+    fnPtr();
+}
+
 methodWithCallback getVoidCallback(void) {
     return voidCallback;
 }
@@ -727,4 +731,8 @@ methodWithCallbackTestUnionPointerReturn getTestUnionPointerReturnCallback(void)
 
 methodWithCallbackTestUnionPointerArg getTestUnionPointerArgCallback(void) {
     return testUnionPointerArgCallback;
+}
+
+methodWithCallbackCallThrowingCallback getCallThrowingCallbackCallback(void) {
+    return testCallThrowingCallback;
 }

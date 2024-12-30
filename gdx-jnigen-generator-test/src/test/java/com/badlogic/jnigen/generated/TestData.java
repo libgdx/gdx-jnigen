@@ -1262,6 +1262,17 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
+    public static ClosureObject<methodWithCallbackCallThrowingCallback> getCallThrowingCallbackCallback() {
+        return CHandler.getClosureObject(getCallThrowingCallbackCallback_internal(), methodWithCallbackCallThrowingCallback::methodWithCallbackCallThrowingCallback_downcall);
+    }
+
+    static private native long getCallThrowingCallbackCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getCallThrowingCallbackCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
     public interface methodWithCallbackBooleanArg extends Closure {
 
         CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(0) };
@@ -1622,6 +1633,30 @@ static jclass cxxExceptionClass = NULL;
 
         public static methodWithCallbackTestEnumArg methodWithCallbackTestEnumArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestEnumArg.__ffi_cache);
+            return (arg0) -> {
+                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
+                useEncoder.setValue(0, arg0);
+                useEncoder.invoke();
+            };
+        }
+    }
+
+    public interface methodWithCallbackCallThrowingCallback extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(-1) };
+
+        void methodWithCallbackCallThrowingCallback_call(ClosureObject<methodWithThrowingCallback> arg0);
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
+            methodWithCallbackCallThrowingCallback_call(CHandler.getClosureObject(parameters[0].asLong(), methodWithThrowingCallback::methodWithThrowingCallback_downcall));
+        }
+
+        public static methodWithCallbackCallThrowingCallback methodWithCallbackCallThrowingCallback_downcall(long fnPtr) {
+            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackCallThrowingCallback.__ffi_cache);
             return (arg0) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
                 useEncoder.setValue(0, arg0);

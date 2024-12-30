@@ -19,6 +19,16 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DowncallTests extends BaseTest {
 
     @Test
+    public void testDowncallUpcallException() {
+        ClosureObject<methodWithCallbackCallThrowingCallback> callback = getCallThrowingCallbackCallback();
+        ClosureObject<methodWithThrowingCallback> thrower = ClosureObject.fromClosure(() -> {
+            throw new IllegalArgumentException();
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> callback.getClosure().methodWithCallbackCallThrowingCallback_call(thrower));
+    }
+
+    @Test
     public void testCantFreeDowncall() {
         ClosureObject<methodWithCallback> voidCallback = getVoidCallback();
         assertThrows(IllegalArgumentException.class, voidCallback::free);
