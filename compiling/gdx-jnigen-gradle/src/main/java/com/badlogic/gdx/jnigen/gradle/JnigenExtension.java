@@ -74,7 +74,7 @@ public class JnigenExtension {
     Action<BuildTarget> all = null;
 
     Action<RobovmBuildConfig> robovm;
-	JnigenBindingGeneratorExtension generator = new JnigenBindingGeneratorExtension();
+	JnigenBindingGeneratorExtension generator;
 
     @Inject
     public JnigenExtension (Project project) {
@@ -84,7 +84,12 @@ public class JnigenExtension {
     }
 
     public void generator(Action<JnigenBindingGeneratorExtension> container) {
+        if (generator != null)
+            throw new IllegalStateException("generator already configured");
+        generator = new JnigenBindingGeneratorExtension();
 		container.execute(generator);
+
+        project.getTasks().create("jnigenGenerateBindings", JnigenGenerateBindingsTask.class, generator);
 	}
 
     public void nativeCodeGenerator (Action<NativeCodeGeneratorConfig> container) {

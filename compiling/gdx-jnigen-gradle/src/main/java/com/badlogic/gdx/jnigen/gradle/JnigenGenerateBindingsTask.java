@@ -14,12 +14,12 @@ import java.util.stream.Collectors;
 
 public class JnigenGenerateBindingsTask extends DefaultTask {
 
-    private final JnigenBindingGeneratorExtension ext;
+    private final JnigenBindingGeneratorExtension generator;
     private Configuration configuration;
 
     @Inject
-    public JnigenGenerateBindingsTask(JnigenExtension ext) {
-        this.ext = ext.generator;
+    public JnigenGenerateBindingsTask(JnigenBindingGeneratorExtension generator) {
+        this.generator = generator;
 
         setGroup("jnigen");
 
@@ -44,9 +44,9 @@ public class JnigenGenerateBindingsTask extends DefaultTask {
 
     @TaskAction
     public void run() {
-        Objects.requireNonNull(ext.getOutputPath(), "jnigen.generator.outputPath not defined");
-        Objects.requireNonNull(ext.getBasePackage(), "jnigen.generator.basePackage not defined");
-        Objects.requireNonNull(ext.getFileToParse(), "jnigen.generator.fileToParse not defined");
+        Objects.requireNonNull(generator.getOutputPath(), "jnigen.generator.outputPath not defined");
+        Objects.requireNonNull(generator.getBasePackage(), "jnigen.generator.basePackage not defined");
+        Objects.requireNonNull(generator.getFileToParse(), "jnigen.generator.fileToParse not defined");
 
         // Gradle is annoying and ships it's own javaparser, but doesn't relocate it
         FileCollection filteredClasspath = getProject().files(
@@ -57,14 +57,14 @@ public class JnigenGenerateBindingsTask extends DefaultTask {
                         .collect(Collectors.toList())
         );
 
-        String[] options = ext.getOptions();
+        String[] options = generator.getOptions();
         if (options == null)
             options = new String[0];
 
         ArrayList<String> args = new ArrayList<>();
-        args.add(ext.getOutputPath().getAbsolutePath());
-        args.add(ext.getBasePackage());
-        args.add(ext.getFileToParse());
+        args.add(generator.getOutputPath().getAbsolutePath());
+        args.add(generator.getBasePackage());
+        args.add(generator.getFileToParse());
         args.addAll(Arrays.asList(options));
 
         getProject().javaexec(spec -> {
