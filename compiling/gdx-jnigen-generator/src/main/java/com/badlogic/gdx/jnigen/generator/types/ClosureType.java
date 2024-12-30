@@ -82,67 +82,74 @@ public class ClosureType implements MappedType, WritableClass {
                         ))
         );
 
-        VariableDeclarationExpr returnConvertDeclaration = new VariableDeclarationExpr(
-                new VariableDeclarator()
-                        .setType("JavaTypeWrapper")
-                        .setName("returnConvert")
-                        .setInitializer(new ObjectCreationExpr()
-                                .setType("JavaTypeWrapper")
-                                .addArgument(new ArrayAccessExpr(
-                                        new FieldAccessExpr(
-                                                new NameExpr(getName()),
-                                                "__ffi_cache"
-                                        ),
-                                        new BinaryExpr(
-                                                new FieldAccessExpr(
-                                                        new NameExpr(getName()),
-                                                        "__ffi_cache.length"
-                                                ),
-                                                new IntegerLiteralExpr("1"),
-                                                BinaryExpr.Operator.MINUS
-                                        )
-                                ))
-                        )
-        );
-
-        BlockStmt arguments = new BlockStmt();
+        NodeList<Statement> arguments = new NodeList<>();
         for (int i = 0; i < signature.getArguments().length; i++) {
             NamedType argument = signature.getArguments()[i];
             ExpressionStmt setValueStmt = new ExpressionStmt(
                     new MethodCallExpr(new NameExpr("useEncoder"), "setValue")
-                            .addArgument(new IntegerLiteralExpr(i))
+                            .addArgument(new IntegerLiteralExpr(String.valueOf(i)))
                             .addArgument(new NameExpr(argument.getName()))
             );
-            arguments.addStatement(setValueStmt);
+            arguments.add(setValueStmt);
         }
 
-        ExpressionStmt returnSetValueStatement = new ExpressionStmt(
-                new MethodCallExpr(
-                        new NameExpr("returnConvert"),
-                        "setValue"
-                ).addArgument(new MethodCallExpr(
-                        new NameExpr("useEncoder"),
-                        "invoke"
-                ))
-        );
+        BlockStmt lambdaBody = new BlockStmt()
+                .addStatement(new ExpressionStmt(useEncoderDeclaration));
 
-        Statement returnStatement;
+        for (Statement statement : arguments) {
+            lambdaBody.addStatement(statement);
+        }
+
         if (signature.getReturnType().getTypeKind() == TypeKind.VOID) {
-            returnStatement = new ReturnStmt();
+            lambdaBody.addStatement(new MethodCallExpr(
+                    new NameExpr("useEncoder"),
+                    "invoke"
+            ));
         } else {
-            returnStatement = new ReturnStmt(getMethodCallExpr(new NameExpr("returnConvert"), signature.getReturnType()));
-        }
 
+            VariableDeclarationExpr returnConvertDeclaration = new VariableDeclarationExpr(
+                    new VariableDeclarator()
+                            .setType("JavaTypeWrapper")
+                            .setName("returnConvert")
+                            .setInitializer(new ObjectCreationExpr()
+                                    .setType("JavaTypeWrapper")
+                                    .addArgument(new ArrayAccessExpr(
+                                            new FieldAccessExpr(
+                                                    new NameExpr(getName()),
+                                                    "__ffi_cache"
+                                            ),
+                                            new BinaryExpr(
+                                                    new FieldAccessExpr(
+                                                            new NameExpr(getName()),
+                                                            "__ffi_cache.length"
+                                                    ),
+                                                    new IntegerLiteralExpr("1"),
+                                                    BinaryExpr.Operator.MINUS
+                                            )
+                                    ))
+                            )
+            );
+
+            ExpressionStmt returnSetValueStatement = new ExpressionStmt(
+                    new MethodCallExpr(
+                            new NameExpr("returnConvert"),
+                            "setValue"
+                    ).addArgument(new MethodCallExpr(
+                            new NameExpr("useEncoder"),
+                            "invoke"
+                    ))
+            );
+
+            Statement returnStatement = new ReturnStmt(getMethodCallExpr(new NameExpr("returnConvert"), signature.getReturnType()));
+
+            lambdaBody.addStatement(new ExpressionStmt(returnConvertDeclaration))
+                    .addStatement(returnSetValueStatement)
+                    .addStatement(returnStatement);
+        }
 
         LambdaExpr lambda = new LambdaExpr()
                 .setEnclosingParameters(true)
-                .setBody(new BlockStmt()
-                        .addStatement(new ExpressionStmt(useEncoderDeclaration))
-                        .addStatement(arguments)
-                        .addStatement(new ExpressionStmt(returnConvertDeclaration))
-                        .addStatement(returnSetValueStatement)
-                        .addStatement(returnStatement)
-                );
+                .setBody(lambdaBody);
 
         for (NamedType namedType : signature.getArguments()) {
             namedType.getDefinition().getMappedType().importType(cu);

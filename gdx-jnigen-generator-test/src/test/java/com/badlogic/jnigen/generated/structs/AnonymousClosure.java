@@ -104,10 +104,8 @@ public final class AnonymousClosure extends Struct {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, someClosure.__ffi_cache);
             return (arg0, arg1) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                {
-                    useEncoder.setValue(0, arg0);
-                    useEncoder.setValue(1, arg1);
-                }
+                useEncoder.setValue(0, arg0);
+                useEncoder.setValue(1, arg1);
                 JavaTypeWrapper returnConvert = new JavaTypeWrapper(someClosure.__ffi_cache[someClosure.__ffi_cache.length - 1]);
                 returnConvert.setValue(useEncoder.invoke());
                 return (int) returnConvert.asLong();
@@ -133,10 +131,8 @@ public final class AnonymousClosure extends Struct {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, anotherClosure.__ffi_cache);
             return (arg0, arg1) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                {
-                    useEncoder.setValue(0, arg0);
-                    useEncoder.setValue(1, arg1);
-                }
+                useEncoder.setValue(0, arg0);
+                useEncoder.setValue(1, arg1);
                 JavaTypeWrapper returnConvert = new JavaTypeWrapper(anotherClosure.__ffi_cache[anotherClosure.__ffi_cache.length - 1]);
                 returnConvert.setValue(useEncoder.invoke());
                 return (float) returnConvert.asFloat();
