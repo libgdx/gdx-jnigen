@@ -118,14 +118,7 @@ public class ClosureType implements MappedType, WritableClass {
                                                     new NameExpr(getName()),
                                                     "__ffi_cache"
                                             ),
-                                            new BinaryExpr(
-                                                    new FieldAccessExpr(
-                                                            new NameExpr(getName()),
-                                                            "__ffi_cache.length"
-                                                    ),
-                                                    new IntegerLiteralExpr("1"),
-                                                    BinaryExpr.Operator.MINUS
-                                            )
+                                            new IntegerLiteralExpr("0")
                                     ))
                             )
             );

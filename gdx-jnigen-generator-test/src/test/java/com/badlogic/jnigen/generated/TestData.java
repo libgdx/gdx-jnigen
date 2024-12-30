@@ -1339,7 +1339,7 @@ static jclass cxxExceptionClass = NULL;
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackDoubleReturn.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackDoubleReturn.__ffi_cache[methodWithCallbackDoubleReturn.__ffi_cache.length - 1]);
+                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackDoubleReturn.__ffi_cache[0]);
                 returnConvert.setValue(useEncoder.invoke());
                 return (double) returnConvert.asDouble();
             };
@@ -1411,7 +1411,7 @@ static jclass cxxExceptionClass = NULL;
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestStructPointerReturn.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackTestStructPointerReturn.__ffi_cache[methodWithCallbackTestStructPointerReturn.__ffi_cache.length - 1]);
+                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackTestStructPointerReturn.__ffi_cache[0]);
                 returnConvert.setValue(useEncoder.invoke());
                 return new TestStruct.TestStructPointer(returnConvert.asLong(), false);
             };
@@ -1436,7 +1436,7 @@ static jclass cxxExceptionClass = NULL;
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackShortReturn.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackShortReturn.__ffi_cache[methodWithCallbackShortReturn.__ffi_cache.length - 1]);
+                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackShortReturn.__ffi_cache[0]);
                 returnConvert.setValue(useEncoder.invoke());
                 return (short) returnConvert.asLong();
             };
@@ -1461,7 +1461,7 @@ static jclass cxxExceptionClass = NULL;
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestEnumPointerReturn.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackTestEnumPointerReturn.__ffi_cache[methodWithCallbackTestEnumPointerReturn.__ffi_cache.length - 1]);
+                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackTestEnumPointerReturn.__ffi_cache[0]);
                 returnConvert.setValue(useEncoder.invoke());
                 return new TestEnum.TestEnumPointer(returnConvert.asLong(), false);
             };
@@ -1512,7 +1512,7 @@ static jclass cxxExceptionClass = NULL;
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackIntPointerReturn.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackIntPointerReturn.__ffi_cache[methodWithCallbackIntPointerReturn.__ffi_cache.length - 1]);
+                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackIntPointerReturn.__ffi_cache[0]);
                 returnConvert.setValue(useEncoder.invoke());
                 return new CSizedIntPointer(returnConvert.asLong(), false, "int");
             };
@@ -1610,7 +1610,7 @@ static jclass cxxExceptionClass = NULL;
             return (arg0) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
                 useEncoder.setValue(0, arg0);
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackIntPointerArg.__ffi_cache[methodWithCallbackIntPointerArg.__ffi_cache.length - 1]);
+                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackIntPointerArg.__ffi_cache[0]);
                 returnConvert.setValue(useEncoder.invoke());
                 return (int) returnConvert.asLong();
             };
@@ -1707,7 +1707,7 @@ static jclass cxxExceptionClass = NULL;
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestUnionPointerReturn.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackTestUnionPointerReturn.__ffi_cache[methodWithCallbackTestUnionPointerReturn.__ffi_cache.length - 1]);
+                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackTestUnionPointerReturn.__ffi_cache[0]);
                 returnConvert.setValue(useEncoder.invoke());
                 return new TestUnion.TestUnionPointer(returnConvert.asLong(), false);
             };
@@ -1732,7 +1732,7 @@ static jclass cxxExceptionClass = NULL;
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackByteReturn.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackByteReturn.__ffi_cache[methodWithCallbackByteReturn.__ffi_cache.length - 1]);
+                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackByteReturn.__ffi_cache[0]);
                 returnConvert.setValue(useEncoder.invoke());
                 return (byte) returnConvert.asLong();
             };
@@ -1757,7 +1757,7 @@ static jclass cxxExceptionClass = NULL;
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackCharReturn.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackCharReturn.__ffi_cache[methodWithCallbackCharReturn.__ffi_cache.length - 1]);
+                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackCharReturn.__ffi_cache[0]);
                 returnConvert.setValue(useEncoder.invoke());
                 return (char) returnConvert.asLong();
             };
@@ -1782,7 +1782,7 @@ static jclass cxxExceptionClass = NULL;
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestEnumReturn.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackTestEnumReturn.__ffi_cache[methodWithCallbackTestEnumReturn.__ffi_cache.length - 1]);
+                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackTestEnumReturn.__ffi_cache[0]);
                 returnConvert.setValue(useEncoder.invoke());
                 return TestEnum.getByIndex((int) returnConvert.asLong());
             };
@@ -1863,7 +1863,7 @@ static jclass cxxExceptionClass = NULL;
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithIntPtrPtrRet.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithIntPtrPtrRet.__ffi_cache[methodWithIntPtrPtrRet.__ffi_cache.length - 1]);
+                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithIntPtrPtrRet.__ffi_cache[0]);
                 returnConvert.setValue(useEncoder.invoke());
                 return new PointerPointer<>(returnConvert.asLong(), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, owned2, "int")).setBackingCType("int");
             };
@@ -1960,7 +1960,7 @@ static jclass cxxExceptionClass = NULL;
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackBooleanReturn.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackBooleanReturn.__ffi_cache[methodWithCallbackBooleanReturn.__ffi_cache.length - 1]);
+                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackBooleanReturn.__ffi_cache[0]);
                 returnConvert.setValue(useEncoder.invoke());
                 return returnConvert.asLong() != 0;
             };
@@ -1985,7 +1985,7 @@ static jclass cxxExceptionClass = NULL;
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackIntReturn.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackIntReturn.__ffi_cache[methodWithCallbackIntReturn.__ffi_cache.length - 1]);
+                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackIntReturn.__ffi_cache[0]);
                 returnConvert.setValue(useEncoder.invoke());
                 return (int) returnConvert.asLong();
             };
@@ -2010,7 +2010,7 @@ static jclass cxxExceptionClass = NULL;
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackLongReturn.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackLongReturn.__ffi_cache[methodWithCallbackLongReturn.__ffi_cache.length - 1]);
+                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackLongReturn.__ffi_cache[0]);
                 returnConvert.setValue(useEncoder.invoke());
                 return (long) returnConvert.asLong();
             };
@@ -2084,7 +2084,7 @@ static jclass cxxExceptionClass = NULL;
             return (arg0) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
                 useEncoder.setValue(0, arg0);
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(thread_callback.__ffi_cache[thread_callback.__ffi_cache.length - 1]);
+                JavaTypeWrapper returnConvert = new JavaTypeWrapper(thread_callback.__ffi_cache[0]);
                 returnConvert.setValue(useEncoder.invoke());
                 return new VoidPointer(returnConvert.asLong(), false);
             };
@@ -2109,7 +2109,7 @@ static jclass cxxExceptionClass = NULL;
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestStructReturn.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackTestStructReturn.__ffi_cache[methodWithCallbackTestStructReturn.__ffi_cache.length - 1]);
+                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackTestStructReturn.__ffi_cache[0]);
                 returnConvert.setValue(useEncoder.invoke());
                 return new TestStruct(returnConvert.asLong(), true);
             };
@@ -2134,7 +2134,7 @@ static jclass cxxExceptionClass = NULL;
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackFloatReturn.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackFloatReturn.__ffi_cache[methodWithCallbackFloatReturn.__ffi_cache.length - 1]);
+                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackFloatReturn.__ffi_cache[0]);
                 returnConvert.setValue(useEncoder.invoke());
                 return (float) returnConvert.asFloat();
             };
