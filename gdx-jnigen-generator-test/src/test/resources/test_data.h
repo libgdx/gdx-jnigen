@@ -164,7 +164,7 @@ int variadic_va_list(int count, va_list list);
 
 // Typedefs
 typedef void (*methodWithCallback)(void);
-typedef void (*methodWithCallbackLongArg)(uint64_t);
+typedef void (*methodWithCallbackLongArg)(uint64_t test);
 typedef void (*methodWithCallbackIntArg)(int);
 typedef void (*methodWithCallbackShortArg)(short);
 typedef void (*methodWithCallbackByteArg)(char);

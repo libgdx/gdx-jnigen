@@ -7,6 +7,7 @@ import com.badlogic.gdx.jnigen.generator.types.MappedType;
 import com.badlogic.gdx.jnigen.generator.types.NamedType;
 import com.badlogic.gdx.jnigen.generator.types.StackElementType;
 import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
+import com.badlogic.gdx.jnigen.generator.types.TypeKind;
 import org.bytedeco.llvm.clang.CXClientData;
 import org.bytedeco.llvm.clang.CXCursor;
 import org.bytedeco.llvm.clang.CXCursorVisitor;
@@ -91,6 +92,10 @@ public class StackElementParser {
                     }
 
                     TypeDefinition fieldDefinition = Generator.registerCXType(type, cursorSpelling, stackElementType);
+
+                    if (fieldDefinition.getTypeKind() == TypeKind.CLOSURE) {
+                        Generator.patchSignatureArgNamesWithVisitor(fieldDefinition, current);
+                    }
 
                     NamedType namedType = new NamedType(fieldDefinition, cursorSpelling);
                     stackElementType.addField(namedType);

@@ -90,7 +90,7 @@ public final class AnonymousClosure extends Struct {
 
         CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(-1), FFITypes.getCTypeInfo(3) };
 
-        int someClosure_call(CSizedIntPointer arg0, double arg1);
+        int someClosure_call(CSizedIntPointer t, double p);
 
         default CTypeInfo[] functionSignature() {
             return __ffi_cache;
@@ -102,10 +102,10 @@ public final class AnonymousClosure extends Struct {
 
         public static someClosure someClosure_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, someClosure.__ffi_cache);
-            return (arg0, arg1) -> {
+            return (t, p) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                useEncoder.setValue(1, arg1);
+                useEncoder.setValue(0, t);
+                useEncoder.setValue(1, p);
                 JavaTypeWrapper returnConvert = new JavaTypeWrapper(someClosure.__ffi_cache[someClosure.__ffi_cache.length - 1]);
                 returnConvert.setValue(useEncoder.invoke());
                 return (int) returnConvert.asLong();
@@ -117,7 +117,7 @@ public final class AnonymousClosure extends Struct {
 
         CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(4), FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(3) };
 
-        float anotherClosure_call(int arg0, double arg1);
+        float anotherClosure_call(int t, double p);
 
         default CTypeInfo[] functionSignature() {
             return __ffi_cache;
@@ -129,10 +129,10 @@ public final class AnonymousClosure extends Struct {
 
         public static anotherClosure anotherClosure_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, anotherClosure.__ffi_cache);
-            return (arg0, arg1) -> {
+            return (t, p) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                useEncoder.setValue(1, arg1);
+                useEncoder.setValue(0, t);
+                useEncoder.setValue(1, p);
                 JavaTypeWrapper returnConvert = new JavaTypeWrapper(anotherClosure.__ffi_cache[anotherClosure.__ffi_cache.length - 1]);
                 returnConvert.setValue(useEncoder.invoke());
                 return (float) returnConvert.asFloat();

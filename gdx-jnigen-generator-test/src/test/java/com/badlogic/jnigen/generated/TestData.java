@@ -1523,7 +1523,7 @@ static jclass cxxExceptionClass = NULL;
 
         CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(9) };
 
-        void methodWithCallbackLongArg_call(long arg0);
+        void methodWithCallbackLongArg_call(long test);
 
         default CTypeInfo[] functionSignature() {
             return __ffi_cache;
@@ -1535,9 +1535,9 @@ static jclass cxxExceptionClass = NULL;
 
         public static methodWithCallbackLongArg methodWithCallbackLongArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackLongArg.__ffi_cache);
-            return (arg0) -> {
+            return (test) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
+                useEncoder.setValue(0, test);
                 useEncoder.invoke();
             };
         }

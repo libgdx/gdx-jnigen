@@ -252,6 +252,10 @@ public class ClosureType implements MappedType, WritableClass {
         return signature.getName();
     }
 
+    public FunctionSignature getSignature() {
+        return signature;
+    }
+
     @Override
     public String abstractType() {
         return "ClosureObject<" + signature.getName() + ">";
