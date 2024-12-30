@@ -305,14 +305,6 @@ public class JnigenExtension {
                     + "`, excludes=`" + Arrays.toString(excludes) + "`]";
         }
 
-        /**
-         * This method is deprecated in favor of {@link NativeCodeGeneratorConfig#setSourceDirs(String[])}
-         */
-        @Deprecated
-        public void setSourceDir (String sourceDir) {
-            this.sourceDirs = new String[]{sourceDir};
-        }
-
         public void setSourceDirs (String[] sourceDirs) {
             this.sourceDirs = sourceDirs;
         }

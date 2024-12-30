@@ -217,29 +217,9 @@ public class BuildTarget {
 
     /**
      * Creates a new default BuildTarget for the given OS, using common default values.
-     *
-     * @deprecated Use {@link #newDefaultTarget(Os, Architecture.Bitness) newDefaultTarget} method.
-     */
-    @Deprecated
-    public static BuildTarget newDefaultTarget (Os osTarget, boolean is64Bit) {
-        return newDefaultTarget(osTarget, is64Bit, false);
-    }
-
-    /**
-     * Creates a new default BuildTarget for the given OS, using common default values.
      */
     public static BuildTarget newDefaultTarget (Os osTarget, Architecture.Bitness bitness) {
         return newDefaultTarget(osTarget, bitness, Architecture.x86);
-    }
-
-    /**
-     * Creates a new default BuildTarget for the given OS, using common default values.
-     *
-     * @deprecated Use {@link #newDefaultTarget(Os, Architecture.Bitness, Architecture) newDefaultTarget} method.
-     */
-    @Deprecated
-    public static BuildTarget newDefaultTarget (Os osTarget, boolean is64Bit, boolean isARM) {
-        return newDefaultTarget(osTarget, is64Bit ? Architecture.Bitness._64 : Architecture.Bitness._32, isARM ? Architecture.ARM : Architecture.x86);
     }
 
     public static BuildTarget newDefaultTarget (Os osTarget, Architecture.Bitness bitness, Architecture architecture) {
