@@ -1,6 +1,6 @@
 package com.badlogic.gdx.jnigen.runtime.pointer;
 
-public final class VoidPointer extends Pointing {
+public class VoidPointer extends Pointing {
 
     public static final VoidPointer NULL = new VoidPointer(0, false).guardSize(0);
 

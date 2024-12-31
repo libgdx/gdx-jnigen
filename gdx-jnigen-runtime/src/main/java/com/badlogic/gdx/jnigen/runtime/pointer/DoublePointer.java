@@ -2,7 +2,7 @@ package com.badlogic.gdx.jnigen.runtime.pointer;
 
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 
-public final class DoublePointer extends Pointing {
+public final class DoublePointer extends VoidPointer {
 
     private static final int __double_size = 8;
 

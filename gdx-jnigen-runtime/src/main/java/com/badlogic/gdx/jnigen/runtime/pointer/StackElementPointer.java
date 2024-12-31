@@ -2,7 +2,7 @@ package com.badlogic.gdx.jnigen.runtime.pointer;
 
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 
-public abstract class StackElementPointer<T extends StackElement> extends Pointing {
+public abstract class StackElementPointer<T extends StackElement> extends VoidPointer {
 
     protected StackElementPointer(long pointer, boolean freeOnGC) {
         super(pointer, freeOnGC);

@@ -3,8 +3,9 @@ package com.badlogic.gdx.jnigen.runtime.pointer;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.c.CEnum;
 
-public abstract class EnumPointer<T extends CEnum> extends Pointing {
+public abstract class EnumPointer<T extends CEnum> extends VoidPointer {
 
+    // TODO: This is actually not true, since and enum can have a variable width
     private static final int __int_size = CHandler.getCTypeInfo("int").getSize();
 
     public EnumPointer(long pointer, boolean freeOnGC) {

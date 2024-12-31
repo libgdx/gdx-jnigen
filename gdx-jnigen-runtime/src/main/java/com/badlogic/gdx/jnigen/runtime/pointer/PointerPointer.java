@@ -3,7 +3,7 @@ package com.badlogic.gdx.jnigen.runtime.pointer;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;
 
-public class PointerPointer<T extends Pointing> extends Pointing {
+public class PointerPointer<T extends Pointing> extends VoidPointer {
 
     private static final int __pointer_size = CHandler.POINTER_SIZE;
     private final PointerDereferenceSupplier<T> supplier;
