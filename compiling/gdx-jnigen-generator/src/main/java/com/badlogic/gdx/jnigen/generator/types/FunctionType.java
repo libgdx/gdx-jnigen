@@ -15,9 +15,11 @@ import java.util.HashMap;
 public class FunctionType {
 
     private final FunctionSignature signature;
+    private final String comment;
 
-    public FunctionType(FunctionSignature signature) {
+    public FunctionType(FunctionSignature signature, String comment) {
         this.signature = signature;
+        this.comment = comment;
     }
 
     public void write(CompilationUnit cu, ClassOrInterfaceDeclaration wrappingClass, HashMap<MethodDeclaration, String> patchNativeMethod) {
@@ -26,6 +28,8 @@ public class FunctionType {
         NamedType[] arguments = signature.getArguments();
 
         MethodDeclaration callMethod = wrappingClass.addMethod(name, Keyword.PUBLIC, Keyword.STATIC);
+        if (comment != null)
+            callMethod.setJavadocComment(comment);
         BlockStmt body = new BlockStmt();
 
         MethodDeclaration nativeMethod = wrappingClass.addMethod(name + "_internal").setStatic(true).setPrivate(true).setNative(true).setBody(null);

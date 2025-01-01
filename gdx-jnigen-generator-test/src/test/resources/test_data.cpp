@@ -130,6 +130,10 @@ void call_methodWithCallbackTestStructPointerArg(methodWithCallbackTestStructPoi
     fnPtr(arg);
 }
 
+void commentedMethod(void) {
+    // This method does actually no great stuff MUAHAHAHA
+}
+
 TestStruct* returnTestStructPointer(void) {
     TestStruct* ptr = (TestStruct*)malloc(sizeof(TestStruct));
     TestStruct str = {

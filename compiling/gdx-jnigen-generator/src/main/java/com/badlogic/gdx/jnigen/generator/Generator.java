@@ -1,5 +1,6 @@
 package com.badlogic.gdx.jnigen.generator;
 
+import com.badlogic.gdx.jnigen.generator.parser.CommentParser;
 import com.badlogic.gdx.jnigen.generator.parser.EnumParser;
 import com.badlogic.gdx.jnigen.generator.parser.StackElementParser;
 import com.badlogic.gdx.jnigen.generator.types.ClosureType;
@@ -284,7 +285,7 @@ public class Generator {
                     try {
                         Manager.startNewManager();
                         FunctionSignature functionSignature = parseFunctionSignature(name, funcType, current);
-                        Manager.getInstance().addFunction(new FunctionType(functionSignature));
+                        Manager.getInstance().addFunction(new FunctionType(functionSignature, new CommentParser(current).parse()));
                     }catch (Throwable e) {
                         Manager.rollBack();
                         System.err.println("Failed to parse function: " + name);

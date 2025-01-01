@@ -165,6 +165,9 @@ GlobalArg getGlobalArgState(void);
 
 struct forwardDeclStruct;
 
+//// This method does great stuff, trust me
+void commentedMethod(void);
+
 void ensureParsed(AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested, struct forwardDeclStruct*);
 void weirdPointer(FILE *_file);
 void constArrayParameter(const TestStruct structs[]);
