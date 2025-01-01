@@ -27,9 +27,9 @@ extern "C" {
 #define MACRO_IN_BRACKETS (0x5)
 #define MACRO_BYTE_SHIFT 1 << 3
 
-//// This is a test struct
+/// This is a test struct
 typedef struct TestStruct {
-    //// Field Comment 1
+    /// Field Comment 1
     uint64_t field1;
     //! Field Comment 2
     uint32_t field2;
@@ -48,15 +48,18 @@ typedef struct SpecialStruct {
     int* intPtrField;
 } SpecialStruct;
 
-//// This is a Test Enum
+/// This is a Test Enum
 typedef enum TestEnum {
-    //// This is a comment on FIRST
+    /// This is a comment on FIRST
     FIRST,
-    //// This is a comment on Second and third
+    /// This is a comment on Second and third
     SECOND,
     THIRD = 4
 } TestEnum;
 
+/*!
+ Some other comment
+*/
 typedef union TestUnion
 {
     uint64_t uintType;
@@ -79,7 +82,7 @@ typedef struct AnonymousStructNoField {
 typedef struct AnonymousStructNoFieldEnd {
     int externalValue;
     struct {
-        //// Anon struct field
+        /// Anon struct field
         int intValue;
         float floatValue;
     };
@@ -108,9 +111,9 @@ typedef struct AnonymousStructNoFieldNested {
 } AnonymousStructNoFieldNested;
 
 typedef struct AnonymousStructField {
-    //// Inner struct name
+    /// Inner struct name
     struct {
-        //// Innerr struct field
+        /// Innerr struct field
         int intValue;
         float floatValue;
     } inner;
@@ -127,7 +130,7 @@ typedef struct AnonymousStructFieldArray {
 
 struct AnonymousClosure
 {
-    //// Comment on internal callback
+    /// Comment on internal callback
     int (* someClosure)(int* t, double p);
     float (* anotherClosure)(int t, double p);
 };
@@ -166,7 +169,7 @@ GlobalArg getGlobalArgState(void);
 
 struct forwardDeclStruct;
 
-//// This method does great stuff, trust me
+/// This method does great stuff, trust me
 void commentedMethod(void);
 
 void ensureParsed(AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested, struct forwardDeclStruct*);
@@ -184,7 +187,7 @@ int variadic(int count, ...);
 int variadic_va_list(int count, va_list list);
 
 // Typedefs
-//// Comment on callback
+/// Comment on callback
 typedef void (*methodWithCallback)(void);
 typedef void (*methodWithCallbackLongArg)(uint64_t test);
 typedef void (*methodWithCallbackIntArg)(int);

@@ -25,10 +25,11 @@ public class CommentParser {
             return null;
 
         String comment = string.getString();
-        comment = comment.replace("////", "");
+         comment = comment.replace("///", "");
         comment = comment.replace("//!", "");
-        if (comment.startsWith("/**")) {
+        if (comment.startsWith("/**") || comment.startsWith("/*!")) {
             comment = comment.replace("/**", "");
+            comment = comment.replace("/*!", "");
             comment = comment.replace("*/", "");
             comment = comment.lines()
                     .map(String::trim)
