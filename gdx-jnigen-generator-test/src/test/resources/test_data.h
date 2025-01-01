@@ -27,13 +27,21 @@ extern "C" {
 #define MACRO_IN_BRACKETS (0x5)
 #define MACRO_BYTE_SHIFT 1 << 3
 
+//// This is a test struct
 typedef struct TestStruct {
+    //// Field Comment 1
     uint64_t field1;
+    //! Field Comment 2
     uint32_t field2;
+    /** Field Comment 3 */
     uint16_t field3;
+    /**
+    * Field Comment 4
+    */
     uint8_t field4;
 } TestStruct;
 
+//! Special Struct jaja
 typedef struct SpecialStruct {
     float* floatPtrField;
     int arrayField[5];
@@ -54,6 +62,9 @@ typedef union TestUnion
     TestStruct structType;
 } TestUnion;
 
+/**
+ * Anonymous struct jaja
+ */
 typedef struct AnonymousStructNoField {
     struct {
         int intValue;
