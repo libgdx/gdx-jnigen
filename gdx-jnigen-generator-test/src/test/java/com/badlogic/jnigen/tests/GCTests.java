@@ -20,7 +20,7 @@ public class GCTests extends BaseTest {
         WeakReference<Pointing> toCheckGC = new WeakReference<>(pointing);
         pointing = null;
         while (GCHandler.nativeObjectCount() != 0)
-            System.gc();
+            emptyGC();
 
         assertNull(toCheckGC.get());
         assertEquals(0, GCHandler.nativeObjectCount());
@@ -38,7 +38,7 @@ public class GCTests extends BaseTest {
         pointing = null;
         samePointer = null;
         while (GCHandler.nativeObjectCount() != 0)
-            System.gc();
+            emptyGC();
 
         // The real test is, that there is no segfault
         assertNull(toCheckGC1.get());

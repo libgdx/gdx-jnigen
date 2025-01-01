@@ -63,49 +63,56 @@ public class StackElementType implements MappedType, WritableClass {
     }
 
     @Override
-    public void write(CompilationUnit compilationUnit, ClassOrInterfaceDeclaration structClass) {
+    public ClassOrInterfaceDeclaration generateClassInternal() {
+        NodeList<Modifier> modifiers = new NodeList<>(Modifier.publicModifier(), Modifier.finalModifier(), Modifier.staticModifier());
+
+        return new ClassOrInterfaceDeclaration(modifiers, false, internalClassName());
+    }
+
+    @Override
+    public void write(CompilationUnit cuPublic, ClassOrInterfaceDeclaration toWriteToPublic, CompilationUnit cuPrivate, ClassOrInterfaceDeclaration toWriteToPrivate) {
         String structPointerRef = javaTypeName + "." + pointerName;
 
-        compilationUnit.addImport(ClassNameConstants.CHANDLER_CLASS);
-        compilationUnit.addImport(isStruct ? ClassNameConstants.STRUCT_CLASS : ClassNameConstants.UNION_CLASS);
-        compilationUnit.addImport(ClassNameConstants.STACKELEMENTPOINTER_CLASS);
+        cuPublic.addImport(ClassNameConstants.CHANDLER_CLASS);
+        cuPublic.addImport(isStruct ? ClassNameConstants.STRUCT_CLASS : ClassNameConstants.UNION_CLASS);
+        cuPublic.addImport(ClassNameConstants.STACKELEMENTPOINTER_CLASS);
 
-        structClass.addExtendedType(isStruct ? "Struct" : "Union");
-        structClass.addField(int.class, "__size", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
-        structClass.addField(long.class, "__ffi_type", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
+        toWriteToPublic.addExtendedType(isStruct ? "Struct" : "Union");
+        toWriteToPublic.addField(int.class, "__size", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
+        toWriteToPublic.addField(long.class, "__ffi_type", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
 
         // Static-Init
-        BlockStmt staticInit = structClass.addStaticInitializer();
+        BlockStmt staticInit = toWriteToPublic.addStaticInitializer();
         staticInit.addStatement("__ffi_type = FFITypes.getCTypeInfo(" + typeID() + ").getFfiType();");
         staticInit.addStatement("__size = CHandler.getSizeFromFFIType(__ffi_type);");
 
-        compilationUnit.addImport(Manager.getInstance().getBasePackage() + ".FFITypes");
+        cuPublic.addImport(Manager.getInstance().getBasePackage() + ".FFITypes");
 
         // Constructors
-        ConstructorDeclaration pointerTakingConstructor = structClass.addConstructor(Keyword.PUBLIC);
+        ConstructorDeclaration pointerTakingConstructor = toWriteToPublic.addConstructor(Keyword.PUBLIC);
         pointerTakingConstructor.addParameter(long.class, "pointer");
         pointerTakingConstructor.addParameter(boolean.class, "freeOnGC");
         pointerTakingConstructor.getBody().addStatement("super(pointer, freeOnGC);");
 
-        ConstructorDeclaration defaultConstructor = structClass.addConstructor(Keyword.PUBLIC);
+        ConstructorDeclaration defaultConstructor = toWriteToPublic.addConstructor(Keyword.PUBLIC);
         defaultConstructor.getBody().addStatement("super(__size);");
 
 
         // Standard methods
-        structClass.addMethod("getSize", Keyword.PUBLIC).setType(long.class)
+        toWriteToPublic.addMethod("getSize", Keyword.PUBLIC).setType(long.class)
                 .createBody().addStatement("return __size;");
 
-        structClass.addMethod("getFFIType", Keyword.PUBLIC).setType(long.class)
+        toWriteToPublic.addMethod("getFFIType", Keyword.PUBLIC).setType(long.class)
                 .createBody().addStatement("return __ffi_type;");
 
-        structClass.addMethod("asPointer", Keyword.PUBLIC).setType(structPointerRef)
+        toWriteToPublic.addMethod("asPointer", Keyword.PUBLIC).setType(structPointerRef)
                 .createBody().addStatement("return new " + structPointerRef + "(getPointer(), getsGCFreed());");
 
         // Fields
         int index = 0;
         for (NamedType field : fields) {
-            field.getDefinition().getMappedType().importType(compilationUnit);
-            MethodDeclaration getMethod = structClass.addMethod(field.getName(), Keyword.PUBLIC);
+            field.getDefinition().getMappedType().importType(cuPublic);
+            MethodDeclaration getMethod = toWriteToPublic.addMethod(field.getName(), Keyword.PUBLIC);
             getMethod.setType(field.getDefinition().getMappedType().abstractType());
             BlockStmt getBody = new BlockStmt();
             if (field.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY || field.getDefinition().getTypeKind() == TypeKind.STACK_ELEMENT) {
@@ -114,7 +121,7 @@ public class StackElementType implements MappedType, WritableClass {
                     getOffsetExpr.setScope(new NameExpr("CHandler"));
                     getOffsetExpr.addArgument("__ffi_type");
                     getOffsetExpr.addArgument(index + "");
-                    structClass.addFieldWithInitializer(int.class, "__" + field.getName() + "_offset", getOffsetExpr,
+                    toWriteToPublic.addFieldWithInitializer(int.class, "__" + field.getName() + "_offset", getOffsetExpr,
                             Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
                 }
 
@@ -135,7 +142,7 @@ public class StackElementType implements MappedType, WritableClass {
                     guardPointer.addArgument(field.getDefinition().getCount() + "");
                     fromCExpression = guardPointer;
                 }
-                structClass.addFieldWithInitializer(field.getDefinition().getMappedType().abstractType(),
+                toWriteToPublic.addFieldWithInitializer(field.getDefinition().getMappedType().abstractType(),
                         "__" + field.getName(), fromCExpression,
                         Keyword.PRIVATE, Keyword.FINAL);
                 getBody.addStatement("return __" + field.getName() + ";");
@@ -155,7 +162,7 @@ public class StackElementType implements MappedType, WritableClass {
             getBody.addStatement(new ReturnStmt(field.getDefinition().getMappedType().fromC(expression)));
             getMethod.setBody(getBody);
 
-            MethodDeclaration setMethod = structClass.addMethod(field.getName(), Keyword.PUBLIC);
+            MethodDeclaration setMethod = toWriteToPublic.addMethod(field.getName(), Keyword.PUBLIC);
             setMethod.addParameter(field.getDefinition().getMappedType().abstractType(), field.getName());
             BlockStmt setBody = new BlockStmt();
 
@@ -171,7 +178,7 @@ public class StackElementType implements MappedType, WritableClass {
         // Pointer
         ClassOrInterfaceDeclaration pointerClass = new ClassOrInterfaceDeclaration(new NodeList<>(Modifier.publicModifier(), Modifier.staticModifier(), Modifier.finalModifier()), false, pointerName);
 
-        structClass.addMember(pointerClass);
+        toWriteToPublic.addMember(pointerClass);
         pointerClass.addExtendedType("StackElementPointer<" + javaTypeName + ">");
         ConstructorDeclaration pointerConstructor = pointerClass.addConstructor(Keyword.PUBLIC);
         pointerConstructor.addParameter(new Parameter(PrimitiveType.longType(), "pointer"));
@@ -205,8 +212,10 @@ public class StackElementType implements MappedType, WritableClass {
         children.forEach(child -> {
             WritableClass childStackElement = (WritableClass)child.getMappedType();
             ClassOrInterfaceDeclaration declaration = childStackElement.generateClass();
-            childStackElement.write(compilationUnit, declaration);
-            structClass.addMember(declaration);
+            ClassOrInterfaceDeclaration internalDeclaration = childStackElement.generateClassInternal();
+            childStackElement.write(cuPublic, declaration, cuPrivate, internalDeclaration);
+            toWriteToPublic.addMember(declaration);
+            toWriteToPrivate.addMember(internalDeclaration);
         });
     }
 
@@ -305,5 +314,13 @@ public class StackElementType implements MappedType, WritableClass {
     @Override
     public boolean isLibFFIConvertible() {
         return isStruct();
+    }
+
+
+    @Override
+    public String internalClass() {
+        if (parent != null)
+            return parent.internalClass() + "." + internalClassName();
+        return Manager.getInstance().getGlobalType().internalClass() + "." + internalClassName();
     }
 }

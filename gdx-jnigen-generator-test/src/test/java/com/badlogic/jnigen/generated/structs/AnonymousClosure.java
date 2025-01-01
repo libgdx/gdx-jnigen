@@ -6,10 +6,9 @@ import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.runtime.closure.Closure;
-import com.badlogic.gdx.jnigen.runtime.ffi.JavaTypeWrapper;
-import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;
+import com.badlogic.jnigen.generated.TestData_Internal.AnonymousClosure_Internal.someClosure_Internal;
 import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
-import com.badlogic.gdx.jnigen.runtime.ffi.ClosureEncoder;
+import com.badlogic.jnigen.generated.TestData_Internal.AnonymousClosure_Internal.anotherClosure_Internal;
 
 public final class AnonymousClosure extends Struct {
 
@@ -43,7 +42,7 @@ public final class AnonymousClosure extends Struct {
     }
 
     public ClosureObject<someClosure> someClosure() {
-        return CHandler.getClosureObject(getValue(0), someClosure::someClosure_downcall);
+        return CHandler.getClosureObject(getValue(0), someClosure_Internal::someClosure_downcall);
     }
 
     public void someClosure(ClosureObject<someClosure> someClosure) {
@@ -51,7 +50,7 @@ public final class AnonymousClosure extends Struct {
     }
 
     public ClosureObject<anotherClosure> anotherClosure() {
-        return CHandler.getClosureObject(getValue(1), anotherClosure::anotherClosure_downcall);
+        return CHandler.getClosureObject(getValue(1), anotherClosure_Internal::anotherClosure_downcall);
     }
 
     public void anotherClosure(ClosureObject<anotherClosure> anotherClosure) {
@@ -86,57 +85,13 @@ public final class AnonymousClosure extends Struct {
         }
     }
 
-    public interface someClosure extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(-1), FFITypes.getCTypeInfo(3) };
+    public interface someClosure extends Closure, someClosure_Internal {
 
         int someClosure_call(CSizedIntPointer t, double p);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(someClosure_call(new CSizedIntPointer(parameters[0].asLong(), false, "int"), (double) parameters[1].asDouble()));
-        }
-
-        public static someClosure someClosure_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, someClosure.__ffi_cache);
-            return (t, p) -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, t);
-                useEncoder.setValue(1, p);
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(someClosure.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return (int) returnConvert.asLong();
-            };
-        }
     }
 
-    public interface anotherClosure extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(4), FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(3) };
+    public interface anotherClosure extends Closure, anotherClosure_Internal {
 
         float anotherClosure_call(int t, double p);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(anotherClosure_call((int) parameters[0].asLong(), (double) parameters[1].asDouble()));
-        }
-
-        public static anotherClosure anotherClosure_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, anotherClosure.__ffi_cache);
-            return (t, p) -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, t);
-                useEncoder.setValue(1, p);
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(anotherClosure.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return (float) returnConvert.asFloat();
-            };
-        }
     }
 }

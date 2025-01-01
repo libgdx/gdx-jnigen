@@ -43,10 +43,9 @@ public class GlobalType implements MappedType {
     }
 
 
-    public void write(CompilationUnit cu, HashMap<MethodDeclaration, String> patchNativeMethods) {
-        ClassOrInterfaceDeclaration global = cu.addClass(globalName, Keyword.PUBLIC, Keyword.FINAL);
-        cu.addImport(ClassNameConstants.CXXEXCEPTION_CLASS);
-        cu.addImport(IllegalArgumentException.class);
+    public void write(CompilationUnit cuPublic, ClassOrInterfaceDeclaration global, CompilationUnit cuInternal, ClassOrInterfaceDeclaration globalInternal, HashMap<MethodDeclaration, String> patchNativeMethods) {
+        cuPublic.addImport(ClassNameConstants.CXXEXCEPTION_CLASS);
+        cuPublic.addImport(IllegalArgumentException.class);
         global.addStaticInitializer()
                 .addStatement("CHandler.init();")
                 .addStatement("FFITypes.init();")
@@ -66,13 +65,15 @@ public class GlobalType implements MappedType {
                 + "cxxExceptionClass = (jclass)env->NewGlobalRef(cxxException);");
 
         for (FunctionType functionType : functions) {
-            functionType.write(cu, global, patchNativeMethods);
+            functionType.write(cuPublic, global, patchNativeMethods);
         }
 
         for (ClosureType closureType : closures.values()) {
             ClassOrInterfaceDeclaration declaration = closureType.generateClass();
-            closureType.write(cu, declaration);
+            ClassOrInterfaceDeclaration declarationInternal = closureType.generateClassInternal();
+            closureType.write(cuPublic, declaration, cuInternal, declarationInternal);
             global.addMember(declaration);
+            globalInternal.addMember(declarationInternal);
         }
     }
 
