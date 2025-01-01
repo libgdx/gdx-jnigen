@@ -11,6 +11,7 @@ extern "C" {
 #endif
 
 #define UNSIGNED_INT 10
+/// This has a comment
 #define SIGNED_INT -10
 #define UNSIGNED_DOUBLE 10.5
 #define SIGNED_DOUBLE -10.5

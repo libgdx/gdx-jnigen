@@ -1,11 +1,6 @@
 package com.badlogic.gdx.jnigen.generator;
 
-import com.badlogic.gdx.jnigen.generator.types.ClosureType;
-import com.badlogic.gdx.jnigen.generator.types.EnumType;
-import com.badlogic.gdx.jnigen.generator.types.FunctionType;
-import com.badlogic.gdx.jnigen.generator.types.GlobalType;
-import com.badlogic.gdx.jnigen.generator.types.StackElementType;
-import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
+import com.badlogic.gdx.jnigen.generator.types.*;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
@@ -58,7 +53,7 @@ public class Manager {
 
     private final Map<String, String> typedefs = new HashMap<>();
 
-    private final Map<String, String> macros = new HashMap<>();
+    private final Map<String, MacroType> macros = new HashMap<>();
 
     private final GlobalType globalType;
 
@@ -128,12 +123,12 @@ public class Manager {
         return knownCTypes.indexOf(name);
     }
 
-    public void registerMacro(String name, String value) {
-        if (macros.containsKey(name)) {
-            if (!macros.get(name).equals(value))
-                throw new IllegalArgumentException("Macro with name " + name + " already exists, but has different value. Old: " + macros.get(name) + " != New: " + value);
+    public void registerMacro(MacroType macroType) {
+        if (macros.containsKey(macroType.getName())) {
+            if (!macros.get(macroType.getName()).getValue().equals(macroType.getValue()))
+                throw new IllegalArgumentException("Macro with name " + macroType.getName() + " already exists, but has different value. Old: " + macros.get(macroType.getName()).getValue() + " != New: " + macroType.getValue());
         }
-        macros.put(name, value);
+        macros.put(macroType.getName(), macroType);
     }
 
     public void registerCTypeMapping(String name, TypeDefinition javaRepresentation) {
@@ -264,52 +259,11 @@ public class Manager {
             // Macros
             CompilationUnit constantsCU = new CompilationUnit(basePackage);
             ClassOrInterfaceDeclaration constantsClass = constantsCU.addClass("Constants", Keyword.PUBLIC, Keyword.FINAL);
-            macros.keySet().stream().sorted().forEach(name -> {
-                String value = macros.get(name);
 
-                // TODO: 21.06.24 We need to find more reliable ways, maybe a fancy regex?
-                if (value.startsWith("(") && value.endsWith(")"))
-                    value = value.substring(1, value.length() - 1);
+            macros.entrySet().stream()
+                    .sorted(Entry.comparingByValue(Comparator.comparing(MacroType::getName)))
+                    .forEach(macroType -> macroType.getValue().write(constantsCU, constantsClass));
 
-                for (int i = 0; i < 3; i++) {
-                    if (value.isEmpty())
-                        return;
-                    char indexLowerCase = value.toLowerCase().charAt(value.length() - 1);
-                    if (indexLowerCase == 'l' || indexLowerCase == 'u')
-                        value = value.substring(0, value.length() - 1);
-                    else
-                        break;
-                }
-
-                if (SourceVersion.isKeyword(name))
-                    name = name + "_r";
-                try {
-                    long l = Long.decode(value);
-                    Class<?> lowestBound;
-                    if (l <= Byte.MAX_VALUE && l >= Byte.MIN_VALUE) {
-                        lowestBound = byte.class;
-                    } else if (l <= Short.MAX_VALUE && l >= Short.MIN_VALUE) {
-                        lowestBound = short.class;
-                    } else if (l <= Character.MAX_VALUE && l >= Character.MIN_VALUE) {
-                        lowestBound = char.class;
-                    } else if (l <= Integer.MAX_VALUE && l >= Integer.MIN_VALUE) {
-                        lowestBound = int.class;
-                    } else {
-                        value += "L";
-                        lowestBound = long.class;
-                    }
-                    constantsClass.addFieldWithInitializer(lowestBound, name, new IntegerLiteralExpr(value), Keyword.PUBLIC, Keyword.STATIC, Keyword.FINAL);
-                }catch (NumberFormatException ignored){
-                    try {
-                        if (value.endsWith("L") || value.endsWith("l"))
-                            value = value.substring(0, value.length() - 1);
-                        Double.parseDouble(value);
-                        boolean isFloat = value.endsWith("f") || value.endsWith("F");
-                        Class<?> lowestBound = isFloat ? float.class : double.class;
-                        constantsClass.addFieldWithInitializer(lowestBound, name, new DoubleLiteralExpr(value), Keyword.PUBLIC, Keyword.STATIC, Keyword.FINAL);
-                    } catch (NumberFormatException ignored1){}
-                }
-            });
             Files.write(Paths.get(basePath + basePackage.replace(".", "/") + "/Constants.java"), constantsCU.toString().getBytes(StandardCharsets.UTF_8));
 
 

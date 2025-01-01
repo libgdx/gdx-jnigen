@@ -3,15 +3,7 @@ package com.badlogic.gdx.jnigen.generator;
 import com.badlogic.gdx.jnigen.generator.parser.CommentParser;
 import com.badlogic.gdx.jnigen.generator.parser.EnumParser;
 import com.badlogic.gdx.jnigen.generator.parser.StackElementParser;
-import com.badlogic.gdx.jnigen.generator.types.ClosureType;
-import com.badlogic.gdx.jnigen.generator.types.FunctionSignature;
-import com.badlogic.gdx.jnigen.generator.types.FunctionType;
-import com.badlogic.gdx.jnigen.generator.types.MappedType;
-import com.badlogic.gdx.jnigen.generator.types.NamedType;
-import com.badlogic.gdx.jnigen.generator.types.PointerType;
-import com.badlogic.gdx.jnigen.generator.types.PrimitiveType;
-import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
-import com.badlogic.gdx.jnigen.generator.types.TypeKind;
+import com.badlogic.gdx.jnigen.generator.types.*;
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.IntPointer;
 import org.bytedeco.javacpp.PointerPointer;
@@ -307,7 +299,9 @@ public class Generator {
                         for (int i = 1; i < nTokens.get(); i++) {
                             value.append(clang_getTokenSpelling(translationUnit, tokens.position(i)).getString());
                         }
-                        Manager.getInstance().registerMacro(tokenizedName, value.toString());
+
+                        // Libclang doesn't support define comment parsing
+                        Manager.getInstance().registerMacro(new MacroType(tokenizedName, value.toString(), null));
                     }
                 }
 
