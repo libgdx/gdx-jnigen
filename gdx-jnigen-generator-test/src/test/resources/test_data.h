@@ -127,6 +127,7 @@ typedef struct AnonymousStructFieldArray {
 
 struct AnonymousClosure
 {
+    //// Comment on internal callback
     int (* someClosure)(int* t, double p);
     float (* anotherClosure)(int t, double p);
 };
@@ -183,6 +184,7 @@ int variadic(int count, ...);
 int variadic_va_list(int count, va_list list);
 
 // Typedefs
+//// Comment on callback
 typedef void (*methodWithCallback)(void);
 typedef void (*methodWithCallbackLongArg)(uint64_t test);
 typedef void (*methodWithCallbackIntArg)(int);

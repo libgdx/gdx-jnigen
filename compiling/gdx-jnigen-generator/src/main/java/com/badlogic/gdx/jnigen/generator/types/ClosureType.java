@@ -32,10 +32,15 @@ public class ClosureType implements MappedType, WritableClass {
 
     private final FunctionSignature signature;
     private final MappedType parent;
+    private String comment;
 
     public ClosureType(FunctionSignature signature, MappedType parent) {
         this.signature = signature;
         this.parent = parent;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     @Override
@@ -60,6 +65,9 @@ public class ClosureType implements MappedType, WritableClass {
     public void writeHelper(CompilationUnit cu, ClassOrInterfaceDeclaration closureHelperClass) {
         cu.addImport(classFile() + "." + signature.getName());
         cu.addImport(ClassNameConstants.CLOSUREENCODER_CLASS);
+
+        if (comment != null)
+            closureHelperClass.setJavadocComment(comment);
 
         MethodDeclaration downcallMethod = closureHelperClass.addMethod(getName() + "_downcall", Keyword.PUBLIC, Keyword.STATIC);
         downcallMethod.addParameter(long.class, "fnPtr");

@@ -94,7 +94,7 @@ public class StackElementParser {
                     TypeDefinition fieldDefinition = Generator.registerCXType(type, cursorSpelling, stackElementType);
 
                     if (fieldDefinition.getTypeKind() == TypeKind.CLOSURE) {
-                        Generator.patchSignatureArgNamesWithVisitor(fieldDefinition, current);
+                        Generator.patchClosureTypeWithCursor(fieldDefinition, current);
                     }
 
                     NamedType namedType = new NamedType(fieldDefinition, cursorSpelling);

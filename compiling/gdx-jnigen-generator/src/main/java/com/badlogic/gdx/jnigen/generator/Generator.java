@@ -75,7 +75,7 @@ public class Generator {
             TypeDefinition lower = registerCXType(typeDef, clang_getTypedefName(type).getString(), null);
             if (lower.getTypeKind() == TypeKind.CLOSURE) {
                 // As the type system does not retain argument names, we need to reparse it here
-                patchSignatureArgNamesWithVisitor(lower, clang_getTypeDeclaration(type));
+                patchClosureTypeWithCursor(lower, clang_getTypeDeclaration(type));
             }
             TypeDefinition definition = new TypeDefinition(lower.getTypeKind(), clang_getTypedefName(type).getString());
             definition.setOverrideMappedType(lower.getMappedType());
@@ -177,13 +177,17 @@ public class Generator {
         throw new IllegalArgumentException("Should not reach");
     }
 
-    public static void patchSignatureArgNamesWithVisitor(TypeDefinition definition, CXCursor cursor) {
+    public static void patchClosureTypeWithCursor(TypeDefinition definition, CXCursor cursor) {
         if (definition.getTypeKind() != TypeKind.CLOSURE)
             throw new IllegalArgumentException("Can only reparse closures");
 
         if (!(definition.getMappedType() instanceof ClosureType))
             throw new IllegalArgumentException("Can only reparse closures");
-        patchSignatureArgNamesWithVisitor(((ClosureType)definition.getMappedType()).getSignature(), cursor);
+        ClosureType closureType = (ClosureType)definition.getMappedType();
+        CommentParser parser = new CommentParser(cursor);
+        if (parser.isPresent())
+            closureType.setComment(parser.parse());
+        patchSignatureArgNamesWithVisitor(closureType.getSignature(), cursor);
     }
 
     // Clangs typesystem doesn't retain arg names, so we need to reparse them for closures
