@@ -48,7 +48,7 @@ public class EnumType implements MappedType {
             throw new IllegalArgumentException("Enum " + javaName + " already has constant with name: " + constant.getName());
         if (constants.containsKey(constant.getId())) {
             // This is valid... Why shouldn't it.... Urgh, this breaks my whole enum assumption
-            constants.computeIfPresent(constant.getId(), (integer, s) -> new EnumConstant(integer, s + "_" + constant.getName(), constant.getComment()));
+            constants.computeIfPresent(constant.getId(), (integer, old_const) -> new EnumConstant(integer, old_const.getName() + "_" + constant.getName(), constant.getComment()));
             return;
         }
 
