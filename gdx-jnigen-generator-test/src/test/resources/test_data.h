@@ -48,8 +48,11 @@ typedef struct SpecialStruct {
     int* intPtrField;
 } SpecialStruct;
 
+//// This is a Test Enum
 typedef enum TestEnum {
+    //// This is a comment on FIRST
     FIRST,
+    //// This is a comment on Second and third
     SECOND,
     THIRD = 4
 } TestEnum;
