@@ -58,7 +58,7 @@ public class ClosureType implements MappedType, WritableClass {
     }
 
     public void writeHelper(CompilationUnit cu, ClassOrInterfaceDeclaration closureHelperClass) {
-        importType(cu);
+        cu.addImport(classFile() + "." + signature.getName());
         cu.addImport(ClassNameConstants.CLOSUREENCODER_CLASS);
 
         MethodDeclaration downcallMethod = closureHelperClass.addMethod(getName() + "_downcall", Keyword.PUBLIC, Keyword.STATIC);
@@ -176,8 +176,6 @@ public class ClosureType implements MappedType, WritableClass {
         cuPublic.addImport(ClassNameConstants.CLOSURE_CLASS);
         cuPublic.addImport(internalClass());
 
-        importType(cuPrivate);
-
         cuPrivate.addImport(ClassNameConstants.JAVATYPEWRAPPER_CLASS);
         cuPrivate.addImport(ClassNameConstants.CTYPEINFO_CLASS);
         cuPrivate.addImport(ClassNameConstants.CLOSURE_CLASS);
@@ -283,6 +281,7 @@ public class ClosureType implements MappedType, WritableClass {
         if (cu.getClassByName(parent.abstractType()).isPresent())
             return;
         cu.addImport(classFile() + "." + signature.getName());
+        cu.addImport(internalClass());
     }
 
     @Override

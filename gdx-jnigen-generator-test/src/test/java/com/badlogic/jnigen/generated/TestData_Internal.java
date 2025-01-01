@@ -1,11 +1,9 @@
 package com.badlogic.jnigen.generated;
 
-import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
-import com.badlogic.gdx.jnigen.runtime.CHandler;
-import com.badlogic.jnigen.generated.structs.AnonymousClosure.someClosure;
 import com.badlogic.gdx.jnigen.runtime.ffi.JavaTypeWrapper;
 import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;
 import com.badlogic.gdx.jnigen.runtime.closure.Closure;
+import com.badlogic.jnigen.generated.structs.AnonymousClosure.someClosure;
 import com.badlogic.gdx.jnigen.runtime.ffi.ClosureEncoder;
 import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
 import com.badlogic.jnigen.generated.structs.AnonymousClosure.anotherClosure;
@@ -27,6 +25,9 @@ import com.badlogic.jnigen.generated.TestData.methodWithCallbackDoubleArg;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerArg;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestEnumArg;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackCallThrowingCallback;
+import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
+import com.badlogic.gdx.jnigen.runtime.CHandler;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithThrowingCallback_Internal;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructPointerArg;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestUnionPointerReturn;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackByteReturn;
