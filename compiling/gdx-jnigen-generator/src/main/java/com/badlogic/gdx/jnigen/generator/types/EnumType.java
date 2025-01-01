@@ -6,11 +6,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.ConstructorDeclaration;
-import com.github.javaparser.ast.body.EnumDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.ArrayInitializerExpr;
 import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.Expression;
@@ -76,9 +72,10 @@ public class EnumType implements MappedType {
         constants.values().stream()
                 .sorted(Comparator.comparingInt(EnumConstant::getId))
                 .forEach(constant -> {
-                    declaration.addEnumConstant(constant.getName())
-                            .addArgument(new IntegerLiteralExpr(String.valueOf(constant.getId())))
-                            .setJavadocComment(constant.getComment());
+                    EnumConstantDeclaration dec = declaration.addEnumConstant(constant.getName())
+                            .addArgument(new IntegerLiteralExpr(String.valueOf(constant.getId())));
+                    if (constant.getComment() != null)
+                        dec.setJavadocComment(constant.getComment());
                 });
 
         declaration.addField(int.class, "index", Keyword.PRIVATE, Keyword.FINAL);
