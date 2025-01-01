@@ -76,6 +76,7 @@ typedef struct AnonymousStructNoField {
 typedef struct AnonymousStructNoFieldEnd {
     int externalValue;
     struct {
+        //// Anon struct field
         int intValue;
         float floatValue;
     };
@@ -104,7 +105,9 @@ typedef struct AnonymousStructNoFieldNested {
 } AnonymousStructNoFieldNested;
 
 typedef struct AnonymousStructField {
+    //// Inner struct name
     struct {
+        //// Innerr struct field
         int intValue;
         float floatValue;
     } inner;
