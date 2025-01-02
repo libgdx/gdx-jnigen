@@ -3,6 +3,7 @@ import com.badlogic.gdx.jnigen.commons.Os
 
 plugins {
     id "com.badlogicgames.jnigen.jnigen-gradle"
+    id 'net.jsign' version '6.0'
 }
 
 sourceCompatibility = 1.8
@@ -55,6 +56,18 @@ jnigen {
         basePackage = "com.badlogic.jnigen.generated"
         fileToParse = "test_data.h"
         options = ["-I" + file("src/test/resources/").absolutePath]
+    }
+
+    signing {
+        jsignParams = [
+                name     : 'My Application',
+                url      : 'http://www.example.com',
+                keystore : 'keystore.p12',
+                alias    : 'test',
+                storepass: 'secret',
+                tsaurl   : 'http://timestamp.sectigo.com'
+        ]
+        identity = '-'
     }
 
     addLinux(x32, ARM)

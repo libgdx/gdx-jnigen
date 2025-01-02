@@ -264,6 +264,7 @@ public class JnigenExtension {
             jnigenBuildTask.dependsOn(jnigenTask);
 
             JnigenSignTask jnigenSignTask = project.getTasks().create("jnigenSign" + os.name() + "_" + architecture.getDisplayName() + bitness.name(), JnigenSignTask.class, this);
+            jnigenSignTask.setBuildTarget(target);
             jnigenSignTask.dependsOn(jnigenBuildTask);
 
             platformLevelTargetsSeen.get(platform).mustRunAfter(jnigenBuildTask);
