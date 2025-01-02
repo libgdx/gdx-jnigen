@@ -32,10 +32,15 @@ public class ClosureType implements MappedType, WritableClass {
 
     private final FunctionSignature signature;
     private final MappedType parent;
+    private String comment;
 
     public ClosureType(FunctionSignature signature, MappedType parent) {
         this.signature = signature;
         this.parent = parent;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     @Override
@@ -188,6 +193,9 @@ public class ClosureType implements MappedType, WritableClass {
         toWriteToPrivate.addFieldWithInitializer("CTypeInfo[]", "__ffi_cache", arrayCreationExpr);
 
         MethodDeclaration callMethod = toWriteToPublic.addMethod(name + "_call");
+        if (comment != null)
+            callMethod.setJavadocComment(comment);
+
         callMethod.setBody(null);
         for (NamedType namedType : arguments) {
             namedType.getDefinition().getMappedType().importType(cuPublic);
@@ -200,7 +208,7 @@ public class ClosureType implements MappedType, WritableClass {
         returnType.getMappedType().importType(cuPublic);
         callMethod.setType(returnType.getMappedType().abstractType());
 
-        toWriteToPrivate.addMember(callMethod);
+        toWriteToPrivate.addMember(new MethodDeclaration(callMethod.getModifiers(), callMethod.getNameAsString(), callMethod.getType(), callMethod.getParameters()).setBody(null));
 
         MethodCallExpr getTypeID = new MethodCallExpr("getCTypeInfo");
         getTypeID.setScope(new NameExpr("FFITypes"));

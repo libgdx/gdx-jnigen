@@ -93,6 +93,19 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
+    /**
+     * This method does great stuff, trust me
+     */
+    public static void commentedMethod() {
+        commentedMethod_internal();
+    }
+
+    static private native void commentedMethod_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	commentedMethod();
+    	HANDLE_JAVA_EXCEPTION_END()
+    */
+
     public static void ensureParsed(AnonymousStructNoField arg0, AnonymousStructField arg1, AnonymousStructFieldArray arg2, AnonymousClosure arg3, AnonymousStructNoFieldEnd arg4, AnonymousStructNoFieldConsecutive arg5, AnonymousStructNoFieldNested arg6, forwardDeclStruct.forwardDeclStructPointer arg7) {
         ensureParsed_internal(arg0.getPointer(), arg1.getPointer(), arg2.getPointer(), arg3.getPointer(), arg4.getPointer(), arg5.getPointer(), arg6.getPointer(), arg7.getPointer());
     }
@@ -1417,6 +1430,9 @@ static jclass cxxExceptionClass = NULL;
 
     public interface methodWithCallback extends Closure, methodWithCallback_Internal {
 
+        /**
+         * Comment on callback
+         */
         void methodWithCallback_call();
     }
 

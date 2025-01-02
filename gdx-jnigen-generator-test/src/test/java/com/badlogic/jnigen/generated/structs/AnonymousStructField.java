@@ -81,6 +81,9 @@ public final class AnonymousStructField extends Struct {
         }
     }
 
+    /**
+     * Inner struct name
+     */
     public final static class inner extends Struct {
 
         private final static int __size;
@@ -112,10 +115,16 @@ public final class AnonymousStructField extends Struct {
             return new inner.innerPointer(getPointer(), getsGCFreed());
         }
 
+        /**
+         * Innerr struct field
+         */
         public int intValue() {
             return (int) getValue(0);
         }
 
+        /**
+         * Innerr struct field
+         */
         public void intValue(int intValue) {
             setValue(intValue, 0);
         }

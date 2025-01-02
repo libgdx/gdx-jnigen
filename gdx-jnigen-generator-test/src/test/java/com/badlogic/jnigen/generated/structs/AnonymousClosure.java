@@ -41,10 +41,16 @@ public final class AnonymousClosure extends Struct {
         return new AnonymousClosure.AnonymousClosurePointer(getPointer(), getsGCFreed());
     }
 
+    /**
+     * Comment on internal callback
+     */
     public ClosureObject<someClosure> someClosure() {
         return CHandler.getClosureObject(getValue(0), someClosure_Internal::someClosure_downcall);
     }
 
+    /**
+     * Comment on internal callback
+     */
     public void someClosure(ClosureObject<someClosure> someClosure) {
         setValue(someClosure.getPointer(), 0);
     }
@@ -87,6 +93,9 @@ public final class AnonymousClosure extends Struct {
 
     public interface someClosure extends Closure, someClosure_Internal {
 
+        /**
+         * Comment on internal callback
+         */
         int someClosure_call(CSizedIntPointer t, double p);
     }
 

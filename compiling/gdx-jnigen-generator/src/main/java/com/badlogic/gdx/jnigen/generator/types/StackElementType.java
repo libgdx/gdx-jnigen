@@ -34,9 +34,10 @@ public class StackElementType implements MappedType, WritableClass {
 
     // TODO: Conceptionally, this belongs into TypeDefinition
     private boolean isStruct;
-    private final List<NamedType> fields = new ArrayList<>();
+    private final List<StackElementField> fields = new ArrayList<>();
     private final String pointerName;
     private final String javaTypeName;
+    private String comment;
 
     public StackElementType(TypeDefinition definition, String javaTypeName, MappedType parent, boolean isStruct) {
         this.definition = definition;
@@ -46,12 +47,16 @@ public class StackElementType implements MappedType, WritableClass {
         pointerName = javaTypeName + "Pointer";
     }
 
-    public void addField(NamedType type) {
+    public void addField(StackElementField type) {
         fields.add(type);
     }
 
     public void addChild(TypeDefinition child) {
         children.add(child);
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     @Override
@@ -76,6 +81,10 @@ public class StackElementType implements MappedType, WritableClass {
         cuPublic.addImport(ClassNameConstants.CHANDLER_CLASS);
         cuPublic.addImport(isStruct ? ClassNameConstants.STRUCT_CLASS : ClassNameConstants.UNION_CLASS);
         cuPublic.addImport(ClassNameConstants.STACKELEMENTPOINTER_CLASS);
+
+        if (comment != null) {
+            toWriteToPublic.setJavadocComment(comment);
+        }
 
         toWriteToPublic.addExtendedType(isStruct ? "Struct" : "Union");
         toWriteToPublic.addField(int.class, "__size", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
@@ -110,18 +119,21 @@ public class StackElementType implements MappedType, WritableClass {
 
         // Fields
         int index = 0;
-        for (NamedType field : fields) {
-            field.getDefinition().getMappedType().importType(cuPublic);
-            MethodDeclaration getMethod = toWriteToPublic.addMethod(field.getName(), Keyword.PUBLIC);
-            getMethod.setType(field.getDefinition().getMappedType().abstractType());
+        for (StackElementField field : fields) {
+            NamedType fieldType = field.getType();
+            fieldType.getDefinition().getMappedType().importType(cuPublic);
+            MethodDeclaration getMethod = toWriteToPublic.addMethod(fieldType.getName(), Keyword.PUBLIC);
+            if (field.getComment() != null)
+                getMethod.setJavadocComment(field.getComment());
+            getMethod.setType(fieldType.getDefinition().getMappedType().abstractType());
             BlockStmt getBody = new BlockStmt();
-            if (field.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY || field.getDefinition().getTypeKind() == TypeKind.STACK_ELEMENT) {
+            if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY || fieldType.getDefinition().getTypeKind() == TypeKind.STACK_ELEMENT) {
                 if (isStruct) {
                     MethodCallExpr getOffsetExpr = new MethodCallExpr("getOffsetForField");
                     getOffsetExpr.setScope(new NameExpr("CHandler"));
                     getOffsetExpr.addArgument("__ffi_type");
                     getOffsetExpr.addArgument(index + "");
-                    toWriteToPublic.addFieldWithInitializer(int.class, "__" + field.getName() + "_offset", getOffsetExpr,
+                    toWriteToPublic.addFieldWithInitializer(int.class, "__" + fieldType.getName() + "_offset", getOffsetExpr,
                             Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
                 }
 
@@ -129,45 +141,47 @@ public class StackElementType implements MappedType, WritableClass {
                 if (isStruct) {
                     MethodCallExpr getPointer = new MethodCallExpr("getPointer");
                     pointer = new BinaryExpr(getPointer,
-                            new NameExpr("__" + field.getName() + "_offset"), Operator.PLUS);
+                            new NameExpr("__" + fieldType.getName() + "_offset"), Operator.PLUS);
                 } else {
                     pointer = new MethodCallExpr("getPointer");
                 }
 
-                Expression fromCExpression = field.getDefinition().getMappedType().fromC(pointer, new BooleanLiteralExpr(false));
+                Expression fromCExpression = fieldType.getDefinition().getMappedType().fromC(pointer, new BooleanLiteralExpr(false));
 
-                if (field.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
+                if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
                     MethodCallExpr guardPointer = new MethodCallExpr("guardCount");
                     guardPointer.setScope(fromCExpression);
-                    guardPointer.addArgument(field.getDefinition().getCount() + "");
+                    guardPointer.addArgument(fieldType.getDefinition().getCount() + "");
                     fromCExpression = guardPointer;
                 }
-                toWriteToPublic.addFieldWithInitializer(field.getDefinition().getMappedType().abstractType(),
-                        "__" + field.getName(), fromCExpression,
+                toWriteToPublic.addFieldWithInitializer(fieldType.getDefinition().getMappedType().abstractType(),
+                        "__" + fieldType.getName(), fromCExpression,
                         Keyword.PRIVATE, Keyword.FINAL);
-                getBody.addStatement("return __" + field.getName() + ";");
+                getBody.addStatement("return __" + fieldType.getName() + ";");
                 getMethod.setBody(getBody);
-                if (field.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY)
-                    index += field.getDefinition().getCount();
+                if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY)
+                    index += fieldType.getDefinition().getCount();
                 else
                     index++;
                 continue;
             }
 
             String appendix = "";
-            if (field.getDefinition().getTypeKind() == TypeKind.FLOAT) appendix = "Float";
-            else if (field.getDefinition().getTypeKind() == TypeKind.DOUBLE) appendix = "Double";
+            if (fieldType.getDefinition().getTypeKind() == TypeKind.FLOAT) appendix = "Float";
+            else if (fieldType.getDefinition().getTypeKind() == TypeKind.DOUBLE) appendix = "Double";
             Expression expression = StaticJavaParser.parseExpression(
                     "getValue" + appendix + "(" + index + ")");
-            getBody.addStatement(new ReturnStmt(field.getDefinition().getMappedType().fromC(expression)));
+            getBody.addStatement(new ReturnStmt(fieldType.getDefinition().getMappedType().fromC(expression)));
             getMethod.setBody(getBody);
 
-            MethodDeclaration setMethod = toWriteToPublic.addMethod(field.getName(), Keyword.PUBLIC);
-            setMethod.addParameter(field.getDefinition().getMappedType().abstractType(), field.getName());
+            MethodDeclaration setMethod = toWriteToPublic.addMethod(fieldType.getName(), Keyword.PUBLIC);
+            setMethod.addParameter(fieldType.getDefinition().getMappedType().abstractType(), fieldType.getName());
+            if (field.getComment() != null)
+                setMethod.setJavadocComment(field.getComment());
             BlockStmt setBody = new BlockStmt();
 
             MethodCallExpr callSetStruct = new MethodCallExpr("setValue");
-            callSetStruct.addArgument(field.getDefinition().getMappedType().toC(new NameExpr(field.getName())));
+            callSetStruct.addArgument(fieldType.getDefinition().getMappedType().toC(new NameExpr(fieldType.getName())));
             callSetStruct.addArgument(String.valueOf(index));
             setBody.addStatement(callSetStruct);
             setMethod.setBody(setBody);
@@ -221,13 +235,14 @@ public class StackElementType implements MappedType, WritableClass {
 
     public String getFFITypeBody(String ffiResolveFunctionName) {
         ArrayList<NamedType> unwrappedFields = new ArrayList<>();
-        for (NamedType field : fields) {
-            if (field.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
-                for (int i = 0; i < field.getDefinition().getCount(); i++) {
-                    unwrappedFields.add(new NamedType(field.getDefinition().getNestedDefinition(), field.getName() + "_" + i));
+        for (StackElementField field : fields) {
+            NamedType fieldType = field.getType();
+            if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
+                for (int i = 0; i < fieldType.getDefinition().getCount(); i++) {
+                    unwrappedFields.add(new NamedType(fieldType.getDefinition().getNestedDefinition(), fieldType.getName() + "_" + i));
                 }
             } else {
-                unwrappedFields.add(field);
+                unwrappedFields.add(fieldType);
             }
         }
 
