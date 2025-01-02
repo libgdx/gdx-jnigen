@@ -25,8 +25,10 @@ public class CommentParser {
             return null;
 
         String comment = string.getString();
-         comment = comment.replace("///", "");
+        comment = comment.replace("///", "");
         comment = comment.replace("//!", "");
+        if (comment.startsWith("<"))
+            comment = comment.substring(1);
         if (comment.startsWith("/**") || comment.startsWith("/*!")) {
             comment = comment.replace("/**", "");
             comment = comment.replace("/*!", "");
