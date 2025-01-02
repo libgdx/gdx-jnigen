@@ -21,9 +21,41 @@ import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.jnigen.generated.structs.SpecialStruct;
 import com.badlogic.jnigen.generated.structs.TestUnion;
 import com.badlogic.gdx.jnigen.runtime.closure.Closure;
-import com.badlogic.gdx.jnigen.runtime.ffi.JavaTypeWrapper;
-import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;
-import com.badlogic.gdx.jnigen.runtime.ffi.ClosureEncoder;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackBooleanArg_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestEnumPointerArg_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackDoubleReturn_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithThrowingCallback_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackIntArg_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestStructPointerReturn_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackShortReturn_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestEnumPointerReturn_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestStructArg_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackIntPointerReturn_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackLongArg_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackFloatArg_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackDoubleArg_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackIntPointerArg_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestEnumArg_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackCallThrowingCallback_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestStructPointerArg_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestUnionPointerReturn_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackByteReturn_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackCharReturn_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestEnumReturn_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackAllArgs_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallback_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithIntPtrPtrRet_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestUnionPointerArg_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackShortArg_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackByteArg_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackBooleanReturn_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackIntReturn_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackLongReturn_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackCharArg_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithIntPtrPtrArg_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.thread_callback_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestStructReturn_Internal;
+import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackFloatReturn_Internal;
 
 public final class TestData {
 
@@ -911,7 +943,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallback> getVoidCallback() {
-        return CHandler.getClosureObject(getVoidCallback_internal(), methodWithCallback::methodWithCallback_downcall);
+        return CHandler.getClosureObject(getVoidCallback_internal(), methodWithCallback_Internal::methodWithCallback_downcall);
     }
 
     static private native long getVoidCallback_internal();/*
@@ -922,7 +954,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackLongArg> getLongArgCallback() {
-        return CHandler.getClosureObject(getLongArgCallback_internal(), methodWithCallbackLongArg::methodWithCallbackLongArg_downcall);
+        return CHandler.getClosureObject(getLongArgCallback_internal(), methodWithCallbackLongArg_Internal::methodWithCallbackLongArg_downcall);
     }
 
     static private native long getLongArgCallback_internal();/*
@@ -933,7 +965,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackIntArg> getIntArgCallback() {
-        return CHandler.getClosureObject(getIntArgCallback_internal(), methodWithCallbackIntArg::methodWithCallbackIntArg_downcall);
+        return CHandler.getClosureObject(getIntArgCallback_internal(), methodWithCallbackIntArg_Internal::methodWithCallbackIntArg_downcall);
     }
 
     static private native long getIntArgCallback_internal();/*
@@ -944,7 +976,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackShortArg> getShortArgCallback() {
-        return CHandler.getClosureObject(getShortArgCallback_internal(), methodWithCallbackShortArg::methodWithCallbackShortArg_downcall);
+        return CHandler.getClosureObject(getShortArgCallback_internal(), methodWithCallbackShortArg_Internal::methodWithCallbackShortArg_downcall);
     }
 
     static private native long getShortArgCallback_internal();/*
@@ -955,7 +987,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackByteArg> getByteArgCallback() {
-        return CHandler.getClosureObject(getByteArgCallback_internal(), methodWithCallbackByteArg::methodWithCallbackByteArg_downcall);
+        return CHandler.getClosureObject(getByteArgCallback_internal(), methodWithCallbackByteArg_Internal::methodWithCallbackByteArg_downcall);
     }
 
     static private native long getByteArgCallback_internal();/*
@@ -966,7 +998,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackCharArg> getCharArgCallback() {
-        return CHandler.getClosureObject(getCharArgCallback_internal(), methodWithCallbackCharArg::methodWithCallbackCharArg_downcall);
+        return CHandler.getClosureObject(getCharArgCallback_internal(), methodWithCallbackCharArg_Internal::methodWithCallbackCharArg_downcall);
     }
 
     static private native long getCharArgCallback_internal();/*
@@ -977,7 +1009,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackBooleanArg> getBooleanArgCallback() {
-        return CHandler.getClosureObject(getBooleanArgCallback_internal(), methodWithCallbackBooleanArg::methodWithCallbackBooleanArg_downcall);
+        return CHandler.getClosureObject(getBooleanArgCallback_internal(), methodWithCallbackBooleanArg_Internal::methodWithCallbackBooleanArg_downcall);
     }
 
     static private native long getBooleanArgCallback_internal();/*
@@ -988,7 +1020,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackFloatArg> getFloatArgCallback() {
-        return CHandler.getClosureObject(getFloatArgCallback_internal(), methodWithCallbackFloatArg::methodWithCallbackFloatArg_downcall);
+        return CHandler.getClosureObject(getFloatArgCallback_internal(), methodWithCallbackFloatArg_Internal::methodWithCallbackFloatArg_downcall);
     }
 
     static private native long getFloatArgCallback_internal();/*
@@ -999,7 +1031,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackDoubleArg> getDoubleArgCallback() {
-        return CHandler.getClosureObject(getDoubleArgCallback_internal(), methodWithCallbackDoubleArg::methodWithCallbackDoubleArg_downcall);
+        return CHandler.getClosureObject(getDoubleArgCallback_internal(), methodWithCallbackDoubleArg_Internal::methodWithCallbackDoubleArg_downcall);
     }
 
     static private native long getDoubleArgCallback_internal();/*
@@ -1010,7 +1042,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackAllArgs> getAllArgsCallback() {
-        return CHandler.getClosureObject(getAllArgsCallback_internal(), methodWithCallbackAllArgs::methodWithCallbackAllArgs_downcall);
+        return CHandler.getClosureObject(getAllArgsCallback_internal(), methodWithCallbackAllArgs_Internal::methodWithCallbackAllArgs_downcall);
     }
 
     static private native long getAllArgsCallback_internal();/*
@@ -1021,7 +1053,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackLongReturn> getLongReturnCallback() {
-        return CHandler.getClosureObject(getLongReturnCallback_internal(), methodWithCallbackLongReturn::methodWithCallbackLongReturn_downcall);
+        return CHandler.getClosureObject(getLongReturnCallback_internal(), methodWithCallbackLongReturn_Internal::methodWithCallbackLongReturn_downcall);
     }
 
     static private native long getLongReturnCallback_internal();/*
@@ -1032,7 +1064,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackIntReturn> getIntReturnCallback() {
-        return CHandler.getClosureObject(getIntReturnCallback_internal(), methodWithCallbackIntReturn::methodWithCallbackIntReturn_downcall);
+        return CHandler.getClosureObject(getIntReturnCallback_internal(), methodWithCallbackIntReturn_Internal::methodWithCallbackIntReturn_downcall);
     }
 
     static private native long getIntReturnCallback_internal();/*
@@ -1043,7 +1075,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackShortReturn> getShortReturnCallback() {
-        return CHandler.getClosureObject(getShortReturnCallback_internal(), methodWithCallbackShortReturn::methodWithCallbackShortReturn_downcall);
+        return CHandler.getClosureObject(getShortReturnCallback_internal(), methodWithCallbackShortReturn_Internal::methodWithCallbackShortReturn_downcall);
     }
 
     static private native long getShortReturnCallback_internal();/*
@@ -1054,7 +1086,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackCharReturn> getCharReturnCallback() {
-        return CHandler.getClosureObject(getCharReturnCallback_internal(), methodWithCallbackCharReturn::methodWithCallbackCharReturn_downcall);
+        return CHandler.getClosureObject(getCharReturnCallback_internal(), methodWithCallbackCharReturn_Internal::methodWithCallbackCharReturn_downcall);
     }
 
     static private native long getCharReturnCallback_internal();/*
@@ -1065,7 +1097,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackByteReturn> getByteReturnCallback() {
-        return CHandler.getClosureObject(getByteReturnCallback_internal(), methodWithCallbackByteReturn::methodWithCallbackByteReturn_downcall);
+        return CHandler.getClosureObject(getByteReturnCallback_internal(), methodWithCallbackByteReturn_Internal::methodWithCallbackByteReturn_downcall);
     }
 
     static private native long getByteReturnCallback_internal();/*
@@ -1076,7 +1108,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackBooleanReturn> getBooleanReturnCallback() {
-        return CHandler.getClosureObject(getBooleanReturnCallback_internal(), methodWithCallbackBooleanReturn::methodWithCallbackBooleanReturn_downcall);
+        return CHandler.getClosureObject(getBooleanReturnCallback_internal(), methodWithCallbackBooleanReturn_Internal::methodWithCallbackBooleanReturn_downcall);
     }
 
     static private native long getBooleanReturnCallback_internal();/*
@@ -1087,7 +1119,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackFloatReturn> getFloatReturnCallback() {
-        return CHandler.getClosureObject(getFloatReturnCallback_internal(), methodWithCallbackFloatReturn::methodWithCallbackFloatReturn_downcall);
+        return CHandler.getClosureObject(getFloatReturnCallback_internal(), methodWithCallbackFloatReturn_Internal::methodWithCallbackFloatReturn_downcall);
     }
 
     static private native long getFloatReturnCallback_internal();/*
@@ -1098,7 +1130,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackDoubleReturn> getDoubleReturnCallback() {
-        return CHandler.getClosureObject(getDoubleReturnCallback_internal(), methodWithCallbackDoubleReturn::methodWithCallbackDoubleReturn_downcall);
+        return CHandler.getClosureObject(getDoubleReturnCallback_internal(), methodWithCallbackDoubleReturn_Internal::methodWithCallbackDoubleReturn_downcall);
     }
 
     static private native long getDoubleReturnCallback_internal();/*
@@ -1109,7 +1141,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithIntPtrPtrArg> getIntPtrPtrArgCallback() {
-        return CHandler.getClosureObject(getIntPtrPtrArgCallback_internal(), methodWithIntPtrPtrArg::methodWithIntPtrPtrArg_downcall);
+        return CHandler.getClosureObject(getIntPtrPtrArgCallback_internal(), methodWithIntPtrPtrArg_Internal::methodWithIntPtrPtrArg_downcall);
     }
 
     static private native long getIntPtrPtrArgCallback_internal();/*
@@ -1120,7 +1152,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithIntPtrPtrRet> getIntPtrPtrRetCallback() {
-        return CHandler.getClosureObject(getIntPtrPtrRetCallback_internal(), methodWithIntPtrPtrRet::methodWithIntPtrPtrRet_downcall);
+        return CHandler.getClosureObject(getIntPtrPtrRetCallback_internal(), methodWithIntPtrPtrRet_Internal::methodWithIntPtrPtrRet_downcall);
     }
 
     static private native long getIntPtrPtrRetCallback_internal();/*
@@ -1131,7 +1163,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackTestStructReturn> getTestStructReturnCallback() {
-        return CHandler.getClosureObject(getTestStructReturnCallback_internal(), methodWithCallbackTestStructReturn::methodWithCallbackTestStructReturn_downcall);
+        return CHandler.getClosureObject(getTestStructReturnCallback_internal(), methodWithCallbackTestStructReturn_Internal::methodWithCallbackTestStructReturn_downcall);
     }
 
     static private native long getTestStructReturnCallback_internal();/*
@@ -1142,7 +1174,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackTestStructPointerReturn> getTestStructPointerReturnCallback() {
-        return CHandler.getClosureObject(getTestStructPointerReturnCallback_internal(), methodWithCallbackTestStructPointerReturn::methodWithCallbackTestStructPointerReturn_downcall);
+        return CHandler.getClosureObject(getTestStructPointerReturnCallback_internal(), methodWithCallbackTestStructPointerReturn_Internal::methodWithCallbackTestStructPointerReturn_downcall);
     }
 
     static private native long getTestStructPointerReturnCallback_internal();/*
@@ -1153,7 +1185,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackTestStructArg> getTestStructArgCallback() {
-        return CHandler.getClosureObject(getTestStructArgCallback_internal(), methodWithCallbackTestStructArg::methodWithCallbackTestStructArg_downcall);
+        return CHandler.getClosureObject(getTestStructArgCallback_internal(), methodWithCallbackTestStructArg_Internal::methodWithCallbackTestStructArg_downcall);
     }
 
     static private native long getTestStructArgCallback_internal();/*
@@ -1164,7 +1196,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackTestStructPointerArg> getTestStructPointerArgCallback() {
-        return CHandler.getClosureObject(getTestStructPointerArgCallback_internal(), methodWithCallbackTestStructPointerArg::methodWithCallbackTestStructPointerArg_downcall);
+        return CHandler.getClosureObject(getTestStructPointerArgCallback_internal(), methodWithCallbackTestStructPointerArg_Internal::methodWithCallbackTestStructPointerArg_downcall);
     }
 
     static private native long getTestStructPointerArgCallback_internal();/*
@@ -1175,7 +1207,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackTestEnumReturn> getTestEnumReturnCallback() {
-        return CHandler.getClosureObject(getTestEnumReturnCallback_internal(), methodWithCallbackTestEnumReturn::methodWithCallbackTestEnumReturn_downcall);
+        return CHandler.getClosureObject(getTestEnumReturnCallback_internal(), methodWithCallbackTestEnumReturn_Internal::methodWithCallbackTestEnumReturn_downcall);
     }
 
     static private native long getTestEnumReturnCallback_internal();/*
@@ -1186,7 +1218,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackTestEnumArg> getTestEnumArgCallback() {
-        return CHandler.getClosureObject(getTestEnumArgCallback_internal(), methodWithCallbackTestEnumArg::methodWithCallbackTestEnumArg_downcall);
+        return CHandler.getClosureObject(getTestEnumArgCallback_internal(), methodWithCallbackTestEnumArg_Internal::methodWithCallbackTestEnumArg_downcall);
     }
 
     static private native long getTestEnumArgCallback_internal();/*
@@ -1197,7 +1229,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackTestEnumPointerReturn> getTestEnumPointerReturnCallback() {
-        return CHandler.getClosureObject(getTestEnumPointerReturnCallback_internal(), methodWithCallbackTestEnumPointerReturn::methodWithCallbackTestEnumPointerReturn_downcall);
+        return CHandler.getClosureObject(getTestEnumPointerReturnCallback_internal(), methodWithCallbackTestEnumPointerReturn_Internal::methodWithCallbackTestEnumPointerReturn_downcall);
     }
 
     static private native long getTestEnumPointerReturnCallback_internal();/*
@@ -1208,7 +1240,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackTestEnumPointerArg> getTestEnumPointerArgCallback() {
-        return CHandler.getClosureObject(getTestEnumPointerArgCallback_internal(), methodWithCallbackTestEnumPointerArg::methodWithCallbackTestEnumPointerArg_downcall);
+        return CHandler.getClosureObject(getTestEnumPointerArgCallback_internal(), methodWithCallbackTestEnumPointerArg_Internal::methodWithCallbackTestEnumPointerArg_downcall);
     }
 
     static private native long getTestEnumPointerArgCallback_internal();/*
@@ -1219,7 +1251,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackIntPointerReturn> getIntPointerReturnCallback() {
-        return CHandler.getClosureObject(getIntPointerReturnCallback_internal(), methodWithCallbackIntPointerReturn::methodWithCallbackIntPointerReturn_downcall);
+        return CHandler.getClosureObject(getIntPointerReturnCallback_internal(), methodWithCallbackIntPointerReturn_Internal::methodWithCallbackIntPointerReturn_downcall);
     }
 
     static private native long getIntPointerReturnCallback_internal();/*
@@ -1230,7 +1262,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackIntPointerArg> getIntPointerArgCallback() {
-        return CHandler.getClosureObject(getIntPointerArgCallback_internal(), methodWithCallbackIntPointerArg::methodWithCallbackIntPointerArg_downcall);
+        return CHandler.getClosureObject(getIntPointerArgCallback_internal(), methodWithCallbackIntPointerArg_Internal::methodWithCallbackIntPointerArg_downcall);
     }
 
     static private native long getIntPointerArgCallback_internal();/*
@@ -1241,7 +1273,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackTestUnionPointerReturn> getTestUnionPointerReturnCallback() {
-        return CHandler.getClosureObject(getTestUnionPointerReturnCallback_internal(), methodWithCallbackTestUnionPointerReturn::methodWithCallbackTestUnionPointerReturn_downcall);
+        return CHandler.getClosureObject(getTestUnionPointerReturnCallback_internal(), methodWithCallbackTestUnionPointerReturn_Internal::methodWithCallbackTestUnionPointerReturn_downcall);
     }
 
     static private native long getTestUnionPointerReturnCallback_internal();/*
@@ -1252,7 +1284,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackTestUnionPointerArg> getTestUnionPointerArgCallback() {
-        return CHandler.getClosureObject(getTestUnionPointerArgCallback_internal(), methodWithCallbackTestUnionPointerArg::methodWithCallbackTestUnionPointerArg_downcall);
+        return CHandler.getClosureObject(getTestUnionPointerArgCallback_internal(), methodWithCallbackTestUnionPointerArg_Internal::methodWithCallbackTestUnionPointerArg_downcall);
     }
 
     static private native long getTestUnionPointerArgCallback_internal();/*
@@ -1263,7 +1295,7 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static ClosureObject<methodWithCallbackCallThrowingCallback> getCallThrowingCallbackCallback() {
-        return CHandler.getClosureObject(getCallThrowingCallbackCallback_internal(), methodWithCallbackCallThrowingCallback::methodWithCallbackCallThrowingCallback_downcall);
+        return CHandler.getClosureObject(getCallThrowingCallbackCallback_internal(), methodWithCallbackCallThrowingCallback_Internal::methodWithCallbackCallThrowingCallback_downcall);
     }
 
     static private native long getCallThrowingCallbackCallback_internal();/*
@@ -1273,871 +1305,178 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public interface methodWithCallbackBooleanArg extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(0) };
+    public interface methodWithCallbackBooleanArg extends Closure, methodWithCallbackBooleanArg_Internal {
 
         void methodWithCallbackBooleanArg_call(boolean arg0);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackBooleanArg_call(parameters[0].asLong() != 0);
-        }
-
-        public static methodWithCallbackBooleanArg methodWithCallbackBooleanArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackBooleanArg.__ffi_cache);
-            return (arg0) -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                useEncoder.invoke();
-            };
-        }
     }
 
-    public interface methodWithCallbackTestEnumPointerArg extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(-1) };
+    public interface methodWithCallbackTestEnumPointerArg extends Closure, methodWithCallbackTestEnumPointerArg_Internal {
 
         void methodWithCallbackTestEnumPointerArg_call(TestEnum.TestEnumPointer arg0);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackTestEnumPointerArg_call(new TestEnum.TestEnumPointer(parameters[0].asLong(), false));
-        }
-
-        public static methodWithCallbackTestEnumPointerArg methodWithCallbackTestEnumPointerArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestEnumPointerArg.__ffi_cache);
-            return (arg0) -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                useEncoder.invoke();
-            };
-        }
     }
 
-    public interface methodWithCallbackDoubleReturn extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(3) };
+    public interface methodWithCallbackDoubleReturn extends Closure, methodWithCallbackDoubleReturn_Internal {
 
         double methodWithCallbackDoubleReturn_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(methodWithCallbackDoubleReturn_call());
-        }
-
-        public static methodWithCallbackDoubleReturn methodWithCallbackDoubleReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackDoubleReturn.__ffi_cache);
-            return () -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackDoubleReturn.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return (double) returnConvert.asDouble();
-            };
-        }
     }
 
-    public interface methodWithThrowingCallback extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2) };
+    public interface methodWithThrowingCallback extends Closure, methodWithThrowingCallback_Internal {
 
         void methodWithThrowingCallback_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithThrowingCallback_call();
-        }
-
-        public static methodWithThrowingCallback methodWithThrowingCallback_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithThrowingCallback.__ffi_cache);
-            return () -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.invoke();
-            };
-        }
     }
 
-    public interface methodWithCallbackIntArg extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(5) };
+    public interface methodWithCallbackIntArg extends Closure, methodWithCallbackIntArg_Internal {
 
         void methodWithCallbackIntArg_call(int arg0);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackIntArg_call((int) parameters[0].asLong());
-        }
-
-        public static methodWithCallbackIntArg methodWithCallbackIntArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackIntArg.__ffi_cache);
-            return (arg0) -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                useEncoder.invoke();
-            };
-        }
     }
 
-    public interface methodWithCallbackTestStructPointerReturn extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-1) };
+    public interface methodWithCallbackTestStructPointerReturn extends Closure, methodWithCallbackTestStructPointerReturn_Internal {
 
         TestStruct.TestStructPointer methodWithCallbackTestStructPointerReturn_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(methodWithCallbackTestStructPointerReturn_call());
-        }
-
-        public static methodWithCallbackTestStructPointerReturn methodWithCallbackTestStructPointerReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestStructPointerReturn.__ffi_cache);
-            return () -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackTestStructPointerReturn.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return new TestStruct.TestStructPointer(returnConvert.asLong(), false);
-            };
-        }
     }
 
-    public interface methodWithCallbackShortReturn extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(6) };
+    public interface methodWithCallbackShortReturn extends Closure, methodWithCallbackShortReturn_Internal {
 
         short methodWithCallbackShortReturn_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(methodWithCallbackShortReturn_call());
-        }
-
-        public static methodWithCallbackShortReturn methodWithCallbackShortReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackShortReturn.__ffi_cache);
-            return () -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackShortReturn.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return (short) returnConvert.asLong();
-            };
-        }
     }
 
-    public interface methodWithCallbackTestEnumPointerReturn extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-1) };
+    public interface methodWithCallbackTestEnumPointerReturn extends Closure, methodWithCallbackTestEnumPointerReturn_Internal {
 
         TestEnum.TestEnumPointer methodWithCallbackTestEnumPointerReturn_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(methodWithCallbackTestEnumPointerReturn_call());
-        }
-
-        public static methodWithCallbackTestEnumPointerReturn methodWithCallbackTestEnumPointerReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestEnumPointerReturn.__ffi_cache);
-            return () -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackTestEnumPointerReturn.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return new TestEnum.TestEnumPointer(returnConvert.asLong(), false);
-            };
-        }
     }
 
-    public interface methodWithCallbackTestStructArg extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(20) };
+    public interface methodWithCallbackTestStructArg extends Closure, methodWithCallbackTestStructArg_Internal {
 
         void methodWithCallbackTestStructArg_call(TestStruct arg0);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackTestStructArg_call(new TestStruct(parameters[0].asLong(), true));
-        }
-
-        public static methodWithCallbackTestStructArg methodWithCallbackTestStructArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestStructArg.__ffi_cache);
-            return (arg0) -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                useEncoder.invoke();
-            };
-        }
     }
 
-    public interface methodWithCallbackIntPointerReturn extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-1) };
+    public interface methodWithCallbackIntPointerReturn extends Closure, methodWithCallbackIntPointerReturn_Internal {
 
         CSizedIntPointer methodWithCallbackIntPointerReturn_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            CSizedIntPointer _ret = methodWithCallbackIntPointerReturn_call();
-            _ret.assertHasCTypeBacking("int");
-            returnType.setValue(_ret);
-        }
-
-        public static methodWithCallbackIntPointerReturn methodWithCallbackIntPointerReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackIntPointerReturn.__ffi_cache);
-            return () -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackIntPointerReturn.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return new CSizedIntPointer(returnConvert.asLong(), false, "int");
-            };
-        }
     }
 
-    public interface methodWithCallbackLongArg extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(9) };
+    public interface methodWithCallbackLongArg extends Closure, methodWithCallbackLongArg_Internal {
 
         void methodWithCallbackLongArg_call(long test);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackLongArg_call((long) parameters[0].asLong());
-        }
-
-        public static methodWithCallbackLongArg methodWithCallbackLongArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackLongArg.__ffi_cache);
-            return (test) -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, test);
-                useEncoder.invoke();
-            };
-        }
     }
 
-    public interface methodWithCallbackFloatArg extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(4) };
+    public interface methodWithCallbackFloatArg extends Closure, methodWithCallbackFloatArg_Internal {
 
         void methodWithCallbackFloatArg_call(float arg0);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackFloatArg_call((float) parameters[0].asFloat());
-        }
-
-        public static methodWithCallbackFloatArg methodWithCallbackFloatArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackFloatArg.__ffi_cache);
-            return (arg0) -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                useEncoder.invoke();
-            };
-        }
     }
 
-    public interface methodWithCallbackDoubleArg extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(3) };
+    public interface methodWithCallbackDoubleArg extends Closure, methodWithCallbackDoubleArg_Internal {
 
         void methodWithCallbackDoubleArg_call(double arg0);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackDoubleArg_call((double) parameters[0].asDouble());
-        }
-
-        public static methodWithCallbackDoubleArg methodWithCallbackDoubleArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackDoubleArg.__ffi_cache);
-            return (arg0) -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                useEncoder.invoke();
-            };
-        }
     }
 
-    public interface methodWithCallbackIntPointerArg extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(-1) };
+    public interface methodWithCallbackIntPointerArg extends Closure, methodWithCallbackIntPointerArg_Internal {
 
         int methodWithCallbackIntPointerArg_call(CSizedIntPointer arg0);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(methodWithCallbackIntPointerArg_call(new CSizedIntPointer(parameters[0].asLong(), false, "int")));
-        }
-
-        public static methodWithCallbackIntPointerArg methodWithCallbackIntPointerArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackIntPointerArg.__ffi_cache);
-            return (arg0) -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackIntPointerArg.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return (int) returnConvert.asLong();
-            };
-        }
     }
 
-    public interface methodWithCallbackTestEnumArg extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(5) };
+    public interface methodWithCallbackTestEnumArg extends Closure, methodWithCallbackTestEnumArg_Internal {
 
         void methodWithCallbackTestEnumArg_call(TestEnum arg0);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackTestEnumArg_call(TestEnum.getByIndex((int) parameters[0].asLong()));
-        }
-
-        public static methodWithCallbackTestEnumArg methodWithCallbackTestEnumArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestEnumArg.__ffi_cache);
-            return (arg0) -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                useEncoder.invoke();
-            };
-        }
     }
 
-    public interface methodWithCallbackCallThrowingCallback extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(-1) };
+    public interface methodWithCallbackCallThrowingCallback extends Closure, methodWithCallbackCallThrowingCallback_Internal {
 
         void methodWithCallbackCallThrowingCallback_call(ClosureObject<methodWithThrowingCallback> arg0);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackCallThrowingCallback_call(CHandler.getClosureObject(parameters[0].asLong(), methodWithThrowingCallback::methodWithThrowingCallback_downcall));
-        }
-
-        public static methodWithCallbackCallThrowingCallback methodWithCallbackCallThrowingCallback_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackCallThrowingCallback.__ffi_cache);
-            return (arg0) -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                useEncoder.invoke();
-            };
-        }
     }
 
-    public interface methodWithCallbackTestStructPointerArg extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(-1) };
+    public interface methodWithCallbackTestStructPointerArg extends Closure, methodWithCallbackTestStructPointerArg_Internal {
 
         void methodWithCallbackTestStructPointerArg_call(TestStruct.TestStructPointer arg0);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackTestStructPointerArg_call(new TestStruct.TestStructPointer(parameters[0].asLong(), false));
-        }
-
-        public static methodWithCallbackTestStructPointerArg methodWithCallbackTestStructPointerArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestStructPointerArg.__ffi_cache);
-            return (arg0) -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                useEncoder.invoke();
-            };
-        }
     }
 
-    public interface methodWithCallbackTestUnionPointerReturn extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-1) };
+    public interface methodWithCallbackTestUnionPointerReturn extends Closure, methodWithCallbackTestUnionPointerReturn_Internal {
 
         TestUnion.TestUnionPointer methodWithCallbackTestUnionPointerReturn_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(methodWithCallbackTestUnionPointerReturn_call());
-        }
-
-        public static methodWithCallbackTestUnionPointerReturn methodWithCallbackTestUnionPointerReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestUnionPointerReturn.__ffi_cache);
-            return () -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackTestUnionPointerReturn.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return new TestUnion.TestUnionPointer(returnConvert.asLong(), false);
-            };
-        }
     }
 
-    public interface methodWithCallbackByteReturn extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(1) };
+    public interface methodWithCallbackByteReturn extends Closure, methodWithCallbackByteReturn_Internal {
 
         byte methodWithCallbackByteReturn_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(methodWithCallbackByteReturn_call());
-        }
-
-        public static methodWithCallbackByteReturn methodWithCallbackByteReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackByteReturn.__ffi_cache);
-            return () -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackByteReturn.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return (byte) returnConvert.asLong();
-            };
-        }
     }
 
-    public interface methodWithCallbackCharReturn extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(7) };
+    public interface methodWithCallbackCharReturn extends Closure, methodWithCallbackCharReturn_Internal {
 
         char methodWithCallbackCharReturn_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(methodWithCallbackCharReturn_call());
-        }
-
-        public static methodWithCallbackCharReturn methodWithCallbackCharReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackCharReturn.__ffi_cache);
-            return () -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackCharReturn.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return (char) returnConvert.asLong();
-            };
-        }
     }
 
-    public interface methodWithCallbackTestEnumReturn extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(5) };
+    public interface methodWithCallbackTestEnumReturn extends Closure, methodWithCallbackTestEnumReturn_Internal {
 
         TestEnum methodWithCallbackTestEnumReturn_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(methodWithCallbackTestEnumReturn_call());
-        }
-
-        public static methodWithCallbackTestEnumReturn methodWithCallbackTestEnumReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestEnumReturn.__ffi_cache);
-            return () -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackTestEnumReturn.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return TestEnum.getByIndex((int) returnConvert.asLong());
-            };
-        }
     }
 
-    public interface methodWithCallbackAllArgs extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(9), FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(6), FFITypes.getCTypeInfo(1), FFITypes.getCTypeInfo(7), FFITypes.getCTypeInfo(0), FFITypes.getCTypeInfo(4), FFITypes.getCTypeInfo(3) };
+    public interface methodWithCallbackAllArgs extends Closure, methodWithCallbackAllArgs_Internal {
 
         void methodWithCallbackAllArgs_call(long arg0, int arg1, short arg2, byte arg3, char arg4, boolean arg5, float arg6, double arg7);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackAllArgs_call((long) parameters[0].asLong(), (int) parameters[1].asLong(), (short) parameters[2].asLong(), (byte) parameters[3].asLong(), (char) parameters[4].asLong(), parameters[5].asLong() != 0, (float) parameters[6].asFloat(), (double) parameters[7].asDouble());
-        }
-
-        public static methodWithCallbackAllArgs methodWithCallbackAllArgs_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackAllArgs.__ffi_cache);
-            return (arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                useEncoder.setValue(1, arg1);
-                useEncoder.setValue(2, arg2);
-                useEncoder.setValue(3, arg3);
-                useEncoder.setValue(4, arg4);
-                useEncoder.setValue(5, arg5);
-                useEncoder.setValue(6, arg6);
-                useEncoder.setValue(7, arg7);
-                useEncoder.invoke();
-            };
-        }
     }
 
-    public interface methodWithCallback extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2) };
+    public interface methodWithCallback extends Closure, methodWithCallback_Internal {
 
         void methodWithCallback_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallback_call();
-        }
-
-        public static methodWithCallback methodWithCallback_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallback.__ffi_cache);
-            return () -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.invoke();
-            };
-        }
     }
 
-    public interface methodWithIntPtrPtrRet extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-1) };
+    public interface methodWithIntPtrPtrRet extends Closure, methodWithIntPtrPtrRet_Internal {
 
         PointerPointer<CSizedIntPointer> methodWithIntPtrPtrRet_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            PointerPointer<CSizedIntPointer> _ret = methodWithIntPtrPtrRet_call();
-            _ret.assertCTypeBacking("int");
-            returnType.setValue(_ret);
-        }
-
-        public static methodWithIntPtrPtrRet methodWithIntPtrPtrRet_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithIntPtrPtrRet.__ffi_cache);
-            return () -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithIntPtrPtrRet.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return new PointerPointer<>(returnConvert.asLong(), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, owned2, "int")).setBackingCType("int");
-            };
-        }
     }
 
-    public interface methodWithCallbackTestUnionPointerArg extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(-1) };
+    public interface methodWithCallbackTestUnionPointerArg extends Closure, methodWithCallbackTestUnionPointerArg_Internal {
 
         void methodWithCallbackTestUnionPointerArg_call(TestUnion.TestUnionPointer arg0);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackTestUnionPointerArg_call(new TestUnion.TestUnionPointer(parameters[0].asLong(), false));
-        }
-
-        public static methodWithCallbackTestUnionPointerArg methodWithCallbackTestUnionPointerArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestUnionPointerArg.__ffi_cache);
-            return (arg0) -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                useEncoder.invoke();
-            };
-        }
     }
 
-    public interface methodWithCallbackShortArg extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(6) };
+    public interface methodWithCallbackShortArg extends Closure, methodWithCallbackShortArg_Internal {
 
         void methodWithCallbackShortArg_call(short arg0);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackShortArg_call((short) parameters[0].asLong());
-        }
-
-        public static methodWithCallbackShortArg methodWithCallbackShortArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackShortArg.__ffi_cache);
-            return (arg0) -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                useEncoder.invoke();
-            };
-        }
     }
 
-    public interface methodWithCallbackByteArg extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(1) };
+    public interface methodWithCallbackByteArg extends Closure, methodWithCallbackByteArg_Internal {
 
         void methodWithCallbackByteArg_call(byte arg0);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackByteArg_call((byte) parameters[0].asLong());
-        }
-
-        public static methodWithCallbackByteArg methodWithCallbackByteArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackByteArg.__ffi_cache);
-            return (arg0) -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                useEncoder.invoke();
-            };
-        }
     }
 
-    public interface methodWithCallbackBooleanReturn extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(0) };
+    public interface methodWithCallbackBooleanReturn extends Closure, methodWithCallbackBooleanReturn_Internal {
 
         boolean methodWithCallbackBooleanReturn_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(methodWithCallbackBooleanReturn_call());
-        }
-
-        public static methodWithCallbackBooleanReturn methodWithCallbackBooleanReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackBooleanReturn.__ffi_cache);
-            return () -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackBooleanReturn.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return returnConvert.asLong() != 0;
-            };
-        }
     }
 
-    public interface methodWithCallbackIntReturn extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(5) };
+    public interface methodWithCallbackIntReturn extends Closure, methodWithCallbackIntReturn_Internal {
 
         int methodWithCallbackIntReturn_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(methodWithCallbackIntReturn_call());
-        }
-
-        public static methodWithCallbackIntReturn methodWithCallbackIntReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackIntReturn.__ffi_cache);
-            return () -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackIntReturn.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return (int) returnConvert.asLong();
-            };
-        }
     }
 
-    public interface methodWithCallbackLongReturn extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(9) };
+    public interface methodWithCallbackLongReturn extends Closure, methodWithCallbackLongReturn_Internal {
 
         long methodWithCallbackLongReturn_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(methodWithCallbackLongReturn_call());
-        }
-
-        public static methodWithCallbackLongReturn methodWithCallbackLongReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackLongReturn.__ffi_cache);
-            return () -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackLongReturn.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return (long) returnConvert.asLong();
-            };
-        }
     }
 
-    public interface methodWithCallbackCharArg extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(7) };
+    public interface methodWithCallbackCharArg extends Closure, methodWithCallbackCharArg_Internal {
 
         void methodWithCallbackCharArg_call(char arg0);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackCharArg_call((char) parameters[0].asLong());
-        }
-
-        public static methodWithCallbackCharArg methodWithCallbackCharArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackCharArg.__ffi_cache);
-            return (arg0) -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                useEncoder.invoke();
-            };
-        }
     }
 
-    public interface methodWithIntPtrPtrArg extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(-1) };
+    public interface methodWithIntPtrPtrArg extends Closure, methodWithIntPtrPtrArg_Internal {
 
         void methodWithIntPtrPtrArg_call(PointerPointer<CSizedIntPointer> arg0);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithIntPtrPtrArg_call(new PointerPointer<>(parameters[0].asLong(), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, owned2, "int")).setBackingCType("int"));
-        }
-
-        public static methodWithIntPtrPtrArg methodWithIntPtrPtrArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithIntPtrPtrArg.__ffi_cache);
-            return (arg0) -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                useEncoder.invoke();
-            };
-        }
     }
 
-    public interface thread_callback extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-1), FFITypes.getCTypeInfo(-1) };
+    public interface thread_callback extends Closure, thread_callback_Internal {
 
         VoidPointer thread_callback_call(VoidPointer arg0);
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(thread_callback_call(new VoidPointer(parameters[0].asLong(), false)));
-        }
-
-        public static thread_callback thread_callback_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, thread_callback.__ffi_cache);
-            return (arg0) -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(thread_callback.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return new VoidPointer(returnConvert.asLong(), false);
-            };
-        }
     }
 
-    public interface methodWithCallbackTestStructReturn extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(20) };
+    public interface methodWithCallbackTestStructReturn extends Closure, methodWithCallbackTestStructReturn_Internal {
 
         TestStruct methodWithCallbackTestStructReturn_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(methodWithCallbackTestStructReturn_call());
-        }
-
-        public static methodWithCallbackTestStructReturn methodWithCallbackTestStructReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestStructReturn.__ffi_cache);
-            return () -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackTestStructReturn.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return new TestStruct(returnConvert.asLong(), true);
-            };
-        }
     }
 
-    public interface methodWithCallbackFloatReturn extends Closure {
-
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(4) };
+    public interface methodWithCallbackFloatReturn extends Closure, methodWithCallbackFloatReturn_Internal {
 
         float methodWithCallbackFloatReturn_call();
-
-        default CTypeInfo[] functionSignature() {
-            return __ffi_cache;
-        }
-
-        default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            returnType.setValue(methodWithCallbackFloatReturn_call());
-        }
-
-        public static methodWithCallbackFloatReturn methodWithCallbackFloatReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackFloatReturn.__ffi_cache);
-            return () -> {
-                ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackFloatReturn.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return (float) returnConvert.asFloat();
-            };
-        }
     }
 }

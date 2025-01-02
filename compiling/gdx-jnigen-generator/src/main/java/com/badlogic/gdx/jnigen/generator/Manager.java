@@ -217,11 +217,20 @@ public class Manager {
 
     public void emit(String basePath) {
         try {
+            CompilationUnit globalCU = new CompilationUnit(globalType.packageName());
+            CompilationUnit globalCUInternal = new CompilationUnit(globalType.packageName());
+            ClassOrInterfaceDeclaration global = globalCU.addClass(globalType.abstractType(), Keyword.PUBLIC, Keyword.FINAL);
+            ClassOrInterfaceDeclaration globalInternal = globalCUInternal.addClass(globalType.internalClassName(), Keyword.PUBLIC, Keyword.FINAL);
+
+
             for (StackElementType stackElementType : stackElements.values()) {
                 CompilationUnit cu = new CompilationUnit(stackElementType.packageName());
                 ClassOrInterfaceDeclaration declaration = stackElementType.generateClass();
                 cu.addType(declaration);
-                stackElementType.write(cu, declaration);
+
+                ClassOrInterfaceDeclaration declarationInternal = stackElementType.generateClassInternal();
+                globalInternal.addMember(declarationInternal);
+                stackElementType.write(cu, declaration, globalCUInternal, declarationInternal);
 
                 String classContent = cu.toString();
 
@@ -241,9 +250,8 @@ public class Manager {
             }
 
             HashMap<MethodDeclaration, String> patchGlobalMethods = new HashMap<>();
-            CompilationUnit globalCU = new CompilationUnit(globalType.packageName());
 
-            globalType.write(globalCU, patchGlobalMethods);
+            globalType.write(globalCU, global, globalCUInternal, globalInternal, patchGlobalMethods);
             String globalFile = globalCU.toString();
             for (Entry<MethodDeclaration, String> entry : patchGlobalMethods.entrySet()) {
                 MethodDeclaration methodDeclaration = entry.getKey();
@@ -251,6 +259,7 @@ public class Manager {
                 globalFile = patchMethodNative(methodDeclaration, s, globalFile);
             }
             Files.write(Paths.get(basePath + globalType.classFile().replace(".", "/") + ".java"), globalFile.getBytes(StandardCharsets.UTF_8));
+            Files.write(Paths.get(basePath + globalType.classFile().replace(".", "/") + "_Internal.java"), globalCUInternal.toString().getBytes(StandardCharsets.UTF_8));
 
             // Macros
             CompilationUnit constantsCU = new CompilationUnit(basePackage);
