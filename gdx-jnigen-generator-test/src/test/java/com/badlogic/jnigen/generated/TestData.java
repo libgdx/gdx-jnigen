@@ -1430,6 +1430,9 @@ static jclass cxxExceptionClass = NULL;
 
     public interface methodWithCallback extends Closure, methodWithCallback_Internal {
 
+        /**
+         * Comment on callback
+         */
         void methodWithCallback_call();
     }
 

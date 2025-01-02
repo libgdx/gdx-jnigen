@@ -91,11 +91,11 @@ public final class AnonymousClosure extends Struct {
         }
     }
 
-    /**
-     * Comment on internal callback
-     */
     public interface someClosure extends Closure, someClosure_Internal {
 
+        /**
+         * Comment on internal callback
+         */
         int someClosure_call(CSizedIntPointer t, double p);
     }
 

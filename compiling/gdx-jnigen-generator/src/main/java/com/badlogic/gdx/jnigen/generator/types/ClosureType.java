@@ -66,9 +66,6 @@ public class ClosureType implements MappedType, WritableClass {
         cu.addImport(classFile() + "." + signature.getName());
         cu.addImport(ClassNameConstants.CLOSUREENCODER_CLASS);
 
-        if (comment != null)
-            closureHelperClass.setJavadocComment(comment);
-
         MethodDeclaration downcallMethod = closureHelperClass.addMethod(getName() + "_downcall", Keyword.PUBLIC, Keyword.STATIC);
         downcallMethod.addParameter(long.class, "fnPtr");
         downcallMethod.setType(getName());
@@ -196,6 +193,9 @@ public class ClosureType implements MappedType, WritableClass {
         toWriteToPrivate.addFieldWithInitializer("CTypeInfo[]", "__ffi_cache", arrayCreationExpr);
 
         MethodDeclaration callMethod = toWriteToPublic.addMethod(name + "_call");
+        if (comment != null)
+            callMethod.setJavadocComment(comment);
+
         callMethod.setBody(null);
         for (NamedType namedType : arguments) {
             namedType.getDefinition().getMappedType().importType(cuPublic);
@@ -208,7 +208,7 @@ public class ClosureType implements MappedType, WritableClass {
         returnType.getMappedType().importType(cuPublic);
         callMethod.setType(returnType.getMappedType().abstractType());
 
-        toWriteToPrivate.addMember(callMethod);
+        toWriteToPrivate.addMember(new MethodDeclaration(callMethod.getModifiers(), callMethod.getNameAsString(), callMethod.getType(), callMethod.getParameters()).setBody(null));
 
         MethodCallExpr getTypeID = new MethodCallExpr("getCTypeInfo");
         getTypeID.setScope(new NameExpr("FFITypes"));
