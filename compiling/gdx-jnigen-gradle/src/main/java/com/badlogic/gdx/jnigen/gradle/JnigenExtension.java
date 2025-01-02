@@ -75,6 +75,7 @@ public class JnigenExtension {
 
     Action<RobovmBuildConfig> robovm;
 	JnigenBindingGeneratorExtension generator;
+	JnigenSigningExtension signing = new JnigenSigningExtension();
 
     @Inject
     public JnigenExtension (Project project) {
@@ -94,6 +95,10 @@ public class JnigenExtension {
 
     public void nativeCodeGenerator (Action<NativeCodeGeneratorConfig> container) {
         container.execute(nativeCodeGeneratorConfig);
+    }
+
+    public void signing (Action<JnigenSigningExtension> container) {
+        container.execute(signing);
     }
 
     public void all (Action<BuildTarget> container) {
@@ -257,6 +262,9 @@ public class JnigenExtension {
             JnigenBuildTask jnigenBuildTask = project.getTasks().create("jnigenBuild" + os.name() + "_" + architecture.getDisplayName() + bitness.name(), JnigenBuildTask.class, this);
             jnigenBuildTask.setBuildTarget(target);
             jnigenBuildTask.dependsOn(jnigenTask);
+
+            JnigenSignTask jnigenSignTask = project.getTasks().create("jnigenSign" + os.name() + "_" + architecture.getDisplayName() + bitness.name(), JnigenSignTask.class, this);
+            jnigenSignTask.dependsOn(jnigenBuildTask);
 
             platformLevelTargetsSeen.get(platform).mustRunAfter(jnigenBuildTask);
             if (HostDetection.os == os && HostDetection.architecture == architecture && HostDetection.bitness == bitness) {
