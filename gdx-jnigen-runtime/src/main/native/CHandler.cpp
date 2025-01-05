@@ -401,6 +401,10 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_malloc(JNI
     return reinterpret_cast<jlong>(malloc(size));
 }
 
+JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_calloc(JNIEnv* env, jclass clazz, jlong count, jlong size) {
+    return reinterpret_cast<jlong>(calloc(count, size));
+}
+
 JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_free(JNIEnv* env, jclass clazz, jlong pointer) {
     free((void*)pointer);
 }

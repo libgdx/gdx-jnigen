@@ -21,7 +21,7 @@ public class Pointing {
     }
 
     public Pointing(int size, boolean freeOnGC, boolean guard) {
-        this(CHandler.malloc(size), freeOnGC);
+        this(CHandler.calloc(1, size), freeOnGC);
         if (guard)
             guardBytes(size);
     }
