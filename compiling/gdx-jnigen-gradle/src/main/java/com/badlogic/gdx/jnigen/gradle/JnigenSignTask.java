@@ -58,7 +58,7 @@ public class JnigenSignTask extends DefaultTask {
 				args.add(ext.signing.getIdentity());
 				args.add("-f");
 				args.add(buildTarget.getTargetBinaryFile(buildConfig).getPath());
-				ToolchainExecutor.execute(codesign, new File(""), args, new ToolchainExecutor.ToolchainCallback() {
+				ToolchainExecutor.execute(codesign, getProject().getProjectDir(), args, new ToolchainExecutor.ToolchainCallback() {
 					@Override
 					public void onInfoMessage(String message) {
 						log.info(message);
