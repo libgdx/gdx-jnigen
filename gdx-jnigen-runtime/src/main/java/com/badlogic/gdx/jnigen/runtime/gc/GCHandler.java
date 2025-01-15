@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class GCHandler {
     private static final boolean NO_GC_FREE = System.getProperty("com.badlogic.jnigen.gc_disabled", "false").equals("true");
     private static final boolean ENABLE_GC_LOG = System.getProperty("com.badlogic.jnigen.gc_log", "false").equals("true");
-    protected static final ReferenceQueue<Pointing> REFERENCE_QUEUE = new ReferenceQueue<>();
+    protected static final ReferenceQueue<Object> REFERENCE_QUEUE = new ReferenceQueue<>();
     private static final Set<PointingPhantomReference> referenceHolder = Collections.synchronizedSet(new HashSet<PointingPhantomReference>());
     private static final Map<Long, AtomicInteger> countMap = new HashMap<>();
 
@@ -59,22 +59,22 @@ public class GCHandler {
         RELEASER.start();
     }
 
-    public static void enqueuePointer(Pointing pointing) {
+    public static void enqueuePointer(Object pointing, long pointer) {
         if (NO_GC_FREE)
             return;
         if (ENABLE_GC_LOG)
-            System.out.println("Enqueuing Pointer: " + pointing.getPointer());
+            System.out.println("Enqueuing Pointer: " + pointer);
 
         synchronized (countMap) {
-            AtomicInteger counter = countMap.get(pointing.getPointer());
+            AtomicInteger counter = countMap.get(pointer);
             if (counter == null) {
                 counter = new AtomicInteger(0);
-                countMap.put(pointing.getPointer(), counter);
+                countMap.put(pointer, counter);
             }
             counter.incrementAndGet();
         }
 
-        PointingPhantomReference structPhantomReference = new PointingPhantomReference(pointing);
+        PointingPhantomReference structPhantomReference = new PointingPhantomReference(pointing, pointer);
         referenceHolder.add(structPhantomReference);
     }
 
