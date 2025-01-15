@@ -75,7 +75,7 @@ public final class TestData {
 static jclass illegalArgumentExceptionClass = NULL;
 static jclass cxxExceptionClass = NULL;
 */
-    private static native void init(Class illegalArgumentException, Class cxxException);/*
+    private static native void init(Class<?> illegalArgumentException, Class<?> cxxException);/*
     	illegalArgumentExceptionClass = (jclass)env->NewGlobalRef(illegalArgumentException);
     	cxxExceptionClass = (jclass)env->NewGlobalRef(cxxException);
     */
