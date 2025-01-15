@@ -43,6 +43,9 @@ public class GlobalType implements MappedType {
         functions.add(functionType);
     }
 
+    public List<FunctionType> getFunctions() {
+        return functions;
+    }
 
     public void write(CompilationUnit cuPublic, ClassOrInterfaceDeclaration global, CompilationUnit cuInternal, ClassOrInterfaceDeclaration globalInternal, HashMap<MethodDeclaration, String> patchNativeMethods) {
         cuPublic.addImport(ClassNameConstants.CXXEXCEPTION_CLASS);

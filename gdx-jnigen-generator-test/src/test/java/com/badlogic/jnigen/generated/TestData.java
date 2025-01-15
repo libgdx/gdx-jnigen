@@ -534,6 +534,10 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
+    /**
+     * Combined attempt
+     * @see TestData#returnTestEnum
+     */
     public static TestEnum passAndReturnTestEnum(TestEnum enumValue) {
         return TestEnum.getByIndex((int) passAndReturnTestEnum_internal(enumValue.getIndex()));
     }

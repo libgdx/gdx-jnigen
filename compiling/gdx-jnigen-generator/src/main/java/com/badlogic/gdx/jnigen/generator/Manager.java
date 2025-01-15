@@ -155,6 +155,10 @@ public class Manager {
         return getCTypeMapping(name) != null;
     }
 
+    public boolean hasFunctionWithName(String name) {
+        return globalType.getFunctions().stream().anyMatch(functionType -> functionType.getSignature().getName().equals(name));
+    }
+
     public void addClosure(ClosureType closureType) {
         globalType.addClosure(closureType);
     }

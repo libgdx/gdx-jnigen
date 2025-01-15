@@ -22,6 +22,10 @@ public class FunctionType {
         this.comment = comment;
     }
 
+    public FunctionSignature getSignature() {
+        return signature;
+    }
+
     public void write(CompilationUnit cu, ClassOrInterfaceDeclaration wrappingClass, HashMap<MethodDeclaration, String> patchNativeMethod) {
         String name = signature.getName();
         TypeDefinition returnType = signature.getReturnType();

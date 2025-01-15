@@ -260,6 +260,8 @@ void call_methodWithCallbackTestStructPointerArg(methodWithCallbackTestStructPoi
 // TestEnum stuff
 int passTestEnum(TestEnum enumValue);
 TestEnum returnTestEnum(void);
+/// Combined attempt
+/// @see returnTestEnum
 TestEnum passAndReturnTestEnum(TestEnum enumValue);
 
 int passTestEnumPointer(TestEnum* enumValue);
