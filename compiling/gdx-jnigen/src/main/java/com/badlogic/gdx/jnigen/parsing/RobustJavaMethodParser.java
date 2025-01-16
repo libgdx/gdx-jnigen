@@ -155,9 +155,30 @@ public class RobustJavaMethodParser implements JavaMethodParser {
 		return new JavaMethod(className, name, isStatic, returnType, null, arguments, method.getBegin().get().line, method.getEnd().get().line);
 	}
 
+	public String removeGenerics(String type) {
+		StringBuilder result = new StringBuilder();
+		int bracketCount = 0;
+
+		for (char c : type.toCharArray()) {
+			if (c == '<') {
+				bracketCount++;
+				continue;
+			}
+			if (c == '>') {
+				bracketCount--;
+				continue;
+			}
+			if (bracketCount == 0) {
+				result.append(c);
+			}
+		}
+		return result.toString();
+	}
+
 	private ArgumentType getArgumentType (Parameter parameter) {
 		String[] typeTokens = parameter.getType().toString().split("\\.");
 		String type = typeTokens[typeTokens.length - 1];
+		type = removeGenerics(type);
 		int arrayDim = 0;
 		for (int i = 0; i < type.length(); i++) {
 			if (type.charAt(i) == '[') arrayDim++;
