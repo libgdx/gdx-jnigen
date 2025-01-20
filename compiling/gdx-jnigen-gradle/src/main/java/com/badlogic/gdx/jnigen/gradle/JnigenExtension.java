@@ -6,7 +6,7 @@ import com.badlogic.gdx.jnigen.commons.*;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
-import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.slf4j.Logger;
@@ -298,7 +298,7 @@ public class JnigenExtension {
         String[] excludes = null;
 
         public NativeCodeGeneratorConfig (Project project) {
-            JavaPluginConvention javaPlugin = project.getConvention().getPlugin(JavaPluginConvention.class);
+            JavaPluginExtension javaPlugin = project.getExtensions().getByType(JavaPluginExtension.class);
             SourceSetContainer sourceSets = javaPlugin.getSourceSets();
             sourceSet = sourceSets.findByName("main");
         }
