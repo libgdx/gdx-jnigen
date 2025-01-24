@@ -3,10 +3,7 @@ package com.badlogic.gdx.jnigen.generator.parser;
 import com.badlogic.gdx.jnigen.generator.Generator;
 import com.badlogic.gdx.jnigen.generator.JavaUtils;
 import com.badlogic.gdx.jnigen.generator.Manager;
-import com.badlogic.gdx.jnigen.generator.types.MappedType;
-import com.badlogic.gdx.jnigen.generator.types.NamedType;
-import com.badlogic.gdx.jnigen.generator.types.StackElementType;
-import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
+import com.badlogic.gdx.jnigen.generator.types.*;
 import org.bytedeco.llvm.clang.CXClientData;
 import org.bytedeco.llvm.clang.CXCursor;
 import org.bytedeco.llvm.clang.CXCursorVisitor;
@@ -53,6 +50,10 @@ public class StackElementParser {
 
     public void parseMappedType() {
         CXCursor cursor = clang_getTypeDeclaration(toParse);
+        CommentParser commentParser = new CommentParser(cursor);
+        if (commentParser.isPresent()) {
+            stackElementType.setComment(commentParser.parse());
+        }
         CXCursorVisitor visitor = new CXCursorVisitor() {
             private CXType anonymousType;
 
@@ -92,8 +93,13 @@ public class StackElementParser {
 
                     TypeDefinition fieldDefinition = Generator.registerCXType(type, cursorSpelling, stackElementType);
 
+                    if (fieldDefinition.getTypeKind() == TypeKind.CLOSURE) {
+                        Generator.patchClosureTypeWithCursor(fieldDefinition, current);
+                    }
+
                     NamedType namedType = new NamedType(fieldDefinition, cursorSpelling);
-                    stackElementType.addField(namedType);
+                    StackElementField field = new StackElementField(namedType, new CommentParser(current).parse());
+                    stackElementType.addField(field);
 
                     while (fieldDefinition.getNestedDefinition() != null)
                         fieldDefinition = fieldDefinition.getNestedDefinition();

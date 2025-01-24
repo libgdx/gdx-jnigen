@@ -176,6 +176,14 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_malloc
   (JNIEnv *, jclass, jlong);
 
 /*
+* Class:     com_badlogic_gdx_jnigen_runtime_CHandler
+* Method:    calloc
+* Signature: (JJ)J
+*/
+JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_calloc
+(JNIEnv *, jclass, jlong, jlong);
+
+/*
  * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
  * Method:    free
  * Signature: (J)V
@@ -206,6 +214,14 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_clone
  */
 JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_convertNativeTypeToFFIType
   (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
+ * Method:    dispatchCCall
+ * Signature: (JJLjava/nio/ByteBuffer;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_dispatchCCall
+  (JNIEnv *, jclass, jlong, jlong, jobject);
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved);
 JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *reserved);

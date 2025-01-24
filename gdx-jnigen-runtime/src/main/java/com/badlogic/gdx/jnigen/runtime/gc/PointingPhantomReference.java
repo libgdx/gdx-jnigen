@@ -4,12 +4,12 @@ import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 
 import java.lang.ref.PhantomReference;
 
-public class PointingPhantomReference extends PhantomReference<Pointing> {
+public class PointingPhantomReference extends PhantomReference<Object> {
 
     private final long pointer;
-    public PointingPhantomReference(Pointing referent) {
+    public PointingPhantomReference(Object referent, long pointer) {
         super(referent, GCHandler.REFERENCE_QUEUE);
-        this.pointer = referent.getPointer();
+        this.pointer = pointer;
     }
 
     public long getPointer() {

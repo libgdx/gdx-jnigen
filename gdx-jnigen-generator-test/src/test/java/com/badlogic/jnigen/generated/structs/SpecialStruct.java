@@ -7,14 +7,17 @@ import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
 
-public final class SpecialStruct extends com.badlogic.gdx.jnigen.runtime.pointer.Struct {
+/**
+ * Special Struct jaja
+ */
+public final class SpecialStruct extends Struct {
 
     private final static int __size;
 
     private final static long __ffi_type;
 
     static {
-        __ffi_type = FFITypes.getCTypeInfo(18).getFfiType();
+        __ffi_type = FFITypes.getCTypeInfo(19).getFfiType();
         __size = CHandler.getSizeFromFFIType(__ffi_type);
     }
 

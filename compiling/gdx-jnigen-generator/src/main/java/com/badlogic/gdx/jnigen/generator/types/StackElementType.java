@@ -34,9 +34,10 @@ public class StackElementType implements MappedType, WritableClass {
 
     // TODO: Conceptionally, this belongs into TypeDefinition
     private boolean isStruct;
-    private final List<NamedType> fields = new ArrayList<>();
+    private final List<StackElementField> fields = new ArrayList<>();
     private final String pointerName;
     private final String javaTypeName;
+    private String comment;
 
     public StackElementType(TypeDefinition definition, String javaTypeName, MappedType parent, boolean isStruct) {
         this.definition = definition;
@@ -46,12 +47,16 @@ public class StackElementType implements MappedType, WritableClass {
         pointerName = javaTypeName + "Pointer";
     }
 
-    public void addField(NamedType type) {
+    public void addField(StackElementField type) {
         fields.add(type);
     }
 
     public void addChild(TypeDefinition child) {
         children.add(child);
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     @Override
@@ -63,58 +68,72 @@ public class StackElementType implements MappedType, WritableClass {
     }
 
     @Override
-    public void write(CompilationUnit compilationUnit, ClassOrInterfaceDeclaration structClass) {
+    public ClassOrInterfaceDeclaration generateClassInternal() {
+        NodeList<Modifier> modifiers = new NodeList<>(Modifier.publicModifier(), Modifier.finalModifier(), Modifier.staticModifier());
+
+        return new ClassOrInterfaceDeclaration(modifiers, false, internalClassName());
+    }
+
+    @Override
+    public void write(CompilationUnit cuPublic, ClassOrInterfaceDeclaration toWriteToPublic, CompilationUnit cuPrivate, ClassOrInterfaceDeclaration toWriteToPrivate) {
         String structPointerRef = javaTypeName + "." + pointerName;
 
-        compilationUnit.addImport(ClassNameConstants.CHANDLER_CLASS);
-        compilationUnit.addImport(isStruct ? ClassNameConstants.STRUCT_CLASS : ClassNameConstants.UNION_CLASS);
-        compilationUnit.addImport(ClassNameConstants.STACKELEMENTPOINTER_CLASS);
+        cuPublic.addImport(ClassNameConstants.CHANDLER_CLASS);
+        cuPublic.addImport(isStruct ? ClassNameConstants.STRUCT_CLASS : ClassNameConstants.UNION_CLASS);
+        cuPublic.addImport(ClassNameConstants.STACKELEMENTPOINTER_CLASS);
 
-        structClass.addExtendedType(isStruct ? ClassNameConstants.STRUCT_CLASS : ClassNameConstants.UNION_CLASS);
-        structClass.addField(int.class, "__size", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
-        structClass.addField(long.class, "__ffi_type", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
+        if (comment != null) {
+            toWriteToPublic.setJavadocComment(comment);
+        }
+
+        toWriteToPublic.addExtendedType(isStruct ? "Struct" : "Union");
+        toWriteToPublic.addField(int.class, "__size", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
+        toWriteToPublic.addField(long.class, "__ffi_type", Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
 
         // Static-Init
-        BlockStmt staticInit = structClass.addStaticInitializer();
+        BlockStmt staticInit = toWriteToPublic.addStaticInitializer();
         staticInit.addStatement("__ffi_type = FFITypes.getCTypeInfo(" + typeID() + ").getFfiType();");
         staticInit.addStatement("__size = CHandler.getSizeFromFFIType(__ffi_type);");
 
-        compilationUnit.addImport(Manager.getInstance().getBasePackage() + ".FFITypes");
+        cuPublic.addImport(Manager.getInstance().getBasePackage() + ".FFITypes");
 
         // Constructors
-        ConstructorDeclaration pointerTakingConstructor = structClass.addConstructor(Keyword.PUBLIC);
+        ConstructorDeclaration pointerTakingConstructor = toWriteToPublic.addConstructor(Keyword.PUBLIC);
         pointerTakingConstructor.addParameter(long.class, "pointer");
         pointerTakingConstructor.addParameter(boolean.class, "freeOnGC");
         pointerTakingConstructor.getBody().addStatement("super(pointer, freeOnGC);");
 
-        ConstructorDeclaration defaultConstructor = structClass.addConstructor(Keyword.PUBLIC);
+        ConstructorDeclaration defaultConstructor = toWriteToPublic.addConstructor(Keyword.PUBLIC);
         defaultConstructor.getBody().addStatement("super(__size);");
 
 
         // Standard methods
-        structClass.addMethod("getSize", Keyword.PUBLIC).setType(long.class)
+        toWriteToPublic.addMethod("getSize", Keyword.PUBLIC).setType(long.class)
                 .createBody().addStatement("return __size;");
 
-        structClass.addMethod("getFFIType", Keyword.PUBLIC).setType(long.class)
+        toWriteToPublic.addMethod("getFFIType", Keyword.PUBLIC).setType(long.class)
                 .createBody().addStatement("return __ffi_type;");
 
-        structClass.addMethod("asPointer", Keyword.PUBLIC).setType(structPointerRef)
+        toWriteToPublic.addMethod("asPointer", Keyword.PUBLIC).setType(structPointerRef)
                 .createBody().addStatement("return new " + structPointerRef + "(getPointer(), getsGCFreed());");
 
         // Fields
         int index = 0;
-        for (NamedType field : fields) {
-            field.getDefinition().getMappedType().importType(compilationUnit);
-            MethodDeclaration getMethod = structClass.addMethod(field.getName(), Keyword.PUBLIC);
-            getMethod.setType(field.getDefinition().getMappedType().abstractType());
+        for (StackElementField field : fields) {
+            NamedType fieldType = field.getType();
+            fieldType.getDefinition().getMappedType().importType(cuPublic);
+            MethodDeclaration getMethod = toWriteToPublic.addMethod(fieldType.getName(), Keyword.PUBLIC);
+            if (field.getComment() != null)
+                getMethod.setJavadocComment(field.getComment());
+            getMethod.setType(fieldType.getDefinition().getMappedType().abstractType());
             BlockStmt getBody = new BlockStmt();
-            if (field.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY || field.getDefinition().getTypeKind() == TypeKind.STACK_ELEMENT) {
+            if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY || fieldType.getDefinition().getTypeKind() == TypeKind.STACK_ELEMENT) {
                 if (isStruct) {
                     MethodCallExpr getOffsetExpr = new MethodCallExpr("getOffsetForField");
                     getOffsetExpr.setScope(new NameExpr("CHandler"));
                     getOffsetExpr.addArgument("__ffi_type");
                     getOffsetExpr.addArgument(index + "");
-                    structClass.addFieldWithInitializer(int.class, "__" + field.getName() + "_offset", getOffsetExpr,
+                    toWriteToPublic.addFieldWithInitializer(int.class, "__" + fieldType.getName() + "_offset", getOffsetExpr,
                             Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
                 }
 
@@ -122,42 +141,47 @@ public class StackElementType implements MappedType, WritableClass {
                 if (isStruct) {
                     MethodCallExpr getPointer = new MethodCallExpr("getPointer");
                     pointer = new BinaryExpr(getPointer,
-                            new NameExpr("__" + field.getName() + "_offset"), Operator.PLUS);
+                            new NameExpr("__" + fieldType.getName() + "_offset"), Operator.PLUS);
                 } else {
                     pointer = new MethodCallExpr("getPointer");
                 }
 
-                Expression fromCExpression = field.getDefinition().getMappedType().fromC(pointer, new BooleanLiteralExpr(false));
+                Expression fromCExpression = fieldType.getDefinition().getMappedType().fromC(pointer, new BooleanLiteralExpr(false));
 
-                if (field.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
+                if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
                     MethodCallExpr guardPointer = new MethodCallExpr("guardCount");
                     guardPointer.setScope(fromCExpression);
-                    guardPointer.addArgument(field.getDefinition().getCount() + "");
+                    guardPointer.addArgument(fieldType.getDefinition().getCount() + "");
                     fromCExpression = guardPointer;
                 }
-                structClass.addFieldWithInitializer(field.getDefinition().getMappedType().abstractType(),
-                        "__" + field.getName(), fromCExpression,
+                toWriteToPublic.addFieldWithInitializer(fieldType.getDefinition().getMappedType().abstractType(),
+                        "__" + fieldType.getName(), fromCExpression,
                         Keyword.PRIVATE, Keyword.FINAL);
-                getBody.addStatement("return __" + field.getName() + ";");
+                getBody.addStatement("return __" + fieldType.getName() + ";");
                 getMethod.setBody(getBody);
-                index += field.getDefinition().getCount();
+                if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY)
+                    index += fieldType.getDefinition().getCount();
+                else
+                    index++;
                 continue;
             }
 
             String appendix = "";
-            if (field.getDefinition().getTypeKind() == TypeKind.FLOAT) appendix = "Float";
-            else if (field.getDefinition().getTypeKind() == TypeKind.DOUBLE) appendix = "Double";
+            if (fieldType.getDefinition().getTypeKind() == TypeKind.FLOAT) appendix = "Float";
+            else if (fieldType.getDefinition().getTypeKind() == TypeKind.DOUBLE) appendix = "Double";
             Expression expression = StaticJavaParser.parseExpression(
                     "getValue" + appendix + "(" + index + ")");
-            getBody.addStatement(new ReturnStmt(field.getDefinition().getMappedType().fromC(expression)));
+            getBody.addStatement(new ReturnStmt(fieldType.getDefinition().getMappedType().fromC(expression)));
             getMethod.setBody(getBody);
 
-            MethodDeclaration setMethod = structClass.addMethod(field.getName(), Keyword.PUBLIC);
-            setMethod.addParameter(field.getDefinition().getMappedType().abstractType(), field.getName());
+            MethodDeclaration setMethod = toWriteToPublic.addMethod(fieldType.getName(), Keyword.PUBLIC);
+            setMethod.addParameter(fieldType.getDefinition().getMappedType().abstractType(), fieldType.getName());
+            if (field.getComment() != null)
+                setMethod.setJavadocComment(field.getComment());
             BlockStmt setBody = new BlockStmt();
 
             MethodCallExpr callSetStruct = new MethodCallExpr("setValue");
-            callSetStruct.addArgument(field.getDefinition().getMappedType().toC(new NameExpr(field.getName())));
+            callSetStruct.addArgument(fieldType.getDefinition().getMappedType().toC(new NameExpr(fieldType.getName())));
             callSetStruct.addArgument(String.valueOf(index));
             setBody.addStatement(callSetStruct);
             setMethod.setBody(setBody);
@@ -168,7 +192,7 @@ public class StackElementType implements MappedType, WritableClass {
         // Pointer
         ClassOrInterfaceDeclaration pointerClass = new ClassOrInterfaceDeclaration(new NodeList<>(Modifier.publicModifier(), Modifier.staticModifier(), Modifier.finalModifier()), false, pointerName);
 
-        structClass.addMember(pointerClass);
+        toWriteToPublic.addMember(pointerClass);
         pointerClass.addExtendedType("StackElementPointer<" + javaTypeName + ">");
         ConstructorDeclaration pointerConstructor = pointerClass.addConstructor(Keyword.PUBLIC);
         pointerConstructor.addParameter(new Parameter(PrimitiveType.longType(), "pointer"));
@@ -202,20 +226,23 @@ public class StackElementType implements MappedType, WritableClass {
         children.forEach(child -> {
             WritableClass childStackElement = (WritableClass)child.getMappedType();
             ClassOrInterfaceDeclaration declaration = childStackElement.generateClass();
-            childStackElement.write(compilationUnit, declaration);
-            structClass.addMember(declaration);
+            ClassOrInterfaceDeclaration internalDeclaration = childStackElement.generateClassInternal();
+            childStackElement.write(cuPublic, declaration, cuPrivate, internalDeclaration);
+            toWriteToPublic.addMember(declaration);
+            toWriteToPrivate.addMember(internalDeclaration);
         });
     }
 
     public String getFFITypeBody(String ffiResolveFunctionName) {
         ArrayList<NamedType> unwrappedFields = new ArrayList<>();
-        for (NamedType field : fields) {
-            if (field.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
-                for (int i = 0; i < field.getDefinition().getCount(); i++) {
-                    unwrappedFields.add(new NamedType(field.getDefinition().getNestedDefinition(), field.getName() + "_" + i));
+        for (StackElementField field : fields) {
+            NamedType fieldType = field.getType();
+            if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
+                for (int i = 0; i < fieldType.getDefinition().getCount(); i++) {
+                    unwrappedFields.add(new NamedType(fieldType.getDefinition().getNestedDefinition(), fieldType.getName() + "_" + i));
                 }
             } else {
-                unwrappedFields.add(field);
+                unwrappedFields.add(fieldType);
             }
         }
 
@@ -302,5 +329,13 @@ public class StackElementType implements MappedType, WritableClass {
     @Override
     public boolean isLibFFIConvertible() {
         return isStruct();
+    }
+
+
+    @Override
+    public String internalClass() {
+        if (parent != null)
+            return parent.internalClass() + "." + internalClassName();
+        return Manager.getInstance().getGlobalType().internalClass() + "." + internalClassName();
     }
 }

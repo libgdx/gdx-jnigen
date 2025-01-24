@@ -6,6 +6,9 @@ plugins {
     id "de.undercouch.download" version "5.0.1"
 }
 
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
 dependencies {
     api project(":jnigen-loader")
 }
@@ -101,8 +104,8 @@ def createBuildTask(String platformName, String architecture, String specialFlag
 
 task build_macos {
     group("libffi")
-    dependsOn createBuildTask("macosx", "arm64", "-arch arm64", ["--host=arm64-apple-darwin"])
-    dependsOn createBuildTask("macosx", "x86_64", "-arch x86_64", ["--host=x86_64-apple-darwin"])
+    dependsOn createBuildTask("macosx", "arm64", "-arch arm64 -mmacosx-version-min=10.7", ["--host=arm64-apple-darwin"])
+    dependsOn createBuildTask("macosx", "x86_64", "-arch x86_64 -mmacosx-version-min=10.7", ["--host=x86_64-apple-darwin"])
 }
 
 task build_linux {

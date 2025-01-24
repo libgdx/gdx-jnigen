@@ -3,7 +3,7 @@ package com.badlogic.gdx.jnigen.generator.types;
 public class NamedType {
 
     private final TypeDefinition definition;
-    private final String name;
+    private String name;
 
     public NamedType(TypeDefinition definition, String name) {
         this.definition = definition;
@@ -16,5 +16,9 @@ public class NamedType {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

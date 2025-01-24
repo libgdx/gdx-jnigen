@@ -6,7 +6,7 @@ import com.badlogic.gdx.jnigen.commons.*;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
-import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.slf4j.Logger;
@@ -74,7 +74,7 @@ public class JnigenExtension {
     Action<BuildTarget> all = null;
 
     Action<RobovmBuildConfig> robovm;
-	JnigenBindingGeneratorExtension generator = new JnigenBindingGeneratorExtension();
+	JnigenBindingGeneratorExtension generator;
 
     @Inject
     public JnigenExtension (Project project) {
@@ -84,7 +84,12 @@ public class JnigenExtension {
     }
 
     public void generator(Action<JnigenBindingGeneratorExtension> container) {
+        if (generator != null)
+            throw new IllegalStateException("generator already configured");
+        generator = new JnigenBindingGeneratorExtension();
 		container.execute(generator);
+
+        project.getTasks().create("jnigenGenerateBindings", JnigenGenerateBindingsTask.class, generator);
 	}
 
     public void nativeCodeGenerator (Action<NativeCodeGeneratorConfig> container) {
@@ -293,7 +298,7 @@ public class JnigenExtension {
         private String[] sourceDirs;
 
         public NativeCodeGeneratorConfig (Project project) {
-            JavaPluginConvention javaPlugin = project.getConvention().getPlugin(JavaPluginConvention.class);
+            JavaPluginExtension javaPlugin = project.getExtensions().getByType(JavaPluginExtension.class);
             SourceSetContainer sourceSets = javaPlugin.getSourceSets();
             sourceSet = sourceSets.findByName("main");
         }

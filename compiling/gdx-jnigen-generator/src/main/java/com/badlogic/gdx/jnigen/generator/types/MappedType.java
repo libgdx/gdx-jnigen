@@ -44,4 +44,12 @@ public interface MappedType {
     default boolean isLibFFIConvertible() {
         return true;
     }
+
+    default String internalClassName() {
+        return abstractType() + "_Internal";
+    }
+
+    default String internalClass() {
+        return classFile() + "_Internal";
+    }
 }

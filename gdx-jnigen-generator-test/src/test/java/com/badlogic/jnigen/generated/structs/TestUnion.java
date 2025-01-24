@@ -7,14 +7,17 @@ import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 
-public final class TestUnion extends com.badlogic.gdx.jnigen.runtime.pointer.Union {
+/**
+ * Some other comment
+ */
+public final class TestUnion extends Union {
 
     private final static int __size;
 
     private final static long __ffi_type;
 
     static {
-        __ffi_type = FFITypes.getCTypeInfo(20).getFfiType();
+        __ffi_type = FFITypes.getCTypeInfo(21).getFfiType();
         __size = CHandler.getSizeFromFFIType(__ffi_type);
     }
 

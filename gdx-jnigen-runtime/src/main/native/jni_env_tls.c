@@ -15,7 +15,7 @@
 
 #define HANDLE_RESULT(res, msg) \
     if (res != JNI_OK) { \
-        fprintf(stderr, msg ": %d", res); \
+        fprintf(stderr, msg ": %d", (int)res); \
         fflush(stderr); \
         exit(1); \
     }
@@ -27,7 +27,8 @@ BOOL WINAPI DllMain(HINSTANCE hDLL, DWORD fdwReason, LPVOID lpvReserved) {
     // Docs say no cleanup when lpvReserved != NULL
     if (fdwReason == DLL_THREAD_DETACH && lpvReserved == NULL) {
         ThreadData* t_data = (ThreadData*)TlsGetValue(envTls);
-        detach_jni_env(t_data);
+        if (t_data != NULL)
+            detach_jni_env(t_data);
     }
 
     return TRUE;

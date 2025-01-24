@@ -5,7 +5,7 @@ import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.jnigen.generated.FFITypes;
 
-public final class AnonymousStructNoFieldEnd extends com.badlogic.gdx.jnigen.runtime.pointer.Struct {
+public final class AnonymousStructNoFieldEnd extends Struct {
 
     private final static int __size;
 
@@ -44,10 +44,16 @@ public final class AnonymousStructNoFieldEnd extends com.badlogic.gdx.jnigen.run
         setValue(externalValue, 0);
     }
 
+    /**
+     * Anon struct field
+     */
     public int intValue() {
         return (int) getValue(1);
     }
 
+    /**
+     * Anon struct field
+     */
     public void intValue(int intValue) {
         setValue(intValue, 1);
     }

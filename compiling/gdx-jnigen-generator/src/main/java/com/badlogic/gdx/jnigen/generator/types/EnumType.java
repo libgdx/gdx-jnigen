@@ -6,11 +6,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.ConstructorDeclaration;
-import com.github.javaparser.ast.body.EnumDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.ArrayInitializerExpr;
 import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.Expression;
@@ -33,41 +29,55 @@ public class EnumType implements MappedType {
 
     private final TypeDefinition definition;
     private final String javaName;
-    private final HashMap<Integer, String> constants = new HashMap<>();
+    private final HashMap<Integer, EnumConstant> constants = new HashMap<>();
     private int highestConstantID = Integer.MIN_VALUE;
     private int lowestConstantID = Integer.MAX_VALUE;
+    private String comment;
 
     public EnumType(TypeDefinition definition, String javaName) {
         this.javaName = javaName;
         this.definition = definition;
     }
 
-    public void registerConstant(String constantName, int index) {
-        if (constants.containsValue(constantName))
-            throw new IllegalArgumentException("Enum " + javaName + " already has constant with name: " + constantName);
-        if (constants.containsKey(index)) {
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public void registerConstant(EnumConstant constant) {
+        if (constants.values().stream().anyMatch(e -> e.getName().equals(constant.getName())))
+            throw new IllegalArgumentException("Enum " + javaName + " already has constant with name: " + constant.getName());
+        if (constants.containsKey(constant.getId())) {
             // This is valid... Why shouldn't it.... Urgh, this breaks my whole enum assumption
-            constants.computeIfPresent(index, (integer, s) -> s + "_" + constantName);
+            constants.computeIfPresent(constant.getId(), (integer, old_const) -> new EnumConstant(integer, old_const.getName() + "_" + constant.getName(), constant.getComment()));
             return;
         }
 
-        constants.put(index, constantName);
+        constants.put(constant.getId(), constant);
 
-        if (index > highestConstantID)
-            highestConstantID = index;
-        if (index < lowestConstantID)
-            lowestConstantID = index;
+        if (constant.getId() > highestConstantID)
+            highestConstantID = constant.getId();
+        if (constant.getId() < lowestConstantID)
+            lowestConstantID = constant.getId();
     }
 
     public void write(CompilationUnit cu) {
         cu.addImport(ClassNameConstants.ENUMPOINTER_CLASS);
+        cu.addImport(ClassNameConstants.CENUM_CLASS);
         EnumDeclaration declaration = cu.addEnum(javaName);
-        declaration.addImplementedType(ClassNameConstants.CENUM_CLASS);
-        constants.entrySet().stream()
-                .sorted(Comparator.comparingInt(Entry::getKey))
-                .forEach(stringIntegerEntry ->
-                        declaration.addEnumConstant(stringIntegerEntry.getValue())
-                                .addArgument(new IntegerLiteralExpr(String.valueOf(stringIntegerEntry.getKey()))));
+        declaration.addImplementedType("CEnum");
+
+        if (comment != null)
+            declaration.setJavadocComment(comment);
+
+        constants.values().stream()
+                .sorted(Comparator.comparingInt(EnumConstant::getId))
+                .forEach(constant -> {
+                    EnumConstantDeclaration dec = declaration.addEnumConstant(constant.getName())
+                            .addArgument(new IntegerLiteralExpr(String.valueOf(constant.getId())));
+                    if (constant.getComment() != null)
+                        dec.setJavadocComment(constant.getComment());
+                });
+
         declaration.addField(int.class, "index", Keyword.PRIVATE, Keyword.FINAL);
         ConstructorDeclaration constructor = declaration.addConstructor().addParameter(int.class, "index");
         constructor.createBody().addStatement("this.index = index;");
@@ -82,8 +92,8 @@ public class EnumType implements MappedType {
             getByIndex.createBody().addStatement("return _values[index];");
             NodeList<Expression> expressions = new NodeList<>();
             for (int i = lowestConstantID; i <= highestConstantID; i++) {
-                String name = constants.get(i);
-                expressions.add(name == null ? new NullLiteralExpr() : new NameExpr(name));
+                EnumConstant constant = constants.get(i);
+                expressions.add(constant == null ? new NullLiteralExpr() : new NameExpr(constant.getName()));
             }
             ArrayInitializerExpr initializerExpr = new ArrayInitializerExpr(expressions);
             declaration.addFieldWithInitializer(javaName + "[]", "_values", initializerExpr, Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);

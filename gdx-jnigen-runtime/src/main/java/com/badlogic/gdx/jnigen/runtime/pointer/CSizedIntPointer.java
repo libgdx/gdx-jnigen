@@ -35,8 +35,14 @@ public final class CSizedIntPointer extends Pointing {
         return pointer;
     }
 
-    public static PointerDereferenceSupplier<CSizedIntPointer> pointerPointer(String cTypeInfo) {
-        return (pointer, freeOnGC) -> new CSizedIntPointer(pointer, freeOnGC, cTypeInfo);
+    public static PointerDereferenceSupplier<CSizedIntPointer> pointerPointer(final String cTypeInfo) {
+        return new PointerDereferenceSupplier<CSizedIntPointer>() {
+
+            @Override
+            public CSizedIntPointer create(long pointer, boolean freeOnGC) {
+                return new CSizedIntPointer(pointer, freeOnGC, cTypeInfo);
+            }
+        };
     }
 
     public CSizedIntPointer guardCount(long count) {

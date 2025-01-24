@@ -1,11 +1,6 @@
 package com.badlogic.gdx.jnigen.generator;
 
-import com.badlogic.gdx.jnigen.generator.types.ClosureType;
-import com.badlogic.gdx.jnigen.generator.types.EnumType;
-import com.badlogic.gdx.jnigen.generator.types.FunctionType;
-import com.badlogic.gdx.jnigen.generator.types.GlobalType;
-import com.badlogic.gdx.jnigen.generator.types.StackElementType;
-import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
+import com.badlogic.gdx.jnigen.generator.types.*;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
@@ -58,7 +53,7 @@ public class Manager {
 
     private final Map<String, String> typedefs = new HashMap<>();
 
-    private final Map<String, String> macros = new HashMap<>();
+    private final Map<String, MacroType> macros = new HashMap<>();
 
     private final GlobalType globalType;
 
@@ -81,7 +76,7 @@ public class Manager {
         this.cTypeToJavaStringMapper.putAll(rollBackManager.cTypeToJavaStringMapper);
         this.typedefs.putAll(rollBackManager.typedefs);
         this.macros.putAll(rollBackManager.macros);
-        this.globalType = rollBackManager.globalType;
+        this.globalType = rollBackManager.globalType.duplicate();
     }
 
     public static void startNewManager() {
@@ -128,12 +123,12 @@ public class Manager {
         return knownCTypes.indexOf(name);
     }
 
-    public void registerMacro(String name, String value) {
-        if (macros.containsKey(name)) {
-            if (!macros.get(name).equals(value))
-                throw new IllegalArgumentException("Macro with name " + name + " already exists, but has different value. Old: " + macros.get(name) + " != New: " + value);
+    public void registerMacro(MacroType macroType) {
+        if (macros.containsKey(macroType.getName())) {
+            if (!macros.get(macroType.getName()).getValue().equals(macroType.getValue()))
+                throw new IllegalArgumentException("Macro with name " + macroType.getName() + " already exists, but has different value. Old: " + macros.get(macroType.getName()).getValue() + " != New: " + macroType.getValue());
         }
-        macros.put(name, value);
+        macros.put(macroType.getName(), macroType);
     }
 
     public void registerCTypeMapping(String name, TypeDefinition javaRepresentation) {
@@ -158,6 +153,10 @@ public class Manager {
 
     public boolean hasCTypeMapping(String name) {
         return getCTypeMapping(name) != null;
+    }
+
+    public boolean hasFunctionWithName(String name) {
+        return globalType.getFunctions().stream().anyMatch(functionType -> functionType.getSignature().getName().equals(name));
     }
 
     public void addClosure(ClosureType closureType) {
@@ -217,11 +216,20 @@ public class Manager {
 
     public void emit(String basePath) {
         try {
+            CompilationUnit globalCU = new CompilationUnit(globalType.packageName());
+            CompilationUnit globalCUInternal = new CompilationUnit(globalType.packageName());
+            ClassOrInterfaceDeclaration global = globalCU.addClass(globalType.abstractType(), Keyword.PUBLIC, Keyword.FINAL);
+            ClassOrInterfaceDeclaration globalInternal = globalCUInternal.addClass(globalType.internalClassName(), Keyword.PUBLIC, Keyword.FINAL);
+
+
             for (StackElementType stackElementType : stackElements.values()) {
                 CompilationUnit cu = new CompilationUnit(stackElementType.packageName());
                 ClassOrInterfaceDeclaration declaration = stackElementType.generateClass();
                 cu.addType(declaration);
-                stackElementType.write(cu, declaration);
+
+                ClassOrInterfaceDeclaration declarationInternal = stackElementType.generateClassInternal();
+                globalInternal.addMember(declarationInternal);
+                stackElementType.write(cu, declaration, globalCUInternal, declarationInternal);
 
                 String classContent = cu.toString();
 
@@ -241,9 +249,8 @@ public class Manager {
             }
 
             HashMap<MethodDeclaration, String> patchGlobalMethods = new HashMap<>();
-            CompilationUnit globalCU = new CompilationUnit(globalType.packageName());
 
-            globalType.write(globalCU, patchGlobalMethods);
+            globalType.write(globalCU, global, globalCUInternal, globalInternal, patchGlobalMethods);
             String globalFile = globalCU.toString();
             for (Entry<MethodDeclaration, String> entry : patchGlobalMethods.entrySet()) {
                 MethodDeclaration methodDeclaration = entry.getKey();
@@ -251,56 +258,16 @@ public class Manager {
                 globalFile = patchMethodNative(methodDeclaration, s, globalFile);
             }
             Files.write(Paths.get(basePath + globalType.classFile().replace(".", "/") + ".java"), globalFile.getBytes(StandardCharsets.UTF_8));
+            Files.write(Paths.get(basePath + globalType.classFile().replace(".", "/") + "_Internal.java"), globalCUInternal.toString().getBytes(StandardCharsets.UTF_8));
 
             // Macros
             CompilationUnit constantsCU = new CompilationUnit(basePackage);
             ClassOrInterfaceDeclaration constantsClass = constantsCU.addClass("Constants", Keyword.PUBLIC, Keyword.FINAL);
-            macros.keySet().stream().sorted().forEach(name -> {
-                String value = macros.get(name);
 
-                // TODO: 21.06.24 We need to find more reliable ways, maybe a fancy regex?
-                if (value.startsWith("(") && value.endsWith(")"))
-                    value = value.substring(1, value.length() - 1);
+            macros.entrySet().stream()
+                    .sorted(Entry.comparingByValue(Comparator.comparing(MacroType::getName)))
+                    .forEach(macroType -> macroType.getValue().write(constantsCU, constantsClass));
 
-                for (int i = 0; i < 3; i++) {
-                    if (value.isEmpty())
-                        return;
-                    char indexLowerCase = value.toLowerCase().charAt(value.length() - 1);
-                    if (indexLowerCase == 'l' || indexLowerCase == 'u')
-                        value = value.substring(0, value.length() - 1);
-                    else
-                        break;
-                }
-
-                if (SourceVersion.isKeyword(name))
-                    name = name + "_r";
-                try {
-                    long l = Long.decode(value);
-                    Class<?> lowestBound;
-                    if (l <= Byte.MAX_VALUE && l >= Byte.MIN_VALUE) {
-                        lowestBound = byte.class;
-                    } else if (l <= Short.MAX_VALUE && l >= Short.MIN_VALUE) {
-                        lowestBound = short.class;
-                    } else if (l <= Character.MAX_VALUE && l >= Character.MIN_VALUE) {
-                        lowestBound = char.class;
-                    } else if (l <= Integer.MAX_VALUE && l >= Integer.MIN_VALUE) {
-                        lowestBound = int.class;
-                    } else {
-                        value += "L";
-                        lowestBound = long.class;
-                    }
-                    constantsClass.addFieldWithInitializer(lowestBound, name, new IntegerLiteralExpr(value), Keyword.PUBLIC, Keyword.STATIC, Keyword.FINAL);
-                }catch (NumberFormatException ignored){
-                    try {
-                        if (value.endsWith("L") || value.endsWith("l"))
-                            value = value.substring(0, value.length() - 1);
-                        Double.parseDouble(value);
-                        boolean isFloat = value.endsWith("f") || value.endsWith("F");
-                        Class<?> lowestBound = isFloat ? float.class : double.class;
-                        constantsClass.addFieldWithInitializer(lowestBound, name, new DoubleLiteralExpr(value), Keyword.PUBLIC, Keyword.STATIC, Keyword.FINAL);
-                    } catch (NumberFormatException ignored1){}
-                }
-            });
             Files.write(Paths.get(basePath + basePackage.replace(".", "/") + "/Constants.java"), constantsCU.toString().getBytes(StandardCharsets.UTF_8));
 
 
@@ -316,7 +283,7 @@ public class Manager {
             ffiTypeClass.addFieldWithInitializer("HashMap<Integer, CTypeInfo>", "ffiIdMap", StaticJavaParser.parseExpression("new HashMap<>()"), Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
 
             ffiTypeClass.addMethod("getCTypeInfo", Keyword.PUBLIC, Keyword.STATIC)
-                    .setType(ClassNameConstants.CTYPEINFO_CLASS)
+                    .setType("CTypeInfo")
                     .addParameter(int.class, "id")
                     .createBody().addStatement("return ffiIdMap.get(id);");
 

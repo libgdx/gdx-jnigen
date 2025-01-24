@@ -28,11 +28,12 @@
 #define CHECK_BOUNDS_FFI_TYPE(type, value) \
     CHECK_BOUNDS_FOR_NUMBER(value, type->size, GET_FFI_TYPE_SIGN(type));
 
-jmethodID dispatchCallbackMethod = NULL;
-jmethodID getExceptionStringMethod = NULL;
-jclass globalClass = NULL;
-JavaVM* gJVM = NULL;
-bool ignoreCXXExceptionMessage = false;
+static jmethodID dispatchCallbackMethod = NULL;
+static jmethodID getExceptionStringMethod = NULL;
+static jclass globalClass = NULL;
+static jclass cxxExceptionClass = NULL;
+static JavaVM* gJVM = NULL;
+static bool ignoreCXXExceptionMessage = false;
 
 typedef struct _closure_info {
     jobject javaInfo;
@@ -134,6 +135,46 @@ void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
     }
 }
 
+JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_dispatchCCall(JNIEnv* env, jclass clazz, jlong fnPtr_j, jlong cif_j, jobject arg_buf) {
+    HANDLE_JAVA_EXCEPTION_START()
+
+    void** arguments = (void**)(arg_buf ? env->GetDirectBufferAddress(arg_buf) : 0);
+    void* fnPtr = (void*) fnPtr_j;
+    ffi_cif* cif = (ffi_cif*) cif_j;
+
+    void** decodedArguments = (void**)alloca(cif->nargs * (sizeof(void*)));
+    for (int i = 0; i < cif->nargs; ++i) {
+        ffi_type* arg = cif->arg_types[i];
+        if (arg->type == FFI_TYPE_STRUCT) {
+            decodedArguments[i] = arguments[i];
+        } else {
+            decodedArguments[i] = alloca(arg->size);
+            ENDIAN_INTCPY(decodedArguments[i], arg->size, &arguments[i], 8);
+        }
+    }
+
+    void* result = (void*)alloca(cif->rtype->size);
+    ffi_call(cif, (void (*)())fnPtr, result, decodedArguments);
+
+    ffi_type* rtype = cif->rtype;
+
+    if (rtype->type == FFI_TYPE_VOID)
+        return 0;
+    if(rtype->type == FFI_TYPE_STRUCT) {
+        void* struct_ret = malloc(rtype->size);
+        memcpy(struct_ret, result, rtype->size);
+        return (jlong) struct_ret;
+    } else {
+        jlong ret = 0;
+        ENDIAN_INTCPY(&ret, sizeof(jlong), result, rtype->size);
+        return ret;
+    }
+
+    HANDLE_JAVA_EXCEPTION_END()
+
+    return 0;
+}
+
 JNIEXPORT jint JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getPointerSize(JNIEnv* env, jclass clazz) {
     return sizeof(void*);
 }
@@ -160,6 +201,7 @@ JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_testIllegal
 
 JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_testCXXExceptionThrowable(JNIEnv* env, jclass clazz, jclass cxxException) {
     env->ThrowNew(cxxException, "Test");
+    cxxExceptionClass = (jclass)env->NewGlobalRef(cxxException);
 }
 
 JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_setDisableCXXExceptionMessage(JNIEnv* env, jclass clazz, jboolean disable) {
@@ -359,6 +401,10 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_malloc(JNI
     return reinterpret_cast<jlong>(malloc(size));
 }
 
+JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_calloc(JNIEnv* env, jclass clazz, jlong count, jlong size) {
+    return reinterpret_cast<jlong>(calloc(count, size));
+}
+
 JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_free(JNIEnv* env, jclass clazz, jlong pointer) {
     free((void*)pointer);
 }
@@ -379,5 +425,13 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
 }
 
 JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *reserved) {
+    JNIEnv* env;
+    tls_attach_jni_env(gJVM, &env);
+    if (globalClass != NULL) {
+        env->DeleteGlobalRef(globalClass);
+    }
+    if (cxxExceptionClass != NULL) {
+        env->DeleteGlobalRef(cxxExceptionClass);
+    }
     cleanup_tls();
 }

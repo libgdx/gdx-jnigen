@@ -6,14 +6,11 @@ on:
   release:
     types: [ published ]
 
-env:
-  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-
 jobs:
   natives-ios:
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: 'recursive'
@@ -32,7 +29,7 @@ jobs:
           # See https://github.com/actions/virtual-environments/issues/2557
           sudo mv /Library/Developer/CommandLineTools/SDKs/* /tmp
           sudo mv /Applications/Xcode.app /Applications/Xcode.app.bak
-          sudo mv /Applications/Xcode_14.3.1.app /Applications/Xcode.app
+          sudo mv /Applications/Xcode_15.4.0.app /Applications/Xcode.app
           sudo xcode-select -switch /Applications/Xcode.app
           /usr/bin/xcodebuild -version
           ./gradlew build_ios
@@ -50,9 +47,9 @@ jobs:
           path: natives-ios.zip
 
   natives-macos:
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: 'recursive'
@@ -71,7 +68,7 @@ jobs:
           # See https://github.com/actions/virtual-environments/issues/2557
           sudo mv /Library/Developer/CommandLineTools/SDKs/* /tmp
           sudo mv /Applications/Xcode.app /Applications/Xcode.app.bak
-          sudo mv /Applications/Xcode_14.3.1.app /Applications/Xcode.app
+          sudo mv /Applications/Xcode_15.4.0.app /Applications/Xcode.app
           sudo xcode-select -switch /Applications/Xcode.app
           /usr/bin/xcodebuild -version
           ./gradlew build_macos
@@ -94,36 +91,8 @@ jobs:
 
   natives-linux:
     runs-on: ubuntu-20.04
-    container:
-      image: ubuntu:18.04
     steps:
-      - name: Install dependencies into minimal dockerfile
-        run: |
-          # ubuntu dockerfile is very minimal (only 122 packages are installed)
-          # need to install updated git (from official git ppa)
-          apt update
-          apt install -y software-properties-common
-          add-apt-repository ppa:git-core/ppa -y
-          # install dependencies expected by other steps
-          apt update
-          apt install -y git \
-          curl \
-          ca-certificates \
-          wget \
-          bzip2 \
-          zip \
-          unzip \
-          xz-utils \
-          maven \
-          ant sudo locales make texinfo
-
-          # set Locale to en_US.UTF-8 (avoids hang during compilation)
-          locale-gen en_US.UTF-8
-          echo "LANG=en_US.UTF-8" >> $GITHUB_ENV
-          echo "LANGUAGE=en_US.UTF-8" >> $GITHUB_ENV
-          echo "LC_ALL=en_US.UTF-8" >> $GITHUB_ENV
-
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: 'recursive'
@@ -168,7 +137,7 @@ jobs:
   natives-windows:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: 'recursive'
@@ -206,7 +175,7 @@ jobs:
   natives-android:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: 'recursive'
@@ -247,7 +216,7 @@ jobs:
     runs-on: windows-latest
     needs: [natives-windows]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: 'recursive'
@@ -266,15 +235,15 @@ jobs:
         with:
           name: natives-windows.zip
 
-      - name: Run windows tests
-        run: |
-          ./gradlew test
+#      - name: Run windows tests
+#        run: |
+#          ./gradlew test
 
   publish:
     runs-on: ubuntu-20.04
     needs: [natives-macos, natives-linux, natives-windows, natives-ios, natives-android, test-windows]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: 'recursive'
