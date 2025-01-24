@@ -6,7 +6,7 @@ import com.badlogic.gdx.jnigen.commons.*;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
-import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.slf4j.Logger;
@@ -54,27 +54,27 @@ public class JnigenExtension {
      * Gradle Tasks are executed in the main project working directory. Supply
      * actual subproject path where necessary.
      */
-    String subProjectDir;
+    public String subProjectDir;
 
-    String sharedLibName = null;
-    String temporaryDir = "build/jnigen/target";
-    String libsDir = "build/jnigen/libs";
-    String jniDir = "build/jnigen/jni";
+    public String sharedLibName = null;
+    public String temporaryDir = "build/jnigen/target";
+    public String libsDir = "build/jnigen/libs";
+    public String jniDir = "build/jnigen/jni";
 
     /**
      * If we should build with release flag set.<br/>
      * This strips debug symbols.
      */
-    boolean release = true;
+    public boolean release = true;
 
-    boolean multiThreadedCompile = true;
+    public boolean multiThreadedCompile = true;
 
     NativeCodeGeneratorConfig nativeCodeGeneratorConfig;
     public List<BuildTarget> targets = new ArrayList<>();
     Action<BuildTarget> all = null;
 
     Action<RobovmBuildConfig> robovm;
-	JnigenBindingGeneratorExtension generator = new JnigenBindingGeneratorExtension();
+	JnigenBindingGeneratorExtension generator;
 
     @Inject
     public JnigenExtension (Project project) {
@@ -84,7 +84,12 @@ public class JnigenExtension {
     }
 
     public void generator(Action<JnigenBindingGeneratorExtension> container) {
+        if (generator != null)
+            throw new IllegalStateException("generator already configured");
+        generator = new JnigenBindingGeneratorExtension();
 		container.execute(generator);
+
+        project.getTasks().create("jnigenGenerateBindings", JnigenGenerateBindingsTask.class, generator);
 	}
 
     public void nativeCodeGenerator (Action<NativeCodeGeneratorConfig> container) {
@@ -286,14 +291,14 @@ public class JnigenExtension {
         }
     }
 
-    class NativeCodeGeneratorConfig {
-        SourceSet sourceSet;
+    public class NativeCodeGeneratorConfig {
+        public SourceSet sourceSet;
+        public String[] includes = null;
+        public String[] excludes = null;
         private String[] sourceDirs;
-        String[] includes = null;
-        String[] excludes = null;
 
         public NativeCodeGeneratorConfig (Project project) {
-            JavaPluginConvention javaPlugin = project.getConvention().getPlugin(JavaPluginConvention.class);
+            JavaPluginExtension javaPlugin = project.getExtensions().getByType(JavaPluginExtension.class);
             SourceSetContainer sourceSets = javaPlugin.getSourceSets();
             sourceSet = sourceSets.findByName("main");
         }

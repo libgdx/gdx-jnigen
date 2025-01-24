@@ -8,9 +8,10 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.WildcardType;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,11 +43,13 @@ public class GlobalType implements MappedType {
         functions.add(functionType);
     }
 
+    public List<FunctionType> getFunctions() {
+        return functions;
+    }
 
-    public void write(CompilationUnit cu, HashMap<MethodDeclaration, String> patchNativeMethods) {
-        ClassOrInterfaceDeclaration global = cu.addClass(globalName, Keyword.PUBLIC, Keyword.FINAL);
-        cu.addImport(ClassNameConstants.CXXEXCEPTION_CLASS);
-        cu.addImport(IllegalArgumentException.class);
+    public void write(CompilationUnit cuPublic, ClassOrInterfaceDeclaration global, CompilationUnit cuInternal, ClassOrInterfaceDeclaration globalInternal, HashMap<MethodDeclaration, String> patchNativeMethods) {
+        cuPublic.addImport(ClassNameConstants.CXXEXCEPTION_CLASS);
+        cuPublic.addImport(IllegalArgumentException.class);
         global.addStaticInitializer()
                 .addStatement("CHandler.init();")
                 .addStatement("FFITypes.init();")
@@ -59,20 +62,22 @@ public class GlobalType implements MappedType {
 
         MethodDeclaration initMethod = global.addMethod("init", Keyword.PRIVATE, Keyword.STATIC, Keyword.NATIVE);
         initMethod.setType(void.class)
-                .addParameter(Class.class, "illegalArgumentException")
-                .addParameter(Class.class, "cxxException")
+                .addParameter(new ClassOrInterfaceType().setName("Class").setTypeArguments(new WildcardType()), "illegalArgumentException")
+                .addParameter(new ClassOrInterfaceType().setName("Class").setTypeArguments(new WildcardType()), "cxxException")
                 .setBody(null);
         patchNativeMethods.put(initMethod, "illegalArgumentExceptionClass = (jclass)env->NewGlobalRef(illegalArgumentException);\n"
                 + "cxxExceptionClass = (jclass)env->NewGlobalRef(cxxException);");
 
         for (FunctionType functionType : functions) {
-            functionType.write(cu, global, patchNativeMethods);
+            functionType.write(cuPublic, global, patchNativeMethods);
         }
 
         for (ClosureType closureType : closures.values()) {
             ClassOrInterfaceDeclaration declaration = closureType.generateClass();
-            closureType.write(cu, declaration);
+            ClassOrInterfaceDeclaration declarationInternal = closureType.generateClassInternal();
+            closureType.write(cuPublic, declaration, cuInternal, declarationInternal);
             global.addMember(declaration);
+            globalInternal.addMember(declarationInternal);
         }
     }
 

@@ -3,9 +3,23 @@ package com.badlogic.jnigen.generated.enums;
 import com.badlogic.gdx.jnigen.runtime.pointer.EnumPointer;
 import com.badlogic.gdx.jnigen.runtime.c.CEnum;
 
+/**
+ * This is a Test Enum
+ */
 public enum TestEnum implements CEnum {
 
-    FIRST(0), SECOND(1), THIRD(4);
+    /**
+     * This is a comment on FIRST
+     */
+    FIRST(0),
+    /**
+     * This is a comment on Second and third
+     */
+    SECOND(1),
+    /**
+     * This is a comment on Second and third
+     */
+    THIRD(4);
 
     private final int index;
 

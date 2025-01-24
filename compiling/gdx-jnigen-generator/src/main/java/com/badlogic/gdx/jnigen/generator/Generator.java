@@ -1,16 +1,9 @@
 package com.badlogic.gdx.jnigen.generator;
 
+import com.badlogic.gdx.jnigen.generator.parser.CommentParser;
 import com.badlogic.gdx.jnigen.generator.parser.EnumParser;
 import com.badlogic.gdx.jnigen.generator.parser.StackElementParser;
-import com.badlogic.gdx.jnigen.generator.types.ClosureType;
-import com.badlogic.gdx.jnigen.generator.types.FunctionSignature;
-import com.badlogic.gdx.jnigen.generator.types.FunctionType;
-import com.badlogic.gdx.jnigen.generator.types.MappedType;
-import com.badlogic.gdx.jnigen.generator.types.NamedType;
-import com.badlogic.gdx.jnigen.generator.types.PointerType;
-import com.badlogic.gdx.jnigen.generator.types.PrimitiveType;
-import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
-import com.badlogic.gdx.jnigen.generator.types.TypeKind;
+import com.badlogic.gdx.jnigen.generator.types.*;
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.IntPointer;
 import org.bytedeco.javacpp.PointerPointer;
@@ -30,6 +23,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.bytedeco.llvm.global.clang.*;
 
@@ -69,6 +65,10 @@ public class Generator {
 
             // A typedef unsets a parent, because an anonymous declaration can't be typedefed I think
             TypeDefinition lower = registerCXType(typeDef, clang_getTypedefName(type).getString(), null);
+            if (lower.getTypeKind() == TypeKind.CLOSURE) {
+                // As the type system does not retain argument names, we need to reparse it here
+                patchClosureTypeWithCursor(lower, clang_getTypeDeclaration(type));
+            }
             TypeDefinition definition = new TypeDefinition(lower.getTypeKind(), clang_getTypedefName(type).getString());
             definition.setOverrideMappedType(lower.getMappedType());
             return definition;
@@ -169,7 +169,63 @@ public class Generator {
         throw new IllegalArgumentException("Should not reach");
     }
 
-    // TODO: Pass proper parameter names
+    public static void patchClosureTypeWithCursor(TypeDefinition definition, CXCursor cursor) {
+        if (definition.getTypeKind() != TypeKind.CLOSURE)
+            throw new IllegalArgumentException("Can only reparse closures");
+
+        if (!(definition.getMappedType() instanceof ClosureType))
+            throw new IllegalArgumentException("Can only reparse closures");
+        ClosureType closureType = (ClosureType)definition.getMappedType();
+        CommentParser parser = new CommentParser(cursor);
+        if (parser.isPresent())
+            closureType.setComment(parser.parse());
+        patchSignatureArgNamesWithVisitor(closureType.getSignature(), cursor);
+    }
+
+    // Clangs typesystem doesn't retain arg names, so we need to reparse them for closures
+    public static void patchSignatureArgNamesWithVisitor(FunctionSignature functionSignature, CXCursor cursor) {
+        AtomicInteger counter = new AtomicInteger(0);
+        CXCursorVisitor parameterVisitor = new CXCursorVisitor() {
+            @Override
+            public int call(CXCursor current, CXCursor parent, CXClientData client_data) {
+                if (current.kind() == CXCursor_ParmDecl) {
+                    int id = counter.getAndIncrement();
+
+                    String name = clang_getCursorSpelling(current).getString();
+                    if (name.isEmpty())
+                        name = "arg" + id;
+
+                    functionSignature.getArguments()[id].setName(name);
+                }
+                return CXChildVisit_Recurse;
+            }
+        };
+
+        clang_visitChildren(cursor, parameterVisitor, null);
+        parameterVisitor.close();
+    }
+
+    public static void dumpAST(CXCursor cursor, int depth) {
+        String indent = IntStream.range(0, depth).mapToObj(i -> " ").collect(Collectors.joining());
+        System.out.printf("%s%s: %s (kind: %s)%n",
+                indent,
+                clang_getCursorSpelling(cursor).getString(),
+                clang_getTypeSpelling(clang_getCursorType(cursor)).getString(),
+                clang_getCursorKind(cursor));
+
+        CXCursorVisitor visitor = new CXCursorVisitor() {
+            @Override
+            public int call(CXCursor cursor, CXCursor parent, CXClientData client_data) {
+                dumpAST(cursor, depth + 1);
+                return CXChildVisit_Continue;
+            }
+        };
+
+        clang_visitChildren(cursor, visitor, null);
+
+        visitor.close();
+    }
+
     public static FunctionSignature parseFunctionSignature(String functionName, CXType functionType, CXCursor cursor) {
         if (clang_isFunctionTypeVariadic(functionType) != 0)
             throw new IllegalArgumentException("Function " + functionName + " is variadic, which is currently not supported");
@@ -225,7 +281,7 @@ public class Generator {
                     try {
                         Manager.startNewManager();
                         FunctionSignature functionSignature = parseFunctionSignature(name, funcType, current);
-                        Manager.getInstance().addFunction(new FunctionType(functionSignature));
+                        Manager.getInstance().addFunction(new FunctionType(functionSignature, new CommentParser(current).parse()));
                     }catch (Throwable e) {
                         Manager.rollBack();
                         System.err.println("Failed to parse function: " + name);
@@ -243,7 +299,9 @@ public class Generator {
                         for (int i = 1; i < nTokens.get(); i++) {
                             value.append(clang_getTokenSpelling(translationUnit, tokens.position(i)).getString());
                         }
-                        Manager.getInstance().registerMacro(tokenizedName, value.toString());
+
+                        // Libclang doesn't support define comment parsing
+                        Manager.getInstance().registerMacro(new MacroType(tokenizedName, value.toString(), null));
                     }
                 }
 

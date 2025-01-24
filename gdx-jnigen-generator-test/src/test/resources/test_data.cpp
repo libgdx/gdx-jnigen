@@ -130,6 +130,10 @@ void call_methodWithCallbackTestStructPointerArg(methodWithCallbackTestStructPoi
     fnPtr(arg);
 }
 
+void commentedMethod(void) {
+    // This method does actually no great stuff MUAHAHAHA
+}
+
 TestStruct* returnTestStructPointer(void) {
     TestStruct* ptr = (TestStruct*)malloc(sizeof(TestStruct));
     TestStruct str = {
@@ -601,6 +605,10 @@ static void testUnionPointerArgCallback(TestUnion* arg) {
     g_lastArg.unionPtr = arg;
 }
 
+static void testCallThrowingCallback(methodWithThrowingCallback fnPtr) {
+    fnPtr();
+}
+
 methodWithCallback getVoidCallback(void) {
     return voidCallback;
 }
@@ -727,4 +735,8 @@ methodWithCallbackTestUnionPointerReturn getTestUnionPointerReturnCallback(void)
 
 methodWithCallbackTestUnionPointerArg getTestUnionPointerArgCallback(void) {
     return testUnionPointerArgCallback;
+}
+
+methodWithCallbackCallThrowingCallback getCallThrowingCallbackCallback(void) {
+    return testCallThrowingCallback;
 }

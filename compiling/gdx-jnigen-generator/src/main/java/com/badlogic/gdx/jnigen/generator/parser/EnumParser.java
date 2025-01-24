@@ -2,6 +2,7 @@ package com.badlogic.gdx.jnigen.generator.parser;
 
 import com.badlogic.gdx.jnigen.generator.JavaUtils;
 import com.badlogic.gdx.jnigen.generator.Manager;
+import com.badlogic.gdx.jnigen.generator.types.EnumConstant;
 import com.badlogic.gdx.jnigen.generator.types.EnumType;
 import com.badlogic.gdx.jnigen.generator.types.MappedType;
 import com.badlogic.gdx.jnigen.generator.types.TypeDefinition;
@@ -31,6 +32,9 @@ public class EnumParser {
         CXCursor cursor = clang_getTypeDeclaration(toParse);
 
         EnumType enumType = new EnumType(definition, javaName);
+        CommentParser commentParser = new CommentParser(cursor);
+        if (commentParser.isPresent())
+            enumType.setComment(commentParser.parse());
 
         CXCursorVisitor visitor = new CXCursorVisitor() {
             @Override
@@ -40,7 +44,8 @@ public class EnumParser {
                     long constantValue = clang_getEnumConstantDeclValue(current);
                     if (constantValue > Integer.MAX_VALUE)
                         throw new IllegalArgumentException("Why is the enum " + enumType.abstractType() + " so biiig? Please open a issue in the gdx-jnigen repo");
-                    enumType.registerConstant(cursorSpelling, (int)constantValue);
+                    EnumConstant constant = new EnumConstant((int) constantValue, cursorSpelling, new CommentParser(current).parse());
+                    enumType.registerConstant(constant);
                 }
                 return CXChildVisit_Recurse;
             }

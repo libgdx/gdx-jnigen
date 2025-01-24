@@ -5,6 +5,9 @@ import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.jnigen.generated.FFITypes;
 
+/**
+ * This is a test struct
+ */
 public final class TestStruct extends Struct {
 
     private final static int __size;
@@ -36,34 +39,58 @@ public final class TestStruct extends Struct {
         return new TestStruct.TestStructPointer(getPointer(), getsGCFreed());
     }
 
+    /**
+     * Field Comment 1
+     */
     public long field1() {
         return (long) getValue(0);
     }
 
+    /**
+     * Field Comment 1
+     */
     public void field1(long field1) {
         setValue(field1, 0);
     }
 
+    /**
+     * Field Comment 2
+     */
     public long field2() {
         return (long) getValue(1);
     }
 
+    /**
+     * Field Comment 2
+     */
     public void field2(long field2) {
         setValue(field2, 1);
     }
 
+    /**
+     * Field Comment 3
+     */
     public char field3() {
         return (char) getValue(2);
     }
 
+    /**
+     * Field Comment 3
+     */
     public void field3(char field3) {
         setValue(field3, 2);
     }
 
+    /**
+     * Field Comment 4
+     */
     public char field4() {
         return (char) getValue(3);
     }
 
+    /**
+     * Field Comment 4
+     */
     public void field4(char field4) {
         setValue(field4, 3);
     }

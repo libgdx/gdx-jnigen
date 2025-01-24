@@ -5,6 +5,9 @@ import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.jnigen.generated.FFITypes;
 
+/**
+ * Anonymous struct jaja
+ */
 public final class AnonymousStructNoField extends Struct {
 
     private final static int __size;

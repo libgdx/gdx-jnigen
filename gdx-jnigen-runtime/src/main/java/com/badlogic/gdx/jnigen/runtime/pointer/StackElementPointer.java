@@ -1,6 +1,7 @@
 package com.badlogic.gdx.jnigen.runtime.pointer;
 
 import com.badlogic.gdx.jnigen.runtime.CHandler;
+import com.badlogic.gdx.jnigen.runtime.gc.GCHandler;
 
 public abstract class StackElementPointer<T extends StackElement> extends Pointing {
 
@@ -39,7 +40,10 @@ public abstract class StackElementPointer<T extends StackElement> extends Pointi
     public T asStackElement(int index) {
         int offset = getSize() * index;
         assertBounds(offset);
-        return createStackElement(getPointer() + offset, getsGCFreed());
+        T stackElement = createStackElement(getPointer() + offset, false);
+        if (getsGCFreed())
+            GCHandler.enqueuePointer(stackElement, getPointer());
+        return stackElement;
     }
 
     public void set(T struct) {

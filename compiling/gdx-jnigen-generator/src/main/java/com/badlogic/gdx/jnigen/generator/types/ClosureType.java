@@ -12,7 +12,6 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.ArrayAccessExpr;
 import com.github.javaparser.ast.expr.ArrayCreationExpr;
 import com.github.javaparser.ast.expr.ArrayInitializerExpr;
-import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
@@ -33,10 +32,15 @@ public class ClosureType implements MappedType, WritableClass {
 
     private final FunctionSignature signature;
     private final MappedType parent;
+    private String comment;
 
     public ClosureType(FunctionSignature signature, MappedType parent) {
         this.signature = signature;
         this.parent = parent;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     @Override
@@ -44,12 +48,22 @@ public class ClosureType implements MappedType, WritableClass {
         return new ClassOrInterfaceDeclaration()
                 .setInterface(true)
                 .addExtendedType("Closure")
+                .addExtendedType(internalClassName())
                 .setModifier(Keyword.PUBLIC, true)
                 .setName(signature.getName());
     }
 
+    @Override
+    public ClassOrInterfaceDeclaration generateClassInternal() {
+        return new ClassOrInterfaceDeclaration()
+                .setInterface(true)
+                .addExtendedType("Closure")
+                .setModifier(Keyword.PUBLIC, true)
+                .setName(internalClassName());
+    }
+
     public void writeHelper(CompilationUnit cu, ClassOrInterfaceDeclaration closureHelperClass) {
-        importType(cu);
+        cu.addImport(classFile() + "." + signature.getName());
         cu.addImport(ClassNameConstants.CLOSUREENCODER_CLASS);
 
         MethodDeclaration downcallMethod = closureHelperClass.addMethod(getName() + "_downcall", Keyword.PUBLIC, Keyword.STATIC);
@@ -66,7 +80,7 @@ public class ClosureType implements MappedType, WritableClass {
                                 .setType("ClosureEncoder")
                                 .addArgument(new NameExpr("fnPtr"))
                                 .addArgument(new FieldAccessExpr(
-                                        new NameExpr(getName()),
+                                        new NameExpr(internalClassName()),
                                         "__ffi_cache"
                                 ))
                         )
@@ -82,67 +96,67 @@ public class ClosureType implements MappedType, WritableClass {
                         ))
         );
 
-        VariableDeclarationExpr returnConvertDeclaration = new VariableDeclarationExpr(
-                new VariableDeclarator()
-                        .setType("JavaTypeWrapper")
-                        .setName("returnConvert")
-                        .setInitializer(new ObjectCreationExpr()
-                                .setType("JavaTypeWrapper")
-                                .addArgument(new ArrayAccessExpr(
-                                        new FieldAccessExpr(
-                                                new NameExpr(getName()),
-                                                "__ffi_cache"
-                                        ),
-                                        new BinaryExpr(
-                                                new FieldAccessExpr(
-                                                        new NameExpr(getName()),
-                                                        "__ffi_cache.length"
-                                                ),
-                                                new IntegerLiteralExpr("1"),
-                                                BinaryExpr.Operator.MINUS
-                                        )
-                                ))
-                        )
-        );
-
-        BlockStmt arguments = new BlockStmt();
+        NodeList<Statement> arguments = new NodeList<>();
         for (int i = 0; i < signature.getArguments().length; i++) {
             NamedType argument = signature.getArguments()[i];
             ExpressionStmt setValueStmt = new ExpressionStmt(
                     new MethodCallExpr(new NameExpr("useEncoder"), "setValue")
-                            .addArgument(new IntegerLiteralExpr(i))
+                            .addArgument(new IntegerLiteralExpr(String.valueOf(i)))
                             .addArgument(new NameExpr(argument.getName()))
             );
-            arguments.addStatement(setValueStmt);
+            arguments.add(setValueStmt);
         }
 
-        ExpressionStmt returnSetValueStatement = new ExpressionStmt(
-                new MethodCallExpr(
-                        new NameExpr("returnConvert"),
-                        "setValue"
-                ).addArgument(new MethodCallExpr(
-                        new NameExpr("useEncoder"),
-                        "invoke"
-                ))
-        );
+        BlockStmt lambdaBody = new BlockStmt()
+                .addStatement(new ExpressionStmt(useEncoderDeclaration));
 
-        Statement returnStatement;
+        for (Statement statement : arguments) {
+            lambdaBody.addStatement(statement);
+        }
+
         if (signature.getReturnType().getTypeKind() == TypeKind.VOID) {
-            returnStatement = new ReturnStmt();
+            lambdaBody.addStatement(new MethodCallExpr(
+                    new NameExpr("useEncoder"),
+                    "invoke"
+            ));
         } else {
-            returnStatement = new ReturnStmt(getMethodCallExpr(new NameExpr("returnConvert"), signature.getReturnType()));
-        }
 
+            VariableDeclarationExpr returnConvertDeclaration = new VariableDeclarationExpr(
+                    new VariableDeclarator()
+                            .setType("JavaTypeWrapper")
+                            .setName("returnConvert")
+                            .setInitializer(new ObjectCreationExpr()
+                                    .setType("JavaTypeWrapper")
+                                    .addArgument(new ArrayAccessExpr(
+                                            new FieldAccessExpr(
+                                                    new NameExpr(internalClassName()),
+                                                    "__ffi_cache"
+                                            ),
+                                            new IntegerLiteralExpr("0")
+                                    ))
+                            )
+            );
+
+            ExpressionStmt returnSetValueStatement = new ExpressionStmt(
+                    new MethodCallExpr(
+                            new NameExpr("returnConvert"),
+                            "setValue"
+                    ).addArgument(new MethodCallExpr(
+                            new NameExpr("useEncoder"),
+                            "invoke"
+                    ))
+            );
+
+            Statement returnStatement = new ReturnStmt(getMethodCallExpr(new NameExpr("returnConvert"), signature.getReturnType()));
+
+            lambdaBody.addStatement(new ExpressionStmt(returnConvertDeclaration))
+                    .addStatement(returnSetValueStatement)
+                    .addStatement(returnStatement);
+        }
 
         LambdaExpr lambda = new LambdaExpr()
                 .setEnclosingParameters(true)
-                .setBody(new BlockStmt()
-                        .addStatement(new ExpressionStmt(useEncoderDeclaration))
-                        .addStatement(arguments)
-                        .addStatement(new ExpressionStmt(returnConvertDeclaration))
-                        .addStatement(returnSetValueStatement)
-                        .addStatement(returnStatement)
-                );
+                .setBody(lambdaBody);
 
         for (NamedType namedType : signature.getArguments()) {
             namedType.getDefinition().getMappedType().importType(cu);
@@ -155,7 +169,7 @@ public class ClosureType implements MappedType, WritableClass {
     }
 
     @Override
-    public void write(CompilationUnit cu, ClassOrInterfaceDeclaration closureClass) {
+    public void write(CompilationUnit cuPublic, ClassOrInterfaceDeclaration toWriteToPublic, CompilationUnit cuPrivate, ClassOrInterfaceDeclaration toWriteToPrivate) {
         String name = signature.getName();
         TypeDefinition returnType = signature.getReturnType();
         NamedType[] arguments = signature.getArguments();
@@ -163,40 +177,49 @@ public class ClosureType implements MappedType, WritableClass {
             throw new IllegalArgumentException("Unions are not allowed to be passed via stack from/to a closure, failing closure: " + name);
         }
 
-        cu.addImport(ClassNameConstants.CLOSURE_CLASS);
-        cu.addImport(ClassNameConstants.JAVATYPEWRAPPER_CLASS);
-        cu.addImport(ClassNameConstants.CTYPEINFO_CLASS);
+        importType(cuPublic);
+        cuPublic.addImport(ClassNameConstants.CLOSURE_CLASS);
+        cuPublic.addImport(internalClass());
+
+        cuPrivate.addImport(ClassNameConstants.JAVATYPEWRAPPER_CLASS);
+        cuPrivate.addImport(ClassNameConstants.CTYPEINFO_CLASS);
+        cuPrivate.addImport(ClassNameConstants.CLOSURE_CLASS);
 
         NodeList<Expression> arrayInitializerExpr = new NodeList<>();
         ArrayCreationExpr arrayCreationExpr = new ArrayCreationExpr();
         arrayCreationExpr.setElementType("CTypeInfo");
         arrayCreationExpr.setInitializer(new ArrayInitializerExpr(arrayInitializerExpr));
 
-        closureClass.addFieldWithInitializer("CTypeInfo[]", "__ffi_cache", arrayCreationExpr);
+        toWriteToPrivate.addFieldWithInitializer("CTypeInfo[]", "__ffi_cache", arrayCreationExpr);
 
-        MethodDeclaration callMethod = closureClass.addMethod(name + "_call");
+        MethodDeclaration callMethod = toWriteToPublic.addMethod(name + "_call");
+        if (comment != null)
+            callMethod.setJavadocComment(comment);
+
         callMethod.setBody(null);
         for (NamedType namedType : arguments) {
-            namedType.getDefinition().getMappedType().importType(cu);
+            namedType.getDefinition().getMappedType().importType(cuPublic);
             callMethod.addAndGetParameter(namedType.getDefinition().getMappedType().abstractType(), namedType.getName());
             MethodCallExpr getTypeID = new MethodCallExpr("getCTypeInfo");
             getTypeID.setScope(new NameExpr("FFITypes"));
             getTypeID.addArgument(new IntegerLiteralExpr(String.valueOf(namedType.getDefinition().getMappedType().typeID())));
             arrayInitializerExpr.add(getTypeID);
         }
-        returnType.getMappedType().importType(cu);
+        returnType.getMappedType().importType(cuPublic);
         callMethod.setType(returnType.getMappedType().abstractType());
+
+        toWriteToPrivate.addMember(new MethodDeclaration(callMethod.getModifiers(), callMethod.getNameAsString(), callMethod.getType(), callMethod.getParameters()).setBody(null));
 
         MethodCallExpr getTypeID = new MethodCallExpr("getCTypeInfo");
         getTypeID.setScope(new NameExpr("FFITypes"));
         getTypeID.addArgument(new IntegerLiteralExpr(String.valueOf(returnType.getMappedType().typeID())));
         arrayInitializerExpr.add(0, getTypeID);
 
-        closureClass.addMethod("functionSignature", Keyword.DEFAULT)
+        toWriteToPrivate.addMethod("functionSignature", Keyword.DEFAULT)
                 .setType("CTypeInfo[]")
                 .createBody().addStatement("return __ffi_cache;");
 
-        MethodDeclaration invokeMethod = closureClass.addMethod("invoke", Keyword.DEFAULT);
+        MethodDeclaration invokeMethod = toWriteToPrivate.addMethod("invoke", Keyword.DEFAULT);
         invokeMethod.addParameter("JavaTypeWrapper[]", "parameters");
         invokeMethod.addParameter("JavaTypeWrapper", "returnType");
         BlockStmt invokeBody = new BlockStmt();
@@ -227,7 +250,7 @@ public class ClosureType implements MappedType, WritableClass {
 
         invokeMethod.setBody(invokeBody);
 
-        writeHelper(cu, closureClass);
+        writeHelper(cuPrivate, toWriteToPrivate);
     }
 
     private static Expression getMethodCallExpr(Expression expression, TypeDefinition type) {
@@ -243,6 +266,10 @@ public class ClosureType implements MappedType, WritableClass {
 
     public String getName() {
         return signature.getName();
+    }
+
+    public FunctionSignature getSignature() {
+        return signature;
     }
 
     @Override
@@ -262,6 +289,7 @@ public class ClosureType implements MappedType, WritableClass {
         if (cu.getClassByName(parent.abstractType()).isPresent())
             return;
         cu.addImport(classFile() + "." + signature.getName());
+        cu.addImport(internalClass());
     }
 
     @Override
@@ -279,7 +307,7 @@ public class ClosureType implements MappedType, WritableClass {
         MethodCallExpr methodCallExpr = new MethodCallExpr("getClosureObject");
         methodCallExpr.setScope(new NameExpr("CHandler"));
         methodCallExpr.addArgument(cRetrieved);
-        methodCallExpr.addArgument(getName() + "::" + getName() + "_downcall");
+        methodCallExpr.addArgument(internalClassName() + "::" + getName() + "_downcall");
         return methodCallExpr;
     }
 
@@ -293,5 +321,15 @@ public class ClosureType implements MappedType, WritableClass {
     @Override
     public int typeID() {
         return Manager.POINTER_FFI_ID;
+    }
+
+    @Override
+    public String internalClassName() {
+        return getName() + "_Internal";
+    }
+
+    @Override
+    public String internalClass() {
+        return parent.internalClass() + "." + internalClassName();
     }
 }

@@ -208,6 +208,8 @@ public class CHandler {
 
     public static native long malloc(long size);
 
+    public static native long calloc(long count, long size);
+
     public static native void free(long pointer);
 
     public static native void memcpy(long dst, long src, long size);

@@ -176,6 +176,14 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_malloc
   (JNIEnv *, jclass, jlong);
 
 /*
+* Class:     com_badlogic_gdx_jnigen_runtime_CHandler
+* Method:    calloc
+* Signature: (JJ)J
+*/
+JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_calloc
+(JNIEnv *, jclass, jlong, jlong);
+
+/*
  * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
  * Method:    free
  * Signature: (J)V

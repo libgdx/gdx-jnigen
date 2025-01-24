@@ -44,10 +44,16 @@ public final class AnonymousStructNoFieldEnd extends Struct {
         setValue(externalValue, 0);
     }
 
+    /**
+     * Anon struct field
+     */
     public int intValue() {
         return (int) getValue(1);
     }
 
+    /**
+     * Anon struct field
+     */
     public void intValue(int intValue) {
         setValue(intValue, 1);
     }

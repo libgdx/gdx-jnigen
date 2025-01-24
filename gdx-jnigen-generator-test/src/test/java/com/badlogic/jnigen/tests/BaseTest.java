@@ -1,14 +1,17 @@
 package com.badlogic.jnigen.tests;
 
-import com.badlogic.gdx.jnigen.runtime.gc.GCHandler;
+import com.badlogic.gdx.jnigen.commons.HostDetection;
+import com.badlogic.gdx.jnigen.commons.Os;
 import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
+import com.badlogic.gdx.jnigen.runtime.gc.GCHandler;
 import com.badlogic.jnigen.generated.TestData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.io.File;
+import java.io.IOException;
+import java.lang.ProcessHandle;
 
 public class BaseTest {
 
@@ -22,21 +25,25 @@ public class BaseTest {
     @BeforeEach
     @AfterEach
     public void emptyGC() {
-        long time = System.currentTimeMillis();
+        String javaHome = System.getProperty("java.home");
+        if (javaHome == null)
+            throw new RuntimeException("System property 'java.home' is not set, can't force GC run");
+
+        String jcmdPath = javaHome + File.separator + "bin" + File.separator + "jcmd";
+        if (HostDetection.os == Os.Windows)
+            jcmdPath += ".exe";
+
+        ProcessBuilder jcmdGCRunner = new ProcessBuilder(jcmdPath, String.valueOf(ProcessHandle.current().pid()), "GC.run");
+
+        long start = System.currentTimeMillis();
         while (GCHandler.nativeObjectCount() != 0) {
-            if (System.currentTimeMillis() - time > 5000)
+            if (System.currentTimeMillis() - start > 5000)
                 throw new RuntimeException("GC timed out");
 
-            System.gc();
-            System.runFinalization();
-
-            if (System.currentTimeMillis() - time > 1000) {
-                try {
-                    final List<long[]> memhog = new LinkedList<>();
-                    while(true) {
-                        memhog.add(new long[102400]);
-                    }
-                } catch(OutOfMemoryError ignored) {}
+            try {
+                jcmdGCRunner.start().waitFor();
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
     }
