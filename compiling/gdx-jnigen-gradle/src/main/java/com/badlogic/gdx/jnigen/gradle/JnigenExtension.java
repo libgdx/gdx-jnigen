@@ -75,6 +75,8 @@ public class JnigenExtension {
 
     Action<RobovmBuildConfig> robovm;
 	JnigenBindingGeneratorExtension generator;
+	JnigenSigningExtension signing;
+    DefaultTask signAllTask;
 
     @Inject
     public JnigenExtension (Project project) {
@@ -94,6 +96,17 @@ public class JnigenExtension {
 
     public void nativeCodeGenerator (Action<NativeCodeGeneratorConfig> container) {
         container.execute(nativeCodeGeneratorConfig);
+    }
+
+    public void signing (Action<JnigenSigningExtension> container) {
+        if (signing != null)
+            throw new IllegalStateException("signing already configured");
+        signing = new JnigenSigningExtension();
+        container.execute(signing);
+
+        signAllTask = project.getTasks().create("jnigenSignAll", DefaultTask.class);
+        signAllTask.setGroup("jnigen");
+        signAllTask.setDescription("Signs all signable native libraries");
     }
 
     public void all (Action<BuildTarget> container) {
@@ -257,6 +270,16 @@ public class JnigenExtension {
             JnigenBuildTask jnigenBuildTask = project.getTasks().create("jnigenBuild" + os.name() + "_" + architecture.getDisplayName() + bitness.name(), JnigenBuildTask.class, this);
             jnigenBuildTask.setBuildTarget(target);
             jnigenBuildTask.dependsOn(jnigenTask);
+
+            if (signing != null) {
+                if (os == Windows && signing.getJsignParams() != null
+                        || (os == MacOsX || os == IOS) && signing.getIdentity() != null) {
+                    JnigenSignTask jnigenSignTask = project.getTasks().create("jnigenSign" + os.name() + "_" + architecture.getDisplayName() + bitness.name(), JnigenSignTask.class, this);
+                    jnigenSignTask.setBuildTarget(target);
+                    jnigenSignTask.dependsOn(jnigenBuildTask);
+                    signAllTask.dependsOn(jnigenSignTask);
+                }
+            }
 
             platformLevelTargetsSeen.get(platform).mustRunAfter(jnigenBuildTask);
             if (HostDetection.os == os && HostDetection.architecture == architecture && HostDetection.bitness == bitness) {
