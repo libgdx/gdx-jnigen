@@ -231,7 +231,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Download natives-windows artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: natives-windows.zip
 
@@ -258,27 +258,27 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Download natives-ios artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: natives-ios.zip
 
       - name: Download natives-macos artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: natives-macos.zip
 
       - name: Download natives-linux artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: natives-linux.zip
 
       - name: Download natives-windows artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: natives-windows.zip
 
       - name: Download natives-android artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: natives-android.zip
 

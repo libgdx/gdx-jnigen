@@ -130,7 +130,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Download natives-windows artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: natives-windows.zip
 
