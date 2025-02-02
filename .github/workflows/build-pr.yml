@@ -106,7 +106,7 @@ jobs:
           zip natives-windows -@ < native-files-list
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: natives-windows.zip
           path: natives-windows.zip

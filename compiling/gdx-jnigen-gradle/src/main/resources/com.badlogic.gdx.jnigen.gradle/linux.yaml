@@ -39,7 +39,7 @@
           zip natives-linux -@ < native-files-list
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: natives-linux.zip
           path: natives-linux.zip

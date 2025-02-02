@@ -29,7 +29,7 @@
           zip natives-mac -@ < native-files-list
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: natives-mac.zip
           path: natives-mac.zip

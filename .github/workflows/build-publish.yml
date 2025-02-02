@@ -41,7 +41,7 @@ jobs:
           zip -r natives-ios -@ < native-files-list
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: natives-ios.zip
           path: natives-ios.zip
@@ -84,7 +84,7 @@ jobs:
           zip natives-macos -@ < native-files-list
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: natives-macos.zip
           path: natives-macos.zip
@@ -129,7 +129,7 @@ jobs:
           zip natives-linux -@ < native-files-list
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: natives-linux.zip
           path: natives-linux.zip
@@ -167,7 +167,7 @@ jobs:
           zip natives-windows -@ < native-files-list
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: natives-windows.zip
           path: natives-windows.zip
@@ -207,7 +207,7 @@ jobs:
           zip natives-android -@ < native-files-list
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: natives-android.zip
           path: natives-android.zip
