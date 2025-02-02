@@ -81,17 +81,21 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static GlobalArg getGlobalArgState() {
-        return new GlobalArg(getGlobalArgState_internal(), true);
+        return new GlobalArg(getGlobalArgState_internal(0), true);
     }
 
-    static private native long getGlobalArgState_internal();/*
+    private static native long getGlobalArgState_internal(long _retPar);/*
     	HANDLE_JAVA_EXCEPTION_START()
-    	GlobalArg* _ret = (GlobalArg*)malloc(sizeof(GlobalArg));
+    	GlobalArg* _ret = (GlobalArg*) (_retPar == 0 ? malloc(sizeof(GlobalArg)) : (void*)_retPar);
     	*_ret = getGlobalArgState();
     	return (jlong)_ret;
     	HANDLE_JAVA_EXCEPTION_END()
     	return 0;
     */
+
+    public static void getGlobalArgState(GlobalArg _retPar) {
+        getGlobalArgState_internal(_retPar.getPointer());
+    }
 
     /**
      * This method does great stuff, trust me
@@ -100,7 +104,7 @@ static jclass cxxExceptionClass = NULL;
         commentedMethod_internal();
     }
 
-    static private native void commentedMethod_internal();/*
+    private static native void commentedMethod_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	commentedMethod();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -110,7 +114,7 @@ static jclass cxxExceptionClass = NULL;
         ensureParsed_internal(arg0.getPointer(), arg1.getPointer(), arg2.getPointer(), arg3.getPointer(), arg4.getPointer(), arg5.getPointer(), arg6.getPointer(), arg7.getPointer());
     }
 
-    static private native void ensureParsed_internal(long arg0, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6, long arg7);/*
+    private static native void ensureParsed_internal(long arg0, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6, long arg7);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	ensureParsed(*(AnonymousStructNoField*)arg0, *(AnonymousStructField*)arg1, *(AnonymousStructFieldArray*)arg2, *(struct AnonymousClosure*)arg3, *(AnonymousStructNoFieldEnd*)arg4, *(AnonymousStructNoFieldConsecutive*)arg5, *(AnonymousStructNoFieldNested*)arg6, (struct forwardDeclStruct *)arg7);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -120,7 +124,7 @@ static jclass cxxExceptionClass = NULL;
         weirdPointer_internal(_file.getPointer());
     }
 
-    static private native void weirdPointer_internal(long _file);/*
+    private static native void weirdPointer_internal(long _file);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	weirdPointer((FILE *)_file);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -130,7 +134,7 @@ static jclass cxxExceptionClass = NULL;
         constArrayParameter_internal(structs.getPointer());
     }
 
-    static private native void constArrayParameter_internal(long structs);/*
+    private static native void constArrayParameter_internal(long structs);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	constArrayParameter((const TestStruct*)structs);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -140,7 +144,7 @@ static jclass cxxExceptionClass = NULL;
         return new PointerPointer<>(voidPointerPointer_internal(test.getPointer()), false, VoidPointer::new);
     }
 
-    static private native long voidPointerPointer_internal(long test);/*
+    private static native long voidPointerPointer_internal(long test);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)voidPointerPointer((void **)test);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -151,7 +155,7 @@ static jclass cxxExceptionClass = NULL;
         return new PointerPointer<>(enumPointerPointer_internal(test.getPointer()), false, TestEnum.TestEnumPointer::new);
     }
 
-    static private native long enumPointerPointer_internal(long test);/*
+    private static native long enumPointerPointer_internal(long test);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)enumPointerPointer((TestEnum **)test);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -162,7 +166,7 @@ static jclass cxxExceptionClass = NULL;
         return new PointerPointer<>(structPointerPointer_internal(test.getPointer()), false, TestStruct.TestStructPointer::new);
     }
 
-    static private native long structPointerPointer_internal(long test);/*
+    private static native long structPointerPointer_internal(long test);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)structPointerPointer((TestStruct **)test);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -174,7 +178,7 @@ static jclass cxxExceptionClass = NULL;
         return new PointerPointer<>(intPointerPointer_internal(test.getPointer()), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, owned2, "int")).setBackingCType("int");
     }
 
-    static private native long intPointerPointer_internal(long test);/*
+    private static native long intPointerPointer_internal(long test);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)intPointerPointer((int **)test);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -185,7 +189,7 @@ static jclass cxxExceptionClass = NULL;
         return new PointerPointer<>(floatPointerPointer_internal(test.getPointer()), false, FloatPointer::new);
     }
 
-    static private native long floatPointerPointer_internal(long test);/*
+    private static native long floatPointerPointer_internal(long test);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)floatPointerPointer((float **)test);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -196,7 +200,7 @@ static jclass cxxExceptionClass = NULL;
         return new PointerPointer<>(pointerPointerManyyy_internal(test.getPointer()), false, (long peer5, boolean owned5) -> new PointerPointer<>(peer5, owned5, (long peer4, boolean owned4) -> new PointerPointer<>(peer4, owned4, (long peer3, boolean owned3) -> new PointerPointer<>(peer3, owned3, VoidPointer::new))));
     }
 
-    static private native long pointerPointerManyyy_internal(long test);/*
+    private static native long pointerPointerManyyy_internal(long test);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)pointerPointerManyyy((void *****)test);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -207,7 +211,7 @@ static jclass cxxExceptionClass = NULL;
         call_methodWithCallback_internal(fnPtr.getPointer());
     }
 
-    static private native void call_methodWithCallback_internal(long fnPtr);/*
+    private static native void call_methodWithCallback_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	call_methodWithCallback((methodWithCallback)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -217,7 +221,7 @@ static jclass cxxExceptionClass = NULL;
         call_methodWithCallbackLongArg_internal(fnPtr.getPointer());
     }
 
-    static private native void call_methodWithCallbackLongArg_internal(long fnPtr);/*
+    private static native void call_methodWithCallbackLongArg_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	call_methodWithCallbackLongArg((methodWithCallbackLongArg)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -227,7 +231,7 @@ static jclass cxxExceptionClass = NULL;
         call_methodWithCallbackIntArg_internal(fnPtr.getPointer());
     }
 
-    static private native void call_methodWithCallbackIntArg_internal(long fnPtr);/*
+    private static native void call_methodWithCallbackIntArg_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	call_methodWithCallbackIntArg((methodWithCallbackIntArg)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -237,7 +241,7 @@ static jclass cxxExceptionClass = NULL;
         call_methodWithCallbackShortArg_internal(fnPtr.getPointer());
     }
 
-    static private native void call_methodWithCallbackShortArg_internal(long fnPtr);/*
+    private static native void call_methodWithCallbackShortArg_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	call_methodWithCallbackShortArg((methodWithCallbackShortArg)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -247,7 +251,7 @@ static jclass cxxExceptionClass = NULL;
         call_methodWithCallbackByteArg_internal(fnPtr.getPointer());
     }
 
-    static private native void call_methodWithCallbackByteArg_internal(long fnPtr);/*
+    private static native void call_methodWithCallbackByteArg_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	call_methodWithCallbackByteArg((methodWithCallbackByteArg)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -257,7 +261,7 @@ static jclass cxxExceptionClass = NULL;
         call_methodWithCallbackCharArg_internal(fnPtr.getPointer());
     }
 
-    static private native void call_methodWithCallbackCharArg_internal(long fnPtr);/*
+    private static native void call_methodWithCallbackCharArg_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	call_methodWithCallbackCharArg((methodWithCallbackCharArg)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -267,7 +271,7 @@ static jclass cxxExceptionClass = NULL;
         call_methodWithCallbackBooleanArg_internal(fnPtr.getPointer());
     }
 
-    static private native void call_methodWithCallbackBooleanArg_internal(long fnPtr);/*
+    private static native void call_methodWithCallbackBooleanArg_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	call_methodWithCallbackBooleanArg((methodWithCallbackBooleanArg)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -277,7 +281,7 @@ static jclass cxxExceptionClass = NULL;
         call_methodWithCallbackFloatArg_internal(fnPtr.getPointer());
     }
 
-    static private native void call_methodWithCallbackFloatArg_internal(long fnPtr);/*
+    private static native void call_methodWithCallbackFloatArg_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	call_methodWithCallbackFloatArg((methodWithCallbackFloatArg)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -287,7 +291,7 @@ static jclass cxxExceptionClass = NULL;
         call_methodWithCallbackDoubleArg_internal(fnPtr.getPointer());
     }
 
-    static private native void call_methodWithCallbackDoubleArg_internal(long fnPtr);/*
+    private static native void call_methodWithCallbackDoubleArg_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	call_methodWithCallbackDoubleArg((methodWithCallbackDoubleArg)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -297,7 +301,7 @@ static jclass cxxExceptionClass = NULL;
         call_methodWithCallbackAllArgs_internal(fnPtr.getPointer());
     }
 
-    static private native void call_methodWithCallbackAllArgs_internal(long fnPtr);/*
+    private static native void call_methodWithCallbackAllArgs_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	call_methodWithCallbackAllArgs((methodWithCallbackAllArgs)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -307,7 +311,7 @@ static jclass cxxExceptionClass = NULL;
         return call_methodWithCallbackLongReturn_internal(fnPtr.getPointer());
     }
 
-    static private native long call_methodWithCallbackLongReturn_internal(long fnPtr);/*
+    private static native long call_methodWithCallbackLongReturn_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)call_methodWithCallbackLongReturn((methodWithCallbackLongReturn)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -318,7 +322,7 @@ static jclass cxxExceptionClass = NULL;
         return call_methodWithCallbackIntReturn_internal(fnPtr.getPointer());
     }
 
-    static private native int call_methodWithCallbackIntReturn_internal(long fnPtr);/*
+    private static native int call_methodWithCallbackIntReturn_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jint)call_methodWithCallbackIntReturn((methodWithCallbackIntReturn)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -329,7 +333,7 @@ static jclass cxxExceptionClass = NULL;
         return call_methodWithCallbackShortReturn_internal(fnPtr.getPointer());
     }
 
-    static private native short call_methodWithCallbackShortReturn_internal(long fnPtr);/*
+    private static native short call_methodWithCallbackShortReturn_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jshort)call_methodWithCallbackShortReturn((methodWithCallbackShortReturn)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -340,7 +344,7 @@ static jclass cxxExceptionClass = NULL;
         return call_methodWithCallbackCharReturn_internal(fnPtr.getPointer());
     }
 
-    static private native char call_methodWithCallbackCharReturn_internal(long fnPtr);/*
+    private static native char call_methodWithCallbackCharReturn_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jchar)call_methodWithCallbackCharReturn((methodWithCallbackCharReturn)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -351,7 +355,7 @@ static jclass cxxExceptionClass = NULL;
         return call_methodWithCallbackByteReturn_internal(fnPtr.getPointer());
     }
 
-    static private native byte call_methodWithCallbackByteReturn_internal(long fnPtr);/*
+    private static native byte call_methodWithCallbackByteReturn_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jbyte)call_methodWithCallbackByteReturn((methodWithCallbackByteReturn)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -362,7 +366,7 @@ static jclass cxxExceptionClass = NULL;
         return call_methodWithCallbackBooleanReturn_internal(fnPtr.getPointer());
     }
 
-    static private native boolean call_methodWithCallbackBooleanReturn_internal(long fnPtr);/*
+    private static native boolean call_methodWithCallbackBooleanReturn_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jboolean)call_methodWithCallbackBooleanReturn((methodWithCallbackBooleanReturn)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -373,7 +377,7 @@ static jclass cxxExceptionClass = NULL;
         return call_methodWithCallbackFloatReturn_internal(fnPtr.getPointer());
     }
 
-    static private native float call_methodWithCallbackFloatReturn_internal(long fnPtr);/*
+    private static native float call_methodWithCallbackFloatReturn_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jfloat)call_methodWithCallbackFloatReturn((methodWithCallbackFloatReturn)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -384,7 +388,7 @@ static jclass cxxExceptionClass = NULL;
         return call_methodWithCallbackDoubleReturn_internal(fnPtr.getPointer());
     }
 
-    static private native double call_methodWithCallbackDoubleReturn_internal(long fnPtr);/*
+    private static native double call_methodWithCallbackDoubleReturn_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jdouble)call_methodWithCallbackDoubleReturn((methodWithCallbackDoubleReturn)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -395,7 +399,7 @@ static jclass cxxExceptionClass = NULL;
         call_methodWithThrowingCallback_internal(fnPtr.getPointer());
     }
 
-    static private native void call_methodWithThrowingCallback_internal(long fnPtr);/*
+    private static native void call_methodWithThrowingCallback_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	call_methodWithThrowingCallback((methodWithThrowingCallback)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -405,7 +409,7 @@ static jclass cxxExceptionClass = NULL;
         call_methodWithIntPtrPtrArg_internal(fnPtr.getPointer());
     }
 
-    static private native void call_methodWithIntPtrPtrArg_internal(long fnPtr);/*
+    private static native void call_methodWithIntPtrPtrArg_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	call_methodWithIntPtrPtrArg((methodWithIntPtrPtrArg)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -415,7 +419,7 @@ static jclass cxxExceptionClass = NULL;
         return new PointerPointer<>(call_methodWithIntPtrPtrRet_internal(fnPtr.getPointer()), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, owned2, "int")).setBackingCType("int");
     }
 
-    static private native long call_methodWithIntPtrPtrRet_internal(long fnPtr);/*
+    private static native long call_methodWithIntPtrPtrRet_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)call_methodWithIntPtrPtrRet((methodWithIntPtrPtrRet)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -426,7 +430,7 @@ static jclass cxxExceptionClass = NULL;
         return new TestStruct.TestStructPointer(returnTestStructPointer_internal(), false);
     }
 
-    static private native long returnTestStructPointer_internal();/*
+    private static native long returnTestStructPointer_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)returnTestStructPointer();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -434,23 +438,27 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static TestStruct returnTestStruct() {
-        return new TestStruct(returnTestStruct_internal(), true);
+        return new TestStruct(returnTestStruct_internal(0), true);
     }
 
-    static private native long returnTestStruct_internal();/*
+    private static native long returnTestStruct_internal(long _retPar);/*
     	HANDLE_JAVA_EXCEPTION_START()
-    	TestStruct* _ret = (TestStruct*)malloc(sizeof(TestStruct));
+    	TestStruct* _ret = (TestStruct*) (_retPar == 0 ? malloc(sizeof(TestStruct)) : (void*)_retPar);
     	*_ret = returnTestStruct();
     	return (jlong)_ret;
     	HANDLE_JAVA_EXCEPTION_END()
     	return 0;
     */
 
+    public static void returnTestStruct(TestStruct _retPar) {
+        returnTestStruct_internal(_retPar.getPointer());
+    }
+
     public static long passByValue(TestStruct testStruct) {
         return passByValue_internal(testStruct.getPointer());
     }
 
-    static private native long passByValue_internal(long testStruct);/*
+    private static native long passByValue_internal(long testStruct);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)passByValue(*(TestStruct*)testStruct);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -461,7 +469,7 @@ static jclass cxxExceptionClass = NULL;
         return passByPointer_internal(testStruct.getPointer());
     }
 
-    static private native long passByPointer_internal(long testStruct);/*
+    private static native long passByPointer_internal(long testStruct);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)passByPointer((TestStruct *)testStruct);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -469,23 +477,27 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static TestStruct call_methodWithCallbackTestStructReturn(ClosureObject<methodWithCallbackTestStructReturn> fnPtr) {
-        return new TestStruct(call_methodWithCallbackTestStructReturn_internal(fnPtr.getPointer()), true);
+        return new TestStruct(call_methodWithCallbackTestStructReturn_internal(fnPtr.getPointer(), 0), true);
     }
 
-    static private native long call_methodWithCallbackTestStructReturn_internal(long fnPtr);/*
+    private static native long call_methodWithCallbackTestStructReturn_internal(long fnPtr, long _retPar);/*
     	HANDLE_JAVA_EXCEPTION_START()
-    	TestStruct* _ret = (TestStruct*)malloc(sizeof(TestStruct));
+    	TestStruct* _ret = (TestStruct*) (_retPar == 0 ? malloc(sizeof(TestStruct)) : (void*)_retPar);
     	*_ret = call_methodWithCallbackTestStructReturn((methodWithCallbackTestStructReturn)fnPtr);
     	return (jlong)_ret;
     	HANDLE_JAVA_EXCEPTION_END()
     	return 0;
     */
 
+    public static void call_methodWithCallbackTestStructReturn(ClosureObject<methodWithCallbackTestStructReturn> fnPtr, TestStruct _retPar) {
+        call_methodWithCallbackTestStructReturn_internal(fnPtr.getPointer(), _retPar.getPointer());
+    }
+
     public static TestStruct.TestStructPointer call_methodWithCallbackTestStructPointerReturn(ClosureObject<methodWithCallbackTestStructPointerReturn> fnPtr) {
         return new TestStruct.TestStructPointer(call_methodWithCallbackTestStructPointerReturn_internal(fnPtr.getPointer()), false);
     }
 
-    static private native long call_methodWithCallbackTestStructPointerReturn_internal(long fnPtr);/*
+    private static native long call_methodWithCallbackTestStructPointerReturn_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)call_methodWithCallbackTestStructPointerReturn((methodWithCallbackTestStructPointerReturn)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -496,7 +508,7 @@ static jclass cxxExceptionClass = NULL;
         call_methodWithCallbackTestStructArg_internal(fnPtr.getPointer());
     }
 
-    static private native void call_methodWithCallbackTestStructArg_internal(long fnPtr);/*
+    private static native void call_methodWithCallbackTestStructArg_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	call_methodWithCallbackTestStructArg((methodWithCallbackTestStructArg)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -506,7 +518,7 @@ static jclass cxxExceptionClass = NULL;
         call_methodWithCallbackTestStructPointerArg_internal(fnPtr.getPointer());
     }
 
-    static private native void call_methodWithCallbackTestStructPointerArg_internal(long fnPtr);/*
+    private static native void call_methodWithCallbackTestStructPointerArg_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	call_methodWithCallbackTestStructPointerArg((methodWithCallbackTestStructPointerArg)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -516,7 +528,7 @@ static jclass cxxExceptionClass = NULL;
         return passTestEnum_internal(enumValue.getIndex());
     }
 
-    static private native int passTestEnum_internal(int enumValue);/*
+    private static native int passTestEnum_internal(int enumValue);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jint)passTestEnum((TestEnum)enumValue);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -527,7 +539,7 @@ static jclass cxxExceptionClass = NULL;
         return TestEnum.getByIndex((int) returnTestEnum_internal());
     }
 
-    static private native int returnTestEnum_internal();/*
+    private static native int returnTestEnum_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jint)returnTestEnum();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -542,7 +554,7 @@ static jclass cxxExceptionClass = NULL;
         return TestEnum.getByIndex((int) passAndReturnTestEnum_internal(enumValue.getIndex()));
     }
 
-    static private native int passAndReturnTestEnum_internal(int enumValue);/*
+    private static native int passAndReturnTestEnum_internal(int enumValue);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jint)passAndReturnTestEnum((TestEnum)enumValue);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -553,7 +565,7 @@ static jclass cxxExceptionClass = NULL;
         return passTestEnumPointer_internal(enumValue.getPointer());
     }
 
-    static private native int passTestEnumPointer_internal(long enumValue);/*
+    private static native int passTestEnumPointer_internal(long enumValue);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jint)passTestEnumPointer((TestEnum *)enumValue);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -564,7 +576,7 @@ static jclass cxxExceptionClass = NULL;
         return new TestEnum.TestEnumPointer(returnTestEnumPointer_internal(), false);
     }
 
-    static private native long returnTestEnumPointer_internal();/*
+    private static native long returnTestEnumPointer_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)returnTestEnumPointer();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -575,7 +587,7 @@ static jclass cxxExceptionClass = NULL;
         return TestEnum.getByIndex((int) passAndReturnTestEnumPointer_internal(enumValue.getPointer()));
     }
 
-    static private native int passAndReturnTestEnumPointer_internal(long enumValue);/*
+    private static native int passAndReturnTestEnumPointer_internal(long enumValue);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jint)passAndReturnTestEnumPointer((TestEnum *)enumValue);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -586,7 +598,7 @@ static jclass cxxExceptionClass = NULL;
         return TestEnum.getByIndex((int) call_methodWithCallbackTestEnumReturn_internal(fnPtr.getPointer()));
     }
 
-    static private native int call_methodWithCallbackTestEnumReturn_internal(long fnPtr);/*
+    private static native int call_methodWithCallbackTestEnumReturn_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jint)call_methodWithCallbackTestEnumReturn((methodWithCallbackTestEnumReturn)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -597,7 +609,7 @@ static jclass cxxExceptionClass = NULL;
         call_methodWithCallbackTestEnumArg_internal(fnPtr.getPointer());
     }
 
-    static private native void call_methodWithCallbackTestEnumArg_internal(long fnPtr);/*
+    private static native void call_methodWithCallbackTestEnumArg_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	call_methodWithCallbackTestEnumArg((methodWithCallbackTestEnumArg)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -607,7 +619,7 @@ static jclass cxxExceptionClass = NULL;
         return new TestEnum.TestEnumPointer(call_methodWithCallbackTestEnumPointerReturn_internal(fnPtr.getPointer()), false);
     }
 
-    static private native long call_methodWithCallbackTestEnumPointerReturn_internal(long fnPtr);/*
+    private static native long call_methodWithCallbackTestEnumPointerReturn_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)call_methodWithCallbackTestEnumPointerReturn((methodWithCallbackTestEnumPointerReturn)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -618,7 +630,7 @@ static jclass cxxExceptionClass = NULL;
         call_methodWithCallbackTestEnumPointerArg_internal(fnPtr.getPointer());
     }
 
-    static private native void call_methodWithCallbackTestEnumPointerArg_internal(long fnPtr);/*
+    private static native void call_methodWithCallbackTestEnumPointerArg_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	call_methodWithCallbackTestEnumPointerArg((methodWithCallbackTestEnumPointerArg)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -629,7 +641,7 @@ static jclass cxxExceptionClass = NULL;
         return passIntPointer_internal(arg0.getPointer());
     }
 
-    static private native int passIntPointer_internal(long arg0);/*
+    private static native int passIntPointer_internal(long arg0);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jint)passIntPointer((int *)arg0);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -640,7 +652,7 @@ static jclass cxxExceptionClass = NULL;
         return new CSizedIntPointer(returnIntPointer_internal(arg0), false, "int");
     }
 
-    static private native long returnIntPointer_internal(int arg0);/*
+    private static native long returnIntPointer_internal(int arg0);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	CHECK_AND_THROW_C_TYPE(env, int, arg0, 0, return 0);
     	return (jlong)returnIntPointer((int)arg0);
@@ -652,7 +664,7 @@ static jclass cxxExceptionClass = NULL;
         return new CSizedIntPointer(call_methodWithCallbackIntPointerReturn_internal(fnPtr.getPointer(), val), false, "int");
     }
 
-    static private native long call_methodWithCallbackIntPointerReturn_internal(long fnPtr, int val);/*
+    private static native long call_methodWithCallbackIntPointerReturn_internal(long fnPtr, int val);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	CHECK_AND_THROW_C_TYPE(env, int, val, 1, return 0);
     	return (jlong)call_methodWithCallbackIntPointerReturn((methodWithCallbackIntPointerReturn)fnPtr, (int)val);
@@ -664,7 +676,7 @@ static jclass cxxExceptionClass = NULL;
         return call_methodWithCallbackIntPointerArg_internal(fnPtr.getPointer());
     }
 
-    static private native int call_methodWithCallbackIntPointerArg_internal(long fnPtr);/*
+    private static native int call_methodWithCallbackIntPointerArg_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jint)call_methodWithCallbackIntPointerArg((methodWithCallbackIntPointerArg)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -675,7 +687,7 @@ static jclass cxxExceptionClass = NULL;
         return getFloatPtrFieldValue_internal(specialStruct.getPointer());
     }
 
-    static private native float getFloatPtrFieldValue_internal(long specialStruct);/*
+    private static native float getFloatPtrFieldValue_internal(long specialStruct);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jfloat)getFloatPtrFieldValue(*(SpecialStruct*)specialStruct);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -686,7 +698,7 @@ static jclass cxxExceptionClass = NULL;
         return getFixedSizeArrayFieldValue_internal(specialStruct.getPointer(), index);
     }
 
-    static private native int getFixedSizeArrayFieldValue_internal(long specialStruct, int index);/*
+    private static native int getFixedSizeArrayFieldValue_internal(long specialStruct, int index);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	CHECK_AND_THROW_C_TYPE(env, int, index, 1, return 0);
     	return (jint)getFixedSizeArrayFieldValue(*(SpecialStruct*)specialStruct, (int)index);
@@ -698,7 +710,7 @@ static jclass cxxExceptionClass = NULL;
         return getIntPtrFieldValue_internal(specialStruct.getPointer());
     }
 
-    static private native int getIntPtrFieldValue_internal(long specialStruct);/*
+    private static native int getIntPtrFieldValue_internal(long specialStruct);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jint)getIntPtrFieldValue(*(SpecialStruct*)specialStruct);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -709,7 +721,7 @@ static jclass cxxExceptionClass = NULL;
         setFloatPtrFieldValue_internal(specialStruct.getPointer(), value);
     }
 
-    static private native void setFloatPtrFieldValue_internal(long specialStruct, float value);/*
+    private static native void setFloatPtrFieldValue_internal(long specialStruct, float value);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	setFloatPtrFieldValue(*(SpecialStruct*)specialStruct, (float)value);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -719,7 +731,7 @@ static jclass cxxExceptionClass = NULL;
         setFixedSizeArrayFieldValue_internal(specialStruct.getPointer(), index, value);
     }
 
-    static private native void setFixedSizeArrayFieldValue_internal(long specialStruct, int index, int value);/*
+    private static native void setFixedSizeArrayFieldValue_internal(long specialStruct, int index, int value);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	CHECK_AND_THROW_C_TYPE(env, int, value, 2, return);
     	CHECK_AND_THROW_C_TYPE(env, int, index, 1, return);
@@ -731,7 +743,7 @@ static jclass cxxExceptionClass = NULL;
         setIntPtrFieldValue_internal(specialStruct.getPointer(), value);
     }
 
-    static private native void setIntPtrFieldValue_internal(long specialStruct, int value);/*
+    private static native void setIntPtrFieldValue_internal(long specialStruct, int value);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	CHECK_AND_THROW_C_TYPE(env, int, value, 1, return);
     	setIntPtrFieldValue(*(SpecialStruct*)specialStruct, (int)value);
@@ -742,7 +754,7 @@ static jclass cxxExceptionClass = NULL;
         return new TestUnion.TestUnionPointer(returnTestUnionPointer_internal(), false);
     }
 
-    static private native long returnTestUnionPointer_internal();/*
+    private static native long returnTestUnionPointer_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)returnTestUnionPointer();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -750,23 +762,27 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static TestUnion returnTestUnion() {
-        return new TestUnion(returnTestUnion_internal(), true);
+        return new TestUnion(returnTestUnion_internal(0), true);
     }
 
-    static private native long returnTestUnion_internal();/*
+    private static native long returnTestUnion_internal(long _retPar);/*
     	HANDLE_JAVA_EXCEPTION_START()
-    	TestUnion* _ret = (TestUnion*)malloc(sizeof(TestUnion));
+    	TestUnion* _ret = (TestUnion*) (_retPar == 0 ? malloc(sizeof(TestUnion)) : (void*)_retPar);
     	*_ret = returnTestUnion();
     	return (jlong)_ret;
     	HANDLE_JAVA_EXCEPTION_END()
     	return 0;
     */
 
+    public static void returnTestUnion(TestUnion _retPar) {
+        returnTestUnion_internal(_retPar.getPointer());
+    }
+
     public static long getUnionUintTypeByValue(TestUnion testUnion) {
         return getUnionUintTypeByValue_internal(testUnion.getPointer());
     }
 
-    static private native long getUnionUintTypeByValue_internal(long testUnion);/*
+    private static native long getUnionUintTypeByValue_internal(long testUnion);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getUnionUintTypeByValue(*(TestUnion*)testUnion);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -777,7 +793,7 @@ static jclass cxxExceptionClass = NULL;
         setUnionUintTypeByPointer_internal(testUnion.getPointer(), value);
     }
 
-    static private native void setUnionUintTypeByPointer_internal(long testUnion, long value);/*
+    private static native void setUnionUintTypeByPointer_internal(long testUnion, long value);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	CHECK_AND_THROW_C_TYPE(env, uint64_t, value, 1, return);
     	setUnionUintTypeByPointer((TestUnion *)testUnion, (uint64_t)value);
@@ -788,7 +804,7 @@ static jclass cxxExceptionClass = NULL;
         return getUnionDoubleTypeByValue_internal(testUnion.getPointer());
     }
 
-    static private native double getUnionDoubleTypeByValue_internal(long testUnion);/*
+    private static native double getUnionDoubleTypeByValue_internal(long testUnion);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jdouble)getUnionDoubleTypeByValue(*(TestUnion*)testUnion);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -799,7 +815,7 @@ static jclass cxxExceptionClass = NULL;
         setUnionDoubleTypeByPointer_internal(testUnion.getPointer(), value);
     }
 
-    static private native void setUnionDoubleTypeByPointer_internal(long testUnion, double value);/*
+    private static native void setUnionDoubleTypeByPointer_internal(long testUnion, double value);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	setUnionDoubleTypeByPointer((TestUnion *)testUnion, (double)value);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -809,7 +825,7 @@ static jclass cxxExceptionClass = NULL;
         return new CSizedIntPointer(getUnionFixedSizeIntByPointer_internal(testUnion.getPointer()), false, "int");
     }
 
-    static private native long getUnionFixedSizeIntByPointer_internal(long testUnion);/*
+    private static native long getUnionFixedSizeIntByPointer_internal(long testUnion);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getUnionFixedSizeIntByPointer((TestUnion *)testUnion);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -820,7 +836,7 @@ static jclass cxxExceptionClass = NULL;
         return getUnionFixedSizeIntByValue_internal(testUnion.getPointer(), index);
     }
 
-    static private native int getUnionFixedSizeIntByValue_internal(long testUnion, int index);/*
+    private static native int getUnionFixedSizeIntByValue_internal(long testUnion, int index);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	CHECK_AND_THROW_C_TYPE(env, int, index, 1, return 0);
     	return (jint)getUnionFixedSizeIntByValue(*(TestUnion*)testUnion, (int)index);
@@ -832,7 +848,7 @@ static jclass cxxExceptionClass = NULL;
         setUnionFixedSizeIntByPointer_internal(testUnion.getPointer(), index, value);
     }
 
-    static private native void setUnionFixedSizeIntByPointer_internal(long testUnion, int index, int value);/*
+    private static native void setUnionFixedSizeIntByPointer_internal(long testUnion, int index, int value);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	CHECK_AND_THROW_C_TYPE(env, int, value, 2, return);
     	CHECK_AND_THROW_C_TYPE(env, int, index, 1, return);
@@ -841,23 +857,27 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static TestStruct getUnionStructTypeByValue(TestUnion testUnion) {
-        return new TestStruct(getUnionStructTypeByValue_internal(testUnion.getPointer()), true);
+        return new TestStruct(getUnionStructTypeByValue_internal(testUnion.getPointer(), 0), true);
     }
 
-    static private native long getUnionStructTypeByValue_internal(long testUnion);/*
+    private static native long getUnionStructTypeByValue_internal(long testUnion, long _retPar);/*
     	HANDLE_JAVA_EXCEPTION_START()
-    	TestStruct* _ret = (TestStruct*)malloc(sizeof(TestStruct));
+    	TestStruct* _ret = (TestStruct*) (_retPar == 0 ? malloc(sizeof(TestStruct)) : (void*)_retPar);
     	*_ret = getUnionStructTypeByValue(*(TestUnion*)testUnion);
     	return (jlong)_ret;
     	HANDLE_JAVA_EXCEPTION_END()
     	return 0;
     */
 
+    public static void getUnionStructTypeByValue(TestUnion testUnion, TestStruct _retPar) {
+        getUnionStructTypeByValue_internal(testUnion.getPointer(), _retPar.getPointer());
+    }
+
     public static void setUnionStructTypeByPointer(TestUnion.TestUnionPointer testUnion, TestStruct value) {
         setUnionStructTypeByPointer_internal(testUnion.getPointer(), value.getPointer());
     }
 
-    static private native void setUnionStructTypeByPointer_internal(long testUnion, long value);/*
+    private static native void setUnionStructTypeByPointer_internal(long testUnion, long value);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	setUnionStructTypeByPointer((TestUnion *)testUnion, *(TestStruct*)value);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -867,7 +887,7 @@ static jclass cxxExceptionClass = NULL;
         return new TestUnion.TestUnionPointer(call_methodWithCallbackTestUnionPointerReturn_internal(fnPtr.getPointer()), false);
     }
 
-    static private native long call_methodWithCallbackTestUnionPointerReturn_internal(long fnPtr);/*
+    private static native long call_methodWithCallbackTestUnionPointerReturn_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)call_methodWithCallbackTestUnionPointerReturn((methodWithCallbackTestUnionPointerReturn)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -878,7 +898,7 @@ static jclass cxxExceptionClass = NULL;
         call_methodWithCallbackTestUnionPointerArg_internal(fnPtr.getPointer());
     }
 
-    static private native void call_methodWithCallbackTestUnionPointerArg_internal(long fnPtr);/*
+    private static native void call_methodWithCallbackTestUnionPointerArg_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	call_methodWithCallbackTestUnionPointerArg((methodWithCallbackTestUnionPointerArg)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -888,7 +908,7 @@ static jclass cxxExceptionClass = NULL;
         outOfBoundArg_internal(par);
     }
 
-    static private native void outOfBoundArg_internal(long par);/*
+    private static native void outOfBoundArg_internal(long par);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	CHECK_AND_THROW_C_TYPE(env, uint32_t, par, 0, return);
     	outOfBoundArg((uint32_t)par);
@@ -899,7 +919,7 @@ static jclass cxxExceptionClass = NULL;
         throwOrdinaryException_internal();
     }
 
-    static private native void throwOrdinaryException_internal();/*
+    private static native void throwOrdinaryException_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	throwOrdinaryException();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -909,7 +929,7 @@ static jclass cxxExceptionClass = NULL;
         throwNumberException_internal();
     }
 
-    static private native void throwNumberException_internal();/*
+    private static native void throwNumberException_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	throwNumberException();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -919,7 +939,7 @@ static jclass cxxExceptionClass = NULL;
         return new CSizedIntPointer(returnThrownCauseMessage_internal(fnPtr.getPointer()), false, "const char");
     }
 
-    static private native long returnThrownCauseMessage_internal(long fnPtr);/*
+    private static native long returnThrownCauseMessage_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)returnThrownCauseMessage((methodWithThrowingCallback)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -930,7 +950,7 @@ static jclass cxxExceptionClass = NULL;
         return new CSizedIntPointer(returnString_internal(), false, "char");
     }
 
-    static private native long returnString_internal();/*
+    private static native long returnString_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)returnString();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -942,7 +962,7 @@ static jclass cxxExceptionClass = NULL;
         return validateString_internal(str.getPointer());
     }
 
-    static private native boolean validateString_internal(long str);/*
+    private static native boolean validateString_internal(long str);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jboolean)validateString((char *)str);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -953,7 +973,7 @@ static jclass cxxExceptionClass = NULL;
         call_callback_in_thread_internal(thread_callback.getPointer());
     }
 
-    static private native void call_callback_in_thread_internal(long thread_callback);/*
+    private static native void call_callback_in_thread_internal(long thread_callback);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	call_callback_in_thread((void *(*)(void *))thread_callback);
     	HANDLE_JAVA_EXCEPTION_END()
@@ -963,7 +983,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getVoidCallback_internal(), methodWithCallback_Internal::methodWithCallback_downcall);
     }
 
-    static private native long getVoidCallback_internal();/*
+    private static native long getVoidCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getVoidCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -974,7 +994,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getLongArgCallback_internal(), methodWithCallbackLongArg_Internal::methodWithCallbackLongArg_downcall);
     }
 
-    static private native long getLongArgCallback_internal();/*
+    private static native long getLongArgCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getLongArgCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -985,7 +1005,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getIntArgCallback_internal(), methodWithCallbackIntArg_Internal::methodWithCallbackIntArg_downcall);
     }
 
-    static private native long getIntArgCallback_internal();/*
+    private static native long getIntArgCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getIntArgCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -996,7 +1016,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getShortArgCallback_internal(), methodWithCallbackShortArg_Internal::methodWithCallbackShortArg_downcall);
     }
 
-    static private native long getShortArgCallback_internal();/*
+    private static native long getShortArgCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getShortArgCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1007,7 +1027,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getByteArgCallback_internal(), methodWithCallbackByteArg_Internal::methodWithCallbackByteArg_downcall);
     }
 
-    static private native long getByteArgCallback_internal();/*
+    private static native long getByteArgCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getByteArgCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1018,7 +1038,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getCharArgCallback_internal(), methodWithCallbackCharArg_Internal::methodWithCallbackCharArg_downcall);
     }
 
-    static private native long getCharArgCallback_internal();/*
+    private static native long getCharArgCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getCharArgCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1029,7 +1049,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getBooleanArgCallback_internal(), methodWithCallbackBooleanArg_Internal::methodWithCallbackBooleanArg_downcall);
     }
 
-    static private native long getBooleanArgCallback_internal();/*
+    private static native long getBooleanArgCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getBooleanArgCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1040,7 +1060,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getFloatArgCallback_internal(), methodWithCallbackFloatArg_Internal::methodWithCallbackFloatArg_downcall);
     }
 
-    static private native long getFloatArgCallback_internal();/*
+    private static native long getFloatArgCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getFloatArgCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1051,7 +1071,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getDoubleArgCallback_internal(), methodWithCallbackDoubleArg_Internal::methodWithCallbackDoubleArg_downcall);
     }
 
-    static private native long getDoubleArgCallback_internal();/*
+    private static native long getDoubleArgCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getDoubleArgCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1062,7 +1082,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getAllArgsCallback_internal(), methodWithCallbackAllArgs_Internal::methodWithCallbackAllArgs_downcall);
     }
 
-    static private native long getAllArgsCallback_internal();/*
+    private static native long getAllArgsCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getAllArgsCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1073,7 +1093,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getLongReturnCallback_internal(), methodWithCallbackLongReturn_Internal::methodWithCallbackLongReturn_downcall);
     }
 
-    static private native long getLongReturnCallback_internal();/*
+    private static native long getLongReturnCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getLongReturnCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1084,7 +1104,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getIntReturnCallback_internal(), methodWithCallbackIntReturn_Internal::methodWithCallbackIntReturn_downcall);
     }
 
-    static private native long getIntReturnCallback_internal();/*
+    private static native long getIntReturnCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getIntReturnCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1095,7 +1115,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getShortReturnCallback_internal(), methodWithCallbackShortReturn_Internal::methodWithCallbackShortReturn_downcall);
     }
 
-    static private native long getShortReturnCallback_internal();/*
+    private static native long getShortReturnCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getShortReturnCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1106,7 +1126,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getCharReturnCallback_internal(), methodWithCallbackCharReturn_Internal::methodWithCallbackCharReturn_downcall);
     }
 
-    static private native long getCharReturnCallback_internal();/*
+    private static native long getCharReturnCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getCharReturnCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1117,7 +1137,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getByteReturnCallback_internal(), methodWithCallbackByteReturn_Internal::methodWithCallbackByteReturn_downcall);
     }
 
-    static private native long getByteReturnCallback_internal();/*
+    private static native long getByteReturnCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getByteReturnCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1128,7 +1148,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getBooleanReturnCallback_internal(), methodWithCallbackBooleanReturn_Internal::methodWithCallbackBooleanReturn_downcall);
     }
 
-    static private native long getBooleanReturnCallback_internal();/*
+    private static native long getBooleanReturnCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getBooleanReturnCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1139,7 +1159,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getFloatReturnCallback_internal(), methodWithCallbackFloatReturn_Internal::methodWithCallbackFloatReturn_downcall);
     }
 
-    static private native long getFloatReturnCallback_internal();/*
+    private static native long getFloatReturnCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getFloatReturnCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1150,7 +1170,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getDoubleReturnCallback_internal(), methodWithCallbackDoubleReturn_Internal::methodWithCallbackDoubleReturn_downcall);
     }
 
-    static private native long getDoubleReturnCallback_internal();/*
+    private static native long getDoubleReturnCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getDoubleReturnCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1161,7 +1181,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getIntPtrPtrArgCallback_internal(), methodWithIntPtrPtrArg_Internal::methodWithIntPtrPtrArg_downcall);
     }
 
-    static private native long getIntPtrPtrArgCallback_internal();/*
+    private static native long getIntPtrPtrArgCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getIntPtrPtrArgCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1172,7 +1192,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getIntPtrPtrRetCallback_internal(), methodWithIntPtrPtrRet_Internal::methodWithIntPtrPtrRet_downcall);
     }
 
-    static private native long getIntPtrPtrRetCallback_internal();/*
+    private static native long getIntPtrPtrRetCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getIntPtrPtrRetCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1183,7 +1203,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getTestStructReturnCallback_internal(), methodWithCallbackTestStructReturn_Internal::methodWithCallbackTestStructReturn_downcall);
     }
 
-    static private native long getTestStructReturnCallback_internal();/*
+    private static native long getTestStructReturnCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getTestStructReturnCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1194,7 +1214,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getTestStructPointerReturnCallback_internal(), methodWithCallbackTestStructPointerReturn_Internal::methodWithCallbackTestStructPointerReturn_downcall);
     }
 
-    static private native long getTestStructPointerReturnCallback_internal();/*
+    private static native long getTestStructPointerReturnCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getTestStructPointerReturnCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1205,7 +1225,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getTestStructArgCallback_internal(), methodWithCallbackTestStructArg_Internal::methodWithCallbackTestStructArg_downcall);
     }
 
-    static private native long getTestStructArgCallback_internal();/*
+    private static native long getTestStructArgCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getTestStructArgCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1216,7 +1236,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getTestStructPointerArgCallback_internal(), methodWithCallbackTestStructPointerArg_Internal::methodWithCallbackTestStructPointerArg_downcall);
     }
 
-    static private native long getTestStructPointerArgCallback_internal();/*
+    private static native long getTestStructPointerArgCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getTestStructPointerArgCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1227,7 +1247,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getTestEnumReturnCallback_internal(), methodWithCallbackTestEnumReturn_Internal::methodWithCallbackTestEnumReturn_downcall);
     }
 
-    static private native long getTestEnumReturnCallback_internal();/*
+    private static native long getTestEnumReturnCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getTestEnumReturnCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1238,7 +1258,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getTestEnumArgCallback_internal(), methodWithCallbackTestEnumArg_Internal::methodWithCallbackTestEnumArg_downcall);
     }
 
-    static private native long getTestEnumArgCallback_internal();/*
+    private static native long getTestEnumArgCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getTestEnumArgCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1249,7 +1269,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getTestEnumPointerReturnCallback_internal(), methodWithCallbackTestEnumPointerReturn_Internal::methodWithCallbackTestEnumPointerReturn_downcall);
     }
 
-    static private native long getTestEnumPointerReturnCallback_internal();/*
+    private static native long getTestEnumPointerReturnCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getTestEnumPointerReturnCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1260,7 +1280,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getTestEnumPointerArgCallback_internal(), methodWithCallbackTestEnumPointerArg_Internal::methodWithCallbackTestEnumPointerArg_downcall);
     }
 
-    static private native long getTestEnumPointerArgCallback_internal();/*
+    private static native long getTestEnumPointerArgCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getTestEnumPointerArgCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1271,7 +1291,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getIntPointerReturnCallback_internal(), methodWithCallbackIntPointerReturn_Internal::methodWithCallbackIntPointerReturn_downcall);
     }
 
-    static private native long getIntPointerReturnCallback_internal();/*
+    private static native long getIntPointerReturnCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getIntPointerReturnCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1282,7 +1302,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getIntPointerArgCallback_internal(), methodWithCallbackIntPointerArg_Internal::methodWithCallbackIntPointerArg_downcall);
     }
 
-    static private native long getIntPointerArgCallback_internal();/*
+    private static native long getIntPointerArgCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getIntPointerArgCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1293,7 +1313,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getTestUnionPointerReturnCallback_internal(), methodWithCallbackTestUnionPointerReturn_Internal::methodWithCallbackTestUnionPointerReturn_downcall);
     }
 
-    static private native long getTestUnionPointerReturnCallback_internal();/*
+    private static native long getTestUnionPointerReturnCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getTestUnionPointerReturnCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1304,7 +1324,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getTestUnionPointerArgCallback_internal(), methodWithCallbackTestUnionPointerArg_Internal::methodWithCallbackTestUnionPointerArg_downcall);
     }
 
-    static private native long getTestUnionPointerArgCallback_internal();/*
+    private static native long getTestUnionPointerArgCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getTestUnionPointerArgCallback();
     	HANDLE_JAVA_EXCEPTION_END()
@@ -1315,7 +1335,7 @@ static jclass cxxExceptionClass = NULL;
         return CHandler.getClosureObject(getCallThrowingCallbackCallback_internal(), methodWithCallbackCallThrowingCallback_Internal::methodWithCallbackCallThrowingCallback_downcall);
     }
 
-    static private native long getCallThrowingCallbackCallback_internal();/*
+    private static native long getCallThrowingCallbackCallback_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jlong)getCallThrowingCallbackCallback();
     	HANDLE_JAVA_EXCEPTION_END()

@@ -146,6 +146,16 @@ public class StructMethodsTest extends BaseTest {
     }
 
     @Test
+    public void returnStructTestParameterPass() {
+        TestStruct testStruct = new TestStruct();
+        TestData.returnTestStruct(testStruct);
+        assertEquals(1, testStruct.field1());
+        assertEquals(2, testStruct.field2());
+        assertEquals(3, testStruct.field3());
+        assertEquals(4, testStruct.field4());
+    }
+
+    @Test
     public void returnStructPointerTest() {
         TestStructPointer testStructPtr = TestData.returnTestStructPointer();
         TestStruct testStruct = testStructPtr.get();
