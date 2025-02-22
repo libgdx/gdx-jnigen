@@ -188,8 +188,8 @@ jnigen {
         headerDirs += ["build/libffi-build/${combined}/include/", "src/main/native"]
         cppIncludes += ["src/main/native/*.cpp"]
         cIncludes += ["src/main/native/*.c"]
-        cFlags += " -std=c11 -fexceptions "
-        cppFlags += " -std=c++11 -fexceptions "
+        cFlags += ["-std=c11", "-fexceptions"]
+        cppFlags += ["-std=c++11", "-fexceptions"]
         libraries += file("build/libffi-build/${combined}/lib/libffi.a").absolutePath
     }
 
@@ -204,8 +204,8 @@ jnigen {
     //add(Windows, x64, ARM)
     addAndroid() {
         libraries = ""
-        androidApplicationMk += "APP_PLATFORM := android-19\nAPP_STRIP_MODE := none\nAPP_STL := c++_shared"
-        linkerFlags += " -stdlib=libc++\nLOCAL_WHOLE_STATIC_LIBRARIES := static_libffi"
+        androidApplicationMk += ["APP_PLATFORM := android-19", "APP_STRIP_MODE := none", "APP_STL := c++_shared"]
+        linkerFlags += ["-stdlib=libc++", "LOCAL_WHOLE_STATIC_LIBRARIES := static_libffi"]
         androidAndroidMk += [
                 "include \$(CLEAR_VARS)",
                 "LOCAL_MODULE := static_libffi",
