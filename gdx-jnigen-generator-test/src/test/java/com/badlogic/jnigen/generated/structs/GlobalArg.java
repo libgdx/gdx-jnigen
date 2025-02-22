@@ -3,6 +3,7 @@ package com.badlogic.jnigen.generated.structs;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.Union;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.PointerPointer;
@@ -40,7 +41,7 @@ public final class GlobalArg extends Union {
     }
 
     public GlobalArg.GlobalArgPointer asPointer() {
-        return new GlobalArg.GlobalArgPointer(getPointer(), getsGCFreed());
+        return new GlobalArg.GlobalArgPointer(getPointer(), false, this);
     }
 
     public long longVal() {
@@ -173,6 +174,11 @@ public final class GlobalArg extends Union {
             super(pointer, freeOnGC);
         }
 
+        public GlobalArgPointer(long pointer, boolean freeOnGC, Pointing parent) {
+            super(pointer, freeOnGC);
+            setParent(parent);
+        }
+
         public GlobalArgPointer() {
             this(1, true, true);
         }
@@ -223,7 +229,7 @@ public final class GlobalArg extends Union {
         }
 
         public allArgs.allArgsPointer asPointer() {
-            return new allArgs.allArgsPointer(getPointer(), getsGCFreed());
+            return new allArgs.allArgsPointer(getPointer(), false, this);
         }
 
         public long arg1() {
@@ -294,6 +300,11 @@ public final class GlobalArg extends Union {
 
             public allArgsPointer(long pointer, boolean freeOnGC) {
                 super(pointer, freeOnGC);
+            }
+
+            public allArgsPointer(long pointer, boolean freeOnGC, Pointing parent) {
+                super(pointer, freeOnGC);
+                setParent(parent);
             }
 
             public allArgsPointer() {

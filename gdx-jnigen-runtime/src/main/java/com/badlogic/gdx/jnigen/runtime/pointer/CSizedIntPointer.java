@@ -167,8 +167,9 @@ public final class CSizedIntPointer extends Pointing {
     }
 
     public CSizedIntPointer recast(String newCType) {
-        CSizedIntPointer tmp = new CSizedIntPointer(getPointer(), getsGCFreed(), newCType);
+        CSizedIntPointer tmp = new CSizedIntPointer(getPointer(), false, newCType);
         tmp.guardBytes(getSizeGuard());
+        tmp.setParent(this);
         return tmp;
     }
 

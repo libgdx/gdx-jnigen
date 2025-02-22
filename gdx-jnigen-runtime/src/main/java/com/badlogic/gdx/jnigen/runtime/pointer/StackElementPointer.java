@@ -41,8 +41,7 @@ public abstract class StackElementPointer<T extends StackElement> extends Pointi
         int offset = getSize() * index;
         assertBounds(offset);
         T stackElement = createStackElement(getPointer() + offset, false);
-        if (getsGCFreed())
-            GCHandler.enqueuePointer(stackElement, getPointer());
+        stackElement.setParent(this);
         return stackElement;
     }
 

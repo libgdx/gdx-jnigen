@@ -17,7 +17,6 @@ public class GCHandler {
     private static final boolean ENABLE_GC_LOG = System.getProperty("com.badlogic.jnigen.gc_log", "false").equals("true");
     protected static final ReferenceQueue<Object> REFERENCE_QUEUE = new ReferenceQueue<>();
     private static final Set<PointingPhantomReference> referenceHolder = Collections.synchronizedSet(new HashSet<PointingPhantomReference>());
-    private static final Map<Long, AtomicInteger> countMap = new HashMap<>();
 
     private static final Thread RELEASER = new Thread() {
         @Override
@@ -29,16 +28,10 @@ public class GCHandler {
                         System.err.println("Reference holder did not contained released StructRef.");
                     }
 
-                    synchronized (countMap) {
-                        AtomicInteger counter = countMap.get(releasedStructRef.getPointer());
-                        int count = counter.decrementAndGet();
-                        if (count <= 0) {
-                            if (ENABLE_GC_LOG)
-                                System.out.println("Freeing Pointer: " + releasedStructRef.getPointer());
-                            countMap.remove(releasedStructRef.getPointer());
-                            CHandler.free(releasedStructRef.getPointer());
-                        }
-                    }
+                    if (ENABLE_GC_LOG)
+                        System.out.println("Freeing Pointer: " + releasedStructRef.getPointer());
+
+                    CHandler.free(releasedStructRef.getPointer());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -48,7 +41,7 @@ public class GCHandler {
 
     static {
         RELEASER.setDaemon(true);
-        RELEASER.setName("jnigen release thread");
+        RELEASER.setName("jnigen-releaser");
         RELEASER.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
@@ -65,26 +58,11 @@ public class GCHandler {
         if (ENABLE_GC_LOG)
             System.out.println("Enqueuing Pointer: " + pointer);
 
-        synchronized (countMap) {
-            AtomicInteger counter = countMap.get(pointer);
-            if (counter == null) {
-                counter = new AtomicInteger(0);
-                countMap.put(pointer, counter);
-            }
-            counter.incrementAndGet();
-        }
-
         PointingPhantomReference structPhantomReference = new PointingPhantomReference(pointing, pointer);
         referenceHolder.add(structPhantomReference);
     }
 
     public static int nativeObjectCount() {
         return referenceHolder.size();
-    }
-
-    public static boolean isEnqueued(long pointer) {
-        synchronized (countMap) {
-            return countMap.containsKey(pointer);
-        }
     }
 }

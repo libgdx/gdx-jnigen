@@ -3,6 +3,7 @@ package com.badlogic.jnigen.generated.structs;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 import com.badlogic.jnigen.generated.FFITypes;
 
 /**
@@ -36,7 +37,7 @@ public final class AnonymousStructNoField extends Struct {
     }
 
     public AnonymousStructNoField.AnonymousStructNoFieldPointer asPointer() {
-        return new AnonymousStructNoField.AnonymousStructNoFieldPointer(getPointer(), getsGCFreed());
+        return new AnonymousStructNoField.AnonymousStructNoFieldPointer(getPointer(), false, this);
     }
 
     public int intValue() {
@@ -67,6 +68,11 @@ public final class AnonymousStructNoField extends Struct {
 
         public AnonymousStructNoFieldPointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);
+        }
+
+        public AnonymousStructNoFieldPointer(long pointer, boolean freeOnGC, Pointing parent) {
+            super(pointer, freeOnGC);
+            setParent(parent);
         }
 
         public AnonymousStructNoFieldPointer() {
