@@ -125,7 +125,10 @@ public class BuildTarget {
      * Extra lines which will be added to Android's Application.mk
      */
     public String[] androidApplicationMk = {};
-
+    /**
+     * Extra lines which will be added to Android's Android.mk `BUILD_SHARED_LIBRARY` module
+     */
+    public String[] androidAndroidMkSharedLibModule = {};
     /**
      * Is the target a simulator
      */

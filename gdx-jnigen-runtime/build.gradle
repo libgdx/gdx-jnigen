@@ -205,7 +205,8 @@ jnigen {
     addAndroid() {
         libraries = ""
         androidApplicationMk += ["APP_PLATFORM := android-19", "APP_STRIP_MODE := none", "APP_STL := c++_shared"]
-        linkerFlags += ["-stdlib=libc++", "LOCAL_WHOLE_STATIC_LIBRARIES := static_libffi"]
+        linkerFlags += ["-stdlib=libc++"]
+        androidApplicationMkSharedLibModule += ["LOCAL_WHOLE_STATIC_LIBRARIES := static_libffi"]
         androidAndroidMk += [
                 "include \$(CLEAR_VARS)",
                 "LOCAL_MODULE := static_libffi",

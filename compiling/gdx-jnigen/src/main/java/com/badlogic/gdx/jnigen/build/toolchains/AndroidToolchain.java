@@ -102,6 +102,7 @@ public class AndroidToolchain extends BaseToolchain {
         template = template.replace("%linkerFlags%", argsArrayToString(target.linkerFlags));
         template = template.replace("%libraries%", argsArrayToString(target.libraries));
         template = template.replace("%srcFiles%", srcFiles);
+        template = template.replace("%extraSharedLibModule%", String.join("\n", target.androidAndroidMkSharedLibModule));
         for (String extra : target.androidAndroidMk)
             template += "\n" + extra;
 
