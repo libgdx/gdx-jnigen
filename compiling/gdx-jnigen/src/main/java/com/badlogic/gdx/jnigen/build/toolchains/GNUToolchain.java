@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -56,7 +57,7 @@ public class GNUToolchain extends BaseToolchain {
         }
 
         List<String> args = new ArrayList<>();
-        args.addAll(stringFlagsToArgs(target.cFlags));
+        args.addAll(Arrays.asList(target.cFlags));
 
         args.add("-I" + convertToAbsoluteRelativeTo(config.jniDir, "jni-headers/"));
         args.add("-I" + convertToAbsoluteRelativeTo(config.jniDir, "jni-headers/" + target.os.getJniPlatform()));
@@ -92,7 +93,7 @@ public class GNUToolchain extends BaseToolchain {
         }
 
         List<String> args = new ArrayList<>();
-        args.addAll(stringFlagsToArgs(target.cppFlags));
+        args.addAll(Arrays.asList(target.cppFlags));
 
         args.add("-I" + convertToAbsoluteRelativeTo(config.jniDir, "jni-headers/"));
         args.add("-I" + convertToAbsoluteRelativeTo(config.jniDir, "jni-headers/" + target.os.getJniPlatform()));
@@ -147,15 +148,14 @@ public class GNUToolchain extends BaseToolchain {
 
         List<String> args = new ArrayList<>();
 
-        args.addAll(stringFlagsToArgs(target.linkerFlags));
+        args.addAll(Arrays.asList(target.linkerFlags));
         args.add("-o");
         args.add(targetLibFile.getAbsolutePath());
         for (File objFile : objFiles) {
             args.add(objFile.getAbsolutePath());
         }
-        if (!target.libraries.isEmpty()) {
-            args.addAll(stringFlagsToArgs(target.libraries));
-        }
+
+        args.addAll(Arrays.asList(target.libraries));
 
         ToolchainExecutor.execute(linkerExecutable, config.buildDir.file(), args, createToolChainCallback("Link"));
     }
