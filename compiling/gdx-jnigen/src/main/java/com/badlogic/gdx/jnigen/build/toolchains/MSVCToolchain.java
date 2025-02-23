@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -198,7 +199,7 @@ public class MSVCToolchain extends BaseToolchain {
         }
 
         List<String> args = new ArrayList<>();
-        args.addAll(stringFlagsToArgs(target.cFlags));
+        args.addAll(Arrays.asList(target.cFlags));
         for (String msvcIncludeDirectory : msvcIncludeDirectories) {
             args.add("/I" + msvcIncludeDirectory);
         }
@@ -236,7 +237,7 @@ public class MSVCToolchain extends BaseToolchain {
         }
 
         List<String> args = new ArrayList<>();
-        args.addAll(stringFlagsToArgs(target.cppFlags));
+        args.addAll(Arrays.asList(target.cppFlags));
         for (String msvcIncludeDirectory : msvcIncludeDirectories) {
             args.add("/I" + msvcIncludeDirectory);
         }
@@ -300,9 +301,7 @@ public class MSVCToolchain extends BaseToolchain {
             args.add("/Zi");
         }
 
-        if (!target.msvcPreLinkerFlags.isEmpty()) {
-            args.addAll(stringFlagsToArgs(target.msvcPreLinkerFlags));
-        }
+        args.addAll(Arrays.asList(target.msvcPreLinkerFlags));
 
         args.add("/Fe" + targetLibFile.getName());
         for (File objFile : objFiles) {
@@ -321,10 +320,8 @@ public class MSVCToolchain extends BaseToolchain {
         for (String msvcLibDirectory : msvcLibDirectories) {
             args.add("/LIBPATH:" + msvcLibDirectory);
         }
-        args.addAll(stringFlagsToArgs(target.linkerFlags));
-        if (!target.libraries.isEmpty()) {
-            args.addAll(stringFlagsToArgs(target.libraries));
-        }
+        args.addAll(Arrays.asList(target.linkerFlags));
+        args.addAll(Arrays.asList(target.libraries));
 
         logger.info("Linking Target {}", target);
 

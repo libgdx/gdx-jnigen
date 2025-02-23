@@ -44,8 +44,8 @@ jnigen {
     }
 
     all {
-        cFlags += " -std=c11 -fexceptions "
-        cppFlags += " -std=c++11 -fexceptions "
+        cFlags += ["-std=c11", "-fexceptions"]
+        cppFlags += ["-std=c++11", "-fexceptions"]
 
         headerDirs += ["src/test/resources/"]
         cppIncludes += ["src/test/resources/*.cpp"]
@@ -80,8 +80,8 @@ jnigen {
     addWindows(x64, x86)
     //add(Windows, x64, ARM)
     addAndroid() {
-        androidApplicationMk += "APP_STL := c++_shared"
-        linkerFlags += " -stdlib=libc++\n"
+        androidApplicationMk += ["APP_STL := c++_shared"]
+        linkerFlags += ["-stdlib=libc++"]
     }
     addIOS()
 }

@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class AndroidToolchain extends BaseToolchain {
 
@@ -16,6 +18,12 @@ public class AndroidToolchain extends BaseToolchain {
     private static final Logger logger = LoggerFactory.getLogger(AndroidToolchain.class);
 
     private File ndkExecutable;
+
+    private String argsArrayToString(String[] args) {
+        return Arrays.stream(args)
+                .map(s -> "\"" + s + "\"")
+                .collect(Collectors.joining(" "));
+    }
 
     @Override
     public void checkForTools () {
@@ -89,11 +97,12 @@ public class AndroidToolchain extends BaseToolchain {
 
         template = template.replace("%sharedLibName%", config.sharedLibName);
         template = template.replace("%headerDirs%", headerDirs);
-        template = template.replace("%cFlags%", target.cFlags);
-        template = template.replace("%cppFlags%", target.cppFlags);
-        template = template.replace("%linkerFlags%", target.linkerFlags);
-        template = template.replace("%libraries%", target.libraries);
+        template = template.replace("%cFlags%", argsArrayToString(target.cFlags));
+        template = template.replace("%cppFlags%", argsArrayToString(target.cppFlags));
+        template = template.replace("%linkerFlags%", argsArrayToString(target.linkerFlags));
+        template = template.replace("%libraries%", argsArrayToString(target.libraries));
         template = template.replace("%srcFiles%", srcFiles);
+        template = template.replace("%extraSharedLibModule%", String.join("\n", target.androidAndroidMkSharedLibModule));
         for (String extra : target.androidAndroidMk)
             template += "\n" + extra;
 
