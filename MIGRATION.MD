@@ -1,6 +1,8 @@
 ## jnigen 2.x to jnigen 3.x
 jnigen 3.x is a major rewrite of the jnigen internals.  
 The internals have been rewritten from ant to a full java code base. Together with this, many other refactors of jnigen occured.  
+Gradle plugin:
+- The artifact of the gradle plugin has been changed from `com.badlogicgames.gdx:gdx-jnigen-gradle` to `com.badlogicgames.jnigen:jnigen-gradle`
 - All old build tasks have been removed. They have been replaced by tasks names like `jnigenBuildAllWindows` or `jnigenBuildWindows_x86_64`.
 - The generalised build task `jnigenBuild` got replaced by the more specialised `jnigenBuildHost`, which only builds the host architecture.
 - All packaging tasks have been removed and replaced by `jnigenPackageAll` or `jnigenPackageAllDesktop`. Some specialised variants exist for android too.
@@ -10,3 +12,8 @@ The internals have been rewritten from ant to a full java code base. Together wi
 - The working directory of jnigen has changed to module directory. Relative path traversal works now.
 - jnigen now configures the publishing of the natives under a `jniPlatform` publication automatically, if the `maven-publish` plugin is applied. Your artifacts will be published using `groupid:artifactid-platform:version:classifierXXX` as the coordinates.
 - Getting verbose debug logs is now configured through gradle, by passing `--info` flag.
+
+SharedLibraryLoader:
+- The artifact of the `jnigen-loader` has been changed from `com.badlogicgames.jnigen:gdx-jnigen-loader` to `com.badlogicgames.jnigen:jnigen-loader`
+- The package of the `SharedLibraryLoader` has been changed from `com.badlogic.gdx.utils` to `com.badlogic.gdx.jnigen.loader`
+- The platform detection logic of `SharedLibraryLoader` has been split of into `com.badlogic.gdx.jnigen.commons.HostDetection`
