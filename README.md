@@ -13,6 +13,10 @@ avoids "java.library.path" troubles.
 
 See the libGDX Wiki for usage: https://libgdx.com/wiki/utils/jnigen
 
+> [!CAUTION]
+> The jnigen-runtime and jnigen-generator API is considered incubating and may change at any point.
+
+
 ## gdx-jnigen-gradle quickstart
 
 We recommend you look at some existing projects for examples:
@@ -21,6 +25,7 @@ We recommend you look at some existing projects for examples:
 - [gdx-bullet](https://github.com/libgdx/libgdx/blob/master/extensions/gdx-bullet/build.gradle) (Uses jnigen 2.x)
 - [gdx-video-desktop](https://github.com/libgdx/gdx-video/blob/master/gdx-video-desktop/build.gradle) (Uses jnigen 2.x)
 - [Jamepad](https://github.com/libgdx/Jamepad/blob/master/build.gradle) (Uses jnigen 2.x)
+- [gdx-box2d](https://github.com/libgdx/gdx-box2d/blob/master/build.gradle.kts) (Uses jnigen 3.x and kotlin DSL)
 
 
 ## Configuring 
@@ -47,11 +52,11 @@ jnigen {
     // String[] options can be replaced by using `x = ["value"]` or appended to with `x += "extravalue"` or `x += ["extravalue", "extravalue2"]`
     all {
         // Add extra flags passed to the C compiler
-        cFlags += " -fvisibility=hidden "
+        cFlags += ["-fvisibility=hidden"]
         // Add extra flags passed to the C++ compiler
-        cppFlags += " -std=c++11 -fvisibility=hidden "
+        cppFlags += ["-std=c++11", "-fvisibility=hidden"]
         // Add extra flags passed to the linker
-        linkerFlags += " -fvisibility=hidden "
+        linkerFlags += ["-fvisibility=hidden"]
     }
 
     // Configure robovm.xml for IOS builds, most simple libraries will not need to do this
@@ -72,14 +77,14 @@ jnigen {
 
     // Add windows 32-bit BuildTarget and customize it
     addWindows(x32, x86) {
-        //cFlags += " -fextraflag=fake "
+        //cFlags += ["-fextraflag=fake"]
         //compilerPrefix = "someprefix-";
         //cIncludes += "windowsspecificdir/*.c"
     }
     
     //Add windows 64 bit, x86, MSVC toolchain 
     addWindows(x64, x86, MSVC) {
-        msvcPreLinkerFlags += "/MD"
+        msvcPreLinkerFlags += ["/MD"]
     }
     
     addWindows(x64, x86)    
@@ -117,20 +122,20 @@ jnigen {
 
     // Customize each BuildTarget that matches the condition
     each({ it.os != Android && !it.isARM }) {
-        //cppFlags += " -march=nocona "
+        //cppFlags += ["-march=nocona"]
     }
     // Customize everything again, can be used for conditional changes
     each({ true }) {
         //if(!it.cppCompiler.contains("clang")) {
-        //    it.cFlags += " -flto "
-        //    it.cppFlags += " -flto "
-        //    it.linkerFlags += " -flto "
+        //    it.cFlags += ["-flto"]
+        //    it.cppFlags += ["-flto"]
+        //    it.linkerFlags += ["-flto"]
         //}
 
         //if(it.cppCompiler.contains("clang"))
-        //    it.linkerFlags += " -Wl,-dead_strip -Wl,-s "
+        //    it.linkerFlags += ["-Wl,-dead_strip", "-Wl,-s"]
         //else
-        //    it.linkerFlags += " -Wl,--gc-sections "
+        //    it.linkerFlags += ["-Wl,--gc-sections"]
     }
 }
 ```
