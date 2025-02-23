@@ -124,7 +124,7 @@ jnigen {
 
 
     // Customize each BuildTarget that matches the condition
-    each({ it.os != Android && !it.isARM }) {
+    each({ it.os != Android && it.architecture != ARM }) {
         //cppFlags += ["-march=nocona"]
     }
     // Customize everything again, can be used for conditional changes
