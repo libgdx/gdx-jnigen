@@ -16,7 +16,7 @@ See the libGDX Wiki for usage: https://libgdx.com/wiki/utils/jnigen
 > [!CAUTION]
 > The jnigen-runtime and jnigen-generator API is considered incubating and may change at any point.
 
-> [!INFO]
+> [!NOTE]
 > For migrating from jnigen 2.x see the `MIGRATION.MD`
 
 
