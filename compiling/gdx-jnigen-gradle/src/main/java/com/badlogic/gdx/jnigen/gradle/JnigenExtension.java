@@ -162,7 +162,7 @@ public class JnigenExtension {
     }
 
     public void addWindows (Architecture.Bitness bitness, Architecture architecture, Action<BuildTarget> container) {
-        addWindows(bitness, architecture, GCC_CLANG, null);
+        addWindows(bitness, architecture, GCC_CLANG, container);
     }
 
     public void addWindows (Architecture.Bitness bitness, Architecture architecture, CompilerABIType compilerABIType) {
