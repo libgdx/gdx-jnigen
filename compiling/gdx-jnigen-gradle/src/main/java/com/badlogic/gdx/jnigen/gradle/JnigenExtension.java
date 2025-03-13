@@ -99,11 +99,14 @@ public class JnigenExtension {
         this.nativeCodeGeneratorConfig = new NativeCodeGeneratorConfig(project);
 
         project.afterEvaluate(p -> {
-            targetConfigurationMap.forEach((target, container) -> {
+            targets.forEach(target -> {
                 if (all != null) {
                     all.execute(target);
                 }
-                container.execute(target);
+
+                if (targetConfigurationMap.containsKey(target)) {
+                    targetConfigurationMap.get(target).execute(target);
+                }
 
                 eachContainerPredicates.forEach(predicateContainer -> {
                     if (predicateContainer.predicate.test(target)) {
