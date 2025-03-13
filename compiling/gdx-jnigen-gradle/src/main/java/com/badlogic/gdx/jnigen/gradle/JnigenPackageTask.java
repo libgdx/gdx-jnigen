@@ -35,7 +35,6 @@ public class JnigenPackageTask extends DefaultTask {
     @Nullable
     private AndroidABI targetAndroidABI;
 
-    private BuildConfig buildConfig;
     private Packager packager;
 
     @Inject
@@ -49,17 +48,6 @@ public class JnigenPackageTask extends DefaultTask {
     public void configure (AndroidABI androidABIPackageOverride, Platform... platformsToPackage) {
         this.platformsToPackage = platformsToPackage;
         this.targetAndroidABI = androidABIPackageOverride;
-
-
-        RobovmBuildConfig robovmBuildConfig = new RobovmBuildConfig();
-        if (ext.robovm != null) {
-            ext.robovm.execute(robovmBuildConfig);
-        }
-
-        buildConfig = new BuildConfig(ext.sharedLibName, ext.subProjectDir + ext.temporaryDir, ext.subProjectDir + ext.libsDir, ext.subProjectDir + ext.jniDir, robovmBuildConfig, new FileDescriptor(ext.subProjectDir));
-        buildConfig.targetJarBaseName = ext.sharedLibName;
-
-        buildConfig.errorOnPackageMissingNative = getProject().hasProperty("jnigen.packageErrorOnMissingNatives");
 
         packager = new Packager();
 
@@ -84,18 +72,18 @@ public class JnigenPackageTask extends DefaultTask {
         for (Platform platform : platformsToPackage) {
             if (platform == Platform.Android) {
                 if (targetAndroidABI != null) {
-                    outputs.add(buildConfig.targetJarBaseName + "-natives-" + targetAndroidABI.getAbiString() + ".jar");
+                    outputs.add(ext.sharedLibName + "-natives-" + targetAndroidABI.getAbiString() + ".jar");
                 } else {
                     log.trace("No target AndroidABI set");
                 }
             } else {
                 switch (platform) {
                     case Desktop:
-                        outputs.add(buildConfig.targetJarBaseName + "-natives-" + "desktop" + ".jar");
+                        outputs.add(ext.sharedLibName + "-natives-" + "desktop" + ".jar");
 
                         break;
                     case IOS:
-                        outputs.add(buildConfig.targetJarBaseName + "-natives-" + "ios" + ".jar");
+                        outputs.add(ext.sharedLibName + "-natives-" + "ios" + ".jar");
                         break;
                 }
             }
@@ -107,6 +95,15 @@ public class JnigenPackageTask extends DefaultTask {
 
     @TaskAction
     public void run () {
+        RobovmBuildConfig robovmBuildConfig = new RobovmBuildConfig();
+        if (ext.robovm != null) {
+            ext.robovm.execute(robovmBuildConfig);
+        }
+
+        BuildConfig buildConfig = new BuildConfig(ext.sharedLibName, ext.subProjectDir + ext.temporaryDir, ext.subProjectDir + ext.libsDir, ext.subProjectDir + ext.jniDir, robovmBuildConfig, new FileDescriptor(ext.subProjectDir));
+        buildConfig.targetJarBaseName = ext.sharedLibName;
+
+        buildConfig.errorOnPackageMissingNative = getProject().hasProperty("jnigen.packageErrorOnMissingNatives");
 
         for (Platform platform : platformsToPackage) {
             if (platform == Platform.Android && targetAndroidABI != null) {
