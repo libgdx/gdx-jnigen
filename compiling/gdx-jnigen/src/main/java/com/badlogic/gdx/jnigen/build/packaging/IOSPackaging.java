@@ -104,7 +104,7 @@ public class IOSPackaging extends PlatformPackager {
 
     private void bundleExtraFrameworkIntoJar (File outputJar, String extraXCFrameworkPath) {
         try {
-			FileDescriptor frameworkFolder = buildConfig.libsDir.child(extraXCFrameworkPath);
+			FileDescriptor frameworkFolder = buildConfig.libsDir.parent().child(extraXCFrameworkPath);
 
 			try (FileOutputStream fileOutputStream = new FileOutputStream(outputJar)) {
                 JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream);
