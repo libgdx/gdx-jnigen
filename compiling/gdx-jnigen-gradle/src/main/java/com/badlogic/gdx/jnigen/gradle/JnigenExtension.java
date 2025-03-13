@@ -297,7 +297,7 @@ public class JnigenExtension {
         }
     }
 
-    public BuildTarget get (Os type, Architecture.Bitness bitness, Architecture architecture, AndroidABI androidABI, TargetType targetType) {
+    private BuildTarget get (Os type, Architecture.Bitness bitness, Architecture architecture, AndroidABI androidABI, TargetType targetType) {
         for (BuildTarget target : targets) {
             if (
                     target.os == type &&
