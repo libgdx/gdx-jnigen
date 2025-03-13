@@ -71,6 +71,8 @@ public class JnigenExtension {
 
     NativeCodeGeneratorConfig nativeCodeGeneratorConfig;
     public List<BuildTarget> targets = new ArrayList<>();
+
+    private Map<BuildTarget, Action<BuildTarget>> targetConfigurationMap = new HashMap<>();
     Action<BuildTarget> all = null;
 
     Action<RobovmBuildConfig> robovm;
@@ -83,6 +85,15 @@ public class JnigenExtension {
         this.project = project;
         this.subProjectDir = project.getProjectDir().getAbsolutePath() + File.separator;
         this.nativeCodeGeneratorConfig = new NativeCodeGeneratorConfig(project);
+
+        project.afterEvaluate(p -> {
+            targetConfigurationMap.forEach((target, container) -> {
+                if (all != null) {
+                    all.execute(target);
+                }
+                container.execute(target);
+            });
+        });
     }
 
     public void generator(Action<JnigenBindingGeneratorExtension> container) {
@@ -208,15 +219,10 @@ public class JnigenExtension {
         BuildTarget target = BuildTarget.newDefaultTarget(targetOs, bitness, architecture, abiType, targetType);
         target.release = release;
 
-        if (all != null)
-            all.execute(target);
-        if (container != null)
-            container.execute(target);
-
-        if (target.excludeFromMasterBuildFile) {
-            return;
-        }
         targets.add(target);
+        if (container != null) {
+            targetConfigurationMap.put(target, container);
+        }
         target.setAndroidOverrideABI(androidABI);
 
         checkForTasksToAdd(target);
@@ -299,8 +305,6 @@ public class JnigenExtension {
                             target.architecture == architecture &&
                             target.getTargetAndroidABI() == androidABI &&
                             target.targetType == targetType) {
-                if (container != null)
-                    container.execute(target);
                 return target;
             }
         }
