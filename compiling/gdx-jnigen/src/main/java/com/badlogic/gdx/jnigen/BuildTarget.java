@@ -99,10 +99,7 @@ public class BuildTarget {
      * the name of the generated build file for this target, defaults to "build-${target}(64)?.xml", must not be null
      **/
     public String buildFileName;
-    /**
-     * whether to exclude this build target from the master build file, useful for debugging
-     **/
-    public boolean excludeFromMasterBuildFile = false;
+
     /**
      * the libraries to be linked to the output, specify via e.g. -ldinput -ldxguid etc.
      **/

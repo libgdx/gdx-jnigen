@@ -71,6 +71,20 @@ public class JnigenExtension {
 
     NativeCodeGeneratorConfig nativeCodeGeneratorConfig;
     public List<BuildTarget> targets = new ArrayList<>();
+
+    private Map<BuildTarget, Action<BuildTarget>> targetConfigurationMap = new HashMap<>();
+    private static class PredicateContainer {
+        Predicate<BuildTarget> predicate;
+        Action<BuildTarget> container;
+
+        PredicateContainer (Predicate<BuildTarget> predicate, Action<BuildTarget> container) {
+            this.predicate = predicate;
+            this.container = container;
+        }
+    }
+
+    private List<PredicateContainer> eachContainerPredicates = new ArrayList<>();
+
     Action<BuildTarget> all = null;
 
     Action<RobovmBuildConfig> robovm;
@@ -83,6 +97,24 @@ public class JnigenExtension {
         this.project = project;
         this.subProjectDir = project.getProjectDir().getAbsolutePath() + File.separator;
         this.nativeCodeGeneratorConfig = new NativeCodeGeneratorConfig(project);
+
+        project.afterEvaluate(p -> {
+            targets.forEach(target -> {
+                if (all != null) {
+                    all.execute(target);
+                }
+
+                if (targetConfigurationMap.containsKey(target)) {
+                    targetConfigurationMap.get(target).execute(target);
+                }
+
+                eachContainerPredicates.forEach(predicateContainer -> {
+                    if (predicateContainer.predicate.test(target)) {
+                        predicateContainer.container.execute(target);
+                    }
+                });
+            });
+        });
     }
 
     public void generator(Action<JnigenBindingGeneratorExtension> container) {
@@ -200,7 +232,7 @@ public class JnigenExtension {
     public void add (Os targetOs, Architecture.Bitness bitness, Architecture architecture, CompilerABIType abiType, TargetType targetType, AndroidABI androidABI, Action<BuildTarget> container) {
         String name = targetOs + architecture.toSuffix().toUpperCase() + bitness.toSuffix();
 
-        if (get(targetOs, bitness, architecture, androidABI, targetType, container) != null)
+        if (get(targetOs, bitness, architecture, androidABI, targetType) != null)
             throw new RuntimeException("Attempt to add duplicate build target " + name);
         if ((targetOs == Android) && bitness != Architecture.Bitness._32 && architecture != Architecture.x86)
             throw new RuntimeException("Android and iOS must not have is64Bit or isARM or isRISCV.");
@@ -208,15 +240,10 @@ public class JnigenExtension {
         BuildTarget target = BuildTarget.newDefaultTarget(targetOs, bitness, architecture, abiType, targetType);
         target.release = release;
 
-        if (all != null)
-            all.execute(target);
-        if (container != null)
-            container.execute(target);
-
-        if (target.excludeFromMasterBuildFile) {
-            return;
-        }
         targets.add(target);
+        if (container != null) {
+            targetConfigurationMap.put(target, container);
+        }
         target.setAndroidOverrideABI(androidABI);
 
         checkForTasksToAdd(target);
@@ -291,7 +318,7 @@ public class JnigenExtension {
         }
     }
 
-    public BuildTarget get (Os type, Architecture.Bitness bitness, Architecture architecture, AndroidABI androidABI, TargetType targetType, Action<BuildTarget> container) {
+    private BuildTarget get (Os type, Architecture.Bitness bitness, Architecture architecture, AndroidABI androidABI, TargetType targetType) {
         for (BuildTarget target : targets) {
             if (
                     target.os == type &&
@@ -299,8 +326,6 @@ public class JnigenExtension {
                             target.architecture == architecture &&
                             target.getTargetAndroidABI() == androidABI &&
                             target.targetType == targetType) {
-                if (container != null)
-                    container.execute(target);
                 return target;
             }
         }
@@ -308,10 +333,7 @@ public class JnigenExtension {
     }
 
     public void each (Predicate<BuildTarget> condition, Action<BuildTarget> container) {
-        for (BuildTarget target : targets) {
-            if (condition.test(target))
-                container.execute(target);
-        }
+        eachContainerPredicates.add(new PredicateContainer(condition, container));
     }
 
     public class NativeCodeGeneratorConfig {

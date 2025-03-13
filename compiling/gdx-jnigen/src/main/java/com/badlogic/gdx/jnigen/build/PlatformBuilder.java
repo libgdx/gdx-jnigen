@@ -58,11 +58,7 @@ public class PlatformBuilder {
                 if (!osSeparatedBuildTargets.containsKey(compatibleTarget.os)) {
                     osSeparatedBuildTargets.put(compatibleTarget.os, new ArrayList<>());
                 }
-                if (compatibleTarget.excludeFromMasterBuildFile) {
-                    logger.warn("Skipping build target because its marked as excluded from master build file. {}", compatibleTarget);
-                } else {
-                    osSeparatedBuildTargets.get(compatibleTarget.os).add(compatibleTarget);
-                }
+                osSeparatedBuildTargets.get(compatibleTarget.os).add(compatibleTarget);
             }
 
 
