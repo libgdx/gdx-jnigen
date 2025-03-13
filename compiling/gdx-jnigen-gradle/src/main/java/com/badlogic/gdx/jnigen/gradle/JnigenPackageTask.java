@@ -49,8 +49,9 @@ public class JnigenPackageTask extends DefaultTask {
     public void configure (AndroidABI androidABIPackageOverride, Platform... platformsToPackage) {
         this.platformsToPackage = platformsToPackage;
         this.targetAndroidABI = androidABIPackageOverride;
+    }
 
-
+    public void injectBuildConfig () {
         RobovmBuildConfig robovmBuildConfig = new RobovmBuildConfig();
         if (ext.robovm != null) {
             ext.robovm.execute(robovmBuildConfig);
@@ -62,6 +63,7 @@ public class JnigenPackageTask extends DefaultTask {
         buildConfig.errorOnPackageMissingNative = getProject().hasProperty("jnigen.packageErrorOnMissingNatives");
 
         packager = new Packager();
+
 
         //add outputs manually here. This is only really required for publishing support
         List<String> outputs = getBuildOutputs();

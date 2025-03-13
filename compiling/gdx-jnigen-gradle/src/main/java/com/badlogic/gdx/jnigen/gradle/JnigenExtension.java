@@ -83,6 +83,13 @@ public class JnigenExtension {
         this.project = project;
         this.subProjectDir = project.getProjectDir().getAbsolutePath() + File.separator;
         this.nativeCodeGeneratorConfig = new NativeCodeGeneratorConfig(project);
+
+        project.afterEvaluate(p -> {
+           p.getTasks().stream().filter(t -> t instanceof JnigenPackageTask).forEach(t -> {
+               JnigenPackageTask packageTask = (JnigenPackageTask)t;
+               packageTask.injectBuildConfig();
+           });
+        });
     }
 
     public void generator(Action<JnigenBindingGeneratorExtension> container) {
