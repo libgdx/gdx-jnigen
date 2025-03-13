@@ -73,6 +73,18 @@ public class JnigenExtension {
     public List<BuildTarget> targets = new ArrayList<>();
 
     private Map<BuildTarget, Action<BuildTarget>> targetConfigurationMap = new HashMap<>();
+    private static class PredicateContainer {
+        Predicate<BuildTarget> predicate;
+        Action<BuildTarget> container;
+
+        PredicateContainer (Predicate<BuildTarget> predicate, Action<BuildTarget> container) {
+            this.predicate = predicate;
+            this.container = container;
+        }
+    }
+
+    private List<PredicateContainer> eachContainerPredicates = new ArrayList<>();
+
     Action<BuildTarget> all = null;
 
     Action<RobovmBuildConfig> robovm;
@@ -92,6 +104,12 @@ public class JnigenExtension {
                     all.execute(target);
                 }
                 container.execute(target);
+
+                eachContainerPredicates.forEach(predicateContainer -> {
+                    if (predicateContainer.predicate.test(target)) {
+                        predicateContainer.container.execute(target);
+                    }
+                });
             });
         });
     }
@@ -312,10 +330,7 @@ public class JnigenExtension {
     }
 
     public void each (Predicate<BuildTarget> condition, Action<BuildTarget> container) {
-        for (BuildTarget target : targets) {
-            if (condition.test(target))
-                container.execute(target);
-        }
+        eachContainerPredicates.add(new PredicateContainer(condition, container));
     }
 
     public class NativeCodeGeneratorConfig {
