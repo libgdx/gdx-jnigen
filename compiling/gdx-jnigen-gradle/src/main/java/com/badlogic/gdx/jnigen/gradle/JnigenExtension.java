@@ -211,7 +211,7 @@ public class JnigenExtension {
     public void add (Os targetOs, Architecture.Bitness bitness, Architecture architecture, CompilerABIType abiType, TargetType targetType, AndroidABI androidABI, Action<BuildTarget> container) {
         String name = targetOs + architecture.toSuffix().toUpperCase() + bitness.toSuffix();
 
-        if (get(targetOs, bitness, architecture, androidABI, targetType, container) != null)
+        if (get(targetOs, bitness, architecture, androidABI, targetType) != null)
             throw new RuntimeException("Attempt to add duplicate build target " + name);
         if ((targetOs == Android) && bitness != Architecture.Bitness._32 && architecture != Architecture.x86)
             throw new RuntimeException("Android and iOS must not have is64Bit or isARM or isRISCV.");
@@ -297,7 +297,7 @@ public class JnigenExtension {
         }
     }
 
-    public BuildTarget get (Os type, Architecture.Bitness bitness, Architecture architecture, AndroidABI androidABI, TargetType targetType, Action<BuildTarget> container) {
+    public BuildTarget get (Os type, Architecture.Bitness bitness, Architecture architecture, AndroidABI androidABI, TargetType targetType) {
         for (BuildTarget target : targets) {
             if (
                     target.os == type &&
