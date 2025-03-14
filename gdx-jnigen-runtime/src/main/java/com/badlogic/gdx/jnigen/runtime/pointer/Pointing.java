@@ -19,7 +19,7 @@ public class Pointing {
         this.pointer = pointer;
         this.freeOnGC = freeOnGC;
         if (freeOnGC)
-            GCHandler.enqueuePointer(this, pointer);
+            GCHandler.enqueuePointer(this);
     }
 
     public Pointing(int size, boolean freeOnGC, boolean guard) {
