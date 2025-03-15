@@ -4,7 +4,7 @@ import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;
 import com.badlogic.gdx.jnigen.runtime.c.CXXException;
 import com.badlogic.gdx.jnigen.runtime.closure.Closure;
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
-import com.badlogic.gdx.jnigen.runtime.ffi.ClosureInfo;
+import com.badlogic.gdx.jnigen.runtime.ffi.ClosureDecoder;
 import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
 import com.badlogic.gdx.jnigen.runtime.util.DowncallClosureSupplier;
 
@@ -20,7 +20,7 @@ public class CHandler {
     static {
         new SharedLibraryLoader().load("jnigen-runtime");
         try {
-            boolean res = init(CHandler.class.getDeclaredMethod("dispatchCallback", ClosureInfo.class, ByteBuffer.class),
+            boolean res = init(CHandler.class.getDeclaredMethod("dispatchCallback", ClosureDecoder.class, ByteBuffer.class),
                     CHandler.class.getDeclaredMethod("getExceptionString", Throwable.class));
             if (!res)
                 throw new RuntimeException("JNI initialization failed, either CHandler#dispatchCallback or CHandler#getExceptionString are not JNI accessible.");
@@ -64,9 +64,9 @@ public class CHandler {
         }catch (CXXException ignored) {}
     }
 
-    private static native void testIllegalArgumentExceptionThrowable(Class illegalArgumentException);
+    private static native void testIllegalArgumentExceptionThrowable(Class<?> illegalArgumentException);
 
-    private static native void testCXXExceptionThrowable(Class cxxException);
+    private static native void testCXXExceptionThrowable(Class<?> cxxException);
 
     /**
      * If java code throws an exception into native, this will disable setting a descriptor for the wrapping CXX exception
@@ -76,7 +76,7 @@ public class CHandler {
 
     public static native boolean reExportSymbolsGlobally(String libPath);
 
-    public static <T extends Closure> long dispatchCallback(ClosureInfo<T> toCallOn, ByteBuffer parameter) {
+    public static <T extends Closure> long dispatchCallback(ClosureDecoder<T> toCallOn, ByteBuffer parameter) {
         return toCallOn.invoke(parameter);
     }
 
@@ -144,8 +144,8 @@ public class CHandler {
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(8);
         byteBuffer.order(ByteOrder.nativeOrder());
 
-        ClosureInfo<T> closureInfo = new ClosureInfo<>(cif, object);
-        long fnPtr = createClosureForObject(cif, closureInfo, byteBuffer);
+        ClosureDecoder<T> closureDecoder = new ClosureDecoder<>(object);
+        long fnPtr = createClosureForObject(cif, closureDecoder, byteBuffer);
         long closurePtr = byteBuffer.getLong();
 
         ClosureObject<T> closureObject = new ClosureObject<>(object, fnPtr, closurePtr, false);
@@ -155,17 +155,17 @@ public class CHandler {
         return closureObject;
     }
 
-    public static native <T extends Closure> long createClosureForObject(long cifArg, ClosureInfo<T> object, ByteBuffer closureRet);
+    public static native <T extends Closure> long createClosureForObject(long cifArg, ClosureDecoder<T> object, ByteBuffer closureRet);
 
     public static <T extends Closure> ClosureObject<T> getClosureObject(long fnPtr, DowncallClosureSupplier<T> closureFallback) {
         synchronized (fnPtrClosureMap) {
-            ClosureObject<?> closureObject = fnPtrClosureMap.get(fnPtr);
+            @SuppressWarnings("unchecked")
+            ClosureObject<T> closureObject = (ClosureObject<T>) fnPtrClosureMap.get(fnPtr);
             if (closureObject == null) {
                 closureObject = new ClosureObject<>(closureFallback.get(fnPtr), fnPtr, 0, false);
                 fnPtrClosureMap.put(fnPtr, closureObject);
             }
-            //noinspection unchecked
-            return (ClosureObject<T>)closureObject;
+            return closureObject;
         }
     }
 

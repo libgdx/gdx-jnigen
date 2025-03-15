@@ -3,6 +3,7 @@ package com.badlogic.jnigen.generated.structs;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 import com.badlogic.jnigen.generated.FFITypes;
 
 public final class AnonymousStructNoFieldConsecutive extends Struct {
@@ -33,7 +34,7 @@ public final class AnonymousStructNoFieldConsecutive extends Struct {
     }
 
     public AnonymousStructNoFieldConsecutive.AnonymousStructNoFieldConsecutivePointer asPointer() {
-        return new AnonymousStructNoFieldConsecutive.AnonymousStructNoFieldConsecutivePointer(getPointer(), getsGCFreed());
+        return new AnonymousStructNoFieldConsecutive.AnonymousStructNoFieldConsecutivePointer(getPointer(), false, this);
     }
 
     public int externalValue() {
@@ -80,6 +81,11 @@ public final class AnonymousStructNoFieldConsecutive extends Struct {
 
         public AnonymousStructNoFieldConsecutivePointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);
+        }
+
+        public AnonymousStructNoFieldConsecutivePointer(long pointer, boolean freeOnGC, Pointing parent) {
+            super(pointer, freeOnGC);
+            setParent(parent);
         }
 
         public AnonymousStructNoFieldConsecutivePointer() {

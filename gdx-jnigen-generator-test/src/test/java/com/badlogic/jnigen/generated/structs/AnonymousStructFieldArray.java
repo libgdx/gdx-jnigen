@@ -3,6 +3,7 @@ package com.badlogic.jnigen.generated.structs;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner;
 
@@ -34,7 +35,7 @@ public final class AnonymousStructFieldArray extends Struct {
     }
 
     public AnonymousStructFieldArray.AnonymousStructFieldArrayPointer asPointer() {
-        return new AnonymousStructFieldArray.AnonymousStructFieldArrayPointer(getPointer(), getsGCFreed());
+        return new AnonymousStructFieldArray.AnonymousStructFieldArrayPointer(getPointer(), false, this);
     }
 
     public inner.innerPointer inner() {
@@ -57,6 +58,11 @@ public final class AnonymousStructFieldArray extends Struct {
 
         public AnonymousStructFieldArrayPointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);
+        }
+
+        public AnonymousStructFieldArrayPointer(long pointer, boolean freeOnGC, Pointing parent) {
+            super(pointer, freeOnGC);
+            setParent(parent);
         }
 
         public AnonymousStructFieldArrayPointer() {
@@ -109,7 +115,7 @@ public final class AnonymousStructFieldArray extends Struct {
         }
 
         public inner.innerPointer asPointer() {
-            return new inner.innerPointer(getPointer(), getsGCFreed());
+            return new inner.innerPointer(getPointer(), false, this);
         }
 
         public int intValue() {
@@ -132,6 +138,11 @@ public final class AnonymousStructFieldArray extends Struct {
 
             public innerPointer(long pointer, boolean freeOnGC) {
                 super(pointer, freeOnGC);
+            }
+
+            public innerPointer(long pointer, boolean freeOnGC, Pointing parent) {
+                super(pointer, freeOnGC);
+                setParent(parent);
             }
 
             public innerPointer() {

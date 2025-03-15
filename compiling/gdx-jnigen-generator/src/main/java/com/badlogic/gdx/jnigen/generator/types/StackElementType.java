@@ -33,7 +33,7 @@ public class StackElementType implements MappedType, WritableClass {
     private final List<TypeDefinition> children = new ArrayList<>();
 
     // TODO: Conceptionally, this belongs into TypeDefinition
-    private boolean isStruct;
+    private final boolean isStruct;
     private final List<StackElementField> fields = new ArrayList<>();
     private final String pointerName;
     private final String javaTypeName;
@@ -81,6 +81,7 @@ public class StackElementType implements MappedType, WritableClass {
         cuPublic.addImport(ClassNameConstants.CHANDLER_CLASS);
         cuPublic.addImport(isStruct ? ClassNameConstants.STRUCT_CLASS : ClassNameConstants.UNION_CLASS);
         cuPublic.addImport(ClassNameConstants.STACKELEMENTPOINTER_CLASS);
+        cuPublic.addImport(ClassNameConstants.POINTING_CLASS);
 
         if (comment != null) {
             toWriteToPublic.setJavadocComment(comment);
@@ -115,7 +116,7 @@ public class StackElementType implements MappedType, WritableClass {
                 .createBody().addStatement("return __ffi_type;");
 
         toWriteToPublic.addMethod("asPointer", Keyword.PUBLIC).setType(structPointerRef)
-                .createBody().addStatement("return new " + structPointerRef + "(getPointer(), getsGCFreed());");
+                .createBody().addStatement("return new " + structPointerRef + "(getPointer(), false, this);");
 
         // Fields
         int index = 0;
@@ -200,6 +201,14 @@ public class StackElementType implements MappedType, WritableClass {
         BlockStmt body = new BlockStmt();
         body.addStatement("super(pointer, freeOnGC);");
         pointerConstructor.setBody(body);
+
+
+        ConstructorDeclaration pointerAndParentTakingConstructor = pointerClass.addConstructor(Keyword.PUBLIC);
+        pointerAndParentTakingConstructor.addParameter(long.class, "pointer");
+        pointerAndParentTakingConstructor.addParameter(boolean.class, "freeOnGC");
+        pointerAndParentTakingConstructor.addParameter("Pointing", "parent");
+        pointerAndParentTakingConstructor.getBody().addStatement("super(pointer, freeOnGC);")
+                .addStatement("setParent(parent);");
 
         pointerClass.addConstructor(Keyword.PUBLIC).getBody().addStatement("this(1, true, true);");
 

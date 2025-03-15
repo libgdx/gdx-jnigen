@@ -3,6 +3,7 @@ package com.badlogic.jnigen.generated.structs;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 import com.badlogic.jnigen.generated.FFITypes;
 
 /**
@@ -36,7 +37,7 @@ public final class TestStruct extends Struct {
     }
 
     public TestStruct.TestStructPointer asPointer() {
-        return new TestStruct.TestStructPointer(getPointer(), getsGCFreed());
+        return new TestStruct.TestStructPointer(getPointer(), false, this);
     }
 
     /**
@@ -99,6 +100,11 @@ public final class TestStruct extends Struct {
 
         public TestStructPointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);
+        }
+
+        public TestStructPointer(long pointer, boolean freeOnGC, Pointing parent) {
+            super(pointer, freeOnGC);
+            setParent(parent);
         }
 
         public TestStructPointer() {

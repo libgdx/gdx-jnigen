@@ -3,6 +3,7 @@ package com.badlogic.jnigen.generated.structs;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.jnigen.generated.structs.AnonymousStructField.inner;
 
@@ -34,7 +35,7 @@ public final class AnonymousStructField extends Struct {
     }
 
     public AnonymousStructField.AnonymousStructFieldPointer asPointer() {
-        return new AnonymousStructField.AnonymousStructFieldPointer(getPointer(), getsGCFreed());
+        return new AnonymousStructField.AnonymousStructFieldPointer(getPointer(), false, this);
     }
 
     public inner inner() {
@@ -57,6 +58,11 @@ public final class AnonymousStructField extends Struct {
 
         public AnonymousStructFieldPointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);
+        }
+
+        public AnonymousStructFieldPointer(long pointer, boolean freeOnGC, Pointing parent) {
+            super(pointer, freeOnGC);
+            setParent(parent);
         }
 
         public AnonymousStructFieldPointer() {
@@ -112,7 +118,7 @@ public final class AnonymousStructField extends Struct {
         }
 
         public inner.innerPointer asPointer() {
-            return new inner.innerPointer(getPointer(), getsGCFreed());
+            return new inner.innerPointer(getPointer(), false, this);
         }
 
         /**
@@ -141,6 +147,11 @@ public final class AnonymousStructField extends Struct {
 
             public innerPointer(long pointer, boolean freeOnGC) {
                 super(pointer, freeOnGC);
+            }
+
+            public innerPointer(long pointer, boolean freeOnGC, Pointing parent) {
+                super(pointer, freeOnGC);
+                setParent(parent);
             }
 
             public innerPointer() {

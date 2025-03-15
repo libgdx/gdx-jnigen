@@ -194,7 +194,7 @@ public class Manager {
         String lineToPatch = Arrays.stream(classString.split("\r\n|\n"))
                 .filter(line -> line.contains(methodString)).findFirst().orElse(null);
         if (lineToPatch == null)
-            throw new IllegalArgumentException("Failed to find native method: " + method.toString() + " in " + classString);
+            throw new IllegalArgumentException("Failed to find native method: " + method + " in " + classString);
 
         String offset = lineToPatch.replace(lineToPatch.trim(), "");
         String newLine = lineToPatch + "/*\n";
