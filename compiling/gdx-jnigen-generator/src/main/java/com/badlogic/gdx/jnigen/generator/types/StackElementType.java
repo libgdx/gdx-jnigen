@@ -33,7 +33,7 @@ public class StackElementType implements MappedType, WritableClass {
     private final List<TypeDefinition> children = new ArrayList<>();
 
     // TODO: Conceptionally, this belongs into TypeDefinition
-    private boolean isStruct;
+    private final boolean isStruct;
     private final List<StackElementField> fields = new ArrayList<>();
     private final String pointerName;
     private final String javaTypeName;
