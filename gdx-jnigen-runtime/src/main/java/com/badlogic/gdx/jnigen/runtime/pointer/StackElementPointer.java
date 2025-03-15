@@ -1,7 +1,6 @@
 package com.badlogic.gdx.jnigen.runtime.pointer;
 
 import com.badlogic.gdx.jnigen.runtime.CHandler;
-import com.badlogic.gdx.jnigen.runtime.gc.GCHandler;
 
 public abstract class StackElementPointer<T extends StackElement> extends Pointing {
 

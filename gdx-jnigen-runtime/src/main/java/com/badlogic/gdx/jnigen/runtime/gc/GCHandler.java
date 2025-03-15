@@ -13,6 +13,7 @@ public class GCHandler {
     private static final ReferenceList referenceList = new ReferenceList();
 
     private static final Thread RELEASER = new Thread() {
+        @SuppressWarnings("InfiniteLoopStatement")
         @Override
         public void run() {
             while (true) {

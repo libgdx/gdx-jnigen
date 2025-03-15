@@ -2,7 +2,6 @@ package com.badlogic.gdx.jnigen.runtime.pointer;
 
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.gc.GCHandler;
-import com.badlogic.gdx.jnigen.runtime.gc.PointingPhantomReference;
 
 public class Pointing {
     private final long pointer;

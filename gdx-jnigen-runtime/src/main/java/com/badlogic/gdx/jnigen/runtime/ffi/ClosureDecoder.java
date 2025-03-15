@@ -7,17 +7,15 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public final class ClosureInfo<T extends Closure> {
+public final class ClosureDecoder<T extends Closure> {
 
-    private final long cif;
     private final T toCallOn;
 
     private final JavaTypeWrapper[] cachedWrappers;
     private final JavaTypeWrapper cachedReturnWrapper;
     private final AtomicBoolean cacheLock = new AtomicBoolean(false);
 
-    public ClosureInfo(long cif, T toCallOn) {
-        this.cif = cif;
+    public ClosureDecoder(T toCallOn) {
         this.toCallOn = toCallOn;
         CTypeInfo[] functionSignature = toCallOn.functionSignature();
         int parameterLength = functionSignature.length - 1;
