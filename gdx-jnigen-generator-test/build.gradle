@@ -18,17 +18,21 @@ repositories {
 }
 
 dependencies {
-    implementation fileTree(dir: file("build/jnigen/libs"), include: '*natives-desktop.jar')
     if (HostDetection.os === Os.Windows) {
         implementation "com.badlogicgames.jnigen:jnigen-runtime:3.0.1-SNAPSHOT"
-        implementation "com.badlogicgames.jnigen:jnigen-runtime-platform:3.0.1-SNAPSHOT:natives-desktop"
+        testImplementation "com.badlogicgames.jnigen:jnigen-runtime-platform:3.0.1-SNAPSHOT:natives-desktop"
+        jmhImplementation "com.badlogicgames.jnigen:jnigen-runtime-platform:3.0.1-SNAPSHOT:natives-desktop"
     } else {
         implementation project(path: ":jnigen-runtime")
-        implementation project(path: ":jnigen-runtime", configuration: "archives")
+        testImplementation project(path: ":jnigen-runtime", configuration: "archives")
+        jmhImplementation project(path: ":jnigen-runtime", configuration: "archives")
     }
 
+    testImplementation fileTree(dir: file("build/jnigen/libs"), include: '*natives-desktop.jar')
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    jmhImplementation fileTree(dir: file("build/jnigen/libs"), include: '*natives-desktop.jar')
 
     jmh 'org.openjdk.jmh:jmh-core:1.37'
     jmh 'org.openjdk.jmh:jmh-generator-annprocess:1.37'
