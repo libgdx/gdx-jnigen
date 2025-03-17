@@ -4,6 +4,7 @@ import com.badlogic.gdx.jnigen.commons.Os
 plugins {
     id "com.badlogicgames.jnigen.jnigen-gradle"
     id 'net.jsign' version '6.0'
+    id("me.champeau.jmh") version "0.7.0"
 }
 
 sourceCompatibility = 1.8
@@ -28,6 +29,10 @@ dependencies {
 
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    jmh 'org.openjdk.jmh:jmh-core:1.37'
+    jmh 'org.openjdk.jmh:jmh-generator-annprocess:1.37'
+    jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.37'
 }
 
 
@@ -35,6 +40,13 @@ test {
     dependsOn "jnigenSequence", "jnigenPackageAllDesktop"
     useJUnitPlatform()
     outputs.upToDateWhen {false}
+}
+
+jmh {
+    warmupIterations = 2
+    iterations = 2
+    fork = 2
+    timeUnit.set("us")
 }
 
 jnigen {
