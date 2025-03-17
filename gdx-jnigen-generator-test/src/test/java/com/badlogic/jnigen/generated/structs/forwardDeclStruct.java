@@ -3,6 +3,7 @@ package com.badlogic.jnigen.generated.structs;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 import com.badlogic.jnigen.generated.FFITypes;
 
 public final class forwardDeclStruct extends Struct {
@@ -33,13 +34,18 @@ public final class forwardDeclStruct extends Struct {
     }
 
     public forwardDeclStruct.forwardDeclStructPointer asPointer() {
-        return new forwardDeclStruct.forwardDeclStructPointer(getPointer(), getsGCFreed());
+        return new forwardDeclStruct.forwardDeclStructPointer(getPointer(), false, this);
     }
 
     public static final class forwardDeclStructPointer extends StackElementPointer<forwardDeclStruct> {
 
         public forwardDeclStructPointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);
+        }
+
+        public forwardDeclStructPointer(long pointer, boolean freeOnGC, Pointing parent) {
+            super(pointer, freeOnGC);
+            setParent(parent);
         }
 
         public forwardDeclStructPointer() {

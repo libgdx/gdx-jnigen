@@ -19,6 +19,5 @@ public final class ClassNameConstants {
     public static final String FLOATPOINTER_CLASS = "com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer";
     public static final String POINTERPOINTER_CLASS = "com.badlogic.gdx.jnigen.runtime.pointer.PointerPointer";
     public static final String VOIDPOINTER_CLASS = "com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer";
-
-
+    public static final String POINTING_CLASS = "com.badlogic.gdx.jnigen.runtime.pointer.Pointing";
 }

@@ -1,7 +1,7 @@
 package com.badlogic.gdx.jnigen.runtime.pointer;
 
 import com.badlogic.gdx.jnigen.runtime.CHandler;
-import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;;
+import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;
 
 public final class CSizedIntPointer extends Pointing {
 
@@ -167,8 +167,9 @@ public final class CSizedIntPointer extends Pointing {
     }
 
     public CSizedIntPointer recast(String newCType) {
-        CSizedIntPointer tmp = new CSizedIntPointer(getPointer(), getsGCFreed(), newCType);
+        CSizedIntPointer tmp = new CSizedIntPointer(getPointer(), false, newCType);
         tmp.guardBytes(getSizeGuard());
+        tmp.setParent(this);
         return tmp;
     }
 

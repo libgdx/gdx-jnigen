@@ -7,6 +7,7 @@ public class Pointing {
     private final long pointer;
     protected boolean freed;
     private final boolean freeOnGC;
+    private Pointing parent;
 
     /**
      * This is just a hint to an implementor of Pointing to respect a bound, but it doesn't have too
@@ -17,7 +18,7 @@ public class Pointing {
         this.pointer = pointer;
         this.freeOnGC = freeOnGC;
         if (freeOnGC)
-            GCHandler.enqueuePointer(this, pointer);
+            GCHandler.enqueuePointer(this);
     }
 
     public Pointing(int size, boolean freeOnGC, boolean guard) {
@@ -48,12 +49,14 @@ public class Pointing {
     public void free() {
         if (freed)
             throw new IllegalStateException("Double free on " + pointer);
-        if (freeOnGC)
+        if (getsGCFreed())
             throw new IllegalStateException("Can't free a object, that gets freed by GC.");
-        if (GCHandler.isEnqueued(pointer))
-            throw new IllegalStateException("Can't free object, when another object with the same pointer will be freed by GC.");
         CHandler.free(pointer);
         freed = true;
+    }
+
+    public void setParent(Pointing parent) {
+        this.parent = parent;
     }
 
     public boolean isFreed() {
@@ -61,6 +64,8 @@ public class Pointing {
     }
 
     public boolean getsGCFreed() {
+        if (parent != null)
+            return parent.getsGCFreed();
         return freeOnGC;
     }
 

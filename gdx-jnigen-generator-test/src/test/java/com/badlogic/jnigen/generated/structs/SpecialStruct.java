@@ -3,6 +3,7 @@ package com.badlogic.jnigen.generated.structs;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
@@ -38,7 +39,7 @@ public final class SpecialStruct extends Struct {
     }
 
     public SpecialStruct.SpecialStructPointer asPointer() {
-        return new SpecialStruct.SpecialStructPointer(getPointer(), getsGCFreed());
+        return new SpecialStruct.SpecialStructPointer(getPointer(), false, this);
     }
 
     public FloatPointer floatPtrField() {
@@ -69,6 +70,11 @@ public final class SpecialStruct extends Struct {
 
         public SpecialStructPointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);
+        }
+
+        public SpecialStructPointer(long pointer, boolean freeOnGC, Pointing parent) {
+            super(pointer, freeOnGC);
+            setParent(parent);
         }
 
         public SpecialStructPointer() {
