@@ -2,30 +2,33 @@ package com.badlogic.gdx.jnigen.generator.types;
 
 import com.badlogic.gdx.jnigen.generator.ClassNameConstants;
 import com.badlogic.gdx.jnigen.generator.Manager;
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.*;
-import com.github.javaparser.ast.expr.ArrayInitializerExpr;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.EnumConstantDeclaration;
+import com.github.javaparser.ast.body.EnumDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.NullLiteralExpr;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.stmt.SwitchEntry;
+import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.type.PrimitiveType;
 
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Map.Entry;
 
 public class EnumType implements MappedType {
-
-    private static final int MAX_VALUE_ARRAY_SIZE = 16;
 
     private final TypeDefinition definition;
     private final String javaName;
@@ -88,24 +91,28 @@ public class EnumType implements MappedType {
         MethodDeclaration getByIndex = declaration.addMethod("getByIndex", Keyword.PUBLIC, Keyword.STATIC);
         getByIndex.addParameter(int.class, "index");
         getByIndex.setType(javaName);
-        if (highestConstantID - lowestConstantID <= MAX_VALUE_ARRAY_SIZE) {
-            getByIndex.createBody().addStatement("return _values[index];");
-            NodeList<Expression> expressions = new NodeList<>();
-            for (int i = lowestConstantID; i <= highestConstantID; i++) {
-                EnumConstant constant = constants.get(i);
-                expressions.add(constant == null ? new NullLiteralExpr() : new NameExpr(constant.getName()));
-            }
-            ArrayInitializerExpr initializerExpr = new ArrayInitializerExpr(expressions);
-            declaration.addFieldWithInitializer(javaName + "[]", "_values", initializerExpr, Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
-        } else {
-            cu.addImport(HashMap.class);
-            ObjectCreationExpr createHashMap = new ObjectCreationExpr();
-            createHashMap.setType(HashMap.class);
-            declaration.addFieldWithInitializer("HashMap<Integer, " + javaName + ">", "_values", createHashMap, Keyword.PRIVATE, Keyword.FINAL, Keyword.STATIC);
-            BlockStmt staticInit = declaration.addStaticInitializer();
-            staticInit.addStatement("for (" + javaName + " _val : values()) _values.put(_val.index, _val);");
-            getByIndex.createBody().addStatement("return _values.get(index);");
-        }
+
+        SwitchStmt switchStmt = new SwitchStmt();
+        switchStmt.setSelector(new NameExpr("index"));
+        constants.values()
+                .forEach(enumConstant -> {
+                    SwitchEntry switchEntry = new SwitchEntry();
+                    switchEntry.setLabels(NodeList.nodeList(new IntegerLiteralExpr(String.valueOf(enumConstant.getId()))));
+                    ReturnStmt returnStmt = new ReturnStmt();
+                    returnStmt.setExpression(new NameExpr(enumConstant.getName()));
+                    switchEntry.setStatements(NodeList.nodeList(returnStmt));
+
+                    switchStmt.getEntries().add(switchEntry);
+                });
+
+        SwitchEntry defaultEntry = new SwitchEntry();
+        defaultEntry.setDefault(true);
+        Statement throwStatement = StaticJavaParser.parseStatement("throw new IllegalArgumentException(\"Index \" + index + \" does not exist.\");");
+        defaultEntry.setStatements(NodeList.nodeList(throwStatement));
+
+        switchStmt.getEntries().add(defaultEntry);
+
+        getByIndex.createBody().addStatement(switchStmt);
 
         String pointerName = javaName + "Pointer";
 

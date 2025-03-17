@@ -32,10 +32,17 @@ public enum TestEnum implements CEnum {
     }
 
     public static TestEnum getByIndex(int index) {
-        return _values[index];
+        switch(index) {
+            case 0:
+                return FIRST;
+            case 1:
+                return SECOND;
+            case 4:
+                return THIRD;
+            default:
+                throw new IllegalArgumentException("Index " + index + " does not exist.");
+        }
     }
-
-    private final static TestEnum[] _values = { FIRST, SECOND, null, null, THIRD };
 
     public static final class TestEnumPointer extends EnumPointer<TestEnum> {
 

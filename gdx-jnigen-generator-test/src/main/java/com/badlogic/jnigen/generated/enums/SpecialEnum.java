@@ -2,7 +2,6 @@ package com.badlogic.jnigen.generated.enums;
 
 import com.badlogic.gdx.jnigen.runtime.pointer.EnumPointer;
 import com.badlogic.gdx.jnigen.runtime.c.CEnum;
-import java.util.HashMap;
 
 public enum SpecialEnum implements CEnum {
 
@@ -19,13 +18,14 @@ public enum SpecialEnum implements CEnum {
     }
 
     public static SpecialEnum getByIndex(int index) {
-        return _values.get(index);
-    }
-
-    private final static HashMap<Integer, SpecialEnum> _values = new HashMap();
-
-    static {
-        for (SpecialEnum _val : values()) _values.put(_val.index, _val);
+        switch(index) {
+            case 0:
+                return LOWER;
+            case 160:
+                return HIGH;
+            default:
+                throw new IllegalArgumentException("Index " + index + " does not exist.");
+        }
     }
 
     public static final class SpecialEnumPointer extends EnumPointer<SpecialEnum> {
