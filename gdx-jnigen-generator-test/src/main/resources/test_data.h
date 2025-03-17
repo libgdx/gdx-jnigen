@@ -57,6 +57,11 @@ typedef enum TestEnum {
     THIRD = 4
 } TestEnum;
 
+typedef enum SpecialEnum {
+    LOWER = 0,
+    HIGH = 160
+} SpecialEnum;
+
 /*!
  Some other comment
 */
@@ -172,7 +177,7 @@ struct forwardDeclStruct;
 /// This method does great stuff, trust me
 void commentedMethod(void);
 
-void ensureParsed(AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested, struct forwardDeclStruct*);
+void ensureParsed(SpecialEnum, AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested, struct forwardDeclStruct*);
 void weirdPointer(FILE *_file);
 void constArrayParameter(const TestStruct structs[]);
 void** voidPointerPointer(void** test);
