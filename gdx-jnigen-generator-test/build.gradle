@@ -4,6 +4,7 @@ import com.badlogic.gdx.jnigen.commons.Os
 plugins {
     id "com.badlogicgames.jnigen.jnigen-gradle"
     id 'net.jsign' version '6.0'
+    id("me.champeau.jmh") version "0.7.0"
 }
 
 sourceCompatibility = 1.8
@@ -17,16 +18,25 @@ repositories {
 }
 
 dependencies {
+    if (HostDetection.os === Os.Windows) {
+        implementation "com.badlogicgames.jnigen:jnigen-runtime:3.0.1-SNAPSHOT"
+        testImplementation "com.badlogicgames.jnigen:jnigen-runtime-platform:3.0.1-SNAPSHOT:natives-desktop"
+        jmhImplementation "com.badlogicgames.jnigen:jnigen-runtime-platform:3.0.1-SNAPSHOT:natives-desktop"
+    } else {
+        implementation project(path: ":jnigen-runtime")
+        testImplementation project(path: ":jnigen-runtime", configuration: "archives")
+        jmhImplementation project(path: ":jnigen-runtime", configuration: "archives")
+    }
+
+    testImplementation fileTree(dir: file("build/jnigen/libs"), include: '*natives-desktop.jar')
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    testRuntimeOnly fileTree(dir: file("build/jnigen/libs"), include: '*natives-desktop.jar')
-    if (HostDetection.os === Os.Windows) {
-        testImplementation "com.badlogicgames.jnigen:jnigen-runtime:3.0.1-SNAPSHOT"
-        testImplementation "com.badlogicgames.jnigen:jnigen-runtime-platform:3.0.1-SNAPSHOT:natives-desktop"
-    } else {
-        testImplementation project(path: ":jnigen-runtime")
-        testImplementation project(path: ":jnigen-runtime", configuration: "archives")
-    }
+
+    jmhImplementation fileTree(dir: file("build/jnigen/libs"), include: '*natives-desktop.jar')
+
+    jmh 'org.openjdk.jmh:jmh-core:1.37'
+    jmh 'org.openjdk.jmh:jmh-generator-annprocess:1.37'
+    jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.37'
 }
 
 
@@ -36,26 +46,29 @@ test {
     outputs.upToDateWhen {false}
 }
 
+jmh {
+    warmupIterations = 2
+    iterations = 2
+    fork = 2
+    timeUnit.set("us")
+}
+
 jnigen {
     sharedLibName = "test-natives"
-
-    nativeCodeGenerator {
-        it.sourceSet = sourceSets.named("test").get()
-    }
 
     all {
         cFlags += ["-std=c11", "-fexceptions"]
         cppFlags += ["-std=c++11", "-fexceptions"]
 
-        headerDirs += ["src/test/resources/"]
-        cppIncludes += ["src/test/resources/*.cpp"]
+        headerDirs += ["src/main/resources/"]
+        cppIncludes += ["src/main/resources/*.cpp"]
     }
 
     generator {
-        outputPath = file("src/test/java")
+        outputPath = file("src/main/java")
         basePackage = "com.badlogic.jnigen.generated"
         fileToParse = "test_data.h"
-        options = ["-I" + file("src/test/resources/").absolutePath]
+        options = ["-I" + file("src/main/resources/").absolutePath]
     }
 
     signing {

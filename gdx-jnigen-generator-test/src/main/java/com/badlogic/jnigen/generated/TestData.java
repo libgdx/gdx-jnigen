@@ -1,7 +1,9 @@
 package com.badlogic.jnigen.generated;
 
+import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
 import com.badlogic.gdx.jnigen.runtime.c.CXXException;
 import com.badlogic.jnigen.generated.structs.GlobalArg;
+import com.badlogic.jnigen.generated.enums.SpecialEnum;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoField;
 import com.badlogic.jnigen.generated.structs.AnonymousStructField;
 import com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray;
@@ -60,6 +62,7 @@ import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackFloatRe
 public final class TestData {
 
     static {
+        new SharedLibraryLoader().load("test-natives");
         CHandler.init();
         FFITypes.init();
         init(IllegalArgumentException.class, CXXException.class);
@@ -110,13 +113,13 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static void ensureParsed(AnonymousStructNoField arg0, AnonymousStructField arg1, AnonymousStructFieldArray arg2, AnonymousClosure arg3, AnonymousStructNoFieldEnd arg4, AnonymousStructNoFieldConsecutive arg5, AnonymousStructNoFieldNested arg6, forwardDeclStruct.forwardDeclStructPointer arg7) {
-        ensureParsed_internal(arg0.getPointer(), arg1.getPointer(), arg2.getPointer(), arg3.getPointer(), arg4.getPointer(), arg5.getPointer(), arg6.getPointer(), arg7.getPointer());
+    public static void ensureParsed(SpecialEnum arg0, AnonymousStructNoField arg1, AnonymousStructField arg2, AnonymousStructFieldArray arg3, AnonymousClosure arg4, AnonymousStructNoFieldEnd arg5, AnonymousStructNoFieldConsecutive arg6, AnonymousStructNoFieldNested arg7, forwardDeclStruct.forwardDeclStructPointer arg8) {
+        ensureParsed_internal(arg0.getIndex(), arg1.getPointer(), arg2.getPointer(), arg3.getPointer(), arg4.getPointer(), arg5.getPointer(), arg6.getPointer(), arg7.getPointer(), arg8.getPointer());
     }
 
-    private static native void ensureParsed_internal(long arg0, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6, long arg7);/*
+    private static native void ensureParsed_internal(int arg0, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6, long arg7, long arg8);/*
     	HANDLE_JAVA_EXCEPTION_START()
-    	ensureParsed(*(AnonymousStructNoField*)arg0, *(AnonymousStructField*)arg1, *(AnonymousStructFieldArray*)arg2, *(struct AnonymousClosure*)arg3, *(AnonymousStructNoFieldEnd*)arg4, *(AnonymousStructNoFieldConsecutive*)arg5, *(AnonymousStructNoFieldNested*)arg6, (struct forwardDeclStruct *)arg7);
+    	ensureParsed((SpecialEnum)arg0, *(AnonymousStructNoField*)arg1, *(AnonymousStructField*)arg2, *(AnonymousStructFieldArray*)arg3, *(struct AnonymousClosure*)arg4, *(AnonymousStructNoFieldEnd*)arg5, *(AnonymousStructNoFieldConsecutive*)arg6, *(AnonymousStructNoFieldNested*)arg7, (struct forwardDeclStruct *)arg8);
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
