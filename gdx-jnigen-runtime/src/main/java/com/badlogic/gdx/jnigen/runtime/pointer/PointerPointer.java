@@ -1,13 +1,11 @@
 package com.badlogic.gdx.jnigen.runtime.pointer;
 
 import com.badlogic.gdx.jnigen.runtime.CHandler;
-import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;
 
 public class PointerPointer<T extends Pointing> extends VoidPointer {
 
     private static final int __pointer_size = CHandler.POINTER_SIZE;
     private final PointerDereferenceSupplier<T> supplier;
-    private CTypeInfo cTypeInfo;
 
     public PointerPointer(long pointer, boolean freeOnGC, PointerDereferenceSupplier<T> supplier) {
         super(pointer, freeOnGC);
@@ -32,41 +30,15 @@ public class PointerPointer<T extends Pointing> extends VoidPointer {
         return this;
     }
 
-    public PointerPointer<T> setBackingCType(String name) {
-        this.cTypeInfo = CHandler.getCTypeInfo(name);
-        return this;
-    }
-
-    public void assertCTypeBacking(String name) {
-        if (cTypeInfo == null)
-            throw new IllegalArgumentException("PointerPointer has no recorded CTypeInfo, set it with setBackingCType");
-        cTypeInfo.assertConformsTo(name);
-    }
-
     public T getValue() {
         return getValue(0);
-    }
-
-    private void assertChild(T pointerObj) {
-        if (pointerObj instanceof PointerPointer)
-            return;
-        if (cTypeInfo != null && !(pointerObj instanceof CSizedIntPointer))
-            throw new IllegalArgumentException("PointerPointer has set a backing CTypeInfo, but doesn't dereference to an CSizedIntPointer");
-        if (pointerObj instanceof CSizedIntPointer) {
-            if (cTypeInfo == null)
-                throw new IllegalArgumentException("PointerPointer dereferences to CTypeInfo, but has not CType info, set it with setBackingCType");
-            CSizedIntPointer intPointer = (CSizedIntPointer) pointerObj;
-            intPointer.assertHasCTypeBacking(cTypeInfo.getName());
-        }
     }
 
     public T getValue(int index) {
         int offset = index * __pointer_size;
         assertBounds(offset);
         long pointer = CHandler.getPointerPart(getPointer(), __pointer_size, offset);
-        T pointerObj = supplier.create(pointer, false);
-        assertChild(pointerObj);
-        return pointerObj;
+        return supplier.create(pointer, false);
     }
 
     public void setValue(T value) {
@@ -76,7 +48,6 @@ public class PointerPointer<T extends Pointing> extends VoidPointer {
     public void setValue(T value, int index) {
         int offset = index * __pointer_size;
         assertBounds(offset);
-        assertChild(value);
         CHandler.setPointerPart(getPointer(), __pointer_size, offset, value.getPointer());
     }
 }

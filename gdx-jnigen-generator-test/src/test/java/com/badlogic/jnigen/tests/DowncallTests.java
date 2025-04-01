@@ -1,9 +1,8 @@
 package com.badlogic.jnigen.tests;
 
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
-import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.PointerPointer;
-import com.badlogic.jnigen.generated.TestData.*;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
 import com.badlogic.jnigen.generated.enums.TestEnum;
 import com.badlogic.jnigen.generated.enums.TestEnum.TestEnumPointer;
 import com.badlogic.jnigen.generated.structs.GlobalArg;
@@ -188,10 +187,9 @@ public class DowncallTests extends BaseTest {
     @Test
     public void testCIntPtrPtrArg() {
         ClosureObject<methodWithIntPtrPtrArg> callback = getIntPtrPtrArgCallback();
-        CSizedIntPointer ptr = new CSizedIntPointer("int");
+        SIntPointer ptr = new SIntPointer();
         ptr.setInt(42);
-        PointerPointer<CSizedIntPointer> ptrPtr = new PointerPointer<>(CSizedIntPointer.pointerPointer("int"));
-        ptrPtr.setBackingCType("int");
+        PointerPointer<SIntPointer> ptrPtr = new PointerPointer<>(SIntPointer::new);
         ptrPtr.setValue(ptr);
         callback.getClosure().methodWithIntPtrPtrArg_call(ptrPtr);
         assertEquals(ptrPtr.getValue().getInt(), getGlobalArgState().intPtrPtr().getValue().getInt());
@@ -200,7 +198,7 @@ public class DowncallTests extends BaseTest {
     @Test
     public void testCIntPtrPtrRet() {
         ClosureObject<methodWithIntPtrPtrRet> callback = getIntPtrPtrRetCallback();
-        PointerPointer<CSizedIntPointer> result = callback.getClosure().methodWithIntPtrPtrRet_call();
+        PointerPointer<SIntPointer> result = callback.getClosure().methodWithIntPtrPtrRet_call();
         assertNotNull(result);
         assertEquals(42, result.getValue().getInt());
     }
@@ -262,7 +260,7 @@ public class DowncallTests extends BaseTest {
     @Test
     public void testCIntPointerReturn() {
         ClosureObject<methodWithCallbackIntPointerReturn> callback = getIntPointerReturnCallback();
-        CSizedIntPointer result = callback.getClosure().methodWithCallbackIntPointerReturn_call();
+        SIntPointer result = callback.getClosure().methodWithCallbackIntPointerReturn_call();
         assertNotNull(result);
         assertEquals(42, result.getInt());
     }

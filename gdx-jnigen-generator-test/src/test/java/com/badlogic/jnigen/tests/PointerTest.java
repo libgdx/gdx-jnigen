@@ -1,10 +1,11 @@
 package com.badlogic.jnigen.tests;
 
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
-import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.PointerPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.SBytePointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
 import com.badlogic.jnigen.generated.TestData;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerArg;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerReturn;
@@ -24,28 +25,19 @@ public class PointerTest extends BaseTest {
 
     @Test
     public void testCallbackIntPointerReturn() {
-        CSizedIntPointer ptr = new CSizedIntPointer("int");
+        SIntPointer ptr = new SIntPointer();
         ptr.setInt(14);
         assertEquals(14, ptr.getInt());
         ClosureObject<methodWithCallbackIntPointerReturn> closureObject = ClosureObject.fromClosure(() -> ptr);
-        CSizedIntPointer ret = call_methodWithCallbackIntPointerReturn(closureObject, 20);
+        SIntPointer ret = call_methodWithCallbackIntPointerReturn(closureObject, 20);
         assertEquals(ret.getPointer(), ptr.getPointer());
         assertEquals(20, ptr.getInt());
         closureObject.free();
     }
 
     @Test
-    public void testCallbackIntPointerReturnWrongType() {
-        CSizedIntPointer ptr = new CSizedIntPointer("uint32_t");
-        ClosureObject<methodWithCallbackIntPointerReturn> closureObject = ClosureObject.fromClosure(() -> ptr);
-        assertThrows(IllegalArgumentException.class, () -> call_methodWithCallbackIntPointerReturn(closureObject, 20));
-
-        closureObject.free();
-    }
-
-    @Test
     public void testCallbackIntPointerArg() {
-        AtomicReference<CSizedIntPointer> ptrRef = new AtomicReference<>();
+        AtomicReference<SIntPointer> ptrRef = new AtomicReference<>();
         ClosureObject<methodWithCallbackIntPointerArg> closureObject = ClosureObject.fromClosure((arg) -> {
             ptrRef.set(arg);
             assertEquals(15, arg.getInt());
@@ -60,7 +52,7 @@ public class PointerTest extends BaseTest {
 
     @Test
     public void testPassPointer() {
-        CSizedIntPointer pointer = new CSizedIntPointer("int", 1);
+        SIntPointer pointer = new SIntPointer();
         for (int i = -10; i < 10; i++) {
             pointer.setInt(i, 0);
             assertEquals(i, TestData.passIntPointer(pointer));
@@ -68,15 +60,9 @@ public class PointerTest extends BaseTest {
     }
 
     @Test
-    public void testPassIncorrectPointer() {
-        CSizedIntPointer pointer = new CSizedIntPointer("uint32_t", 1);
-        assertThrows(IllegalArgumentException.class, () -> TestData.passIntPointer(pointer));
-    }
-
-    @Test
     public void testReturnPointer() {
         for (int i = -10; i < 10; i++) {
-            CSizedIntPointer pointer = TestData.returnIntPointer(i);
+            SIntPointer pointer = TestData.returnIntPointer(i);
             assertEquals(i, pointer.getInt(0));
             pointer.free();
         }
@@ -93,14 +79,12 @@ public class PointerTest extends BaseTest {
     @Test
     public void closureIntPtrPtrTest() {
         ClosureObject<TestData.methodWithIntPtrPtrArg> ptrPtrArg = ClosureObject.fromClosure(arg0 -> {
-            arg0.assertCTypeBacking("int");
             assertEquals(5, arg0.getValue().getInt());
         });
         TestData.call_methodWithIntPtrPtrArg(ptrPtrArg);
         ptrPtrArg.free();
 
-        PointerPointer<CSizedIntPointer> pointer = new PointerPointer<>((pointer1, freeOnGC) -> new CSizedIntPointer("int"));
-        pointer.setBackingCType("int");
+        PointerPointer<SIntPointer> pointer = new PointerPointer<>(SIntPointer::new);
         ClosureObject<TestData.methodWithIntPtrPtrRet> ptrPtrRet = ClosureObject.fromClosure(() -> pointer);
         TestData.call_methodWithIntPtrPtrRet(ptrPtrRet);
         ptrPtrRet.free();
@@ -128,21 +112,8 @@ public class PointerTest extends BaseTest {
     }
 
     @Test
-    public void intPointerPointerWrongTypeTest() {
-        PointerPointer<CSizedIntPointer> pointer = new PointerPointer<>(CSizedIntPointer.pointerPointer("int"));
-        pointer.setBackingCType("short");
-        assertThrows(IllegalArgumentException.class, () -> TestData.intPointerPointer(pointer));
-        assertThrows(IllegalArgumentException.class, pointer::getValue);
-
-        ClosureObject<TestData.methodWithIntPtrPtrRet> ptrPtrRet = ClosureObject.fromClosure(() -> pointer);
-        assertThrows(IllegalArgumentException.class, () -> TestData.call_methodWithIntPtrPtrRet(ptrPtrRet));
-        ptrPtrRet.free();
-    }
-
-    @Test
     public void intPointerPointerTest() {
-        PointerPointer<CSizedIntPointer> pointer = new PointerPointer<>(CSizedIntPointer.pointerPointer("int"));
-        pointer.setBackingCType("int");
+        PointerPointer<SIntPointer> pointer = new PointerPointer<>(SIntPointer::new);
         assertEquals(pointer.getPointer(), TestData.intPointerPointer(pointer).getPointer());
         assertEquals(5, pointer.getValue().getInt());
 
@@ -175,14 +146,14 @@ public class PointerTest extends BaseTest {
 
     @Test
     public void stringTests() {
-        CSizedIntPointer rightPointer = CSizedIntPointer.fromString("TEST STRING", true);
+        SBytePointer rightPointer = SBytePointer.fromString("TEST STRING", true);
         assertEquals("TEST STRING", rightPointer.getString());
         assertTrue(TestData.validateString(rightPointer));
 
-        CSizedIntPointer wrongPointer = CSizedIntPointer.fromString("TEST STRING ", true);
+        SBytePointer wrongPointer = SBytePointer.fromString("TEST STRING ", true);
         assertFalse(TestData.validateString(wrongPointer));
 
-        CSizedIntPointer ret = TestData.returnString();
+        SBytePointer ret = TestData.returnString();
         assertEquals("HALLO 123", ret.getString());
         assertFalse(TestData.validateString(ret));
 

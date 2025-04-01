@@ -5,7 +5,7 @@ import com.badlogic.gdx.jnigen.runtime.pointer.Union;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 import com.badlogic.jnigen.generated.FFITypes;
-import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.PointerPointer;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 import com.badlogic.jnigen.generated.enums.TestEnum;
@@ -108,19 +108,19 @@ public final class GlobalArg extends Union {
         setValue(doubleVal, 7);
     }
 
-    public CSizedIntPointer intPtr() {
-        return new CSizedIntPointer(getValue(8), false, "int");
+    public SIntPointer intPtr() {
+        return new SIntPointer(getValue(8), false);
     }
 
-    public void intPtr(CSizedIntPointer intPtr) {
+    public void intPtr(SIntPointer intPtr) {
         setValue(intPtr.getPointer(), 8);
     }
 
-    public PointerPointer<CSizedIntPointer> intPtrPtr() {
-        return new PointerPointer<>(getValue(9), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, owned2, "int")).setBackingCType("int");
+    public PointerPointer<SIntPointer> intPtrPtr() {
+        return new PointerPointer<>(getValue(9), false, SIntPointer::new);
     }
 
-    public void intPtrPtr(PointerPointer<CSizedIntPointer> intPtrPtr) {
+    public void intPtrPtr(PointerPointer<SIntPointer> intPtrPtr) {
         setValue(intPtrPtr.getPointer(), 9);
     }
 

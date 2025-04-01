@@ -27,7 +27,8 @@ public class CHandler {
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
-        POINTER_SIZE = getPointerSize();
+        POINTER_SIZE = is32Bit() ? 4 : 8;
+        IS_32_BIT = is32Bit();
         testNativeSetup();
     }
 
@@ -36,8 +37,9 @@ public class CHandler {
     }
 
     public static final int POINTER_SIZE;
+    public static final boolean IS_32_BIT;
 
-    private static native int getPointerSize();
+    private static native boolean is32Bit();
 
     private static final HashMap<CTypeInfo[], Long> classCifMap = new HashMap<>();
 

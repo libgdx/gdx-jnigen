@@ -36,6 +36,8 @@ public class PrimitiveType implements MappedType {
             return new PrimitiveType(definition, int.class);
         case PROMOTED_INT:
         case PROMOTED_LONG:
+        case LONG_LONG:
+        case PROMOTED_LONG_LONG:
         case LONG:
             return new PrimitiveType(definition, long.class);
         case FLOAT:

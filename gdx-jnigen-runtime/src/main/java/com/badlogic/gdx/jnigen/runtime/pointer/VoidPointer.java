@@ -20,25 +20,4 @@ public class VoidPointer extends Pointing {
         super.guardBytes(size);
         return this;
     }
-
-    public CSizedIntPointer recastToInt(String cType) {
-        CSizedIntPointer tmp = new CSizedIntPointer(getPointer(), false, cType);
-        tmp.guardBytes(getSizeGuard());
-        tmp.setParent(this);
-        return tmp;
-    }
-
-    public FloatPointer recastToFloat() {
-        FloatPointer tmp = new FloatPointer(getPointer(), false);
-        tmp.guardBytes(getSizeGuard());
-        tmp.setParent(this);
-        return tmp;
-    }
-
-    public DoublePointer recastToDouble() {
-        DoublePointer tmp = new DoublePointer(getPointer(), false);
-        tmp.guardBytes(getSizeGuard());
-        tmp.setParent(this);
-        return tmp;
-    }
 }

@@ -1,6 +1,5 @@
 package com.badlogic.jnigen.generated;
 
-import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
 import com.badlogic.gdx.jnigen.runtime.c.CXXException;
 import com.badlogic.jnigen.generated.structs.GlobalArg;
 import com.badlogic.jnigen.generated.enums.SpecialEnum;
@@ -16,12 +15,13 @@ import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 import com.badlogic.gdx.jnigen.runtime.pointer.PointerPointer;
 import com.badlogic.jnigen.generated.enums.TestEnum;
-import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer;
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.jnigen.generated.structs.SpecialStruct;
 import com.badlogic.jnigen.generated.structs.TestUnion;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.SBytePointer;
 import com.badlogic.gdx.jnigen.runtime.closure.Closure;
 import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackBooleanArg_Internal;
 import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestEnumPointerArg_Internal;
@@ -62,7 +62,6 @@ import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackFloatRe
 public final class TestData {
 
     static {
-        new SharedLibraryLoader().load("test-natives");
         CHandler.init();
         FFITypes.init();
         init(IllegalArgumentException.class, CXXException.class);
@@ -176,9 +175,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static PointerPointer<CSizedIntPointer> intPointerPointer(PointerPointer<CSizedIntPointer> test) {
-        test.assertCTypeBacking("int");
-        return new PointerPointer<>(intPointerPointer_internal(test.getPointer()), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, owned2, "int")).setBackingCType("int");
+    public static PointerPointer<SIntPointer> intPointerPointer(PointerPointer<SIntPointer> test) {
+        return new PointerPointer<>(intPointerPointer_internal(test.getPointer()), false, SIntPointer::new);
     }
 
     private static native long intPointerPointer_internal(long test);/*
@@ -418,8 +416,8 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static PointerPointer<CSizedIntPointer> call_methodWithIntPtrPtrRet(ClosureObject<methodWithIntPtrPtrRet> fnPtr) {
-        return new PointerPointer<>(call_methodWithIntPtrPtrRet_internal(fnPtr.getPointer()), false, (long peer2, boolean owned2) -> new CSizedIntPointer(peer2, owned2, "int")).setBackingCType("int");
+    public static PointerPointer<SIntPointer> call_methodWithIntPtrPtrRet(ClosureObject<methodWithIntPtrPtrRet> fnPtr) {
+        return new PointerPointer<>(call_methodWithIntPtrPtrRet_internal(fnPtr.getPointer()), false, SIntPointer::new);
     }
 
     private static native long call_methodWithIntPtrPtrRet_internal(long fnPtr);/*
@@ -639,8 +637,7 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static int passIntPointer(CSizedIntPointer arg0) {
-        arg0.assertHasCTypeBacking("int");
+    public static int passIntPointer(SIntPointer arg0) {
         return passIntPointer_internal(arg0.getPointer());
     }
 
@@ -651,8 +648,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static CSizedIntPointer returnIntPointer(int arg0) {
-        return new CSizedIntPointer(returnIntPointer_internal(arg0), false, "int");
+    public static SIntPointer returnIntPointer(int arg0) {
+        return new SIntPointer(returnIntPointer_internal(arg0), false);
     }
 
     private static native long returnIntPointer_internal(int arg0);/*
@@ -663,8 +660,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static CSizedIntPointer call_methodWithCallbackIntPointerReturn(ClosureObject<methodWithCallbackIntPointerReturn> fnPtr, int val) {
-        return new CSizedIntPointer(call_methodWithCallbackIntPointerReturn_internal(fnPtr.getPointer(), val), false, "int");
+    public static SIntPointer call_methodWithCallbackIntPointerReturn(ClosureObject<methodWithCallbackIntPointerReturn> fnPtr, int val) {
+        return new SIntPointer(call_methodWithCallbackIntPointerReturn_internal(fnPtr.getPointer(), val), false);
     }
 
     private static native long call_methodWithCallbackIntPointerReturn_internal(long fnPtr, int val);/*
@@ -824,8 +821,8 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static CSizedIntPointer getUnionFixedSizeIntByPointer(TestUnion.TestUnionPointer testUnion) {
-        return new CSizedIntPointer(getUnionFixedSizeIntByPointer_internal(testUnion.getPointer()), false, "int");
+    public static SIntPointer getUnionFixedSizeIntByPointer(TestUnion.TestUnionPointer testUnion) {
+        return new SIntPointer(getUnionFixedSizeIntByPointer_internal(testUnion.getPointer()), false);
     }
 
     private static native long getUnionFixedSizeIntByPointer_internal(long testUnion);/*
@@ -938,8 +935,8 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static CSizedIntPointer returnThrownCauseMessage(ClosureObject<methodWithThrowingCallback> fnPtr) {
-        return new CSizedIntPointer(returnThrownCauseMessage_internal(fnPtr.getPointer()), false, "const char");
+    public static SBytePointer returnThrownCauseMessage(ClosureObject<methodWithThrowingCallback> fnPtr) {
+        return new SBytePointer(returnThrownCauseMessage_internal(fnPtr.getPointer()), false);
     }
 
     private static native long returnThrownCauseMessage_internal(long fnPtr);/*
@@ -949,8 +946,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static CSizedIntPointer returnString() {
-        return new CSizedIntPointer(returnString_internal(), false, "char");
+    public static SBytePointer returnString() {
+        return new SBytePointer(returnString_internal(), false);
     }
 
     private static native long returnString_internal();/*
@@ -960,8 +957,7 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static boolean validateString(CSizedIntPointer str) {
-        str.assertHasCTypeBacking("char");
+    public static boolean validateString(SBytePointer str) {
         return validateString_internal(str.getPointer());
     }
 
@@ -1392,7 +1388,7 @@ static jclass cxxExceptionClass = NULL;
 
     public interface methodWithCallbackIntPointerReturn extends Closure, methodWithCallbackIntPointerReturn_Internal {
 
-        CSizedIntPointer methodWithCallbackIntPointerReturn_call();
+        SIntPointer methodWithCallbackIntPointerReturn_call();
     }
 
     public interface methodWithCallbackLongArg extends Closure, methodWithCallbackLongArg_Internal {
@@ -1412,7 +1408,7 @@ static jclass cxxExceptionClass = NULL;
 
     public interface methodWithCallbackIntPointerArg extends Closure, methodWithCallbackIntPointerArg_Internal {
 
-        int methodWithCallbackIntPointerArg_call(CSizedIntPointer arg0);
+        int methodWithCallbackIntPointerArg_call(SIntPointer arg0);
     }
 
     public interface methodWithCallbackTestEnumArg extends Closure, methodWithCallbackTestEnumArg_Internal {
@@ -1465,7 +1461,7 @@ static jclass cxxExceptionClass = NULL;
 
     public interface methodWithIntPtrPtrRet extends Closure, methodWithIntPtrPtrRet_Internal {
 
-        PointerPointer<CSizedIntPointer> methodWithIntPtrPtrRet_call();
+        PointerPointer<SIntPointer> methodWithIntPtrPtrRet_call();
     }
 
     public interface methodWithCallbackTestUnionPointerArg extends Closure, methodWithCallbackTestUnionPointerArg_Internal {
@@ -1505,7 +1501,7 @@ static jclass cxxExceptionClass = NULL;
 
     public interface methodWithIntPtrPtrArg extends Closure, methodWithIntPtrPtrArg_Internal {
 
-        void methodWithIntPtrPtrArg_call(PointerPointer<CSizedIntPointer> arg0);
+        void methodWithIntPtrPtrArg_call(PointerPointer<SIntPointer> arg0);
     }
 
     public interface thread_callback extends Closure, thread_callback_Internal {

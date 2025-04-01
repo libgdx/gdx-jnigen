@@ -9,9 +9,7 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
-import com.github.javaparser.ast.stmt.Statement;
 
 public class PointerType implements MappedType {
 
@@ -50,6 +48,36 @@ public class PointerType implements MappedType {
         return pointingTo.getTypeKind() == TypeKind.VOID;
     }
 
+    private String findJavaPointerForIntPointer() {
+        if (!isIntPointer())
+            throw new IllegalArgumentException("Trying to find int pointer for non-integer pointer type");
+        switch (pointingTo.getTypeKind()) {
+        case BOOLEAN:
+        case BYTE:
+            return "SBytePointer";
+        case PROMOTED_BYTE:
+            return "UBytePointer";
+        case SHORT:
+            return "SShortPointer";
+        case CHAR:
+            return "UShortPointer";
+        case INT:
+            return "SIntPointer";
+        case PROMOTED_INT:
+            return "UIntPointer";
+        case LONG:
+            return "SLongPointer";
+        case PROMOTED_LONG:
+            return "ULongPointer";
+        case LONG_LONG:
+            return "SInt64Pointer";
+        case PROMOTED_LONG_LONG:
+            return "UInt64Pointer";
+        default:
+            throw new IllegalArgumentException("Type " + this + " is not a primitive type");
+        }
+    }
+
     @Override
     public void importType(CompilationUnit cu) {
         if (isStackElementPointer())
@@ -59,7 +87,7 @@ public class PointerType implements MappedType {
         else if (isDoublePointer())
             cu.addImport(ClassNameConstants.DOUBLEPOINTER_CLASS);
         else if (isIntPointer())
-            cu.addImport(ClassNameConstants.CSIZEDINTPOINTER_CLASS);
+            cu.addImport("com.badlogic.gdx.jnigen.runtime.pointer.integer." + abstractType());
         else if (isVoidPointer())
             cu.addImport(ClassNameConstants.VOIDPOINTER_CLASS);
         else if (isEnumPointer())
@@ -84,7 +112,7 @@ public class PointerType implements MappedType {
     @Override
     public String abstractType() {
         if (isIntPointer())
-            return "CSizedIntPointer";
+            return findJavaPointerForIntPointer();
         if (isFloatPointer())
             return "FloatPointer";
         if (isDoublePointer())
@@ -124,11 +152,9 @@ public class PointerType implements MappedType {
         createObject.setType(instantiationType());
         createObject.addArgument(cRetrieved);
         createObject.addArgument(String.valueOf(owned));
-        if (isIntPointer())
-            createObject.addArgument(new StringLiteralExpr(pointingTo.getTypeName()));
         if (isPointerPointer()) {
             PointerType childPointerType = (PointerType) pointingTo.getMappedType();
-            if (childPointerType.isIntPointer() || childPointerType.isPointerPointer()) {
+            if (childPointerType.isPointerPointer()) {
                 LambdaExpr expr = new LambdaExpr();
                 expr.setEnclosingParameters(true);
                 Parameter peerPar = expr.addAndGetParameter(long.class, "peer" + pointingTo.getDepth());
@@ -139,13 +165,6 @@ public class PointerType implements MappedType {
                 createObject.addArgument(expr);
             } else {
                 createObject.addArgument(pointingTo.getMappedType().abstractType() + "::new");
-            }
-
-            PointerType root = new PointerType(pointingTo.rootType());
-            if (root.isIntPointer()) {
-                MethodCallExpr setCType = new MethodCallExpr(createObject, "setBackingCType");
-                setCType.addArgument(new StringLiteralExpr(pointingTo.rootType().getTypeName()));
-                return setCType;
             }
         }
         return createObject;
@@ -161,20 +180,5 @@ public class PointerType implements MappedType {
     @Override
     public int typeID() {
         return Manager.POINTER_FFI_ID;
-    }
-
-    @Override
-    public Statement assertJava(Expression scope) {
-        if (isIntPointer())
-            return new ExpressionStmt(new MethodCallExpr("assertHasCTypeBacking").setScope(scope).addArgument(new StringLiteralExpr(pointingTo.getTypeName())));
-        if (isPointerPointer()) {
-            PointerType root = new PointerType(pointingTo.rootType());
-
-            if (root.isIntPointer()) {
-                return new ExpressionStmt(new MethodCallExpr("assertCTypeBacking").setScope(scope)
-                        .addArgument(new StringLiteralExpr(pointingTo.rootType().getTypeName())));
-            }
-        }
-        return MappedType.super.assertJava(scope);
     }
 }

@@ -2,9 +2,12 @@ package com.badlogic.jnigen.tests;
 
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;
-import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.DoublePointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.SBytePointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.UBytePointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.UIntPointer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -22,29 +25,25 @@ public class BasicPointerTest extends BaseTest {
 
     @Test
     public void testPointerSizedGetSet() {
-        CSizedIntPointer cSizedIntPointer = new CSizedIntPointer("int32_t", 4);
-        cSizedIntPointer.setInt(10, 0);
-        assertEquals(10, cSizedIntPointer.getInt(0));
+        SIntPointer sIntPtr = new SIntPointer(4);
+        sIntPtr.setInt(10, 0);
+        assertEquals(10, sIntPtr.getInt(0));
 
-        cSizedIntPointer.setInt(11, 1);
-        assertEquals(11, cSizedIntPointer.getInt(1));
+        sIntPtr.setInt(11, 1);
+        assertEquals(11, sIntPtr.getInt(1));
 
-        cSizedIntPointer.setInt(12, 2);
-        assertEquals(12, cSizedIntPointer.getInt(2));
+        sIntPtr.setInt(12, 2);
+        assertEquals(12, sIntPtr.getInt(2));
 
-        cSizedIntPointer.setInt(13, 3);
-        assertEquals(13, cSizedIntPointer.getInt(3));
+        sIntPtr.setInt(13, 3);
+        assertEquals(13, sIntPtr.getInt(3));
     }
 
     @Test
     public void testPointerSizedBoundCheck() {
-        CSizedIntPointer cSizedCharPointer = new CSizedIntPointer("uint16_t", 1);
-        assertThrows(IllegalArgumentException.class, () -> cSizedCharPointer.setInt(Character.MAX_VALUE + 1, 0));
-        assertDoesNotThrow(() -> cSizedCharPointer.setInt(Character.MAX_VALUE, 0));
-        assertThrows(IllegalArgumentException.class, () -> cSizedCharPointer.setInt(-1, 0));
-        CSizedIntPointer cSizedIntPointer = new CSizedIntPointer("uint32_t", 1);
-        assertThrows(IllegalArgumentException.class, () -> cSizedIntPointer.getInt(0));
-        assertDoesNotThrow(() -> cSizedIntPointer.setInt(Integer.MAX_VALUE,0));
+        UIntPointer uIntPointer = new UIntPointer(1);
+        assertThrows(IllegalArgumentException.class, () -> uIntPointer.setUInt(0xFFFFFFFFL + 1L, 0));
+        assertDoesNotThrow(() -> uIntPointer.setUInt(0xFFFFFFFFL, 0));
     }
 
     @Test
@@ -67,14 +66,14 @@ public class BasicPointerTest extends BaseTest {
 
     @Test
     public void testPointerBoundCheck() {
-        CSizedIntPointer cSizedIntPointer = new CSizedIntPointer("int32_t", 4);
-        assertDoesNotThrow(() -> cSizedIntPointer.getInt(3));
-        assertThrows(IllegalArgumentException.class, () -> cSizedIntPointer.getInt(4));
+        UIntPointer uIntPointer = new UIntPointer(4);
+        assertDoesNotThrow(() -> uIntPointer.getUInt(3));
+        assertThrows(IllegalArgumentException.class, () -> uIntPointer.getUInt(4));
     }
 
     @Test
     public void testPointerNullCheck() {
-        CSizedIntPointer pointer = new CSizedIntPointer(0, false,"char");
+        SBytePointer pointer = new SBytePointer(0, false);
         assertTrue(pointer.isNull());
         assertThrows(NullPointerException.class, pointer::getByte);
         assertNull(pointer.getString());

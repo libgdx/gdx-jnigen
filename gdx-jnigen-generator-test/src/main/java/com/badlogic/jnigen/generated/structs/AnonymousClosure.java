@@ -8,7 +8,7 @@ import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.runtime.closure.Closure;
 import com.badlogic.jnigen.generated.TestData_Internal.AnonymousClosure_Internal.someClosure_Internal;
-import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
 import com.badlogic.jnigen.generated.TestData_Internal.AnonymousClosure_Internal.anotherClosure_Internal;
 
 public final class AnonymousClosure extends Struct {
@@ -102,7 +102,7 @@ public final class AnonymousClosure extends Struct {
         /**
          * Comment on internal callback
          */
-        int someClosure_call(CSizedIntPointer t, double p);
+        int someClosure_call(SIntPointer t, double p);
     }
 
     public interface anotherClosure extends Closure, anotherClosure_Internal {

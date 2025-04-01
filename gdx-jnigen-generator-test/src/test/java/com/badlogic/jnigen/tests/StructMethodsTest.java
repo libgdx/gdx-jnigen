@@ -1,8 +1,8 @@
 package com.badlogic.jnigen.tests;
 
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
-import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
 import com.badlogic.jnigen.generated.TestData;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackTestStructReturn;
 import com.badlogic.jnigen.generated.structs.SpecialStruct;
@@ -50,7 +50,7 @@ public class StructMethodsTest extends BaseTest {
         TestData.setFloatPtrFieldValue(struct, 1.1f);
         assertEquals(1.1f, TestData.getFloatPtrFieldValue(struct));
 
-        CSizedIntPointer cSizedIntPointer = new CSizedIntPointer("int");
+        SIntPointer cSizedIntPointer = new SIntPointer();
         cSizedIntPointer.setInt(30);
         struct.intPtrField(cSizedIntPointer);
         assertEquals(30, TestData.getIntPtrFieldValue(struct));
@@ -63,7 +63,7 @@ public class StructMethodsTest extends BaseTest {
         SpecialStruct struct = new SpecialStruct();
         //noinspection EqualsWithItself
         assertEquals(struct.arrayField(), struct.arrayField());
-        CSizedIntPointer arrayField = struct.arrayField();
+        SIntPointer arrayField = struct.arrayField();
         for (int i = 0; i < 5; i++) {
             arrayField.setInt(i + 1, i);
         }

@@ -7,6 +7,14 @@
 #include <string>
 #include <jni.h>
 
+#if (UINTPTR_MAX == 0xFFFFFFFF)
+    #define ARCH_BITS 32
+#elif (UINTPTR_MAX == 0xFFFFFFFFFFFFFFFF)
+    #define ARCH_BITS 64
+#else
+    #error "Architecture is neither 32-bit nor 64-bit"
+#endif
+
 // Helper macro for platform-specific thread attachment
 // Stolen from https://github.com/rednblackgames/gdx-miniaudio
 #ifdef __ANDROID__
