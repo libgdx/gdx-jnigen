@@ -4,6 +4,8 @@
 
 GlobalArg g_lastArg;
 
+void random(char, unsigned char, signed char, char*, unsigned char*, signed char*) {}
+
 GlobalArg getGlobalArgState(void) {
     return g_lastArg;
 }

@@ -52,7 +52,9 @@ public class PointerType implements MappedType {
         if (!isIntPointer())
             throw new IllegalArgumentException("Trying to find int pointer for non-integer pointer type");
         switch (pointingTo.getTypeKind()) {
-        case BYTE:
+        case NATIVE_BYTE:
+            return "BytePointer";
+        case SIGNED_BYTE:
             return "SBytePointer";
         case BOOLEAN:
         case PROMOTED_BYTE:

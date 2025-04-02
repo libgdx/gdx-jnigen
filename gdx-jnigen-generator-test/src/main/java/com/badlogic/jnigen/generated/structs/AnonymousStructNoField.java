@@ -16,7 +16,7 @@ public final class AnonymousStructNoField extends Struct {
     private final static long __ffi_type;
 
     static {
-        __ffi_type = FFITypes.getCTypeInfo(16).getFfiType();
+        __ffi_type = FFITypes.getCTypeInfo(18).getFfiType();
         __size = CHandler.getSizeFromFFIType(__ffi_type);
     }
 

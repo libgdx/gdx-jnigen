@@ -8,7 +8,8 @@ public enum TypeKind {
 
     VOID(CXType_Void),
     BOOLEAN(CXType_Bool),
-    BYTE(CXType_Char_S, CXType_SChar),
+    NATIVE_BYTE(),
+    SIGNED_BYTE(CXType_Char_S, CXType_SChar),
     PROMOTED_BYTE(CXType_UChar, CXType_Char_U),
     SHORT(CXType_Short),
     CHAR(CXType_UShort),
@@ -63,7 +64,7 @@ public enum TypeKind {
 
     public boolean isSigned() {
         switch (this) {
-        case BYTE:
+        case SIGNED_BYTE:
         case SHORT:
         case INT:
         case LONG:
@@ -86,7 +87,8 @@ public enum TypeKind {
     public int getSize(boolean is32Bit, boolean isWin) {
         switch (this) {
         case BOOLEAN:
-        case BYTE:
+        case NATIVE_BYTE:
+        case SIGNED_BYTE:
         case PROMOTED_BYTE:
             return 1;
         case SHORT:

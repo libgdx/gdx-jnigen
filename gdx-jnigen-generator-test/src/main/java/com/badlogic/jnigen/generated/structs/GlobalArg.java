@@ -20,7 +20,7 @@ public final class GlobalArg extends Union {
     private final static long __ffi_type;
 
     static {
-        __ffi_type = FFITypes.getCTypeInfo(20).getFfiType();
+        __ffi_type = FFITypes.getCTypeInfo(22).getFfiType();
         __size = CHandler.getSizeFromFFIType(__ffi_type);
     }
 
@@ -68,11 +68,11 @@ public final class GlobalArg extends Union {
         setValue(shortVal, 2);
     }
 
-    public byte byteVal() {
-        return (byte) getValue(3);
+    public char byteVal() {
+        return (char) getValue(3);
     }
 
-    public void byteVal(byte byteVal) {
+    public void byteVal(char byteVal) {
         setValue(byteVal, 3);
     }
 
@@ -208,7 +208,7 @@ public final class GlobalArg extends Union {
         private final static long __ffi_type;
 
         static {
-            __ffi_type = FFITypes.getCTypeInfo(24).getFfiType();
+            __ffi_type = FFITypes.getCTypeInfo(26).getFfiType();
             __size = CHandler.getSizeFromFFIType(__ffi_type);
         }
 
@@ -256,11 +256,11 @@ public final class GlobalArg extends Union {
             setValue(arg3, 2);
         }
 
-        public byte arg4() {
-            return (byte) getValue(3);
+        public char arg4() {
+            return (char) getValue(3);
         }
 
-        public void arg4(byte arg4) {
+        public void arg4(char arg4) {
             setValue(arg4, 3);
         }
 

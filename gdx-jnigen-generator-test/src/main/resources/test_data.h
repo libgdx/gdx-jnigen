@@ -176,6 +176,7 @@ struct forwardDeclStruct;
 
 /// This method does great stuff, trust me
 void commentedMethod(void);
+void random(unsigned char, signed char, unsigned char*, signed char*);
 
 void ensureParsed(SpecialEnum, AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested, struct forwardDeclStruct*);
 void weirdPointer(FILE *_file);

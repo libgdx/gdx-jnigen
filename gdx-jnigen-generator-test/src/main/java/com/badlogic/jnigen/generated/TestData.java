@@ -2,6 +2,8 @@ package com.badlogic.jnigen.generated;
 
 import com.badlogic.gdx.jnigen.runtime.c.CXXException;
 import com.badlogic.jnigen.generated.structs.GlobalArg;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.UBytePointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.SBytePointer;
 import com.badlogic.jnigen.generated.enums.SpecialEnum;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoField;
 import com.badlogic.jnigen.generated.structs.AnonymousStructField;
@@ -21,7 +23,7 @@ import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.jnigen.generated.structs.SpecialStruct;
 import com.badlogic.jnigen.generated.structs.TestUnion;
-import com.badlogic.gdx.jnigen.runtime.pointer.integer.SBytePointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.BytePointer;
 import com.badlogic.gdx.jnigen.runtime.closure.Closure;
 import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackBooleanArg_Internal;
 import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestEnumPointerArg_Internal;
@@ -109,6 +111,18 @@ static jclass cxxExceptionClass = NULL;
     private static native void commentedMethod_internal();/*
     	HANDLE_JAVA_EXCEPTION_START()
     	commentedMethod();
+    	HANDLE_JAVA_EXCEPTION_END()
+    */
+
+    public static void random(char arg0, byte arg1, UBytePointer arg2, SBytePointer arg3) {
+        random_internal(arg0, arg1, arg2.getPointer(), arg3.getPointer());
+    }
+
+    private static native void random_internal(char arg0, byte arg1, long arg2, long arg3);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	CHECK_AND_THROW_C_TYPE(env, signed char, arg1, 1, return);
+    	CHECK_AND_THROW_C_TYPE(env, unsigned char, arg0, 0, return);
+    	random((unsigned char)arg0, (signed char)arg1, (unsigned char *)arg2, (signed char *)arg3);
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
@@ -352,13 +366,13 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static byte call_methodWithCallbackByteReturn(ClosureObject<methodWithCallbackByteReturn> fnPtr) {
+    public static char call_methodWithCallbackByteReturn(ClosureObject<methodWithCallbackByteReturn> fnPtr) {
         return call_methodWithCallbackByteReturn_internal(fnPtr.getPointer());
     }
 
-    private static native byte call_methodWithCallbackByteReturn_internal(long fnPtr);/*
+    private static native char call_methodWithCallbackByteReturn_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
-    	return (jbyte)call_methodWithCallbackByteReturn((methodWithCallbackByteReturn)fnPtr);
+    	return (jchar)call_methodWithCallbackByteReturn((methodWithCallbackByteReturn)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
     	return 0;
     */
@@ -935,8 +949,8 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static SBytePointer returnThrownCauseMessage(ClosureObject<methodWithThrowingCallback> fnPtr) {
-        return new SBytePointer(returnThrownCauseMessage_internal(fnPtr.getPointer()), false);
+    public static BytePointer returnThrownCauseMessage(ClosureObject<methodWithThrowingCallback> fnPtr) {
+        return new BytePointer(returnThrownCauseMessage_internal(fnPtr.getPointer()), false);
     }
 
     private static native long returnThrownCauseMessage_internal(long fnPtr);/*
@@ -946,8 +960,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static SBytePointer returnString() {
-        return new SBytePointer(returnString_internal(), false);
+    public static BytePointer returnString() {
+        return new BytePointer(returnString_internal(), false);
     }
 
     private static native long returnString_internal();/*
@@ -957,7 +971,7 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static boolean validateString(SBytePointer str) {
+    public static boolean validateString(BytePointer str) {
         return validateString_internal(str.getPointer());
     }
 
@@ -1433,7 +1447,7 @@ static jclass cxxExceptionClass = NULL;
 
     public interface methodWithCallbackByteReturn extends Closure, methodWithCallbackByteReturn_Internal {
 
-        byte methodWithCallbackByteReturn_call();
+        char methodWithCallbackByteReturn_call();
     }
 
     public interface methodWithCallbackCharReturn extends Closure, methodWithCallbackCharReturn_Internal {
@@ -1448,7 +1462,7 @@ static jclass cxxExceptionClass = NULL;
 
     public interface methodWithCallbackAllArgs extends Closure, methodWithCallbackAllArgs_Internal {
 
-        void methodWithCallbackAllArgs_call(long arg0, int arg1, short arg2, byte arg3, char arg4, boolean arg5, float arg6, double arg7);
+        void methodWithCallbackAllArgs_call(long arg0, int arg1, short arg2, char arg3, char arg4, boolean arg5, float arg6, double arg7);
     }
 
     public interface methodWithCallback extends Closure, methodWithCallback_Internal {
@@ -1476,7 +1490,7 @@ static jclass cxxExceptionClass = NULL;
 
     public interface methodWithCallbackByteArg extends Closure, methodWithCallbackByteArg_Internal {
 
-        void methodWithCallbackByteArg_call(byte arg0);
+        void methodWithCallbackByteArg_call(char arg0);
     }
 
     public interface methodWithCallbackBooleanReturn extends Closure, methodWithCallbackBooleanReturn_Internal {

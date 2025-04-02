@@ -7,14 +7,11 @@ import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.comments.BlockComment;
-import com.github.javaparser.ast.expr.DoubleLiteralExpr;
-import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.printer.configuration.DefaultConfigurationOption;
 import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration;
 import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration.ConfigOption;
 
-import javax.lang.model.SourceVersion;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -48,7 +45,7 @@ public class Manager {
     private final Map<String, StackElementType> stackElements = new HashMap<>();
     private final ArrayList<StackElementType> orderedStackElements = new ArrayList<>();
     private final Map<String, EnumType> enums = new HashMap<>();
-    private final HashMap<String, TypeKind> knownCTypes = new HashMap<>();
+    private final HashMap<String, TypeDefinition> knownCTypes = new HashMap<>();
 
     private final HashMap<String, TypeDefinition> cTypeToJavaStringMapper = new HashMap<>();
 
@@ -90,6 +87,19 @@ public class Manager {
         instance = instance.rollBackManager;
     }
 
+    public void mergeManager(Manager toMerge) {
+        toMerge.knownCTypes.forEach((name, typeDefinition) -> {
+            TypeDefinition own = knownCTypes.get(name);
+            if (own == null)
+                throw new IllegalStateException("Can't merge Manager cause " + name + " doesn't exist in both.");
+            if (own.getTypeKind() != typeDefinition.getTypeKind()) {
+                if ((own.getTypeKind() != TypeKind.SIGNED_BYTE && own.getTypeKind() != TypeKind.PROMOTED_BYTE) || (typeDefinition.getTypeKind() != TypeKind.SIGNED_BYTE && typeDefinition.getTypeKind() != TypeKind.PROMOTED_BYTE))
+                    throw new IllegalStateException("Can't merge Manager cause " + name + " is of type " + typeDefinition.getTypeKind() + " and not mergable with " + own.getTypeKind());
+                own.setTypeKind(TypeKind.NATIVE_BYTE);
+            }
+        });
+    }
+
     public void addStackElement(StackElementType stackElementType, boolean registerGlobally) {
         String name = stackElementType.abstractType();
         if (registerGlobally) {
@@ -112,11 +122,18 @@ public class Manager {
         enums.put(name, enumType);
     }
 
-    public void recordCType(String name, TypeKind kind) {
-        if (knownCTypes.containsKey(name) && knownCTypes.get(name) != kind) {
-            throw new IllegalArgumentException("CType with name: " + name + " already exists, but maps to " + knownCTypes.get(name) + " instead of " + kind);
-        }
-        knownCTypes.put(name, kind);
+    public void recordCType(String name, TypeDefinition definition) {
+        if (hasCType(name))
+            throw new IllegalArgumentException("CType with name: " + name + " already exists");
+        knownCTypes.put(name, definition);
+    }
+
+    public boolean hasCType(String name) {
+        return knownCTypes.containsKey(name);
+    }
+
+    public TypeDefinition getCType(String name) {
+        return knownCTypes.get(name);
     }
 
     public int getCTypeID(String name) {
@@ -220,11 +237,11 @@ public class Manager {
     private void createStaticAsserts(List<String> assertBuilder, boolean windows) {
         assertBuilder.add("#if ARCH_BITS == 32");
         knownCTypes.forEach((name, typeKind) -> {
-            assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getSize(true, windows) + ", \"Type " + name + " has unexpected size.\");");
+            assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getTypeKind().getSize(true, windows) + ", \"Type " + name + " has unexpected size.\");");
         });
         assertBuilder.add("#elif ARCH_BITS == 64");
         knownCTypes.forEach((name, typeKind) -> {
-            assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getSize(false, windows) + ", \"Type " + name + " has unexpected size.\");");
+            assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getTypeKind().getSize(false, windows) + ", \"Type " + name + " has unexpected size.\");");
         });
         assertBuilder.add("#else");
         assertBuilder.add("#error Unsupported OS");
@@ -303,7 +320,9 @@ public class Manager {
             assertBuilder.add("#endif");
 
             knownCTypes.forEach((name, typeKind) -> {
-                if (typeKind.isSigned())
+                if (typeKind.getTypeKind() == TypeKind.NATIVE_BYTE)
+                    return;
+                if (typeKind.getTypeKind().isSigned())
                     assertBuilder.add("static_assert(IS_SIGNED_TYPE(" + name + "), \"Type " + name + " is expected signed.\");");
                 else
                     assertBuilder.add("static_assert(IS_UNSIGNED_TYPE(" + name + "), \"Type " + name + " is expected unsigned.\");");
