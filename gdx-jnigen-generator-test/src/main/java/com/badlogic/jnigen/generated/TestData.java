@@ -114,16 +114,16 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static void random(char arg0, char arg1, byte arg2, BytePointer arg3, UBytePointer arg4, SBytePointer arg5) {
-        random_internal(arg0, arg1, arg2, arg3.getPointer(), arg4.getPointer(), arg5.getPointer());
+    public static void randomFunc(byte arg0, char arg1, byte arg2, BytePointer arg3, UBytePointer arg4, SBytePointer arg5) {
+        randomFunc_internal(arg0, arg1, arg2, arg3.getPointer(), arg4.getPointer(), arg5.getPointer());
     }
 
-    private static native void random_internal(char arg0, char arg1, byte arg2, long arg3, long arg4, long arg5);/*
+    private static native void randomFunc_internal(byte arg0, char arg1, byte arg2, long arg3, long arg4, long arg5);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	CHECK_AND_THROW_C_TYPE(env, signed char, arg2, 2, return);
     	CHECK_AND_THROW_C_TYPE(env, unsigned char, arg1, 1, return);
     	CHECK_AND_THROW_C_TYPE(env, char, arg0, 0, return);
-    	random((char)arg0, (unsigned char)arg1, (signed char)arg2, (char *)arg3, (unsigned char *)arg4, (signed char *)arg5);
+    	randomFunc((char)arg0, (unsigned char)arg1, (signed char)arg2, (char *)arg3, (unsigned char *)arg4, (signed char *)arg5);
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
@@ -367,13 +367,13 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static char call_methodWithCallbackByteReturn(ClosureObject<methodWithCallbackByteReturn> fnPtr) {
+    public static byte call_methodWithCallbackByteReturn(ClosureObject<methodWithCallbackByteReturn> fnPtr) {
         return call_methodWithCallbackByteReturn_internal(fnPtr.getPointer());
     }
 
-    private static native char call_methodWithCallbackByteReturn_internal(long fnPtr);/*
+    private static native byte call_methodWithCallbackByteReturn_internal(long fnPtr);/*
     	HANDLE_JAVA_EXCEPTION_START()
-    	return (jchar)call_methodWithCallbackByteReturn((methodWithCallbackByteReturn)fnPtr);
+    	return (jbyte)call_methodWithCallbackByteReturn((methodWithCallbackByteReturn)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
     	return 0;
     */
@@ -1448,7 +1448,7 @@ static jclass cxxExceptionClass = NULL;
 
     public interface methodWithCallbackByteReturn extends Closure, methodWithCallbackByteReturn_Internal {
 
-        char methodWithCallbackByteReturn_call();
+        byte methodWithCallbackByteReturn_call();
     }
 
     public interface methodWithCallbackCharReturn extends Closure, methodWithCallbackCharReturn_Internal {
@@ -1463,7 +1463,7 @@ static jclass cxxExceptionClass = NULL;
 
     public interface methodWithCallbackAllArgs extends Closure, methodWithCallbackAllArgs_Internal {
 
-        void methodWithCallbackAllArgs_call(long arg0, int arg1, short arg2, char arg3, char arg4, boolean arg5, float arg6, double arg7);
+        void methodWithCallbackAllArgs_call(long arg0, int arg1, short arg2, byte arg3, char arg4, boolean arg5, float arg6, double arg7);
     }
 
     public interface methodWithCallback extends Closure, methodWithCallback_Internal {
@@ -1491,7 +1491,7 @@ static jclass cxxExceptionClass = NULL;
 
     public interface methodWithCallbackByteArg extends Closure, methodWithCallbackByteArg_Internal {
 
-        void methodWithCallbackByteArg_call(char arg0);
+        void methodWithCallbackByteArg_call(byte arg0);
     }
 
     public interface methodWithCallbackBooleanReturn extends Closure, methodWithCallbackBooleanReturn_Internal {

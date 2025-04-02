@@ -4,6 +4,7 @@ import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.PointerPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.BytePointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.SBytePointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
 import com.badlogic.jnigen.generated.TestData;
@@ -146,14 +147,14 @@ public class PointerTest extends BaseTest {
 
     @Test
     public void stringTests() {
-        SBytePointer rightPointer = SBytePointer.fromString("TEST STRING", true);
+        BytePointer rightPointer = BytePointer.fromString("TEST STRING", true);
         assertEquals("TEST STRING", rightPointer.getString());
         assertTrue(TestData.validateString(rightPointer));
 
-        SBytePointer wrongPointer = SBytePointer.fromString("TEST STRING ", true);
+        BytePointer wrongPointer = BytePointer.fromString("TEST STRING ", true);
         assertFalse(TestData.validateString(wrongPointer));
 
-        SBytePointer ret = TestData.returnString();
+        BytePointer ret = TestData.returnString();
         assertEquals("HALLO 123", ret.getString());
         assertFalse(TestData.validateString(ret));
 

@@ -4,6 +4,7 @@ import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;
 import com.badlogic.gdx.jnigen.runtime.pointer.DoublePointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.BytePointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.SBytePointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.UIntPointer;
@@ -63,7 +64,7 @@ public class BasicPointerTest extends BaseTest {
 
     @Test
     public void testPointerNullCheck() {
-        SBytePointer pointer = new SBytePointer(0, false);
+        BytePointer pointer = new BytePointer(0, false);
         assertTrue(pointer.isNull());
         assertThrows(NullPointerException.class, pointer::getByte);
         assertNull(pointer.getString());

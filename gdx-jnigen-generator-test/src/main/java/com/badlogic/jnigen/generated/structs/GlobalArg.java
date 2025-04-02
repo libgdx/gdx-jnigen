@@ -68,11 +68,11 @@ public final class GlobalArg extends Union {
         setValue(shortVal, 2);
     }
 
-    public char byteVal() {
-        return (char) getValue(3);
+    public byte byteVal() {
+        return (byte) getValue(3);
     }
 
-    public void byteVal(char byteVal) {
+    public void byteVal(byte byteVal) {
         setValue(byteVal, 3);
     }
 
@@ -256,11 +256,11 @@ public final class GlobalArg extends Union {
             setValue(arg3, 2);
         }
 
-        public char arg4() {
-            return (char) getValue(3);
+        public byte arg4() {
+            return (byte) getValue(3);
         }
 
-        public void arg4(char arg4) {
+        public void arg4(byte arg4) {
             setValue(arg4, 3);
         }
 

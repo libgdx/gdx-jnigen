@@ -52,35 +52,54 @@ public class BytePointer extends VoidPointer {
         CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value ? 1 : 0);
     }
 
-    public char getUByte() {
-        return getUByte(0);
+    public char getByte() {
+        return getByte(0);
     }
 
-    public char getUByte(int index) {
+    public char getByte(int index) {
         if (IS_CHAR_SIGNED)
             return (char) (byte)CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index));
         else
             return (char) CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index));
     }
 
-    public void setUByte(byte value) {
-        setUByte(value, 0);
+    public void setByte(byte value) {
+        setByte(value, 0);
     }
 
-    public void setUByte(byte value, int index) {
+    public void setByte(byte value, int index) {
         if (IS_CHAR_SIGNED)
-            setUByte((char) value, index);
+            setByte((char) value, index);
         else
-            setUByte((char)(value & 0xFF), index);
+            setByte((char)(value & 0xFF), index);
     }
 
-    public void setUByte(char value) {
-        setUByte(value, 0);
+    public void setByte(char value) {
+        setByte(value, 0);
     }
 
-    public void setUByte(char value, int index) {
+    public void setByte(char value, int index) {
         if (Utils.checkBoundsForNumber(value, BYTE_SIZE, IS_CHAR_SIGNED))
             throw new IllegalArgumentException("Byte out of range: " + value);
         CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value);
+    }
+
+    public static BytePointer fromString(String string, boolean freeOnGC) {
+        BytePointer pointer = new BytePointer(string.length() + 1, freeOnGC, true);
+        pointer.setString(string);
+        return pointer;
+    }
+
+    // TODO: 01.04.2025 Probably not belongs here
+    public void setString(String string) {
+        // TODO: 21.06.24 is that sane?
+        assertBounds(string.length());
+        CHandler.setPointerAsString(getPointer(), string);
+    }
+
+    public String getString() {
+        if (isNull())
+            return null;
+        return CHandler.getPointerAsString(getPointer());
     }
 }

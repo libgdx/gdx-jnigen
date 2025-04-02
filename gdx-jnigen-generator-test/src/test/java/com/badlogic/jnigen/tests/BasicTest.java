@@ -3,6 +3,7 @@ package com.badlogic.jnigen.tests;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.c.CXXException;
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.BytePointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.SBytePointer;
 import com.badlogic.jnigen.generated.TestData;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ public class BasicTest extends BaseTest {
         ClosureObject<TestData.methodWithThrowingCallback> closureObject = ClosureObject.fromClosure(() -> {
             throw new IllegalArgumentException("TEST");
         });
-        SBytePointer pointer = TestData.returnThrownCauseMessage(closureObject);
+        BytePointer pointer = TestData.returnThrownCauseMessage(closureObject);
         assertTrue(pointer.getString().startsWith("java.lang.IllegalArgumentException: TEST"));
 
         pointer.free();
@@ -57,12 +58,12 @@ public class BasicTest extends BaseTest {
             throw new IllegalArgumentException("TEST");
         });
         CHandler.setDisableCXXExceptionMessage(true);
-        SBytePointer noMessage = TestData.returnThrownCauseMessage(closureObject);
+        BytePointer noMessage = TestData.returnThrownCauseMessage(closureObject);
         assertEquals("Java-Side exception", noMessage.getString());
         noMessage.free();
 
         CHandler.setDisableCXXExceptionMessage(false);
-        SBytePointer withMessage = TestData.returnThrownCauseMessage(closureObject);
+        BytePointer withMessage = TestData.returnThrownCauseMessage(closureObject);
         assertTrue(withMessage.getString().startsWith("java.lang.IllegalArgumentException: TEST"));
         withMessage.free();
 

@@ -20,9 +20,10 @@ public class PrimitiveType implements MappedType {
         switch (definition.getTypeKind()) {
             case VOID:
                 return void.class;
-            case SIGNED_BYTE:
+        // Technically not correct, but most platforms have it signed, so better to follow that I think
+        case NATIVE_BYTE:
+        case SIGNED_BYTE:
                 return byte.class;
-            case NATIVE_BYTE:
             case PROMOTED_BYTE:
             case CHAR:
                 return char.class;

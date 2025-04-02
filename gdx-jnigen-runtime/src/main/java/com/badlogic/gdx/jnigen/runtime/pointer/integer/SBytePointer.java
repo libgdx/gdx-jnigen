@@ -64,23 +64,4 @@ public class SBytePointer extends VoidPointer {
     public void setByte(byte value, int index) {
         CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value);
     }
-
-    public static SBytePointer fromString(String string, boolean freeOnGC) {
-        SBytePointer pointer = new SBytePointer(string.length() + 1, freeOnGC, true);
-        pointer.setString(string);
-        return pointer;
-    }
-
-    // TODO: 01.04.2025 Probably not belongs here
-    public void setString(String string) {
-        // TODO: 21.06.24 is that sane?
-        assertBounds(string.length());
-        CHandler.setPointerAsString(getPointer(), string);
-    }
-
-    public String getString() {
-        if (isNull())
-            return null;
-        return CHandler.getPointerAsString(getPointer());
-    }
 }
