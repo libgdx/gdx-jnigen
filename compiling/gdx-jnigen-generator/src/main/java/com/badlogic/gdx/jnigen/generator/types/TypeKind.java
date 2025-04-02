@@ -60,4 +60,74 @@ public enum TypeKind {
     public boolean isPrimitive() {
         return !isSpecial() && this != VOID;
     }
+
+    public boolean isSigned() {
+        switch (this) {
+        case BYTE:
+        case SHORT:
+        case INT:
+        case LONG:
+        case LONG_LONG:
+        case FLOAT:
+        case DOUBLE:
+            return true;
+        case BOOLEAN:
+        case PROMOTED_BYTE:
+        case CHAR:
+        case PROMOTED_INT:
+        case PROMOTED_LONG:
+        case PROMOTED_LONG_LONG:
+            return false;
+        default:
+            throw new IllegalArgumentException("Type " + this + " is not a primitive type");
+        }
+    }
+
+    public int getSize32() {
+        switch (this) {
+        case BOOLEAN:
+        case BYTE:
+        case PROMOTED_BYTE:
+            return 1;
+        case SHORT:
+        case CHAR:
+            return 2;
+        case INT:
+        case PROMOTED_INT:
+        case LONG:
+        case PROMOTED_LONG:
+        case FLOAT:
+            return 4;
+        case LONG_LONG:
+        case PROMOTED_LONG_LONG:
+        case DOUBLE:
+            return 8;
+        default:
+            throw new IllegalArgumentException("Type " + this + " is not a primitive type");
+        }
+    }
+
+    public int getSize64() {
+        switch (this) {
+        case BOOLEAN:
+        case BYTE:
+        case PROMOTED_BYTE:
+            return 1;
+        case SHORT:
+        case CHAR:
+            return 2;
+        case INT:
+        case PROMOTED_INT:
+        case FLOAT:
+            return 4;
+        case LONG:
+        case PROMOTED_LONG:
+        case LONG_LONG:
+        case PROMOTED_LONG_LONG:
+        case DOUBLE:
+            return 8;
+        default:
+            throw new IllegalArgumentException("Type " + this + " is not a primitive type");
+        }
+    }
 }

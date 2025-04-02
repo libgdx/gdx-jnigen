@@ -85,7 +85,8 @@ static inline void set_native_type(native_type* nat_type, native_type_id id, siz
     nat_type->sign = sign;
 }
 
-#define IS_SIGNED_TYPE(type) (((type)-1) < 0)
+#define IS_SIGNED_TYPE(type)   (((type)-1) < 0)
+#define IS_UNSIGNED_TYPE(type) ((type)-1 > 0)
 
 #ifdef __cplusplus
 template<typename T>

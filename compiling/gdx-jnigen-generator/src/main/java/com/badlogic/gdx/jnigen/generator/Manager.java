@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -47,7 +48,7 @@ public class Manager {
     private final Map<String, StackElementType> stackElements = new HashMap<>();
     private final ArrayList<StackElementType> orderedStackElements = new ArrayList<>();
     private final Map<String, EnumType> enums = new HashMap<>();
-    private final ArrayList<String> knownCTypes = new ArrayList<>();
+    private final HashMap<String, TypeKind> knownCTypes = new HashMap<>();
 
     private final HashMap<String, TypeDefinition> cTypeToJavaStringMapper = new HashMap<>();
 
@@ -72,7 +73,7 @@ public class Manager {
         this.stackElements.putAll(rollBackManager.stackElements);
         this.orderedStackElements.addAll(rollBackManager.orderedStackElements);
         this.enums.putAll(rollBackManager.enums);
-        this.knownCTypes.addAll(rollBackManager.knownCTypes);
+        this.knownCTypes.putAll(rollBackManager.knownCTypes);
         this.cTypeToJavaStringMapper.putAll(rollBackManager.cTypeToJavaStringMapper);
         this.typedefs.putAll(rollBackManager.typedefs);
         this.macros.putAll(rollBackManager.macros);
@@ -111,16 +112,18 @@ public class Manager {
         enums.put(name, enumType);
     }
 
-    public void recordCType(String name) {
-        if (!knownCTypes.contains(name))
-            knownCTypes.add(name);
-        knownCTypes.sort(Comparator.naturalOrder());
+    public void recordCType(String name, TypeKind kind) {
+        if (knownCTypes.containsKey(name) && knownCTypes.get(name) != kind) {
+            throw new IllegalArgumentException("CType with name: " + name + " already exists, but maps to " + knownCTypes.get(name) + " instead of " + kind);
+        }
+        knownCTypes.put(name, kind);
     }
 
     public int getCTypeID(String name) {
-        if (!knownCTypes.contains(name))
+        List<String> cTypes = knownCTypes.keySet().stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
+        if (!cTypes.contains(name))
             throw new IllegalArgumentException("CType " + name + " is not registered.");
-        return knownCTypes.indexOf(name);
+        return cTypes.indexOf(name);
     }
 
     public void registerMacro(MacroType macroType) {
@@ -277,6 +280,29 @@ public class Manager {
             ffiTypeCU.addImport(ClassNameConstants.CTYPEINFO_CLASS);
             ClassOrInterfaceDeclaration ffiTypeClass = ffiTypeCU.addClass("FFITypes", Keyword.PUBLIC);
             addJNIComment(ffiTypeClass, "#include <jnigen.h>", "#include <" + parsedCHeader + ">");
+
+            List<String> assertBuilder = new ArrayList<>();
+            assertBuilder.add("#if ARCH_BITS == 32");
+            knownCTypes.forEach((name, typeKind) -> {
+                assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getSize32() + ");");
+            });
+            assertBuilder.add("#elif ARCH_BITS == 64");
+            knownCTypes.forEach((name, typeKind) -> {
+                assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getSize64() + ");");
+            });
+            assertBuilder.add("#else");
+            assertBuilder.add("#error Unsupported OS");
+            assertBuilder.add("#endif");
+
+            knownCTypes.forEach((name, typeKind) -> {
+                if (typeKind.isSigned())
+                    assertBuilder.add("static_assert(IS_SIGNED_TYPE(" + name + "));");
+                else
+                    assertBuilder.add("static_assert(IS_UNSIGNED_TYPE(" + name + "));");
+            });
+
+            addJNIComment(ffiTypeClass, assertBuilder.toArray(new String[0]));
+
             ffiTypeClass.addMethod("init", Keyword.PUBLIC, Keyword.STATIC);
 
             ffiTypeCU.addImport(HashMap.class);
@@ -310,8 +336,9 @@ public class Manager {
                     .append("\t\treturn nativeType;\n");
             staticInit.addStatement("ffiIdMap.put(" + POINTER_FFI_ID + ", CHandler.constructCTypeFromNativeType(\"void*\", getNativeType(" + POINTER_FFI_ID + ")));");
 
-            for (int i = 0; i < knownCTypes.size(); i++) {
-                String cType = knownCTypes.get(i);
+            List<String> cTypes = knownCTypes.keySet().stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
+            for (int i = 0; i < cTypes.size(); i++) {
+                String cType = cTypes.get(i);
                 staticInit.addStatement("ffiIdMap.put(" + i + ", CHandler.constructCTypeFromNativeType(\"" + cType + "\", getNativeType(" + i + ")));");
                 staticInit.addStatement("CHandler.registerCType(ffiIdMap.get(" + i + "));");
                 ffiTypeNativeBody.append("\tcase ").append(i).append(":\n");

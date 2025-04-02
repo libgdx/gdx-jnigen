@@ -10,6 +10,46 @@ public class FFITypes {
 		#include <jnigen.h>
 		#include <test_data.h>
 */
+    /*JNI
+		#if ARCH_BITS == 32
+		static_assert(sizeof(uint16_t) == 2);
+		static_assert(sizeof(bool) == 1);
+		static_assert(sizeof(uint64_t) == 8);
+		static_assert(sizeof(double) == 8);
+		static_assert(sizeof(const char) == 1);
+		static_assert(sizeof(char) == 1);
+		static_assert(sizeof(short) == 2);
+		static_assert(sizeof(uint32_t) == 4);
+		static_assert(sizeof(uint8_t) == 1);
+		static_assert(sizeof(float) == 4);
+		static_assert(sizeof(int) == 4);
+		#elif ARCH_BITS == 64
+		static_assert(sizeof(uint16_t) == 2);
+		static_assert(sizeof(bool) == 1);
+		static_assert(sizeof(uint64_t) == 8);
+		static_assert(sizeof(double) == 8);
+		static_assert(sizeof(const char) == 1);
+		static_assert(sizeof(char) == 1);
+		static_assert(sizeof(short) == 2);
+		static_assert(sizeof(uint32_t) == 4);
+		static_assert(sizeof(uint8_t) == 1);
+		static_assert(sizeof(float) == 4);
+		static_assert(sizeof(int) == 4);
+		#else
+		#error Unsupported OS
+		#endif
+		static_assert(IS_UNSIGNED_TYPE(uint16_t));
+		static_assert(IS_UNSIGNED_TYPE(bool));
+		static_assert(IS_UNSIGNED_TYPE(uint64_t));
+		static_assert(IS_SIGNED_TYPE(double));
+		static_assert(IS_SIGNED_TYPE(const char));
+		static_assert(IS_SIGNED_TYPE(char));
+		static_assert(IS_SIGNED_TYPE(short));
+		static_assert(IS_UNSIGNED_TYPE(uint32_t));
+		static_assert(IS_UNSIGNED_TYPE(uint8_t));
+		static_assert(IS_SIGNED_TYPE(float));
+		static_assert(IS_SIGNED_TYPE(int));
+*/
     public static void init() {
     }
 

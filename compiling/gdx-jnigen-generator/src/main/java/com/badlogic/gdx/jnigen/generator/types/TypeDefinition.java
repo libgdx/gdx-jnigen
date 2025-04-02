@@ -18,7 +18,7 @@ public class TypeDefinition {
     public TypeDefinition(TypeKind typeKind, String typeName) {
         this.typeKind = typeKind;
         if (typeKind.isPrimitive())
-            Manager.getInstance().recordCType(typeName);
+            Manager.getInstance().recordCType(typeName, typeKind);
         this.typeName = typeName;
         if (typeName.startsWith("const "))
             constMarked = true;
