@@ -284,11 +284,11 @@ public class Manager {
             List<String> assertBuilder = new ArrayList<>();
             assertBuilder.add("#if ARCH_BITS == 32");
             knownCTypes.forEach((name, typeKind) -> {
-                assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getSize32() + ");");
+                assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getSize32() + ", \"Type " + name + " has unexpected size.\");");
             });
             assertBuilder.add("#elif ARCH_BITS == 64");
             knownCTypes.forEach((name, typeKind) -> {
-                assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getSize64() + ");");
+                assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getSize64() + ", \"Type " + name + " has unexpected size.\");");
             });
             assertBuilder.add("#else");
             assertBuilder.add("#error Unsupported OS");
@@ -296,9 +296,9 @@ public class Manager {
 
             knownCTypes.forEach((name, typeKind) -> {
                 if (typeKind.isSigned())
-                    assertBuilder.add("static_assert(IS_SIGNED_TYPE(" + name + "));");
+                    assertBuilder.add("static_assert(IS_SIGNED_TYPE(" + name + "), \"Type " + name + " is expected signed.\");");
                 else
-                    assertBuilder.add("static_assert(IS_UNSIGNED_TYPE(" + name + "));");
+                    assertBuilder.add("static_assert(IS_UNSIGNED_TYPE(" + name + "), \"Type " + name + " is expected unsigned.\");");
             });
 
             addJNIComment(ffiTypeClass, assertBuilder.toArray(new String[0]));
