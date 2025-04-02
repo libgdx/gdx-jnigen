@@ -2,6 +2,7 @@ package com.badlogic.jnigen.generated;
 
 import com.badlogic.gdx.jnigen.runtime.c.CXXException;
 import com.badlogic.jnigen.generated.structs.GlobalArg;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.BytePointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.UBytePointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.SBytePointer;
 import com.badlogic.jnigen.generated.enums.SpecialEnum;
@@ -23,7 +24,6 @@ import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.jnigen.generated.structs.SpecialStruct;
 import com.badlogic.jnigen.generated.structs.TestUnion;
-import com.badlogic.gdx.jnigen.runtime.pointer.integer.BytePointer;
 import com.badlogic.gdx.jnigen.runtime.closure.Closure;
 import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackBooleanArg_Internal;
 import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestEnumPointerArg_Internal;
@@ -114,15 +114,16 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static void random(char arg0, byte arg1, UBytePointer arg2, SBytePointer arg3) {
-        random_internal(arg0, arg1, arg2.getPointer(), arg3.getPointer());
+    public static void random(char arg0, char arg1, byte arg2, BytePointer arg3, UBytePointer arg4, SBytePointer arg5) {
+        random_internal(arg0, arg1, arg2, arg3.getPointer(), arg4.getPointer(), arg5.getPointer());
     }
 
-    private static native void random_internal(char arg0, byte arg1, long arg2, long arg3);/*
+    private static native void random_internal(char arg0, char arg1, byte arg2, long arg3, long arg4, long arg5);/*
     	HANDLE_JAVA_EXCEPTION_START()
-    	CHECK_AND_THROW_C_TYPE(env, signed char, arg1, 1, return);
-    	CHECK_AND_THROW_C_TYPE(env, unsigned char, arg0, 0, return);
-    	random((unsigned char)arg0, (signed char)arg1, (unsigned char *)arg2, (signed char *)arg3);
+    	CHECK_AND_THROW_C_TYPE(env, signed char, arg2, 2, return);
+    	CHECK_AND_THROW_C_TYPE(env, unsigned char, arg1, 1, return);
+    	CHECK_AND_THROW_C_TYPE(env, char, arg0, 0, return);
+    	random((char)arg0, (unsigned char)arg1, (signed char)arg2, (char *)arg3, (unsigned char *)arg4, (signed char *)arg5);
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
