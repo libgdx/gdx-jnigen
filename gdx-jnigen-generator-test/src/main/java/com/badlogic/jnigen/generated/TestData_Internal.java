@@ -299,7 +299,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackShortReturn_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(6) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(7) };
 
         short methodWithCallbackShortReturn_call();
 
@@ -349,7 +349,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackTestStructArg_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(20) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(22) };
 
         void methodWithCallbackTestStructArg_call(TestStruct arg0);
 
@@ -398,7 +398,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackLongArg_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(9) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(10) };
 
         void methodWithCallbackLongArg_call(long test);
 
@@ -618,7 +618,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackCharReturn_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(7) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(8) };
 
         char methodWithCallbackCharReturn_call();
 
@@ -668,7 +668,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackAllArgs_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(9), FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(6), FFITypes.getCTypeInfo(1), FFITypes.getCTypeInfo(7), FFITypes.getCTypeInfo(0), FFITypes.getCTypeInfo(4), FFITypes.getCTypeInfo(3) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(10), FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(7), FFITypes.getCTypeInfo(1), FFITypes.getCTypeInfo(8), FFITypes.getCTypeInfo(0), FFITypes.getCTypeInfo(4), FFITypes.getCTypeInfo(3) };
 
         void methodWithCallbackAllArgs_call(long arg0, int arg1, short arg2, byte arg3, char arg4, boolean arg5, float arg6, double arg7);
 
@@ -771,7 +771,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackShortArg_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(6) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(7) };
 
         void methodWithCallbackShortArg_call(short arg0);
 
@@ -869,7 +869,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackLongReturn_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(9) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(10) };
 
         long methodWithCallbackLongReturn_call();
 
@@ -894,7 +894,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackCharArg_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(7) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(8) };
 
         void methodWithCallbackCharArg_call(char arg0);
 
@@ -968,7 +968,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackTestStructReturn_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(20) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(22) };
 
         TestStruct methodWithCallbackTestStructReturn_call();
 

@@ -162,6 +162,7 @@ public class Generator {
             TypeDefinition typeDefinition = new TypeDefinition(TypeKind.ENUM, name);
             Manager.getInstance().registerCTypeMapping(name, typeDefinition);
 
+            typeDefinition.setNestedDefinition(registerCXType(clang_getEnumDeclIntegerType(clang_getTypeDeclaration(type)), null, null));
             typeDefinition.setOverrideMappedType(new EnumParser(typeDefinition, type, alternativeName).register());
             return typeDefinition;
         }

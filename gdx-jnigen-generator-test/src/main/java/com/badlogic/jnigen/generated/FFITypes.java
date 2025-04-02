@@ -12,43 +12,49 @@ public class FFITypes {
 */
     /*JNI
 		#if ARCH_BITS == 32
-		static_assert(sizeof(uint16_t) == 2);
 		static_assert(sizeof(bool) == 1);
 		static_assert(sizeof(uint64_t) == 8);
 		static_assert(sizeof(double) == 8);
+		static_assert(sizeof(uint32_t) == 4);
+		static_assert(sizeof(float) == 4);
+		static_assert(sizeof(int) == 4);
+		static_assert(sizeof(long) == 4);
+		static_assert(sizeof(uint16_t) == 2);
+		static_assert(sizeof(unsigned int) == 4);
 		static_assert(sizeof(const char) == 1);
 		static_assert(sizeof(char) == 1);
 		static_assert(sizeof(short) == 2);
-		static_assert(sizeof(uint32_t) == 4);
 		static_assert(sizeof(uint8_t) == 1);
-		static_assert(sizeof(float) == 4);
-		static_assert(sizeof(int) == 4);
 		#elif ARCH_BITS == 64
-		static_assert(sizeof(uint16_t) == 2);
 		static_assert(sizeof(bool) == 1);
 		static_assert(sizeof(uint64_t) == 8);
 		static_assert(sizeof(double) == 8);
+		static_assert(sizeof(uint32_t) == 4);
+		static_assert(sizeof(float) == 4);
+		static_assert(sizeof(int) == 4);
+		static_assert(sizeof(long) == 8);
+		static_assert(sizeof(uint16_t) == 2);
+		static_assert(sizeof(unsigned int) == 4);
 		static_assert(sizeof(const char) == 1);
 		static_assert(sizeof(char) == 1);
 		static_assert(sizeof(short) == 2);
-		static_assert(sizeof(uint32_t) == 4);
 		static_assert(sizeof(uint8_t) == 1);
-		static_assert(sizeof(float) == 4);
-		static_assert(sizeof(int) == 4);
 		#else
 		#error Unsupported OS
 		#endif
-		static_assert(IS_UNSIGNED_TYPE(uint16_t));
 		static_assert(IS_UNSIGNED_TYPE(bool));
 		static_assert(IS_UNSIGNED_TYPE(uint64_t));
 		static_assert(IS_SIGNED_TYPE(double));
+		static_assert(IS_UNSIGNED_TYPE(uint32_t));
+		static_assert(IS_SIGNED_TYPE(float));
+		static_assert(IS_SIGNED_TYPE(int));
+		static_assert(IS_SIGNED_TYPE(long));
+		static_assert(IS_UNSIGNED_TYPE(uint16_t));
+		static_assert(IS_UNSIGNED_TYPE(unsigned int));
 		static_assert(IS_SIGNED_TYPE(const char));
 		static_assert(IS_SIGNED_TYPE(char));
 		static_assert(IS_SIGNED_TYPE(short));
-		static_assert(IS_UNSIGNED_TYPE(uint32_t));
 		static_assert(IS_UNSIGNED_TYPE(uint8_t));
-		static_assert(IS_SIGNED_TYPE(float));
-		static_assert(IS_SIGNED_TYPE(int));
 */
     public static void init() {
     }
@@ -88,43 +94,49 @@ switch(id) {
 		GET_NATIVE_TYPE(int, nativeType);
 		return nativeType;
 	case 6:
-		GET_NATIVE_TYPE(short, nativeType);
+		GET_NATIVE_TYPE(long, nativeType);
 		return nativeType;
 	case 7:
-		GET_NATIVE_TYPE(uint16_t, nativeType);
+		GET_NATIVE_TYPE(short, nativeType);
 		return nativeType;
 	case 8:
-		GET_NATIVE_TYPE(uint32_t, nativeType);
+		GET_NATIVE_TYPE(uint16_t, nativeType);
 		return nativeType;
 	case 9:
-		GET_NATIVE_TYPE(uint64_t, nativeType);
+		GET_NATIVE_TYPE(uint32_t, nativeType);
 		return nativeType;
 	case 10:
-		GET_NATIVE_TYPE(uint8_t, nativeType);
+		GET_NATIVE_TYPE(uint64_t, nativeType);
 		return nativeType;
 	case 11:
+		GET_NATIVE_TYPE(uint8_t, nativeType);
+		return nativeType;
+	case 12:
+		GET_NATIVE_TYPE(unsigned int, nativeType);
+		return nativeType;
+	case 13:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 2;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
 		nativeType->fields[0] = getNativeType(-1);
 		nativeType->fields[1] = getNativeType(-1);
 		return nativeType;
-	case 12:
+	case 14:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 2;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
-		nativeType->fields[0] = getNativeType(24);
+		nativeType->fields[0] = getNativeType(26);
 		nativeType->fields[1] = getNativeType(5);
 		return nativeType;
-	case 13:
+	case 15:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 3;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 3);
-		nativeType->fields[0] = getNativeType(25);
-		nativeType->fields[1] = getNativeType(25);
+		nativeType->fields[0] = getNativeType(27);
+		nativeType->fields[1] = getNativeType(27);
 		nativeType->fields[2] = getNativeType(5);
 		return nativeType;
-	case 14:
+	case 16:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 3;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 3);
@@ -132,7 +144,7 @@ switch(id) {
 		nativeType->fields[1] = getNativeType(4);
 		nativeType->fields[2] = getNativeType(5);
 		return nativeType;
-	case 15:
+	case 17:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 5;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 5);
@@ -142,7 +154,7 @@ switch(id) {
 		nativeType->fields[3] = getNativeType(5);
 		nativeType->fields[4] = getNativeType(4);
 		return nativeType;
-	case 16:
+	case 18:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 3;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 3);
@@ -150,7 +162,7 @@ switch(id) {
 		nativeType->fields[1] = getNativeType(5);
 		nativeType->fields[2] = getNativeType(4);
 		return nativeType;
-	case 17:
+	case 19:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 3;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 3);
@@ -158,28 +170,28 @@ switch(id) {
 		nativeType->fields[1] = getNativeType(4);
 		nativeType->fields[2] = getNativeType(5);
 		return nativeType;
-	case 18:
+	case 20:
 		nativeType->type = UNION_TYPE;
 		nativeType->field_count = 16;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 16);
-		nativeType->fields[0] = getNativeType(9);
+		nativeType->fields[0] = getNativeType(10);
 		nativeType->fields[1] = getNativeType(5);
-		nativeType->fields[2] = getNativeType(6);
+		nativeType->fields[2] = getNativeType(7);
 		nativeType->fields[3] = getNativeType(1);
-		nativeType->fields[4] = getNativeType(7);
+		nativeType->fields[4] = getNativeType(8);
 		nativeType->fields[5] = getNativeType(0);
 		nativeType->fields[6] = getNativeType(4);
 		nativeType->fields[7] = getNativeType(3);
 		nativeType->fields[8] = getNativeType(-1);
 		nativeType->fields[9] = getNativeType(-1);
-		nativeType->fields[10] = getNativeType(20);
+		nativeType->fields[10] = getNativeType(22);
 		nativeType->fields[11] = getNativeType(-1);
 		nativeType->fields[12] = getNativeType(5);
 		nativeType->fields[13] = getNativeType(-1);
 		nativeType->fields[14] = getNativeType(-1);
-		nativeType->fields[15] = getNativeType(22);
+		nativeType->fields[15] = getNativeType(24);
 		return nativeType;
-	case 19:
+	case 21:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 7;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 7);
@@ -191,52 +203,52 @@ switch(id) {
 		nativeType->fields[5] = getNativeType(5);
 		nativeType->fields[6] = getNativeType(-1);
 		return nativeType;
-	case 20:
+	case 22:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 4;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 4);
-		nativeType->fields[0] = getNativeType(9);
-		nativeType->fields[1] = getNativeType(8);
-		nativeType->fields[2] = getNativeType(7);
-		nativeType->fields[3] = getNativeType(10);
+		nativeType->fields[0] = getNativeType(10);
+		nativeType->fields[1] = getNativeType(9);
+		nativeType->fields[2] = getNativeType(8);
+		nativeType->fields[3] = getNativeType(11);
 		return nativeType;
-	case 21:
+	case 23:
 		nativeType->type = UNION_TYPE;
 		nativeType->field_count = 6;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 6);
-		nativeType->fields[0] = getNativeType(9);
+		nativeType->fields[0] = getNativeType(10);
 		nativeType->fields[1] = getNativeType(3);
 		nativeType->fields[2] = getNativeType(5);
 		nativeType->fields[3] = getNativeType(5);
 		nativeType->fields[4] = getNativeType(5);
-		nativeType->fields[5] = getNativeType(20);
+		nativeType->fields[5] = getNativeType(22);
 		return nativeType;
-	case 22:
+	case 24:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 8;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 8);
-		nativeType->fields[0] = getNativeType(9);
+		nativeType->fields[0] = getNativeType(10);
 		nativeType->fields[1] = getNativeType(5);
-		nativeType->fields[2] = getNativeType(6);
+		nativeType->fields[2] = getNativeType(7);
 		nativeType->fields[3] = getNativeType(1);
-		nativeType->fields[4] = getNativeType(7);
+		nativeType->fields[4] = getNativeType(8);
 		nativeType->fields[5] = getNativeType(0);
 		nativeType->fields[6] = getNativeType(4);
 		nativeType->fields[7] = getNativeType(3);
 		return nativeType;
-	case 23:
+	case 25:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 0;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 0);
 		return nativeType;
-	case 24:
+	case 26:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 2;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
 		nativeType->fields[0] = getNativeType(5);
 		nativeType->fields[1] = getNativeType(4);
 		return nativeType;
-	case 25:
+	case 27:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 2;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
@@ -266,8 +278,8 @@ switch(id) {
         ffiIdMap.put(8, CHandler.constructCTypeFromNativeType(getNativeType(8)));
         ffiIdMap.put(9, CHandler.constructCTypeFromNativeType(getNativeType(9)));
         ffiIdMap.put(10, CHandler.constructCTypeFromNativeType(getNativeType(10)));
-        ffiIdMap.put(11, CHandler.constructStackElementCTypeFromNativeType(getNativeType(11)));
-        ffiIdMap.put(12, CHandler.constructStackElementCTypeFromNativeType(getNativeType(12)));
+        ffiIdMap.put(11, CHandler.constructCTypeFromNativeType(getNativeType(11)));
+        ffiIdMap.put(12, CHandler.constructCTypeFromNativeType(getNativeType(12)));
         ffiIdMap.put(13, CHandler.constructStackElementCTypeFromNativeType(getNativeType(13)));
         ffiIdMap.put(14, CHandler.constructStackElementCTypeFromNativeType(getNativeType(14)));
         ffiIdMap.put(15, CHandler.constructStackElementCTypeFromNativeType(getNativeType(15)));
@@ -281,5 +293,7 @@ switch(id) {
         ffiIdMap.put(23, CHandler.constructStackElementCTypeFromNativeType(getNativeType(23)));
         ffiIdMap.put(24, CHandler.constructStackElementCTypeFromNativeType(getNativeType(24)));
         ffiIdMap.put(25, CHandler.constructStackElementCTypeFromNativeType(getNativeType(25)));
+        ffiIdMap.put(26, CHandler.constructStackElementCTypeFromNativeType(getNativeType(26)));
+        ffiIdMap.put(27, CHandler.constructStackElementCTypeFromNativeType(getNativeType(27)));
     }
 }

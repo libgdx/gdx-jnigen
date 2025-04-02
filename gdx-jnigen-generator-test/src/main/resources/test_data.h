@@ -57,7 +57,7 @@ typedef enum TestEnum {
     THIRD = 4
 } TestEnum;
 
-typedef enum SpecialEnum {
+typedef enum SpecialEnum : long {
     LOWER = 0,
     HIGH = 160
 } SpecialEnum;

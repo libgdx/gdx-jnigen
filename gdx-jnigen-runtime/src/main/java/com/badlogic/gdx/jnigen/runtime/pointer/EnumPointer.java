@@ -5,19 +5,16 @@ import com.badlogic.gdx.jnigen.runtime.c.CEnum;
 
 public abstract class EnumPointer<T extends CEnum> extends VoidPointer {
 
-    // TODO: This is actually not true, since and enum can have a variable width
-    private static final int __int_size = 4;
-
     public EnumPointer(long pointer, boolean freeOnGC) {
         super(pointer, freeOnGC);
     }
 
     public EnumPointer(int size, boolean freeOnGC, boolean guard) {
-        super(__int_size * size, freeOnGC, guard);
+        super(size, freeOnGC, guard);
     }
 
     public EnumPointer<T> guardCount(long count) {
-        super.guardBytes(count * __int_size);
+        super.guardBytes(count * getSize());
         return this;
     }
 
@@ -26,9 +23,9 @@ public abstract class EnumPointer<T extends CEnum> extends VoidPointer {
     }
 
     public T getEnumValue(int index) {
-        int offset = index * __int_size;
+        int offset = index * getSize();
         assertBounds(offset);
-        return getEnum((int)CHandler.getPointerPart(getPointer(), __int_size, offset));
+        return getEnum((int)CHandler.getPointerPart(getPointer(), getSize(), offset));
     }
 
     public void setEnumValue(T value) {
@@ -36,10 +33,11 @@ public abstract class EnumPointer<T extends CEnum> extends VoidPointer {
     }
 
     public void setEnumValue(T value, int index) {
-        int offset = index * __int_size;
+        int offset = index * getSize();
         assertBounds(offset);
-        CHandler.setPointerPart(getPointer(), __int_size, offset, value.getIndex());
+        CHandler.setPointerPart(getPointer(), getSize(), offset, value.getIndex());
     }
 
     protected abstract T getEnum(int index);
+    protected abstract int getSize();
 }

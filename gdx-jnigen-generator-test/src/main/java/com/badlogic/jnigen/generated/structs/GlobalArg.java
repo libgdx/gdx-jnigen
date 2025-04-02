@@ -20,7 +20,7 @@ public final class GlobalArg extends Union {
     private final static long __ffi_type;
 
     static {
-        __ffi_type = FFITypes.getCTypeInfo(18).getFfiType();
+        __ffi_type = FFITypes.getCTypeInfo(20).getFfiType();
         __size = CHandler.getSizeFromFFIType(__ffi_type);
     }
 
@@ -208,7 +208,7 @@ public final class GlobalArg extends Union {
         private final static long __ffi_type;
 
         static {
-            __ffi_type = FFITypes.getCTypeInfo(22).getFfiType();
+            __ffi_type = FFITypes.getCTypeInfo(24).getFfiType();
             __size = CHandler.getSizeFromFFIType(__ffi_type);
         }
 
