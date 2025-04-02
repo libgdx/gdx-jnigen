@@ -6,7 +6,7 @@ import com.badlogic.gdx.jnigen.runtime.c.CEnum;
 public abstract class EnumPointer<T extends CEnum> extends VoidPointer {
 
     // TODO: This is actually not true, since and enum can have a variable width
-    private static final int __int_size = CHandler.getCTypeInfo("int").getSize();
+    private static final int __int_size = 4;
 
     public EnumPointer(long pointer, boolean freeOnGC) {
         super(pointer, freeOnGC);

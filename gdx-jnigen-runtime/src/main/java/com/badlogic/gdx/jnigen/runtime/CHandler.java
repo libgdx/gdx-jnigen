@@ -43,8 +43,6 @@ public class CHandler {
 
     private static final HashMap<CTypeInfo[], Long> classCifMap = new HashMap<>();
 
-    private static final HashMap<String, CTypeInfo> cTypeInfoMap = new HashMap<>();
-
     private static final HashMap<Long, ClosureObject<?>> fnPtrClosureMap = new HashMap<>();
 
     private static native boolean init(Method dispatchCallbackReflectedMethod, Method getExceptionStringReflectedMethod);
@@ -84,35 +82,20 @@ public class CHandler {
 
     public static native long dispatchCCall(long fnPtr, long cif, ByteBuffer parameter);
 
-    public static CTypeInfo getCTypeInfo(String name) {
-        synchronized (cTypeInfoMap) {
-            CTypeInfo cTypeInfo = cTypeInfoMap.get(name);
-            if (cTypeInfo == null)
-                throw new IllegalArgumentException("CType " + name + " is not registered.");
-            return cTypeInfo;
-        }
-    }
-
-    public static void registerCType(CTypeInfo cTypeInfo) {
-        synchronized (cTypeInfoMap) {
-            cTypeInfoMap.put(cTypeInfo.getName(), cTypeInfo);
-        }
-    }
-
     public static native long convertNativeTypeToFFIType(long nativeType);
 
-    public static CTypeInfo constructStackElementCTypeFromNativeType(String name, long nativeType) {
+    public static CTypeInfo constructStackElementCTypeFromNativeType(long nativeType) {
         if (nativeType == 0)
-            throw new IllegalArgumentException("CType " + name + " maps to zero.");
+            throw new IllegalArgumentException("CType maps to zero.");
         long ffiType = convertNativeTypeToFFIType(nativeType);
-        return new CTypeInfo(name, ffiType, CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType), true, CHandler.isVoid(ffiType));
+        return new CTypeInfo(ffiType, CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType), true, CHandler.isVoid(ffiType));
     }
 
-    public static CTypeInfo constructCTypeFromNativeType(String name, long nativeType) {
+    public static CTypeInfo constructCTypeFromNativeType(long nativeType) {
         if (nativeType == 0)
-            throw new IllegalArgumentException("CType " + name + " maps to zero.");
+            throw new IllegalArgumentException("CType maps to zero.");
         long ffiType = convertNativeTypeToFFIType(nativeType);
-        return new CTypeInfo(name, ffiType, CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType), false, CHandler.isVoid(ffiType));
+        return new CTypeInfo(ffiType, CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType), false, CHandler.isVoid(ffiType));
     }
 
     private static native long nativeCreateCif(long returnType, ByteBuffer parameters, int size); 

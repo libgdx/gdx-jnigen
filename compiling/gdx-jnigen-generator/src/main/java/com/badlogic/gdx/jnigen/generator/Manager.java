@@ -330,17 +330,16 @@ public class Manager {
             ffiTypeNativeBody.append("\tcase ").append(VOID_FFI_ID).append(":\n")
                     .append("\t\t").append("nativeType->type = VOID_TYPE;").append("\n")
                     .append("\t\treturn nativeType;\n");
-            staticInit.addStatement("ffiIdMap.put(" + VOID_FFI_ID + ", CHandler.constructCTypeFromNativeType(\"void\", getNativeType(" + VOID_FFI_ID + ")));");
+            staticInit.addStatement("ffiIdMap.put(" + VOID_FFI_ID + ", CHandler.constructCTypeFromNativeType(getNativeType(" + VOID_FFI_ID + ")));");
             ffiTypeNativeBody.append("\tcase ").append(POINTER_FFI_ID).append(":\n")
                     .append("\t\t").append("nativeType->type = POINTER_TYPE;").append("\n")
                     .append("\t\treturn nativeType;\n");
-            staticInit.addStatement("ffiIdMap.put(" + POINTER_FFI_ID + ", CHandler.constructCTypeFromNativeType(\"void*\", getNativeType(" + POINTER_FFI_ID + ")));");
+            staticInit.addStatement("ffiIdMap.put(" + POINTER_FFI_ID + ", CHandler.constructCTypeFromNativeType(getNativeType(" + POINTER_FFI_ID + ")));");
 
             List<String> cTypes = knownCTypes.keySet().stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
             for (int i = 0; i < cTypes.size(); i++) {
                 String cType = cTypes.get(i);
-                staticInit.addStatement("ffiIdMap.put(" + i + ", CHandler.constructCTypeFromNativeType(\"" + cType + "\", getNativeType(" + i + ")));");
-                staticInit.addStatement("CHandler.registerCType(ffiIdMap.get(" + i + "));");
+                staticInit.addStatement("ffiIdMap.put(" + i + ", CHandler.constructCTypeFromNativeType(getNativeType(" + i + ")));");
                 ffiTypeNativeBody.append("\tcase ").append(i).append(":\n");
                 ffiTypeNativeBody.append("\t\tGET_NATIVE_TYPE(").append(cType).append(", nativeType);\n");
                 ffiTypeNativeBody.append("\t\treturn nativeType;\n");
@@ -348,7 +347,7 @@ public class Manager {
             for (int i = 0; i < orderedStackElements.size(); i++) {
                 int id = i + knownCTypes.size();
                 StackElementType stackElementType = orderedStackElements.get(i);
-                staticInit.addStatement("ffiIdMap.put(" + id + ", CHandler.constructStackElementCTypeFromNativeType(null, getNativeType(" + id + ")));");
+                staticInit.addStatement("ffiIdMap.put(" + id + ", CHandler.constructStackElementCTypeFromNativeType(getNativeType(" + id + ")));");
                 ffiTypeNativeBody.append("\tcase ").append(id).append(":\n");
                 ffiTypeNativeBody.append(stackElementType.getFFITypeBody(nativeGetFFIMethodName));
             }

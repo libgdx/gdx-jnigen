@@ -6,22 +6,12 @@ import com.badlogic.gdx.jnigen.runtime.pointer.DoublePointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.SBytePointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
-import com.badlogic.gdx.jnigen.runtime.pointer.integer.UBytePointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.UIntPointer;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BasicPointerTest extends BaseTest {
-
-    @BeforeAll
-    public static void setupCTypes() {
-        CHandler.registerCType(new CTypeInfo("int32_t", 0, 4, true, false, false));
-        CHandler.registerCType(new CTypeInfo("uint16_t", 0, 2, false, false, false));
-        CHandler.registerCType(new CTypeInfo("uint32_t", 0, 4, false, false, false));
-        CHandler.registerCType(new CTypeInfo("char", 0, 1, true, false, false));
-    }
 
     @Test
     public void testPointerSizedGetSet() {
@@ -77,11 +67,5 @@ public class BasicPointerTest extends BaseTest {
         assertTrue(pointer.isNull());
         assertThrows(NullPointerException.class, pointer::getByte);
         assertNull(pointer.getString());
-    }
-
-    @Test
-    public void testCTypeConformsTo() {
-        CTypeInfo infoNonConst = new CTypeInfo("char", 0, 1, true, false, false);
-        assertDoesNotThrow(() -> infoNonConst.assertConformsTo("const char"));
     }
 }
