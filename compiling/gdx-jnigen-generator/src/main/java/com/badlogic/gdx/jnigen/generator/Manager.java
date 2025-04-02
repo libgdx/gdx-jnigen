@@ -93,9 +93,14 @@ public class Manager {
             if (own == null)
                 throw new IllegalStateException("Can't merge Manager cause " + name + " doesn't exist in both.");
             if (own.getTypeKind() != typeDefinition.getTypeKind()) {
-                if ((own.getTypeKind() != TypeKind.SIGNED_BYTE && own.getTypeKind() != TypeKind.PROMOTED_BYTE) || (typeDefinition.getTypeKind() != TypeKind.SIGNED_BYTE && typeDefinition.getTypeKind() != TypeKind.PROMOTED_BYTE))
-                    throw new IllegalStateException("Can't merge Manager cause " + name + " is of type " + typeDefinition.getTypeKind() + " and not mergable with " + own.getTypeKind());
-                own.setTypeKind(TypeKind.NATIVE_BYTE);
+                if (own.getTypeKind() == TypeKind.SIGNED_BYTE && typeDefinition.getTypeKind() == TypeKind.PROMOTED_BYTE)
+                    own.setTypeKind(TypeKind.NATIVE_BYTE);
+                else if (own.getTypeKind() == TypeKind.PROMOTED_LONG && typeDefinition.getTypeKind() == TypeKind.PROMOTED_LONG_LONG)
+                    own.setTypeKind(TypeKind.PROMOTED_LONG_LONG);
+                else if (own.getTypeKind() == TypeKind.LONG && typeDefinition.getTypeKind() == TypeKind.LONG_LONG)
+                    own.setTypeKind(TypeKind.LONG_LONG);
+                else
+                    throw new IllegalStateException("Can't merge " + typeDefinition.getTypeKind() + " into " + own.getTypeKind());
             }
         });
     }

@@ -325,13 +325,15 @@ public class Generator {
     public static void execute(String path, String basePackage, String fileToParse, String[] options) {
         if (!path.endsWith("/"))
             path += "/";
-        String[] extendedOptions = Arrays.copyOf(options, options.length + 1);
+        String[] extendedOptions = Arrays.copyOf(options, options.length + 2);
+        extendedOptions[extendedOptions.length - 2] = "-m32";
         extendedOptions[extendedOptions.length - 1] = "-funsigned-char";
         Manager.init(fileToParse, basePackage);
         parse(fileToParse, extendedOptions);
 
         Manager unsignedCharManager = Manager.getInstance();
 
+        extendedOptions = Arrays.copyOf(options, options.length + 1);
         extendedOptions[extendedOptions.length - 1] = "-fsigned-char";
         Manager.init(fileToParse, basePackage);
         parse(fileToParse, extendedOptions);
