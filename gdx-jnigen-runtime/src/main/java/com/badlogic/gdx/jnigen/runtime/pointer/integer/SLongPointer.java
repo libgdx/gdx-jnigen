@@ -6,7 +6,7 @@ import com.badlogic.gdx.jnigen.runtime.util.Utils;
 
 public class SLongPointer extends VoidPointer {
 
-    private static final int BYTE_SIZE = CHandler.IS_32_BIT ? 4 : 8;
+    private static final int BYTE_SIZE = CHandler.IS_32_BIT || CHandler.IS_COMPILED_WIN ? 4 : 8;
 
     public SLongPointer(int count, boolean freeOnGC, boolean guard) {
         super(count * BYTE_SIZE, freeOnGC, guard);

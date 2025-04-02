@@ -74,10 +74,10 @@ public class EnumType implements MappedType {
             declaration.setJavadocComment(comment);
 
         TypeKind nestedKind = definition.getNestedDefinition().getTypeKind();
-        if (nestedKind.getSize32() == nestedKind.getSize64())
-            declaration.addFieldWithInitializer("int", "__size", new IntegerLiteralExpr(String.valueOf(nestedKind.getSize64())), Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
+        if (nestedKind.getSize(false, false) == nestedKind.getSize(true, true))
+            declaration.addFieldWithInitializer("int", "__size", new IntegerLiteralExpr(String.valueOf(nestedKind.getSize(false, false))), Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
         else
-            declaration.addFieldWithInitializer("int", "__size", StaticJavaParser.parseExpression("CHandler.IS_32_BIT ? " + nestedKind.getSize32() + " : " + nestedKind.getSize64()), Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
+            declaration.addFieldWithInitializer("int", "__size", StaticJavaParser.parseExpression("CHandler.IS_32_BIT || CHandler.IS_COMPILED_WIN ? " + nestedKind.getSize(true, true) + " : " + nestedKind.getSize(false, false)), Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
 
         constants.values().stream()
                 .sorted(Comparator.comparingInt(EnumConstant::getId))

@@ -217,6 +217,20 @@ public class Manager {
         toAddTo.addOrphanComment(new BlockComment(result.toString()));
     }
 
+    private void createStaticAsserts(List<String> assertBuilder, boolean windows) {
+        assertBuilder.add("#if ARCH_BITS == 32");
+        knownCTypes.forEach((name, typeKind) -> {
+            assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getSize(true, windows) + ", \"Type " + name + " has unexpected size.\");");
+        });
+        assertBuilder.add("#elif ARCH_BITS == 64");
+        knownCTypes.forEach((name, typeKind) -> {
+            assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getSize(false, windows) + ", \"Type " + name + " has unexpected size.\");");
+        });
+        assertBuilder.add("#else");
+        assertBuilder.add("#error Unsupported OS");
+        assertBuilder.add("#endif");
+    }
+
     public void emit(String basePath) {
         try {
             CompilationUnit globalCU = new CompilationUnit(globalType.packageName());
@@ -282,16 +296,10 @@ public class Manager {
             addJNIComment(ffiTypeClass, "#include <jnigen.h>", "#include <" + parsedCHeader + ">");
 
             List<String> assertBuilder = new ArrayList<>();
-            assertBuilder.add("#if ARCH_BITS == 32");
-            knownCTypes.forEach((name, typeKind) -> {
-                assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getSize32() + ", \"Type " + name + " has unexpected size.\");");
-            });
-            assertBuilder.add("#elif ARCH_BITS == 64");
-            knownCTypes.forEach((name, typeKind) -> {
-                assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getSize64() + ", \"Type " + name + " has unexpected size.\");");
-            });
+            assertBuilder.add("#if defined(_WIN32)");
+            createStaticAsserts(assertBuilder, true);
             assertBuilder.add("#else");
-            assertBuilder.add("#error Unsupported OS");
+            createStaticAsserts(assertBuilder, false);
             assertBuilder.add("#endif");
 
             knownCTypes.forEach((name, typeKind) -> {

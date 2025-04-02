@@ -83,31 +83,7 @@ public enum TypeKind {
         }
     }
 
-    public int getSize32() {
-        switch (this) {
-        case BOOLEAN:
-        case BYTE:
-        case PROMOTED_BYTE:
-            return 1;
-        case SHORT:
-        case CHAR:
-            return 2;
-        case INT:
-        case PROMOTED_INT:
-        case LONG:
-        case PROMOTED_LONG:
-        case FLOAT:
-            return 4;
-        case LONG_LONG:
-        case PROMOTED_LONG_LONG:
-        case DOUBLE:
-            return 8;
-        default:
-            throw new IllegalArgumentException("Type " + this + " is not a primitive type");
-        }
-    }
-
-    public int getSize64() {
+    public int getSize(boolean is32Bit, boolean isWin) {
         switch (this) {
         case BOOLEAN:
         case BYTE:
@@ -122,6 +98,7 @@ public enum TypeKind {
             return 4;
         case LONG:
         case PROMOTED_LONG:
+            return is32Bit || isWin ? 4 : 8;
         case LONG_LONG:
         case PROMOTED_LONG_LONG:
         case DOUBLE:

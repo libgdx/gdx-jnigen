@@ -179,6 +179,14 @@ JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_is32Bit
     return ARCH_BITS == 32;
 }
 
+JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_isCompiledWin(JNIEnv* env, jclass clazz) {
+    #if defined(_WIN32)
+        return true;
+    #else
+        return false;
+    #endif
+}
+
 JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_init(JNIEnv* env, jclass clazz, jobject dispatchCallbackReflectedMethod, jobject getExceptionStringReflectedMethod) {
     env->GetJavaVM(&gJVM);
     globalClass = (jclass)env->NewGlobalRef(clazz);

@@ -11,6 +11,39 @@ public class FFITypes {
 		#include <test_data.h>
 */
     /*JNI
+		#if defined(_WIN32)
+		#if ARCH_BITS == 32
+		static_assert(sizeof(bool) == 1, "Type bool has unexpected size.");
+		static_assert(sizeof(uint64_t) == 8, "Type uint64_t has unexpected size.");
+		static_assert(sizeof(double) == 8, "Type double has unexpected size.");
+		static_assert(sizeof(uint32_t) == 4, "Type uint32_t has unexpected size.");
+		static_assert(sizeof(float) == 4, "Type float has unexpected size.");
+		static_assert(sizeof(int) == 4, "Type int has unexpected size.");
+		static_assert(sizeof(long) == 4, "Type long has unexpected size.");
+		static_assert(sizeof(uint16_t) == 2, "Type uint16_t has unexpected size.");
+		static_assert(sizeof(unsigned int) == 4, "Type unsigned int has unexpected size.");
+		static_assert(sizeof(const char) == 1, "Type const char has unexpected size.");
+		static_assert(sizeof(char) == 1, "Type char has unexpected size.");
+		static_assert(sizeof(short) == 2, "Type short has unexpected size.");
+		static_assert(sizeof(uint8_t) == 1, "Type uint8_t has unexpected size.");
+		#elif ARCH_BITS == 64
+		static_assert(sizeof(bool) == 1, "Type bool has unexpected size.");
+		static_assert(sizeof(uint64_t) == 8, "Type uint64_t has unexpected size.");
+		static_assert(sizeof(double) == 8, "Type double has unexpected size.");
+		static_assert(sizeof(uint32_t) == 4, "Type uint32_t has unexpected size.");
+		static_assert(sizeof(float) == 4, "Type float has unexpected size.");
+		static_assert(sizeof(int) == 4, "Type int has unexpected size.");
+		static_assert(sizeof(long) == 4, "Type long has unexpected size.");
+		static_assert(sizeof(uint16_t) == 2, "Type uint16_t has unexpected size.");
+		static_assert(sizeof(unsigned int) == 4, "Type unsigned int has unexpected size.");
+		static_assert(sizeof(const char) == 1, "Type const char has unexpected size.");
+		static_assert(sizeof(char) == 1, "Type char has unexpected size.");
+		static_assert(sizeof(short) == 2, "Type short has unexpected size.");
+		static_assert(sizeof(uint8_t) == 1, "Type uint8_t has unexpected size.");
+		#else
+		#error Unsupported OS
+		#endif
+		#else
 		#if ARCH_BITS == 32
 		static_assert(sizeof(bool) == 1, "Type bool has unexpected size.");
 		static_assert(sizeof(uint64_t) == 8, "Type uint64_t has unexpected size.");
@@ -41,6 +74,7 @@ public class FFITypes {
 		static_assert(sizeof(uint8_t) == 1, "Type uint8_t has unexpected size.");
 		#else
 		#error Unsupported OS
+		#endif
 		#endif
 		static_assert(IS_UNSIGNED_TYPE(bool), "Type bool is expected unsigned.");
 		static_assert(IS_UNSIGNED_TYPE(uint64_t), "Type uint64_t is expected unsigned.");

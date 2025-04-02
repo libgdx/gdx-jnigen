@@ -29,6 +29,7 @@ public class CHandler {
         }
         POINTER_SIZE = is32Bit() ? 4 : 8;
         IS_32_BIT = is32Bit();
+        IS_COMPILED_WIN = isCompiledWin();
         testNativeSetup();
     }
 
@@ -38,8 +39,10 @@ public class CHandler {
 
     public static final int POINTER_SIZE;
     public static final boolean IS_32_BIT;
+    public static final boolean IS_COMPILED_WIN;
 
     private static native boolean is32Bit();
+    private static native boolean isCompiledWin();
 
     private static final HashMap<CTypeInfo[], Long> classCifMap = new HashMap<>();
 

@@ -17,6 +17,15 @@ JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_is32Bit
 
 /*
  * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
+ * Method:    isCompiledWin
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_isCompiledWin
+  (JNIEnv *, jclass);
+
+
+/*
+ * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
  * Method:    init
  * Signature: (Ljava/lang/reflect/Method;Ljava/lang/reflect/Method;Ljava/lang/Class;Ljava/lang/Class;)Z
  */
