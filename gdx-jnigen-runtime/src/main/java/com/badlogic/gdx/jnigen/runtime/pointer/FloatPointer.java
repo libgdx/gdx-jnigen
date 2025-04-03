@@ -1,7 +1,5 @@
 package com.badlogic.gdx.jnigen.runtime.pointer;
 
-import com.badlogic.gdx.jnigen.runtime.CHandler;
-
 public final class FloatPointer extends VoidPointer {
 
     private static final int __float_size = 4;
@@ -34,7 +32,7 @@ public final class FloatPointer extends VoidPointer {
     public float getFloat(int index) {
         int offset = index * __float_size;
         assertBounds(offset);
-        return Float.intBitsToFloat((int)CHandler.getPointerPart(getPointer(), __float_size, offset));
+        return getBufPtr().getFloat(offset);
     }
 
     public void setFloat(float value) {
@@ -44,6 +42,6 @@ public final class FloatPointer extends VoidPointer {
     public void setFloat(float value, int index) {
         int offset = index * __float_size;
         assertBounds(offset);
-        CHandler.setPointerPart(getPointer(), __float_size, offset, Float.floatToIntBits(value));
+        getBufPtr().setFloat(offset, value);
     }
 }

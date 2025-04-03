@@ -39,7 +39,7 @@ public class UShortPointer extends VoidPointer {
     }
 
     public char getUShort(int index) {
-        return (char)CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index));
+        return getBufPtr().getChar(calculateOffset(index));
     }
 
     public void setUShort(char value) {
@@ -47,6 +47,6 @@ public class UShortPointer extends VoidPointer {
     }
 
     public void setUShort(char value, int index) {
-        CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value);
+        getBufPtr().setChar(calculateOffset(index), value);
     }
 }

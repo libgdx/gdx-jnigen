@@ -34,7 +34,7 @@ public final class DoublePointer extends VoidPointer {
     public double getDouble(int index) {
         int offset = index * __double_size;
         assertBounds(offset);
-        return Double.longBitsToDouble(CHandler.getPointerPart(getPointer(), __double_size, offset));
+        return getBufPtr().getDouble(offset);
     }
 
     public void setDouble(double value) {
@@ -44,6 +44,6 @@ public final class DoublePointer extends VoidPointer {
     public void setDouble(double value, int index) {
         int offset = index * __double_size;
         assertBounds(offset);
-        CHandler.setPointerPart(getPointer(), __double_size, offset, Double.doubleToLongBits(value));
+        getBufPtr().setDouble(offset, value);
     }
 }

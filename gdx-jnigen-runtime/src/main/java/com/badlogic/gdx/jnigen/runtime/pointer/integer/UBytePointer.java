@@ -39,7 +39,7 @@ public class UBytePointer extends VoidPointer {
     }
 
     public boolean getBoolean(int index) {
-        return CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index)) != 0;
+        return getBufPtr().getBoolean(calculateOffset(index));
     }
 
     public void setBoolean(boolean value) {
@@ -47,7 +47,7 @@ public class UBytePointer extends VoidPointer {
     }
 
     public void setBoolean(boolean value, int index) {
-        CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value ? 1 : 0);
+        getBufPtr().setBoolean(calculateOffset(index), value);
     }
 
     public char getUByte() {
@@ -55,7 +55,7 @@ public class UBytePointer extends VoidPointer {
     }
 
     public char getUByte(int index) {
-        return (char)CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index));
+        return (char)(getBufPtr().getByte(calculateOffset(index)) & 0xFF);
     }
 
     public void setUByte(byte value) {
@@ -73,6 +73,6 @@ public class UBytePointer extends VoidPointer {
     public void setUByte(char value, int index) {
         if (value >= 1L << (BYTE_SIZE * 8))
             throw new IllegalArgumentException("UByte out of range: " + value);
-        CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value);
+        getBufPtr().setByte(calculateOffset(index), (byte)value);
     }
 }

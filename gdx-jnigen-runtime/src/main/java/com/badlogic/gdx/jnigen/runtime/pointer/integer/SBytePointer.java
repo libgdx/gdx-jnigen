@@ -38,7 +38,7 @@ public class SBytePointer extends VoidPointer {
     }
 
     public boolean getBoolean(int index) {
-        return CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index)) != 0;
+        return getBufPtr().getBoolean(calculateOffset(index));
     }
 
     public void setBoolean(boolean value) {
@@ -46,7 +46,7 @@ public class SBytePointer extends VoidPointer {
     }
 
     public void setBoolean(boolean value, int index) {
-        CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value ? 1 : 0);
+        getBufPtr().setBoolean(calculateOffset(index), value);
     }
 
     public byte getByte() {
@@ -54,7 +54,7 @@ public class SBytePointer extends VoidPointer {
     }
 
     public byte getByte(int index) {
-        return (byte)CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index));
+        return getBufPtr().getByte(calculateOffset(index));
     }
 
     public void setByte(byte value) {
@@ -62,6 +62,6 @@ public class SBytePointer extends VoidPointer {
     }
 
     public void setByte(byte value, int index) {
-        CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value);
+        getBufPtr().setByte(calculateOffset(index), value);
     }
 }

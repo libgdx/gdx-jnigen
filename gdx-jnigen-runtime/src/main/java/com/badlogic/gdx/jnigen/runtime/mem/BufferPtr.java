@@ -38,8 +38,31 @@ public final class BufferPtr {
     }
 
     private void assertBounds(int index) {
-        if (index < 0 || index >= capacity)
+        if (capacity > 0 && (index < 0 || index >= capacity))
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + capacity);
+    }
+
+    public boolean getBoolean() {
+        return buffer.get(0) != 0;
+    }
+
+    public boolean getBoolean(int index) {
+        assertBounds(index);
+        if (index >= buffer.capacity())
+            return next.get(index - buffer.capacity()) != 0;
+        return buffer.get(index) != 0;
+    }
+
+    public void setBoolean(boolean value) {
+        buffer.put(0, (byte)(value ? 1 : 0));
+    }
+
+    public void setBoolean(int index, boolean value) {
+        assertBounds(index);
+        if (index >= buffer.capacity())
+            next.put(index - buffer.capacity(), (byte)(value ? 1 : 0));
+        else
+            buffer.put(index, (byte)(value ? 1 : 0));
     }
 
     public byte getByte() {
@@ -201,6 +224,102 @@ public final class BufferPtr {
             next.putDouble(index - buffer.capacity(), value);
         else
             buffer.putDouble(index, value);
+    }
+
+    public long getNativePointer() {
+        if (CHandler.POINTER_SIZE == 4)
+            return buffer.getInt(0);
+        else
+            return buffer.getLong(0);
+    }
+
+    public long getNativePointer(int index) {
+        assertBounds(index);
+        if (CHandler.POINTER_SIZE == 4) {
+            if (index >= buffer.capacity()) {
+                return next.getInt(index - buffer.capacity());
+            } else {
+                return buffer.getInt(index);
+            }
+        } else {
+            if (index >= buffer.capacity()) {
+                return next.getLong(index - buffer.capacity());
+            } else {
+                return buffer.getLong(index);
+            }
+        }
+    }
+
+    public void setNativePointer(long value) {
+        if (CHandler.POINTER_SIZE == 4)
+            buffer.putInt(0, (int)value);
+        else
+            buffer.putLong(0, value);
+    }
+
+    public void setNativePointer(int index, long value) {
+        assertBounds(index);
+        if (CHandler.LONG_SIZE == 4) {
+            if (index >= buffer.capacity()) {
+                next.putInt(index - buffer.capacity(), (int)value);
+            } else {
+                buffer.putInt(index, (int)value);
+            }
+        } else {
+            if (index >= buffer.capacity()) {
+                next.putLong(index - buffer.capacity(), value);
+            } else {
+                buffer.putLong(index, value);
+            }
+        }
+    }
+
+    public long getNativeLong() {
+        if (CHandler.LONG_SIZE == 4)
+            return buffer.getInt(0);
+        else
+            return buffer.getLong(0);
+    }
+
+    public long getNativeLong(int index) {
+        assertBounds(index);
+        if (CHandler.LONG_SIZE == 4) {
+            if (index >= buffer.capacity()) {
+                return next.getInt(index - buffer.capacity());
+            } else {
+                return buffer.getInt(index);
+            }
+        } else {
+            if (index >= buffer.capacity()) {
+                return next.getLong(index - buffer.capacity());
+            } else {
+                return buffer.getLong(index);
+            }
+        }
+    }
+
+    public void setNativeLong(long value) {
+        if (CHandler.LONG_SIZE == 4)
+            buffer.putInt(0, (int)value);
+        else
+            buffer.putLong(0, value);
+    }
+
+    public void setNativeLong(int index, long value) {
+        assertBounds(index);
+        if (CHandler.LONG_SIZE == 4) {
+            if (index >= buffer.capacity()) {
+                next.putInt(index - buffer.capacity(), (int)value);
+            } else {
+                buffer.putInt(index, (int)value);
+            }
+        } else {
+            if (index >= buffer.capacity()) {
+                next.putLong(index - buffer.capacity(), value);
+            } else {
+                buffer.putLong(index, value);
+            }
+        }
     }
 
     public boolean getsGCFreed() {

@@ -39,7 +39,7 @@ public class SShortPointer extends VoidPointer {
     }
 
     public short getShort(int index) {
-        return (short)CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index));
+        return getBufPtr().getShort(calculateOffset(index));
     }
 
     public void setShort(short value) {
@@ -47,6 +47,6 @@ public class SShortPointer extends VoidPointer {
     }
 
     public void setShort(short value, int index) {
-        CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value);
+        getBufPtr().setShort(calculateOffset(index), value);
     }
 }

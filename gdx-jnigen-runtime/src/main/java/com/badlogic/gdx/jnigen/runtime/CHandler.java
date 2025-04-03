@@ -31,6 +31,7 @@ public class CHandler {
         IS_32_BIT = is32Bit();
         IS_COMPILED_WIN = isCompiledWin();
         IS_CHAR_SIGNED = isCharSigned();
+        LONG_SIZE = is32Bit() || isCompiledWin() ? 4 : 8;
         testNativeSetup();
     }
 
@@ -42,6 +43,7 @@ public class CHandler {
     public static final boolean IS_32_BIT;
     public static final boolean IS_COMPILED_WIN;
     public static final boolean IS_CHAR_SIGNED;
+    public static final int LONG_SIZE;
 
     private static native boolean is32Bit();
     private static native boolean isCompiledWin();

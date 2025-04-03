@@ -39,7 +39,7 @@ public class UInt64Pointer extends VoidPointer {
     }
 
     public long getLong(int index) {
-        return CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index));
+        return getBufPtr().getLong(calculateOffset(index));
     }
 
     public void setLong(long value) {
@@ -47,6 +47,6 @@ public class UInt64Pointer extends VoidPointer {
     }
 
     public void setLong(long value, int index) {
-        CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value);
+        getBufPtr().setLong(calculateOffset(index), value);
     }
 }

@@ -41,7 +41,7 @@ public class BytePointer extends VoidPointer {
     }
 
     public boolean getBoolean(int index) {
-        return CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index)) != 0;
+        return getBufPtr().getBoolean(calculateOffset(index));
     }
 
     public void setBoolean(boolean value) {
@@ -49,7 +49,7 @@ public class BytePointer extends VoidPointer {
     }
 
     public void setBoolean(boolean value, int index) {
-        CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value ? 1 : 0);
+        getBufPtr().setBoolean(calculateOffset(index), value);
     }
 
     public byte getByte() {
@@ -57,7 +57,7 @@ public class BytePointer extends VoidPointer {
     }
 
     public byte getByte(int index) {
-        return (byte)CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index));
+        return getBufPtr().getByte(calculateOffset(index));
     }
 
     public void setByte(byte value) {
@@ -78,7 +78,7 @@ public class BytePointer extends VoidPointer {
     public void setByte(char value, int index) {
         if (Utils.checkBoundsForNumber(value, BYTE_SIZE, IS_CHAR_SIGNED))
             throw new IllegalArgumentException("Byte out of range: " + value);
-        CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value);
+        getBufPtr().setByte(index, (byte) value);
     }
 
     public static BytePointer fromString(String string, boolean freeOnGC) {

@@ -39,7 +39,7 @@ public class UIntPointer extends VoidPointer {
     }
 
     public long getUInt(int index) {
-        return CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index));
+        return getBufPtr().getInt(calculateOffset(index)) & 0xFFFFFFFFL;
     }
 
     public void setUInt(int value) {
@@ -57,6 +57,6 @@ public class UIntPointer extends VoidPointer {
     public void setUInt(long value, int index) {
         if (value >= 1L << (BYTE_SIZE * 8))
             throw new IllegalArgumentException("UInt out of range: " + value);
-        CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value);
+        getBufPtr().setInt(calculateOffset(index), (int)value);
     }
 }

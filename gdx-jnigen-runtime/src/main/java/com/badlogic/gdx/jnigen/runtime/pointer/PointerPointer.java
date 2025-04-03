@@ -37,7 +37,7 @@ public class PointerPointer<T extends Pointing> extends VoidPointer {
     public T getValue(int index) {
         int offset = index * __pointer_size;
         assertBounds(offset);
-        long pointer = CHandler.getPointerPart(getPointer(), __pointer_size, offset);
+        long pointer = getBufPtr().getNativePointer(offset);
         return supplier.create(pointer, false);
     }
 
@@ -48,6 +48,6 @@ public class PointerPointer<T extends Pointing> extends VoidPointer {
     public void setValue(T value, int index) {
         int offset = index * __pointer_size;
         assertBounds(offset);
-        CHandler.setPointerPart(getPointer(), __pointer_size, offset, value.getPointer());
+        getBufPtr().setNativePointer(offset, value.getPointer());
     }
 }

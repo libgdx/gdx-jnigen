@@ -39,7 +39,7 @@ public class SIntPointer extends VoidPointer {
     }
 
     public int getInt(int index) {
-        return (int)CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index));
+        return getBufPtr().getInt(calculateOffset(index));
     }
 
     public void setInt(int value) {
@@ -47,6 +47,6 @@ public class SIntPointer extends VoidPointer {
     }
 
     public void setInt(int value, int index) {
-        CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value);
+        getBufPtr().setInt(calculateOffset(index), value);
     }
 }
