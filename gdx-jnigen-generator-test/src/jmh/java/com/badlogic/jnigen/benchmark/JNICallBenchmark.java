@@ -22,11 +22,13 @@ public class JNICallBenchmark {
 
     private TestStruct testStruct;
     private CharBuffer charBuffer = ByteBuffer.allocateDirect(2).order(ByteOrder.nativeOrder()).asCharBuffer();
+    private BufferPtr bufferPtr;
 
     @Setup(Level.Trial)
     public void setup() {
         TestData.initialize();
         testStruct = new TestStruct();
+        bufferPtr = BufferPtrAllocator.get(CHandler.calloc(1, 2), 2, true);
     }
 
     @Benchmark
@@ -69,5 +71,15 @@ public class JNICallBenchmark {
     @Benchmark
     public void bufferFieldSet(Blackhole bh) {
         charBuffer.put(0, 'a');
+    }
+
+    @Benchmark
+    public void bufferPtrFieldGet(Blackhole bh) {
+        bh.consume(bufferPtr.getChar());
+    }
+
+    @Benchmark
+    public void bufferPtrFieldSet(Blackhole bh) {
+        bufferPtr.setChar('a');
     }
 }
