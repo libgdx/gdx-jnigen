@@ -13,6 +13,7 @@ public final class BufferPtr {
     private final int capacity;
     private final boolean freeOnGC;
     private boolean freed = false;
+    private BufferPtr parent;
 
     public BufferPtr(ByteBuffer buffer, ByteBuffer next, long pointer, int capacity, boolean freeOnGC) {
         this.buffer = buffer;
@@ -27,7 +28,7 @@ public final class BufferPtr {
     public void free() {
         if (freed)
             throw new IllegalStateException("Double free on " + pointer);
-        if (freeOnGC) // TODO: Consider moving parent setting to BufferPtr moving
+        if (getsGCFreed())
             throw new IllegalStateException("Can't free a object, that gets freed by GC.");
         CHandler.free(pointer);
         freed = true;
@@ -35,6 +36,10 @@ public final class BufferPtr {
 
     public boolean isFreed() {
         return freed;
+    }
+
+    public void setParent(BufferPtr parent) {
+        this.parent = parent;
     }
 
     public void assertBounds(int index) {
@@ -370,6 +375,8 @@ public final class BufferPtr {
         }
     }
     public boolean getsGCFreed() {
+        if (parent != null)
+            return parent.getsGCFreed();
         return freeOnGC;
     }
 

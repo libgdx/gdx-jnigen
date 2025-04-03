@@ -5,8 +5,8 @@ import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrAllocator;
 
 public class Pointing {
+
     private final BufferPtr bufPtr;
-    private Pointing parent;
 
     public Pointing(long pointer, boolean freeOnGC) {
         this.bufPtr = BufferPtrAllocator.get(pointer, -1, freeOnGC);
@@ -31,9 +31,6 @@ public class Pointing {
     }
 
     public void free() {
-        if (getsGCFreed())
-            throw new IllegalStateException("Can't free a object, that gets freed by GC.");
-
         bufPtr.free();
     }
 
@@ -42,13 +39,11 @@ public class Pointing {
     }
 
     public void setParent(Pointing parent) {
-        this.parent = parent;
+        bufPtr.setParent(parent.getBufPtr());
     }
 
     public boolean getsGCFreed() {
-        if (parent != null)
-            return parent.getsGCFreed();
-        return getBufPtr().getsGCFreed();
+        return bufPtr.getsGCFreed();
     }
 
     protected BufferPtr getBufPtr() {
