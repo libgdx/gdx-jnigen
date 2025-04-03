@@ -108,11 +108,11 @@ public final class TestStruct extends Struct {
         }
 
         public TestStructPointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public TestStructPointer(int count, boolean freeOnGC, boolean guard) {
-            super(__size, count, freeOnGC, guard);
+        public TestStructPointer(int count, boolean freeOnGC) {
+            super(__size, count, freeOnGC);
         }
 
         public TestStruct.TestStructPointer guardCount(long count) {

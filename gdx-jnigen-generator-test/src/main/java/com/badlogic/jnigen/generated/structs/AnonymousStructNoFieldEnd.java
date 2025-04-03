@@ -79,11 +79,11 @@ public final class AnonymousStructNoFieldEnd extends Struct {
         }
 
         public AnonymousStructNoFieldEndPointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public AnonymousStructNoFieldEndPointer(int count, boolean freeOnGC, boolean guard) {
-            super(__size, count, freeOnGC, guard);
+        public AnonymousStructNoFieldEndPointer(int count, boolean freeOnGC) {
+            super(__size, count, freeOnGC);
         }
 
         public AnonymousStructNoFieldEnd.AnonymousStructNoFieldEndPointer guardCount(long count) {

@@ -9,7 +9,7 @@ public abstract class StackElement extends Pointing {
     }
 
     protected StackElement(int size) {
-        super(size, true, true);
+        super(size, true);
     }
 
     protected void setValue(long value, int index) {

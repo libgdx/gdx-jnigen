@@ -76,11 +76,11 @@ public final class AnonymousClosure extends Struct {
         }
 
         public AnonymousClosurePointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public AnonymousClosurePointer(int count, boolean freeOnGC, boolean guard) {
-            super(__size, count, freeOnGC, guard);
+        public AnonymousClosurePointer(int count, boolean freeOnGC) {
+            super(__size, count, freeOnGC);
         }
 
         public AnonymousClosure.AnonymousClosurePointer guardCount(long count) {

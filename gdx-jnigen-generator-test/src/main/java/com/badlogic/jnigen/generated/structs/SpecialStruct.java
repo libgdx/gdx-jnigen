@@ -78,11 +78,11 @@ public final class SpecialStruct extends Struct {
         }
 
         public SpecialStructPointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public SpecialStructPointer(int count, boolean freeOnGC, boolean guard) {
-            super(__size, count, freeOnGC, guard);
+        public SpecialStructPointer(int count, boolean freeOnGC) {
+            super(__size, count, freeOnGC);
         }
 
         public SpecialStruct.SpecialStructPointer guardCount(long count) {

@@ -66,11 +66,11 @@ public final class AnonymousStructFieldArray extends Struct {
         }
 
         public AnonymousStructFieldArrayPointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public AnonymousStructFieldArrayPointer(int count, boolean freeOnGC, boolean guard) {
-            super(__size, count, freeOnGC, guard);
+        public AnonymousStructFieldArrayPointer(int count, boolean freeOnGC) {
+            super(__size, count, freeOnGC);
         }
 
         public AnonymousStructFieldArray.AnonymousStructFieldArrayPointer guardCount(long count) {
@@ -146,11 +146,11 @@ public final class AnonymousStructFieldArray extends Struct {
             }
 
             public innerPointer() {
-                this(1, true, true);
+                this(1, true);
             }
 
-            public innerPointer(int count, boolean freeOnGC, boolean guard) {
-                super(__size, count, freeOnGC, guard);
+            public innerPointer(int count, boolean freeOnGC) {
+                super(__size, count, freeOnGC);
             }
 
             public inner.innerPointer guardCount(long count) {

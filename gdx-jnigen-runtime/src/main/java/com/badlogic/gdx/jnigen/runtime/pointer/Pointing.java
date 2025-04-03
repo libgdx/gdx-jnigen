@@ -1,12 +1,11 @@
 package com.badlogic.gdx.jnigen.runtime.pointer;
 
 import com.badlogic.gdx.jnigen.runtime.CHandler;
-import com.badlogic.gdx.jnigen.runtime.gc.GCHandler;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrAllocator;
 
 public class Pointing {
-    private final long pointer;
-    protected boolean freed;
-    private final boolean freeOnGC;
+    private final BufferPtr bufPtr;
     private Pointing parent;
 
     /**
@@ -15,16 +14,12 @@ public class Pointing {
     private long sizeGuard = -1;
 
     public Pointing(long pointer, boolean freeOnGC) {
-        this.pointer = pointer;
-        this.freeOnGC = freeOnGC;
-        if (freeOnGC)
-            GCHandler.enqueuePointer(this);
+        this.bufPtr = BufferPtrAllocator.get(pointer, -1, freeOnGC);
     }
 
-    public Pointing(int size, boolean freeOnGC, boolean guard) {
-        this(CHandler.calloc(1, size), freeOnGC);
-        if (guard)
-            guardBytes(size);
+    public Pointing(int size, boolean freeOnGC) {
+        this.bufPtr = BufferPtrAllocator.get(CHandler.calloc(1, size), size, freeOnGC);
+        this.sizeGuard = size;
     }
 
     public void guardBytes(long size) {
@@ -32,11 +27,7 @@ public class Pointing {
     }
 
     public boolean isNull() {
-        return pointer == 0;
-    }
-
-    public long getSizeGuard() {
-        return sizeGuard;
+        return bufPtr == null;
     }
 
     public void assertBounds(long index) {
@@ -47,29 +38,33 @@ public class Pointing {
     }
 
     public void free() {
-        if (freed)
-            throw new IllegalStateException("Double free on " + pointer);
         if (getsGCFreed())
             throw new IllegalStateException("Can't free a object, that gets freed by GC.");
-        CHandler.free(pointer);
-        freed = true;
+
+        bufPtr.free();
+    }
+
+    public boolean isFreed() {
+        return bufPtr.isFreed();
     }
 
     public void setParent(Pointing parent) {
         this.parent = parent;
     }
 
-    public boolean isFreed() {
-        return freed;
-    }
-
     public boolean getsGCFreed() {
         if (parent != null)
             return parent.getsGCFreed();
-        return freeOnGC;
+        return getBufPtr().getsGCFreed();
+    }
+
+    protected BufferPtr getBufPtr() {
+        return bufPtr;
     }
 
     public long getPointer() {
-        return pointer;
+        if (bufPtr == null)
+            return 0;
+        return bufPtr.getPointer();
     }
 }

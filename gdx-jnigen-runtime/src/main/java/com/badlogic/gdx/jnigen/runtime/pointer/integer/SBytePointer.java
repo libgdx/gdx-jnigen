@@ -6,8 +6,8 @@ import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 public class SBytePointer extends VoidPointer {
     private static final int BYTE_SIZE = 1;
 
-    public SBytePointer(int count, boolean freeOnGC, boolean guard) {
-        super(count * BYTE_SIZE, freeOnGC, guard);
+    public SBytePointer(int count, boolean freeOnGC) {
+        super(count * BYTE_SIZE, freeOnGC);
     }
 
     public SBytePointer() {

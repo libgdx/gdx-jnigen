@@ -58,11 +58,11 @@ public enum TestEnum implements CEnum {
         }
 
         public TestEnumPointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public TestEnumPointer(int count, boolean freeOnGC, boolean guard) {
-            super(count, freeOnGC, guard);
+        public TestEnumPointer(int count, boolean freeOnGC) {
+            super(count, freeOnGC);
         }
 
         public TestEnum.TestEnumPointer guardCount(long count) {

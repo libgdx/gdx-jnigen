@@ -431,6 +431,11 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_clone(JNIE
     return reinterpret_cast<jlong>(dst);
 }
 
+JNIEXPORT jobject JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_wrapPointer
+  (JNIEnv* env, jclass clazz, jlong ptr, jint capacity) {
+    return env->NewDirectByteBuffer((void*)ptr, capacity);
+}
+
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     init_tls();
     return JNI_VERSION_1_6;

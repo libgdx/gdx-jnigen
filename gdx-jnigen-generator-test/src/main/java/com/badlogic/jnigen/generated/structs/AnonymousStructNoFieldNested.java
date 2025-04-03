@@ -73,11 +73,11 @@ public final class AnonymousStructNoFieldNested extends Struct {
         }
 
         public AnonymousStructNoFieldNestedPointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public AnonymousStructNoFieldNestedPointer(int count, boolean freeOnGC, boolean guard) {
-            super(__size, count, freeOnGC, guard);
+        public AnonymousStructNoFieldNestedPointer(int count, boolean freeOnGC) {
+            super(__size, count, freeOnGC);
         }
 
         public AnonymousStructNoFieldNested.AnonymousStructNoFieldNestedPointer guardCount(long count) {

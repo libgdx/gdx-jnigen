@@ -15,11 +15,11 @@ public final class FloatPointer extends VoidPointer {
     }
 
     public FloatPointer(int size) {
-        this(size, true, true);
+        this(size, true);
     }
 
-    public FloatPointer(int size, boolean freeOnGC, boolean guard) {
-        super(__float_size * size, freeOnGC, guard);
+    public FloatPointer(int size, boolean freeOnGC) {
+        super(__float_size * size, freeOnGC);
     }
 
     public FloatPointer guardCount(long count) {

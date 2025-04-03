@@ -9,8 +9,8 @@ public abstract class EnumPointer<T extends CEnum> extends VoidPointer {
         super(pointer, freeOnGC);
     }
 
-    public EnumPointer(int size, boolean freeOnGC, boolean guard) {
-        super(size, freeOnGC, guard);
+    public EnumPointer(int size, boolean freeOnGC) {
+        super(size, freeOnGC);
     }
 
     public EnumPointer<T> guardCount(long count) {

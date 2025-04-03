@@ -172,6 +172,8 @@ public class CHandler {
 
     private static native boolean setStackElement_internal(long pointer, long type_ptr, int index, long value, boolean calculateOffset);
 
+    public static native ByteBuffer wrapPointer(long pointer, int size);
+
     public static native long getPointerPart(long pointer, int size, int offset);
 
     public static native void setPointerPart(long pointer, int size, int offset, long value);

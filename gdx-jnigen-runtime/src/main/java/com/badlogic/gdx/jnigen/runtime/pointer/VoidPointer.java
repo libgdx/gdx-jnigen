@@ -9,11 +9,11 @@ public class VoidPointer extends Pointing {
     }
 
     public VoidPointer(int size) {
-        this(size, true, true);
+        this(size, true);
     }
 
-    public VoidPointer(int size, boolean freeOnGC, boolean guard) {
-        super(size, freeOnGC, guard);
+    public VoidPointer(int size, boolean freeOnGC) {
+        super(size, freeOnGC);
     }
 
     public VoidPointer guardSize(long size) {

@@ -82,11 +82,11 @@ public final class TestUnion extends Union {
         }
 
         public TestUnionPointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public TestUnionPointer(int count, boolean freeOnGC, boolean guard) {
-            super(__size, count, freeOnGC, guard);
+        public TestUnionPointer(int count, boolean freeOnGC) {
+            super(__size, count, freeOnGC);
         }
 
         public TestUnion.TestUnionPointer guardCount(long count) {

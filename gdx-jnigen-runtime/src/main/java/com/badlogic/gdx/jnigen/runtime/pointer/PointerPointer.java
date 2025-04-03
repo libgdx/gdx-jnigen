@@ -17,11 +17,11 @@ public class PointerPointer<T extends Pointing> extends VoidPointer {
     }
 
     public PointerPointer(int size, PointerDereferenceSupplier<T> supplier) {
-        this(size, true, true, supplier);
+        this(size, true, supplier);
     }
 
-    public PointerPointer(int size, boolean freeOnGC, boolean guard, PointerDereferenceSupplier<T> supplier) {
-        super(size * __pointer_size, freeOnGC, guard);
+    public PointerPointer(int size, boolean freeOnGC, PointerDereferenceSupplier<T> supplier) {
+        super(size * __pointer_size, freeOnGC);
         this.supplier = supplier;
     }
 

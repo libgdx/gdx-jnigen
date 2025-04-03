@@ -9,11 +9,11 @@ public abstract class StackElementPointer<T extends StackElement> extends VoidPo
     }
 
     public StackElementPointer(int size, int count) {
-        this(size, count, true, true);
+        this(size, count, true);
     }
 
-    public StackElementPointer(int size, int count, boolean freeOnGC, boolean guard) {
-        super(size * count, freeOnGC, guard);
+    public StackElementPointer(int size, int count, boolean freeOnGC) {
+        super(size * count, freeOnGC);
     }
 
     public StackElementPointer<T> guardCount(long count) {

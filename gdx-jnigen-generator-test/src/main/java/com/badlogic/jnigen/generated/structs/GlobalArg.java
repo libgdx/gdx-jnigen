@@ -180,11 +180,11 @@ public final class GlobalArg extends Union {
         }
 
         public GlobalArgPointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public GlobalArgPointer(int count, boolean freeOnGC, boolean guard) {
-            super(__size, count, freeOnGC, guard);
+        public GlobalArgPointer(int count, boolean freeOnGC) {
+            super(__size, count, freeOnGC);
         }
 
         public GlobalArg.GlobalArgPointer guardCount(long count) {
@@ -308,11 +308,11 @@ public final class GlobalArg extends Union {
             }
 
             public allArgsPointer() {
-                this(1, true, true);
+                this(1, true);
             }
 
-            public allArgsPointer(int count, boolean freeOnGC, boolean guard) {
-                super(__size, count, freeOnGC, guard);
+            public allArgsPointer(int count, boolean freeOnGC) {
+                super(__size, count, freeOnGC);
             }
 
             public allArgs.allArgsPointer guardCount(long count) {

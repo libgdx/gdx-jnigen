@@ -239,6 +239,14 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_convertNat
 JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_dispatchCCall
   (JNIEnv *, jclass, jlong, jlong, jobject);
 
+/*
+ * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
+ * Method:    wrapPointer
+ * Signature: (JI)Ljava/nio/ByteBuffer;
+ */
+JNIEXPORT jobject JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_wrapPointer
+  (JNIEnv *, jclass, jlong, jint);
+
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved);
 JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *reserved);
 

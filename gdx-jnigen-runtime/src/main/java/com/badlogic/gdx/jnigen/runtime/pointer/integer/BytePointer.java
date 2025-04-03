@@ -9,8 +9,8 @@ public class BytePointer extends VoidPointer {
     private static final int BYTE_SIZE = 1;
     private static final boolean IS_CHAR_SIGNED = CHandler.IS_CHAR_SIGNED;
 
-    public BytePointer(int count, boolean freeOnGC, boolean guard) {
-        super(count * BYTE_SIZE, freeOnGC, guard);
+    public BytePointer(int count, boolean freeOnGC) {
+        super(count * BYTE_SIZE, freeOnGC);
     }
 
     public BytePointer() {
@@ -82,7 +82,7 @@ public class BytePointer extends VoidPointer {
     }
 
     public static BytePointer fromString(String string, boolean freeOnGC) {
-        BytePointer pointer = new BytePointer(string.length() + 1, freeOnGC, true);
+        BytePointer pointer = new BytePointer(string.length() + 1, freeOnGC);
         pointer.setString(string);
         return pointer;
     }

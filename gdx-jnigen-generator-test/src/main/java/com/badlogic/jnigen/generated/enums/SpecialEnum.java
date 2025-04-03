@@ -42,11 +42,11 @@ public enum SpecialEnum implements CEnum {
         }
 
         public SpecialEnumPointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public SpecialEnumPointer(int count, boolean freeOnGC, boolean guard) {
-            super(count, freeOnGC, guard);
+        public SpecialEnumPointer(int count, boolean freeOnGC) {
+            super(count, freeOnGC);
         }
 
         public SpecialEnum.SpecialEnumPointer guardCount(long count) {

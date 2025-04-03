@@ -49,11 +49,11 @@ public final class forwardDeclStruct extends Struct {
         }
 
         public forwardDeclStructPointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public forwardDeclStructPointer(int count, boolean freeOnGC, boolean guard) {
-            super(__size, count, freeOnGC, guard);
+        public forwardDeclStructPointer(int count, boolean freeOnGC) {
+            super(__size, count, freeOnGC);
         }
 
         public forwardDeclStruct.forwardDeclStructPointer guardCount(long count) {

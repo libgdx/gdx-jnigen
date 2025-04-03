@@ -15,11 +15,11 @@ public final class DoublePointer extends VoidPointer {
     }
 
     public DoublePointer(int size) {
-        this(size, true, true);
+        this(size, true);
     }
 
-    public DoublePointer(int size, boolean freeOnGC, boolean guard) {
-        super(__double_size * size, freeOnGC, guard);
+    public DoublePointer(int size, boolean freeOnGC) {
+        super(__double_size * size, freeOnGC);
     }
 
     public DoublePointer guardCount(long count) {

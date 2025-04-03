@@ -89,11 +89,11 @@ public final class AnonymousStructNoFieldConsecutive extends Struct {
         }
 
         public AnonymousStructNoFieldConsecutivePointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public AnonymousStructNoFieldConsecutivePointer(int count, boolean freeOnGC, boolean guard) {
-            super(__size, count, freeOnGC, guard);
+        public AnonymousStructNoFieldConsecutivePointer(int count, boolean freeOnGC) {
+            super(__size, count, freeOnGC);
         }
 
         public AnonymousStructNoFieldConsecutive.AnonymousStructNoFieldConsecutivePointer guardCount(long count) {

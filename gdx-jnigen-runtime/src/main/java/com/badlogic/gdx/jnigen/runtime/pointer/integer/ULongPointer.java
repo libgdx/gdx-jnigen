@@ -8,8 +8,8 @@ public class ULongPointer extends VoidPointer {
 
     private static final int BYTE_SIZE = CHandler.IS_32_BIT || CHandler.IS_COMPILED_WIN ? 4 : 8;
 
-    public ULongPointer(int count, boolean freeOnGC, boolean guard) {
-        super(count * BYTE_SIZE, freeOnGC, guard);
+    public ULongPointer(int count, boolean freeOnGC) {
+        super(count * BYTE_SIZE, freeOnGC);
     }
 
     public ULongPointer() {
