@@ -40,10 +40,7 @@ public class ULongPointer extends VoidPointer {
     }
 
     public long getLong(int index) {
-        if (CHandler.LONG_SIZE == 4)
-            return getBufPtr().getInt(calculateOffset(index)) & 0xFFFFFFFFL;
-
-        return getBufPtr().getLong(calculateOffset(index));
+        return getBufPtr().getNativeULong(calculateOffset(index));
     }
 
     public void setLong(long value) {
@@ -53,6 +50,6 @@ public class ULongPointer extends VoidPointer {
     public void setLong(long value, int index) {
         if (Utils.checkBoundsForNumber(value, BYTE_SIZE, false))
             throw new IllegalArgumentException("SLong out of range: " + value);
-        getBufPtr().setNativeLong(calculateOffset(index), value);
+        getBufPtr().setNativeULong(calculateOffset(index), value);
     }
 }

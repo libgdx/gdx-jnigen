@@ -241,10 +241,12 @@ public class Manager {
 
     private void createStaticAsserts(List<String> assertBuilder, boolean windows) {
         assertBuilder.add("#if ARCH_BITS == 32");
+        assertBuilder.add("static_assert(sizeof(void*) == 4, Expected size of void* on 32bit is 4);");
         knownCTypes.forEach((name, typeKind) -> {
             assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getTypeKind().getSize(true, windows) + ", \"Type " + name + " has unexpected size.\");");
         });
         assertBuilder.add("#elif ARCH_BITS == 64");
+        assertBuilder.add("static_assert(sizeof(void*) == 8, Expected size of void* on 32bit is 8);");
         knownCTypes.forEach((name, typeKind) -> {
             assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getTypeKind().getSize(false, windows) + ", \"Type " + name + " has unexpected size.\");");
         });

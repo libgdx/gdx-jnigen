@@ -84,6 +84,10 @@ public enum TypeKind {
         }
     }
 
+    public boolean hasPlatformDependentSize() {
+        return this == LONG || this == PROMOTED_LONG;
+    }
+
     public int getSize(boolean is32Bit, boolean isWin) {
         switch (this) {
         case BOOLEAN:

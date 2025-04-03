@@ -322,6 +322,53 @@ public final class BufferPtr {
         }
     }
 
+    public long getNativeULong() {
+        if (CHandler.LONG_SIZE == 4)
+            return buffer.getInt(0) & 0xFFFFFFFFL;
+        else
+            return buffer.getLong(0);
+    }
+
+    public long getNativeULong(int index) {
+        assertBounds(index);
+        if (CHandler.LONG_SIZE == 4) {
+            if (index >= buffer.capacity()) {
+                return next.getInt(index - buffer.capacity()) & 0xFFFFFFFFL;
+            } else {
+                return buffer.getInt(index) & 0xFFFFFFFFL;
+            }
+        } else {
+            if (index >= buffer.capacity()) {
+                return next.getLong(index - buffer.capacity());
+            } else {
+                return buffer.getLong(index);
+            }
+        }
+    }
+
+    public void setNativeULong(long value) {
+        if (CHandler.LONG_SIZE == 4)
+            buffer.putInt(0, (int)value);
+        else
+            buffer.putLong(0, value);
+    }
+
+    public void setNativeULong(int index, long value) {
+        assertBounds(index);
+        if (CHandler.LONG_SIZE == 4) {
+            if (index >= buffer.capacity()) {
+                next.putInt(index - buffer.capacity(), (int)value);
+            } else {
+                buffer.putInt(index, (int)value);
+            }
+        } else {
+            if (index >= buffer.capacity()) {
+                next.putLong(index - buffer.capacity(), value);
+            } else {
+                buffer.putLong(index, value);
+            }
+        }
+    }
     public boolean getsGCFreed() {
         return freeOnGC;
     }
