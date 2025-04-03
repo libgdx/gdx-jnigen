@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -53,8 +54,8 @@ public class Generator {
         // We need to do this early, because numbers may be typedefed depending on the platform.
         // To properly resolve this, we need to generate the CTypeInfo for the "highest" declaration.
         if (!typeKind.isSpecial()) {
-            TypeDefinition typeDefinition = new TypeDefinition(typeKind, name);
-            MappedType mappedType = PrimitiveType.fromTypeDefinition(typeDefinition);
+            TypeDefinition typeDefinition = TypeDefinition.get(typeKind, name);
+            MappedType mappedType = new PrimitiveType(typeDefinition);
             typeDefinition.setOverrideMappedType(mappedType);
             return typeDefinition;
         }
@@ -69,7 +70,7 @@ public class Generator {
                 // As the type system does not retain argument names, we need to reparse it here
                 patchClosureTypeWithCursor(lower, clang_getTypeDeclaration(type));
             }
-            TypeDefinition definition = new TypeDefinition(lower.getTypeKind(), clang_getTypedefName(type).getString());
+            TypeDefinition definition = TypeDefinition.get(lower.getTypeKind(), clang_getTypedefName(type).getString());
             definition.setOverrideMappedType(lower.getMappedType());
             return definition;
         }
@@ -90,7 +91,7 @@ public class Generator {
                 return Manager.getInstance().resolveCTypeMapping(alternativeName);
 
             ClosureType closureType = new ClosureType(functionSignature, parentMappedType);
-            TypeDefinition typeDefinition = new TypeDefinition(TypeKind.CLOSURE, name);
+            TypeDefinition typeDefinition = TypeDefinition.get(TypeKind.CLOSURE, name);
             typeDefinition.setOverrideMappedType(closureType);
             typeDefinition.setAnonymous(parent != null);
             if (!typeDefinition.isAnonymous()) {
@@ -107,14 +108,14 @@ public class Generator {
 
         if (type.kind() == CXType_Pointer) {
             CXType pointee = clang_getPointeeType(type);
-            TypeDefinition typeDefinition = new TypeDefinition(TypeKind.POINTER, name);
+            TypeDefinition typeDefinition = TypeDefinition.get(TypeKind.POINTER, name);
 
             if (pointee.kind() == 0)
-                typeDefinition.setOverrideMappedType(new PointerType(new TypeDefinition(TypeKind.VOID, "void")));
+                typeDefinition.setOverrideMappedType(new PointerType(TypeDefinition.get(TypeKind.VOID, "void")));
 
             TypeDefinition nested = registerCXType(pointee, alternativeName, parent);
             if (TypeKind.getTypeKind(pointee) == TypeKind.CLOSURE) {
-                typeDefinition = new TypeDefinition(TypeKind.CLOSURE, name);
+                typeDefinition = TypeDefinition.get(TypeKind.CLOSURE, name);
                 typeDefinition.setOverrideMappedType(nested.getMappedType());
                 typeDefinition.setAnonymous(nested.isAnonymous());
             } else {
@@ -125,7 +126,7 @@ public class Generator {
         }
 
         if (type.kind() == CXType_IncompleteArray) {
-            TypeDefinition typeDefinition = new TypeDefinition(TypeKind.POINTER, name.replace("[]", "*"));
+            TypeDefinition typeDefinition = TypeDefinition.get(TypeKind.POINTER, name.replace("[]", "*"));
             TypeDefinition nested = registerCXType(clang_getArrayElementType(type), alternativeName, parent);
             typeDefinition.setOverrideMappedType(new PointerType(nested));
             typeDefinition.setNestedDefinition(nested);
@@ -133,7 +134,7 @@ public class Generator {
         }
 
         if (type.kind() == CXType_ConstantArray) {
-            TypeDefinition typeDefinition = new TypeDefinition(TypeKind.FIXED_SIZE_ARRAY, name);
+            TypeDefinition typeDefinition = TypeDefinition.get(TypeKind.FIXED_SIZE_ARRAY, name);
             typeDefinition.setCount((int)clang.clang_getArraySize(type));
             TypeDefinition nested = registerCXType(clang_getArrayElementType(type), alternativeName, parent);
             typeDefinition.setOverrideMappedType(new PointerType(nested));
@@ -145,12 +146,12 @@ public class Generator {
             // For the moment, treat system header structs as unknown
             // Figure out later, whether this might be problematic
             if (clang_Location_isInSystemHeader(clang_getCursorLocation(clang_getTypeDeclaration(type))) != 0) {
-                TypeDefinition definition = new TypeDefinition(TypeKind.VOID, "void");
-                definition.setOverrideMappedType(PrimitiveType.fromTypeDefinition(definition));
+                TypeDefinition definition = TypeDefinition.get(TypeKind.VOID, "void");
+                definition.setOverrideMappedType(new PrimitiveType(definition));
                 return definition;
             }
 
-            TypeDefinition typeDefinition = new TypeDefinition(TypeKind.STACK_ELEMENT, name);
+            TypeDefinition typeDefinition = TypeDefinition.get(TypeKind.STACK_ELEMENT, name);
             typeDefinition.setAnonymous(clang_Cursor_isAnonymous(clang.clang_getTypeDeclaration(type)) != 0);
             Manager.getInstance().registerCTypeMapping(name, typeDefinition);
             StackElementParser parser = new StackElementParser(typeDefinition, type, alternativeName, parent);
@@ -159,9 +160,10 @@ public class Generator {
             parser.parseMappedType();
             return typeDefinition;
         } else if (typeKind == TypeKind.ENUM) {
-            TypeDefinition typeDefinition = new TypeDefinition(TypeKind.ENUM, name);
+            TypeDefinition typeDefinition = TypeDefinition.get(TypeKind.ENUM, name);
             Manager.getInstance().registerCTypeMapping(name, typeDefinition);
 
+            typeDefinition.setNestedDefinition(registerCXType(clang_getEnumDeclIntegerType(clang_getTypeDeclaration(type)), null, null));
             typeDefinition.setOverrideMappedType(new EnumParser(typeDefinition, type, alternativeName).register());
             return typeDefinition;
         }
@@ -323,8 +325,21 @@ public class Generator {
     public static void execute(String path, String basePackage, String fileToParse, String[] options) {
         if (!path.endsWith("/"))
             path += "/";
+        String[] extendedOptions = Arrays.copyOf(options, options.length + 2);
+        extendedOptions[extendedOptions.length - 2] = "-m32";
+        extendedOptions[extendedOptions.length - 1] = "-funsigned-char";
         Manager.init(fileToParse, basePackage);
-        parse(fileToParse, options);
+        parse(fileToParse, extendedOptions);
+
+        Manager unsignedCharManager = Manager.getInstance();
+
+        extendedOptions = Arrays.copyOf(options, options.length + 1);
+        extendedOptions[extendedOptions.length - 1] = "-fsigned-char";
+        Manager.init(fileToParse, basePackage);
+        parse(fileToParse, extendedOptions);
+
+        Manager.getInstance().mergeManager(unsignedCharManager);
+
         generateJavaCode(path);
     }
 

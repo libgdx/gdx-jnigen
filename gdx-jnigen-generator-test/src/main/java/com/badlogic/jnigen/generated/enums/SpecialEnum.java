@@ -2,10 +2,13 @@ package com.badlogic.jnigen.generated.enums;
 
 import com.badlogic.gdx.jnigen.runtime.pointer.EnumPointer;
 import com.badlogic.gdx.jnigen.runtime.c.CEnum;
+import com.badlogic.gdx.jnigen.runtime.CHandler;
 
 public enum SpecialEnum implements CEnum {
 
     LOWER(0), HIGH(160);
+
+    private static final int __size = CHandler.IS_32_BIT || CHandler.IS_COMPILED_WIN ? 4 : 8;
 
     private final int index;
 
@@ -15,6 +18,10 @@ public enum SpecialEnum implements CEnum {
 
     public int getIndex() {
         return index;
+    }
+
+    public int getSize() {
+        return __size;
     }
 
     public static SpecialEnum getByIndex(int index) {
@@ -49,6 +56,10 @@ public enum SpecialEnum implements CEnum {
 
         protected SpecialEnum getEnum(int index) {
             return getByIndex(index);
+        }
+
+        protected int getSize() {
+            return __size;
         }
     }
 }

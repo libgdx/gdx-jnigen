@@ -7,6 +7,14 @@
 #include <string>
 #include <jni.h>
 
+#if (UINTPTR_MAX == 0xFFFFFFFF)
+    #define ARCH_BITS 32
+#elif (UINTPTR_MAX == 0xFFFFFFFFFFFFFFFF)
+    #define ARCH_BITS 64
+#else
+    #error "Architecture is neither 32-bit nor 64-bit"
+#endif
+
 // Helper macro for platform-specific thread attachment
 // Stolen from https://github.com/rednblackgames/gdx-miniaudio
 #ifdef __ANDROID__
@@ -77,7 +85,8 @@ static inline void set_native_type(native_type* nat_type, native_type_id id, siz
     nat_type->sign = sign;
 }
 
-#define IS_SIGNED_TYPE(type) (((type)-1) < 0)
+#define IS_SIGNED_TYPE(type)   (((type)-1) < 0)
+#define IS_UNSIGNED_TYPE(type) ((type)-1 > 0)
 
 #ifdef __cplusplus
 template<typename T>

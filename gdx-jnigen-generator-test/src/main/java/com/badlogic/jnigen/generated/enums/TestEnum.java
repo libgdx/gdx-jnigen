@@ -2,6 +2,7 @@ package com.badlogic.jnigen.generated.enums;
 
 import com.badlogic.gdx.jnigen.runtime.pointer.EnumPointer;
 import com.badlogic.gdx.jnigen.runtime.c.CEnum;
+import com.badlogic.gdx.jnigen.runtime.CHandler;
 
 /**
  * This is a Test Enum
@@ -21,6 +22,8 @@ public enum TestEnum implements CEnum {
      */
     THIRD(4);
 
+    private static final int __size = 4;
+
     private final int index;
 
     TestEnum(int index) {
@@ -29,6 +32,10 @@ public enum TestEnum implements CEnum {
 
     public int getIndex() {
         return index;
+    }
+
+    public int getSize() {
+        return __size;
     }
 
     public static TestEnum getByIndex(int index) {
@@ -65,6 +72,10 @@ public enum TestEnum implements CEnum {
 
         protected TestEnum getEnum(int index) {
             return getByIndex(index);
+        }
+
+        protected int getSize() {
+            return __size;
         }
     }
 }

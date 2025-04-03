@@ -2,7 +2,7 @@ package com.badlogic.gdx.jnigen.runtime.pointer;
 
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 
-public final class FloatPointer extends Pointing {
+public final class FloatPointer extends VoidPointer {
 
     private static final int __float_size = 4;
 

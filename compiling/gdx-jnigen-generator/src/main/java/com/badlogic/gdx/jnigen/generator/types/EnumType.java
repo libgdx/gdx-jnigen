@@ -66,11 +66,18 @@ public class EnumType implements MappedType {
     public void write(CompilationUnit cu) {
         cu.addImport(ClassNameConstants.ENUMPOINTER_CLASS);
         cu.addImport(ClassNameConstants.CENUM_CLASS);
+        cu.addImport(ClassNameConstants.CHANDLER_CLASS);
         EnumDeclaration declaration = cu.addEnum(javaName);
         declaration.addImplementedType("CEnum");
 
         if (comment != null)
             declaration.setJavadocComment(comment);
+
+        TypeKind nestedKind = definition.getNestedDefinition().getTypeKind();
+        if (nestedKind.getSize(false, false) == nestedKind.getSize(true, true))
+            declaration.addFieldWithInitializer("int", "__size", new IntegerLiteralExpr(String.valueOf(nestedKind.getSize(false, false))), Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
+        else
+            declaration.addFieldWithInitializer("int", "__size", StaticJavaParser.parseExpression("CHandler.IS_32_BIT || CHandler.IS_COMPILED_WIN ? " + nestedKind.getSize(true, true) + " : " + nestedKind.getSize(false, false)), Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
 
         constants.values().stream()
                 .sorted(Comparator.comparingInt(EnumConstant::getId))
@@ -87,6 +94,9 @@ public class EnumType implements MappedType {
 
         declaration.addMethod("getIndex", Keyword.PUBLIC).setType(int.class)
                 .createBody().addStatement(new ReturnStmt("index"));
+
+        declaration.addMethod("getSize", Keyword.PUBLIC).setType(int.class)
+                .createBody().addStatement(new ReturnStmt("__size"));
 
         MethodDeclaration getByIndex = declaration.addMethod("getByIndex", Keyword.PUBLIC, Keyword.STATIC);
         getByIndex.addParameter(int.class, "index");
@@ -146,6 +156,8 @@ public class EnumType implements MappedType {
                 .addParameter(int.class, "index")
                 .createBody().addStatement("return getByIndex(index);");
 
+        pointerClass.addMethod("getSize", Keyword.PROTECTED).setType(int.class)
+                .createBody().addStatement("return __size;");
     }
 
     @Override

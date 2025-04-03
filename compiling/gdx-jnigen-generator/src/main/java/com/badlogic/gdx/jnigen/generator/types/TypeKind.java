@@ -6,33 +6,32 @@ import static org.bytedeco.llvm.global.clang.*;
 
 public enum TypeKind {
 
-    VOID(-2, false, CXType_Void),
-    BOOLEAN(1, false, CXType_Bool),
-    BYTE(1, true, CXType_Char_S, CXType_SChar),
-    PROMOTED_BYTE(1, false, CXType_UChar, CXType_Char_U),
-    SHORT(2, true, CXType_Short),
-    CHAR(2, false, CXType_UShort),
-    INT(4, true, CXType_Int),
-    PROMOTED_INT(4, false, CXType_UInt),
-    LONG(8, true, CXType_Long, CXType_LongLong),
-    PROMOTED_LONG(8, false, CXType_ULong, CXType_ULongLong),
-    FLOAT(4, true, CXType_Float),
-    DOUBLE(8, true, CXType_Double, CXType_LongDouble),
-    POINTER(8, false, CXType_Pointer, CXType_IncompleteArray),
-    STACK_ELEMENT(-1, false, CXType_Record),
-    CLOSURE(-1, false, CXType_FunctionProto, CXType_FunctionNoProto),
-    ENUM(4, true, CXType_Enum),
-    FIXED_SIZE_ARRAY(-1, false, CXType_ConstantArray);
+    VOID(CXType_Void),
+    BOOLEAN(CXType_Bool),
+    NATIVE_BYTE(),
+    SIGNED_BYTE(CXType_Char_S, CXType_SChar),
+    PROMOTED_BYTE(CXType_UChar, CXType_Char_U),
+    SHORT(CXType_Short),
+    CHAR(CXType_UShort),
+    INT(CXType_Int),
+    PROMOTED_INT(CXType_UInt),
+    LONG(CXType_Long),
+    PROMOTED_LONG(CXType_ULong),
+    LONG_LONG(CXType_LongLong),
+    PROMOTED_LONG_LONG(CXType_ULongLong),
+    FLOAT(CXType_Float),
+    DOUBLE(CXType_Double, CXType_LongDouble),
+    POINTER(CXType_Pointer, CXType_IncompleteArray),
+    STACK_ELEMENT(CXType_Record),
+    CLOSURE(CXType_FunctionProto, CXType_FunctionNoProto),
+    ENUM(CXType_Enum),
+    FIXED_SIZE_ARRAY(CXType_ConstantArray);
 
-    private final int size;
-    private final boolean signed;
     private final int[] kinds;
 
     private static final TypeKind[] CACHE = values();
 
-    TypeKind(int size, boolean signed, int... kinds) {
-        this.size = size;
-        this.signed = signed;
+    TypeKind(int... kinds) {
         this.kinds = kinds;
     }
 
@@ -41,25 +40,15 @@ public enum TypeKind {
         type = clang_getCanonicalType(type);
         int kind = type.kind();
 
-        long size = clang_Type_getSizeOf(type);
         for (TypeKind typeKind : CACHE) {
             for (int k : typeKind.getKinds()) {
                 if (k == kind) {
-                    if (size != -2 && size != typeKind.getSize() && typeKind.getSize() != -1)
-                        throw new IllegalArgumentException("Kind: " + kind + " got identified as " + typeKind.name() + ", but has a size of " + size + " != " + typeKind.size);
                     return typeKind;
                 }
             }
         }
+
         throw new IllegalArgumentException("Could not find Kind for " + kind + " for type " + clang_getTypeSpelling(type).getString());
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public boolean isSigned() {
-        return signed;
     }
 
     public int[] getKinds() {
@@ -71,5 +60,53 @@ public enum TypeKind {
     }
     public boolean isPrimitive() {
         return !isSpecial() && this != VOID;
+    }
+
+    public boolean isSigned() {
+        switch (this) {
+        case SIGNED_BYTE:
+        case SHORT:
+        case INT:
+        case LONG:
+        case LONG_LONG:
+        case FLOAT:
+        case DOUBLE:
+            return true;
+        case BOOLEAN:
+        case PROMOTED_BYTE:
+        case CHAR:
+        case PROMOTED_INT:
+        case PROMOTED_LONG:
+        case PROMOTED_LONG_LONG:
+            return false;
+        default:
+            throw new IllegalArgumentException("Type " + this + " is not a primitive type");
+        }
+    }
+
+    public int getSize(boolean is32Bit, boolean isWin) {
+        switch (this) {
+        case BOOLEAN:
+        case NATIVE_BYTE:
+        case SIGNED_BYTE:
+        case PROMOTED_BYTE:
+            return 1;
+        case SHORT:
+        case CHAR:
+            return 2;
+        case INT:
+        case PROMOTED_INT:
+        case FLOAT:
+            return 4;
+        case LONG:
+        case PROMOTED_LONG:
+            return is32Bit || isWin ? 4 : 8;
+        case LONG_LONG:
+        case PROMOTED_LONG_LONG:
+        case DOUBLE:
+            return 8;
+        default:
+            throw new IllegalArgumentException("Type " + this + " is not a primitive type");
+        }
     }
 }

@@ -6,7 +6,7 @@ import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer;
-import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
 
 /**
  * Special Struct jaja
@@ -18,7 +18,7 @@ public final class SpecialStruct extends Struct {
     private final static long __ffi_type;
 
     static {
-        __ffi_type = FFITypes.getCTypeInfo(19).getFfiType();
+        __ffi_type = FFITypes.getCTypeInfo(23).getFfiType();
         __size = CHandler.getSizeFromFFIType(__ffi_type);
     }
 
@@ -50,19 +50,19 @@ public final class SpecialStruct extends Struct {
         setValue(floatPtrField.getPointer(), 0);
     }
 
-    public CSizedIntPointer arrayField() {
+    public SIntPointer arrayField() {
         return __arrayField;
     }
 
     private static final int __arrayField_offset = CHandler.getOffsetForField(__ffi_type, 1);
 
-    private final CSizedIntPointer __arrayField = new CSizedIntPointer(getPointer() + __arrayField_offset, false, "int").guardCount(5);
+    private final SIntPointer __arrayField = new SIntPointer(getPointer() + __arrayField_offset, false).guardCount(5);
 
-    public CSizedIntPointer intPtrField() {
-        return new CSizedIntPointer(getValue(6), false, "int");
+    public SIntPointer intPtrField() {
+        return new SIntPointer(getValue(6), false);
     }
 
-    public void intPtrField(CSizedIntPointer intPtrField) {
+    public void intPtrField(SIntPointer intPtrField) {
         setValue(intPtrField.getPointer(), 6);
     }
 

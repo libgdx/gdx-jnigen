@@ -9,10 +9,26 @@ extern "C" {
 #endif
 /*
  * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
- * Method:    getPointerSize
- * Signature: ()I
+ * Method:    is32Bit
+ * Signature: ()Z
  */
-JNIEXPORT jint JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getPointerSize
+JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_is32Bit
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
+ * Method:    isCompiledWin
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_isCompiledWin
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
+ * Method:    isCharSigned
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_isCharSigned
   (JNIEnv *, jclass);
 
 /*

@@ -3,20 +3,18 @@ package com.badlogic.gdx.jnigen.runtime.pointer;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.c.CEnum;
 
-public abstract class EnumPointer<T extends CEnum> extends Pointing {
-
-    private static final int __int_size = CHandler.getCTypeInfo("int").getSize();
+public abstract class EnumPointer<T extends CEnum> extends VoidPointer {
 
     public EnumPointer(long pointer, boolean freeOnGC) {
         super(pointer, freeOnGC);
     }
 
     public EnumPointer(int size, boolean freeOnGC, boolean guard) {
-        super(__int_size * size, freeOnGC, guard);
+        super(size, freeOnGC, guard);
     }
 
     public EnumPointer<T> guardCount(long count) {
-        super.guardBytes(count * __int_size);
+        super.guardBytes(count * getSize());
         return this;
     }
 
@@ -25,9 +23,9 @@ public abstract class EnumPointer<T extends CEnum> extends Pointing {
     }
 
     public T getEnumValue(int index) {
-        int offset = index * __int_size;
+        int offset = index * getSize();
         assertBounds(offset);
-        return getEnum((int)CHandler.getPointerPart(getPointer(), __int_size, offset));
+        return getEnum((int)CHandler.getPointerPart(getPointer(), getSize(), offset));
     }
 
     public void setEnumValue(T value) {
@@ -35,10 +33,11 @@ public abstract class EnumPointer<T extends CEnum> extends Pointing {
     }
 
     public void setEnumValue(T value, int index) {
-        int offset = index * __int_size;
+        int offset = index * getSize();
         assertBounds(offset);
-        CHandler.setPointerPart(getPointer(), __int_size, offset, value.getIndex());
+        CHandler.setPointerPart(getPointer(), getSize(), offset, value.getIndex());
     }
 
     protected abstract T getEnum(int index);
+    protected abstract int getSize();
 }

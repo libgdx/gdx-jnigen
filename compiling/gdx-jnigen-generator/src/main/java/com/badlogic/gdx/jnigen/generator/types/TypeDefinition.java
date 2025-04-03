@@ -6,8 +6,8 @@ import org.bytedeco.llvm.global.clang;
 
 public class TypeDefinition {
 
-    private final TypeKind typeKind;
     private final String typeName;
+    private TypeKind typeKind;
     private TypeDefinition nestedDefinition;
     private boolean constMarked = false;
     private int count;
@@ -15,17 +15,36 @@ public class TypeDefinition {
     private MappedType mappedType;
 
 
-    public TypeDefinition(TypeKind typeKind, String typeName) {
+    private TypeDefinition(TypeKind typeKind, String typeName) {
         this.typeKind = typeKind;
-        if (typeKind.isPrimitive())
-            Manager.getInstance().recordCType(typeName);
         this.typeName = typeName;
         if (typeName.startsWith("const "))
             constMarked = true;
     }
 
+    public static TypeDefinition get(TypeKind typeKind, String typeName) {
+        if (typeKind.isPrimitive()) {
+            if (!Manager.getInstance().hasCType(typeName)) {
+                TypeDefinition definition = new TypeDefinition(typeKind, typeName);
+                Manager.getInstance().recordCType(typeName, definition);
+                return definition;
+            }
+
+            TypeDefinition definition = Manager.getInstance().getCType(typeName);
+            if (definition.getTypeKind() != typeKind)
+                throw new IllegalArgumentException("Type " + typeName + " has kind " + definition.getTypeKind() + ", but requested was " + typeKind);
+            return definition;
+        }
+
+        return new TypeDefinition(typeKind, typeName);
+    }
+
     public TypeKind getTypeKind() {
         return typeKind;
+    }
+
+    public void setTypeKind(TypeKind typeKind) {
+        this.typeKind = typeKind;
     }
 
     public void setOverrideMappedType(MappedType mappedType) {

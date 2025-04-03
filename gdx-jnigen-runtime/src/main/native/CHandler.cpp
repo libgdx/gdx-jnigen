@@ -175,8 +175,20 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_dispatchCC
     return 0;
 }
 
-JNIEXPORT jint JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getPointerSize(JNIEnv* env, jclass clazz) {
-    return sizeof(void*);
+JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_is32Bit(JNIEnv* env, jclass clazz) {
+    return ARCH_BITS == 32;
+}
+
+JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_isCompiledWin(JNIEnv* env, jclass clazz) {
+    #if defined(_WIN32)
+        return true;
+    #else
+        return false;
+    #endif
+}
+
+JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_isCharSigned(JNIEnv* env, jclass clazz) {
+    return IS_SIGNED_TYPE(char);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_init(JNIEnv* env, jclass clazz, jobject dispatchCallbackReflectedMethod, jobject getExceptionStringReflectedMethod) {

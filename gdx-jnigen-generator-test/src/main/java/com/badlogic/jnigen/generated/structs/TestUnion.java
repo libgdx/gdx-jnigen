@@ -5,7 +5,7 @@ import com.badlogic.gdx.jnigen.runtime.pointer.Union;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 import com.badlogic.jnigen.generated.FFITypes;
-import com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 
 /**
@@ -18,7 +18,7 @@ public final class TestUnion extends Union {
     private final static long __ffi_type;
 
     static {
-        __ffi_type = FFITypes.getCTypeInfo(21).getFfiType();
+        __ffi_type = FFITypes.getCTypeInfo(25).getFfiType();
         __size = CHandler.getSizeFromFFIType(__ffi_type);
     }
 
@@ -58,11 +58,11 @@ public final class TestUnion extends Union {
         setValue(doubleType, 1);
     }
 
-    public CSizedIntPointer fixedSizeInt() {
+    public SIntPointer fixedSizeInt() {
         return __fixedSizeInt;
     }
 
-    private final CSizedIntPointer __fixedSizeInt = new CSizedIntPointer(getPointer(), false, "int").guardCount(3);
+    private final SIntPointer __fixedSizeInt = new SIntPointer(getPointer(), false).guardCount(3);
 
     public TestStruct structType() {
         return __structType;
