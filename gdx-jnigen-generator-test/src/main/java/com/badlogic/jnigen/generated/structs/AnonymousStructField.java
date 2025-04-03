@@ -60,6 +60,10 @@ public final class AnonymousStructField extends Struct {
             super(pointer, freeOnGC);
         }
 
+        public AnonymousStructFieldPointer(long pointer, boolean freeOnGC, int capacity) {
+            super(pointer, freeOnGC, capacity * __size);
+        }
+
         public AnonymousStructFieldPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
             setParent(parent);
@@ -71,11 +75,6 @@ public final class AnonymousStructField extends Struct {
 
         public AnonymousStructFieldPointer(int count, boolean freeOnGC) {
             super(__size, count, freeOnGC);
-        }
-
-        public AnonymousStructField.AnonymousStructFieldPointer guardCount(long count) {
-            super.guardCount(count);
-            return this;
         }
 
         public int getSize() {
@@ -149,6 +148,10 @@ public final class AnonymousStructField extends Struct {
                 super(pointer, freeOnGC);
             }
 
+            public innerPointer(long pointer, boolean freeOnGC, int capacity) {
+                super(pointer, freeOnGC, capacity * __size);
+            }
+
             public innerPointer(long pointer, boolean freeOnGC, Pointing parent) {
                 super(pointer, freeOnGC);
                 setParent(parent);
@@ -160,11 +163,6 @@ public final class AnonymousStructField extends Struct {
 
             public innerPointer(int count, boolean freeOnGC) {
                 super(__size, count, freeOnGC);
-            }
-
-            public inner.innerPointer guardCount(long count) {
-                super.guardCount(count);
-                return this;
             }
 
             public int getSize() {

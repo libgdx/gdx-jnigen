@@ -56,7 +56,7 @@ public final class SpecialStruct extends Struct {
 
     private static final int __arrayField_offset = CHandler.getOffsetForField(__ffi_type, 1);
 
-    private final SIntPointer __arrayField = new SIntPointer(getPointer() + __arrayField_offset, false).guardCount(5);
+    private final SIntPointer __arrayField = new SIntPointer(getPointer() + __arrayField_offset, false, 5);
 
     public SIntPointer intPtrField() {
         return new SIntPointer(getValue(6), false);
@@ -72,6 +72,10 @@ public final class SpecialStruct extends Struct {
             super(pointer, freeOnGC);
         }
 
+        public SpecialStructPointer(long pointer, boolean freeOnGC, int capacity) {
+            super(pointer, freeOnGC, capacity * __size);
+        }
+
         public SpecialStructPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
             setParent(parent);
@@ -83,11 +87,6 @@ public final class SpecialStruct extends Struct {
 
         public SpecialStructPointer(int count, boolean freeOnGC) {
             super(__size, count, freeOnGC);
-        }
-
-        public SpecialStruct.SpecialStructPointer guardCount(long count) {
-            super.guardCount(count);
-            return this;
         }
 
         public int getSize() {

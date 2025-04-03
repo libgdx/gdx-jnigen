@@ -68,7 +68,7 @@ public class StructMethodsTest extends BaseTest {
             arrayField.setInt(i + 1, i);
         }
 
-        assertThrows(IllegalArgumentException.class, () -> arrayField.setInt(3,5));
+        assertThrows(IndexOutOfBoundsException.class, () -> arrayField.setInt(3,5));
         for (int i = 0; i < 5; i++) {
             assertEquals(i + 1, TestData.getFixedSizeArrayFieldValue(struct, i));
         }

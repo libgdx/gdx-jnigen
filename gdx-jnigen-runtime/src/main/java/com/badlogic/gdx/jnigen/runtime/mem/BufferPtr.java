@@ -37,7 +37,7 @@ public final class BufferPtr {
         return freed;
     }
 
-    private void assertBounds(int index) {
+    public void assertBounds(int index) {
         if (capacity > 0 && (index < 0 || index >= capacity))
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + capacity);
     }

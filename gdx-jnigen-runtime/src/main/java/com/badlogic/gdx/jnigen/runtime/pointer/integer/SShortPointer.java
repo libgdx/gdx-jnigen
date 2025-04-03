@@ -23,15 +23,8 @@ public class SShortPointer extends VoidPointer {
         super(pointer, freeOnGC);
     }
 
-    public SShortPointer guardCount(long count) {
-        super.guardBytes(count * BYTE_SIZE);
-        return this;
-    }
-
-    private int calculateOffset(int index) {
-        int offset = index * BYTE_SIZE;
-        assertBounds(offset);
-        return offset;
+    public SShortPointer(long pointer, boolean freeOnGC, int capacity) {
+        super(pointer, freeOnGC, capacity * BYTE_SIZE);
     }
 
     public short getShort() {
@@ -39,7 +32,7 @@ public class SShortPointer extends VoidPointer {
     }
 
     public short getShort(int index) {
-        return getBufPtr().getShort(calculateOffset(index));
+        return getBufPtr().getShort(index * BYTE_SIZE);
     }
 
     public void setShort(short value) {
@@ -47,6 +40,6 @@ public class SShortPointer extends VoidPointer {
     }
 
     public void setShort(short value, int index) {
-        getBufPtr().setShort(calculateOffset(index), value);
+        getBufPtr().setShort(index * BYTE_SIZE, value);
     }
 }

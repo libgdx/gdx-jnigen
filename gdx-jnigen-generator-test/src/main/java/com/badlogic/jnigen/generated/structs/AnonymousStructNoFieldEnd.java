@@ -73,6 +73,10 @@ public final class AnonymousStructNoFieldEnd extends Struct {
             super(pointer, freeOnGC);
         }
 
+        public AnonymousStructNoFieldEndPointer(long pointer, boolean freeOnGC, int capacity) {
+            super(pointer, freeOnGC, capacity * __size);
+        }
+
         public AnonymousStructNoFieldEndPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
             setParent(parent);
@@ -84,11 +88,6 @@ public final class AnonymousStructNoFieldEnd extends Struct {
 
         public AnonymousStructNoFieldEndPointer(int count, boolean freeOnGC) {
             super(__size, count, freeOnGC);
-        }
-
-        public AnonymousStructNoFieldEnd.AnonymousStructNoFieldEndPointer guardCount(long count) {
-            super.guardCount(count);
-            return this;
         }
 
         public int getSize() {

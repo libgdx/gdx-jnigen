@@ -150,10 +150,7 @@ public class StackElementType implements MappedType, WritableClass {
                 Expression fromCExpression = fieldType.getDefinition().getMappedType().fromC(pointer, new BooleanLiteralExpr(false));
 
                 if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
-                    MethodCallExpr guardPointer = new MethodCallExpr("guardCount");
-                    guardPointer.setScope(fromCExpression);
-                    guardPointer.addArgument(fieldType.getDefinition().getCount() + "");
-                    fromCExpression = guardPointer;
+                    fromCExpression.asObjectCreationExpr().addArgument(fieldType.getDefinition().getCount() + "");
                 }
                 toWriteToPublic.addFieldWithInitializer(fieldType.getDefinition().getMappedType().abstractType(),
                         "__" + fieldType.getName(), fromCExpression,
@@ -202,6 +199,13 @@ public class StackElementType implements MappedType, WritableClass {
         body.addStatement("super(pointer, freeOnGC);");
         pointerConstructor.setBody(body);
 
+        ConstructorDeclaration pointerConstructorCapacity = pointerClass.addConstructor(Keyword.PUBLIC);
+        pointerConstructorCapacity.addParameter(new Parameter(com.github.javaparser.ast.type.PrimitiveType.longType(), "pointer"));
+        pointerConstructorCapacity.addParameter(new Parameter(PrimitiveType.booleanType(), "freeOnGC"));
+        pointerConstructorCapacity.addParameter(new Parameter(PrimitiveType.intType(), "capacity"));
+        BlockStmt bodyCapacity = new BlockStmt();
+        bodyCapacity.addStatement("super(pointer, freeOnGC, capacity * __size);");
+        pointerConstructorCapacity.setBody(bodyCapacity);
 
         ConstructorDeclaration pointerAndParentTakingConstructor = pointerClass.addConstructor(Keyword.PUBLIC);
         pointerAndParentTakingConstructor.addParameter(long.class, "pointer");
@@ -216,12 +220,6 @@ public class StackElementType implements MappedType, WritableClass {
         defaultConstructorPointer.addParameter(int.class, "count");
         defaultConstructorPointer.addParameter(boolean.class, "freeOnGC");
         defaultConstructorPointer.createBody().addStatement("super(__size, count, freeOnGC);");
-
-        pointerClass.addMethod("guardCount", Keyword.PUBLIC).setType(structPointerRef)
-                .addParameter(long.class, "count")
-                .createBody()
-                .addStatement("super.guardCount(count);")
-                .addStatement("return this;");
 
         pointerClass.addMethod("getSize", Keyword.PUBLIC).setType(int.class).createBody().addStatement("return __size;");
         pointerClass.addMethod("createStackElement", Keyword.PROTECTED).setType(javaTypeName)

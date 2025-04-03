@@ -44,7 +44,7 @@ public final class AnonymousStructFieldArray extends Struct {
 
     private static final int __inner_offset = CHandler.getOffsetForField(__ffi_type, 0);
 
-    private final inner.innerPointer __inner = new inner.innerPointer(getPointer() + __inner_offset, false).guardCount(2);
+    private final inner.innerPointer __inner = new inner.innerPointer(getPointer() + __inner_offset, false, 2);
 
     public int externalValue() {
         return (int) getValue(2);
@@ -60,6 +60,10 @@ public final class AnonymousStructFieldArray extends Struct {
             super(pointer, freeOnGC);
         }
 
+        public AnonymousStructFieldArrayPointer(long pointer, boolean freeOnGC, int capacity) {
+            super(pointer, freeOnGC, capacity * __size);
+        }
+
         public AnonymousStructFieldArrayPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
             setParent(parent);
@@ -71,11 +75,6 @@ public final class AnonymousStructFieldArray extends Struct {
 
         public AnonymousStructFieldArrayPointer(int count, boolean freeOnGC) {
             super(__size, count, freeOnGC);
-        }
-
-        public AnonymousStructFieldArray.AnonymousStructFieldArrayPointer guardCount(long count) {
-            super.guardCount(count);
-            return this;
         }
 
         public int getSize() {
@@ -140,6 +139,10 @@ public final class AnonymousStructFieldArray extends Struct {
                 super(pointer, freeOnGC);
             }
 
+            public innerPointer(long pointer, boolean freeOnGC, int capacity) {
+                super(pointer, freeOnGC, capacity * __size);
+            }
+
             public innerPointer(long pointer, boolean freeOnGC, Pointing parent) {
                 super(pointer, freeOnGC);
                 setParent(parent);
@@ -151,11 +154,6 @@ public final class AnonymousStructFieldArray extends Struct {
 
             public innerPointer(int count, boolean freeOnGC) {
                 super(__size, count, freeOnGC);
-            }
-
-            public inner.innerPointer guardCount(long count) {
-                super.guardCount(count);
-                return this;
             }
 
             public int getSize() {

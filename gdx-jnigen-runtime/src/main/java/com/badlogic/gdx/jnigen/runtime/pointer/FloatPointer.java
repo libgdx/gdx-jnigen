@@ -8,6 +8,10 @@ public final class FloatPointer extends VoidPointer {
         super(pointer, freeOnGC);
     }
 
+    public FloatPointer(long pointer, boolean freeOnGC, int capacity) {
+        super(pointer, freeOnGC, capacity * __float_size);
+    }
+
     public FloatPointer() {
         this(1);
     }
@@ -20,10 +24,6 @@ public final class FloatPointer extends VoidPointer {
         super(__float_size * size, freeOnGC);
     }
 
-    public FloatPointer guardCount(long count) {
-        super.guardBytes(count * __float_size);
-        return this;
-    }
 
     public float getFloat() {
         return getFloat(0);
@@ -31,7 +31,6 @@ public final class FloatPointer extends VoidPointer {
 
     public float getFloat(int index) {
         int offset = index * __float_size;
-        assertBounds(offset);
         return getBufPtr().getFloat(offset);
     }
 
@@ -41,7 +40,6 @@ public final class FloatPointer extends VoidPointer {
 
     public void setFloat(float value, int index) {
         int offset = index * __float_size;
-        assertBounds(offset);
         getBufPtr().setFloat(offset, value);
     }
 }

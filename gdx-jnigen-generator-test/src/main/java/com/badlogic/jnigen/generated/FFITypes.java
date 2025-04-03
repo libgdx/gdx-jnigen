@@ -13,6 +13,7 @@ public class FFITypes {
     /*JNI
 		#if defined(_WIN32)
 		#if ARCH_BITS == 32
+		static_assert(sizeof(void*) == 4, "Expected size of void* on 32bit is 4");
 		static_assert(sizeof(bool) == 1, "Type bool has unexpected size.");
 		static_assert(sizeof(uint64_t) == 8, "Type uint64_t has unexpected size.");
 		static_assert(sizeof(double) == 8, "Type double has unexpected size.");
@@ -29,6 +30,7 @@ public class FFITypes {
 		static_assert(sizeof(short) == 2, "Type short has unexpected size.");
 		static_assert(sizeof(uint8_t) == 1, "Type uint8_t has unexpected size.");
 		#elif ARCH_BITS == 64
+		static_assert(sizeof(void*) == 8, "Expected size of void* on 64bit is 8");
 		static_assert(sizeof(bool) == 1, "Type bool has unexpected size.");
 		static_assert(sizeof(uint64_t) == 8, "Type uint64_t has unexpected size.");
 		static_assert(sizeof(double) == 8, "Type double has unexpected size.");
@@ -49,6 +51,7 @@ public class FFITypes {
 		#endif
 		#else
 		#if ARCH_BITS == 32
+		static_assert(sizeof(void*) == 4, "Expected size of void* on 32bit is 4");
 		static_assert(sizeof(bool) == 1, "Type bool has unexpected size.");
 		static_assert(sizeof(uint64_t) == 8, "Type uint64_t has unexpected size.");
 		static_assert(sizeof(double) == 8, "Type double has unexpected size.");
@@ -65,6 +68,7 @@ public class FFITypes {
 		static_assert(sizeof(short) == 2, "Type short has unexpected size.");
 		static_assert(sizeof(uint8_t) == 1, "Type uint8_t has unexpected size.");
 		#elif ARCH_BITS == 64
+		static_assert(sizeof(void*) == 8, "Expected size of void* on 64bit is 8");
 		static_assert(sizeof(bool) == 1, "Type bool has unexpected size.");
 		static_assert(sizeof(uint64_t) == 8, "Type uint64_t has unexpected size.");
 		static_assert(sizeof(double) == 8, "Type double has unexpected size.");

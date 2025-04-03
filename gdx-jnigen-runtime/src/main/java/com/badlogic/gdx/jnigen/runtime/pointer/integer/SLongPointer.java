@@ -24,15 +24,8 @@ public class SLongPointer extends VoidPointer {
         super(pointer, freeOnGC);
     }
 
-    public SLongPointer guardCount(long count) {
-        super.guardBytes(count * BYTE_SIZE);
-        return this;
-    }
-
-    private int calculateOffset(int index) {
-        int offset = index * BYTE_SIZE;
-        assertBounds(offset);
-        return offset;
+    public SLongPointer(long pointer, boolean freeOnGC, int capacity) {
+        super(pointer, freeOnGC, capacity * BYTE_SIZE);
     }
 
     public long getLong() {
@@ -40,7 +33,7 @@ public class SLongPointer extends VoidPointer {
     }
 
     public long getLong(int index) {
-        return getBufPtr().getNativeLong(calculateOffset(index));
+        return getBufPtr().getNativeLong(index * BYTE_SIZE);
     }
 
     public void setLong(long value) {
@@ -50,6 +43,6 @@ public class SLongPointer extends VoidPointer {
     public void setLong(long value, int index) {
         if (Utils.checkBoundsForNumber(value, BYTE_SIZE, true))
             throw new IllegalArgumentException("SLong out of range: " + value);
-        getBufPtr().setNativeLong(calculateOffset(index), value);
+        getBufPtr().setNativeLong(index * BYTE_SIZE, value);
     }
 }

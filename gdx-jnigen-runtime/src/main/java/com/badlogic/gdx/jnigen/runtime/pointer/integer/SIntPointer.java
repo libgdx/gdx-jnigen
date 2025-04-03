@@ -23,15 +23,8 @@ public class SIntPointer extends VoidPointer {
         super(pointer, freeOnGC);
     }
 
-    public SIntPointer guardCount(long count) {
-        super.guardBytes(count * BYTE_SIZE);
-        return this;
-    }
-
-    private int calculateOffset(int index) {
-        int offset = index * BYTE_SIZE;
-        assertBounds(offset);
-        return offset;
+    public SIntPointer(long pointer, boolean freeOnGC, int capacity) {
+        super(pointer, freeOnGC, capacity * BYTE_SIZE);
     }
 
     public int getInt() {
@@ -39,7 +32,7 @@ public class SIntPointer extends VoidPointer {
     }
 
     public int getInt(int index) {
-        return getBufPtr().getInt(calculateOffset(index));
+        return getBufPtr().getInt(index * BYTE_SIZE);
     }
 
     public void setInt(int value) {
@@ -47,6 +40,6 @@ public class SIntPointer extends VoidPointer {
     }
 
     public void setInt(int value, int index) {
-        getBufPtr().setInt(calculateOffset(index), value);
+        getBufPtr().setInt(index * BYTE_SIZE, value);
     }
 }

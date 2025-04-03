@@ -174,6 +174,10 @@ public final class GlobalArg extends Union {
             super(pointer, freeOnGC);
         }
 
+        public GlobalArgPointer(long pointer, boolean freeOnGC, int capacity) {
+            super(pointer, freeOnGC, capacity * __size);
+        }
+
         public GlobalArgPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
             setParent(parent);
@@ -185,11 +189,6 @@ public final class GlobalArg extends Union {
 
         public GlobalArgPointer(int count, boolean freeOnGC) {
             super(__size, count, freeOnGC);
-        }
-
-        public GlobalArg.GlobalArgPointer guardCount(long count) {
-            super.guardCount(count);
-            return this;
         }
 
         public int getSize() {
@@ -302,6 +301,10 @@ public final class GlobalArg extends Union {
                 super(pointer, freeOnGC);
             }
 
+            public allArgsPointer(long pointer, boolean freeOnGC, int capacity) {
+                super(pointer, freeOnGC, capacity * __size);
+            }
+
             public allArgsPointer(long pointer, boolean freeOnGC, Pointing parent) {
                 super(pointer, freeOnGC);
                 setParent(parent);
@@ -313,11 +316,6 @@ public final class GlobalArg extends Union {
 
             public allArgsPointer(int count, boolean freeOnGC) {
                 super(__size, count, freeOnGC);
-            }
-
-            public allArgs.allArgsPointer guardCount(long count) {
-                super.guardCount(count);
-                return this;
             }
 
             public int getSize() {

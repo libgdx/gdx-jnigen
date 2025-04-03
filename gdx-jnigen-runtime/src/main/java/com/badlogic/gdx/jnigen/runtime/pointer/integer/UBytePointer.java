@@ -23,15 +23,8 @@ public class UBytePointer extends VoidPointer {
         super(pointer, freeOnGC);
     }
 
-    public UBytePointer guardCount(long count) {
-        super.guardBytes(count * BYTE_SIZE);
-        return this;
-    }
-
-    private int calculateOffset(int index) {
-        int offset = index * BYTE_SIZE;
-        assertBounds(offset);
-        return offset;
+    public UBytePointer(long pointer, boolean freeOnGC, int capacity) {
+        super(pointer, freeOnGC, capacity * BYTE_SIZE);
     }
 
     public boolean getBoolean() {
@@ -39,7 +32,7 @@ public class UBytePointer extends VoidPointer {
     }
 
     public boolean getBoolean(int index) {
-        return getBufPtr().getBoolean(calculateOffset(index));
+        return getBufPtr().getBoolean(index * BYTE_SIZE);
     }
 
     public void setBoolean(boolean value) {
@@ -47,7 +40,7 @@ public class UBytePointer extends VoidPointer {
     }
 
     public void setBoolean(boolean value, int index) {
-        getBufPtr().setBoolean(calculateOffset(index), value);
+        getBufPtr().setBoolean(index * BYTE_SIZE, value);
     }
 
     public char getUByte() {
@@ -55,7 +48,7 @@ public class UBytePointer extends VoidPointer {
     }
 
     public char getUByte(int index) {
-        return (char)(getBufPtr().getByte(calculateOffset(index)) & 0xFF);
+        return (char)(getBufPtr().getByte(index * BYTE_SIZE) & 0xFF);
     }
 
     public void setUByte(byte value) {
@@ -73,6 +66,6 @@ public class UBytePointer extends VoidPointer {
     public void setUByte(char value, int index) {
         if (value >= 1L << (BYTE_SIZE * 8))
             throw new IllegalArgumentException("UByte out of range: " + value);
-        getBufPtr().setByte(calculateOffset(index), (byte)value);
+        getBufPtr().setByte(index * BYTE_SIZE, (byte)value);
     }
 }

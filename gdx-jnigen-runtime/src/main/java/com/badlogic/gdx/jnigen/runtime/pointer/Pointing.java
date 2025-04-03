@@ -8,33 +8,26 @@ public class Pointing {
     private final BufferPtr bufPtr;
     private Pointing parent;
 
-    /**
-     * This is just a hint to an implementor of Pointing to respect a bound, but it doesn't have too
-     */
-    private long sizeGuard = -1;
-
     public Pointing(long pointer, boolean freeOnGC) {
         this.bufPtr = BufferPtrAllocator.get(pointer, -1, freeOnGC);
     }
 
-    public Pointing(int size, boolean freeOnGC) {
-        this.bufPtr = BufferPtrAllocator.get(CHandler.calloc(1, size), size, freeOnGC);
-        this.sizeGuard = size;
+    public Pointing(long pointer, boolean freeOnGC, int capacity) {
+        this.bufPtr = BufferPtrAllocator.get(pointer, capacity, freeOnGC);
     }
 
-    public void guardBytes(long size) {
-        this.sizeGuard = size;
+    public Pointing(int size, boolean freeOnGC) {
+        this.bufPtr = BufferPtrAllocator.get(CHandler.calloc(1, size), size, freeOnGC);
     }
 
     public boolean isNull() {
         return bufPtr == null;
     }
 
-    public void assertBounds(long index) {
+    public void assertBounds(int index) {
         if (isNull())
             throw new NullPointerException("Pointer is null");
-        if (sizeGuard != -1 && index >= sizeGuard)
-            throw new IllegalArgumentException("Byte " + index + " overshoots guard " + sizeGuard);
+        bufPtr.assertBounds(index);
     }
 
     public void free() {

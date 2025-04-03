@@ -1,6 +1,5 @@
 package com.badlogic.jnigen.generated;
 
-import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
 import com.badlogic.gdx.jnigen.runtime.c.CXXException;
 import com.badlogic.jnigen.generated.structs.GlobalArg;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.BytePointer;
@@ -65,7 +64,6 @@ import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackFloatRe
 public final class TestData {
 
     static {
-        new SharedLibraryLoader().load("test-natives");
         CHandler.init();
         FFITypes.init();
         init(IllegalArgumentException.class, CXXException.class);

@@ -25,15 +25,8 @@ public class BytePointer extends VoidPointer {
         super(pointer, freeOnGC);
     }
 
-    public BytePointer guardCount(long count) {
-        super.guardBytes(count * BYTE_SIZE);
-        return this;
-    }
-
-    private int calculateOffset(int index) {
-        int offset = index * BYTE_SIZE;
-        assertBounds(offset);
-        return offset;
+    public BytePointer(long pointer, boolean freeOnGC, int capacity) {
+        super(pointer, freeOnGC, capacity * BYTE_SIZE);
     }
 
     public boolean getBoolean() {
@@ -41,7 +34,7 @@ public class BytePointer extends VoidPointer {
     }
 
     public boolean getBoolean(int index) {
-        return getBufPtr().getBoolean(calculateOffset(index));
+        return getBufPtr().getBoolean(index * BYTE_SIZE);
     }
 
     public void setBoolean(boolean value) {
@@ -49,7 +42,7 @@ public class BytePointer extends VoidPointer {
     }
 
     public void setBoolean(boolean value, int index) {
-        getBufPtr().setBoolean(calculateOffset(index), value);
+        getBufPtr().setBoolean(index * BYTE_SIZE, value);
     }
 
     public byte getByte() {
@@ -57,7 +50,7 @@ public class BytePointer extends VoidPointer {
     }
 
     public byte getByte(int index) {
-        return getBufPtr().getByte(calculateOffset(index));
+        return getBufPtr().getByte(index * BYTE_SIZE);
     }
 
     public void setByte(byte value) {

@@ -62,7 +62,7 @@ public final class TestUnion extends Union {
         return __fixedSizeInt;
     }
 
-    private final SIntPointer __fixedSizeInt = new SIntPointer(getPointer(), false).guardCount(3);
+    private final SIntPointer __fixedSizeInt = new SIntPointer(getPointer(), false, 3);
 
     public TestStruct structType() {
         return __structType;
@@ -76,6 +76,10 @@ public final class TestUnion extends Union {
             super(pointer, freeOnGC);
         }
 
+        public TestUnionPointer(long pointer, boolean freeOnGC, int capacity) {
+            super(pointer, freeOnGC, capacity * __size);
+        }
+
         public TestUnionPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
             setParent(parent);
@@ -87,11 +91,6 @@ public final class TestUnion extends Union {
 
         public TestUnionPointer(int count, boolean freeOnGC) {
             super(__size, count, freeOnGC);
-        }
-
-        public TestUnion.TestUnionPointer guardCount(long count) {
-            super.guardCount(count);
-            return this;
         }
 
         public int getSize() {

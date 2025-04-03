@@ -5,17 +5,16 @@ import com.badlogic.gdx.jnigen.runtime.c.CEnum;
 
 public abstract class EnumPointer<T extends CEnum> extends VoidPointer {
 
-    public EnumPointer(long pointer, boolean freeOnGC) {
+    protected EnumPointer(long pointer, boolean freeOnGC) {
         super(pointer, freeOnGC);
+    }
+
+    protected EnumPointer(long pointer, boolean freeOnGC, int capacity) {
+        super(pointer, freeOnGC, capacity);
     }
 
     public EnumPointer(int size, boolean freeOnGC) {
         super(size, freeOnGC);
-    }
-
-    public EnumPointer<T> guardCount(long count) {
-        super.guardBytes(count * getSize());
-        return this;
     }
 
     public T getEnumValue() {

@@ -83,6 +83,10 @@ public final class AnonymousStructNoFieldConsecutive extends Struct {
             super(pointer, freeOnGC);
         }
 
+        public AnonymousStructNoFieldConsecutivePointer(long pointer, boolean freeOnGC, int capacity) {
+            super(pointer, freeOnGC, capacity * __size);
+        }
+
         public AnonymousStructNoFieldConsecutivePointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
             setParent(parent);
@@ -94,11 +98,6 @@ public final class AnonymousStructNoFieldConsecutive extends Struct {
 
         public AnonymousStructNoFieldConsecutivePointer(int count, boolean freeOnGC) {
             super(__size, count, freeOnGC);
-        }
-
-        public AnonymousStructNoFieldConsecutive.AnonymousStructNoFieldConsecutivePointer guardCount(long count) {
-            super.guardCount(count);
-            return this;
         }
 
         public int getSize() {

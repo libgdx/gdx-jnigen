@@ -70,6 +70,10 @@ public final class AnonymousClosure extends Struct {
             super(pointer, freeOnGC);
         }
 
+        public AnonymousClosurePointer(long pointer, boolean freeOnGC, int capacity) {
+            super(pointer, freeOnGC, capacity * __size);
+        }
+
         public AnonymousClosurePointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
             setParent(parent);
@@ -81,11 +85,6 @@ public final class AnonymousClosure extends Struct {
 
         public AnonymousClosurePointer(int count, boolean freeOnGC) {
             super(__size, count, freeOnGC);
-        }
-
-        public AnonymousClosure.AnonymousClosurePointer guardCount(long count) {
-            super.guardCount(count);
-            return this;
         }
 
         public int getSize() {

@@ -12,6 +12,11 @@ public class PointerPointer<T extends Pointing> extends VoidPointer {
         this.supplier = supplier;
     }
 
+    public PointerPointer(long pointer, boolean freeOnGC, int capacity, PointerDereferenceSupplier<T> supplier) {
+        super(pointer, freeOnGC, capacity * __pointer_size);
+        this.supplier = supplier;
+    }
+
     public PointerPointer(PointerDereferenceSupplier<T> supplier) {
         this(1, supplier);
     }
@@ -25,18 +30,12 @@ public class PointerPointer<T extends Pointing> extends VoidPointer {
         this.supplier = supplier;
     }
 
-    public PointerPointer<T> guardCount(long count) {
-        super.guardBytes(__pointer_size * count);
-        return this;
-    }
-
     public T getValue() {
         return getValue(0);
     }
 
     public T getValue(int index) {
         int offset = index * __pointer_size;
-        assertBounds(offset);
         long pointer = getBufPtr().getNativePointer(offset);
         return supplier.create(pointer, false);
     }
@@ -47,7 +46,6 @@ public class PointerPointer<T extends Pointing> extends VoidPointer {
 
     public void setValue(T value, int index) {
         int offset = index * __pointer_size;
-        assertBounds(offset);
         getBufPtr().setNativePointer(offset, value.getPointer());
     }
 }

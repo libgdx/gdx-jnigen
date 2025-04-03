@@ -57,17 +57,16 @@ public enum TestEnum implements CEnum {
             super(pointer, freeOnGC);
         }
 
+        public TestEnumPointer(long pointer, boolean freeOnGC, int capacity) {
+            super(pointer, freeOnGC, capacity * __size);
+        }
+
         public TestEnumPointer() {
             this(1, true);
         }
 
         public TestEnumPointer(int count, boolean freeOnGC) {
             super(count, freeOnGC);
-        }
-
-        public TestEnum.TestEnumPointer guardCount(long count) {
-            super.guardCount(count);
-            return this;
         }
 
         protected TestEnum getEnum(int index) {

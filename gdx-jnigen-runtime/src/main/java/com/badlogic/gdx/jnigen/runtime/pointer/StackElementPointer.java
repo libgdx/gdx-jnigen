@@ -8,17 +8,16 @@ public abstract class StackElementPointer<T extends StackElement> extends VoidPo
         super(pointer, freeOnGC);
     }
 
+    protected StackElementPointer(long pointer, boolean freeOnGC, int capacity) {
+        super(pointer, freeOnGC, capacity);
+    }
+
     public StackElementPointer(int size, int count) {
         this(size, count, true);
     }
 
     public StackElementPointer(int size, int count, boolean freeOnGC) {
         super(size * count, freeOnGC);
-    }
-
-    public StackElementPointer<T> guardCount(long count) {
-        super.guardBytes(count * getSize());
-        return this;
     }
 
     public T get() {

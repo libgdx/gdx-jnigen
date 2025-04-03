@@ -23,15 +23,8 @@ public class UIntPointer extends VoidPointer {
         super(pointer, freeOnGC);
     }
 
-    public UIntPointer guardCount(long count) {
-        super.guardBytes(count * BYTE_SIZE);
-        return this;
-    }
-
-    private int calculateOffset(int index) {
-        int offset = index * BYTE_SIZE;
-        assertBounds(offset);
-        return offset;
+    public UIntPointer(long pointer, boolean freeOnGC, int capacity) {
+        super(pointer, freeOnGC, capacity * BYTE_SIZE);
     }
 
     public long getUInt() {
@@ -39,7 +32,7 @@ public class UIntPointer extends VoidPointer {
     }
 
     public long getUInt(int index) {
-        return getBufPtr().getInt(calculateOffset(index)) & 0xFFFFFFFFL;
+        return getBufPtr().getInt(index * BYTE_SIZE) & 0xFFFFFFFFL;
     }
 
     public void setUInt(int value) {
@@ -57,6 +50,6 @@ public class UIntPointer extends VoidPointer {
     public void setUInt(long value, int index) {
         if (value >= 1L << (BYTE_SIZE * 8))
             throw new IllegalArgumentException("UInt out of range: " + value);
-        getBufPtr().setInt(calculateOffset(index), (int)value);
+        getBufPtr().setInt(index * BYTE_SIZE, (int)value);
     }
 }

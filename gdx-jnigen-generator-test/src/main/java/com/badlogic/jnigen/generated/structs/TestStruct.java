@@ -102,6 +102,10 @@ public final class TestStruct extends Struct {
             super(pointer, freeOnGC);
         }
 
+        public TestStructPointer(long pointer, boolean freeOnGC, int capacity) {
+            super(pointer, freeOnGC, capacity * __size);
+        }
+
         public TestStructPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
             setParent(parent);
@@ -113,11 +117,6 @@ public final class TestStruct extends Struct {
 
         public TestStructPointer(int count, boolean freeOnGC) {
             super(__size, count, freeOnGC);
-        }
-
-        public TestStruct.TestStructPointer guardCount(long count) {
-            super.guardCount(count);
-            return this;
         }
 
         public int getSize() {
