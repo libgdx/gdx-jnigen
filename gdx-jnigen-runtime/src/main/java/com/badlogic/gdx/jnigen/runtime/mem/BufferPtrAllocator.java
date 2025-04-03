@@ -12,12 +12,16 @@ public class BufferPtrAllocator {
     private static final int L1_BITS = 11;
     private static final int L2_BITS = 11;
     private static final int L3_BITS = 11;
+    private static final int PAGE_OFFSET_BITS = 31;
 
     private static final int L1_SIZE = 1 << L1_BITS;
     private static final int L2_SIZE = 1 << L2_BITS;
     private static final int L3_SIZE = 1 << L3_BITS;
 
-    private static final long PAGE_OFFSET_MASK = 0x7FFFFFFFL;
+    private static final int L1_MASK = (1 << L1_BITS) - 1;
+    private static final int L2_MASK = (1 << L2_BITS) - 1;
+    private static final int L3_MASK = (1 << L3_BITS) - 1;
+    private static final long PAGE_OFFSET_MASK = (1L << PAGE_OFFSET_BITS) - 1;
 
     private static final ByteBuffer[][][] BUFFER_CACHE = new ByteBuffer[L1_SIZE][][];
 
@@ -25,9 +29,9 @@ public class BufferPtrAllocator {
         long basePtr = pointer & ~PAGE_OFFSET_MASK;
 
         // Address format: [L1 (11 bits) | L2 (11 bits) | L3 (11 bits) | offset (31 bits)]
-        int l1_index = (int)(pointer >> 53) & 0x7FF;
-        int l2_index = (int)(pointer >> 42) & 0x7FF;
-        int l3_index = (int)(pointer >> 31) & 0x7FF;
+        int l1_index = (int)(pointer >> (PAGE_OFFSET_BITS + L3_BITS + L2_BITS)) & L1_MASK;
+        int l2_index = (int)(pointer >> (PAGE_OFFSET_BITS + L3_BITS)) & L2_MASK;
+        int l3_index = (int)(pointer >> (PAGE_OFFSET_BITS)) & L3_MASK;
 
         ByteBuffer[][] L1 = BUFFER_CACHE[l1_index];
         if (L1 == null) {

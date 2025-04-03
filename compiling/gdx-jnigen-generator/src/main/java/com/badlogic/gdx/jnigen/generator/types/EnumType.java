@@ -138,13 +138,12 @@ public class EnumType implements MappedType {
         body.addStatement("super(pointer, freeOnGC);");
         pointerConstructor.setBody(body);
 
-        pointerClass.addConstructor(Keyword.PUBLIC).getBody().addStatement("this(1, true, true);");
+        pointerClass.addConstructor(Keyword.PUBLIC).getBody().addStatement("this(1, true);");
 
         ConstructorDeclaration defaultConstructorPointer = pointerClass.addConstructor(Keyword.PUBLIC);
         defaultConstructorPointer.addParameter(int.class, "count");
         defaultConstructorPointer.addParameter(boolean.class, "freeOnGC");
-        defaultConstructorPointer.addParameter(boolean.class, "guard");
-        defaultConstructorPointer.createBody().addStatement("super(count, freeOnGC, guard);");
+        defaultConstructorPointer.createBody().addStatement("super(count, freeOnGC);");
 
         pointerClass.addMethod("guardCount", Keyword.PUBLIC).setType(javaName + "." + pointerName)
                 .addParameter(long.class, "count")

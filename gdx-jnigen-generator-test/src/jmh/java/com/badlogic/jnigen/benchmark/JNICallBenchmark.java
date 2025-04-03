@@ -1,6 +1,7 @@
 package com.badlogic.jnigen.benchmark;
 
 import com.badlogic.gdx.jnigen.runtime.CHandler;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrAllocator;
 import com.badlogic.jnigen.generated.TestData;
 import com.badlogic.jnigen.generated.enums.SpecialEnum;
 import com.badlogic.jnigen.generated.enums.TestEnum;
@@ -34,7 +35,13 @@ public class JNICallBenchmark {
         CHandler.free(ptr);
     }
 
+    int count = 1;
     @Benchmark
+    public void bufferPtrResolveSpeed(Blackhole bh) {
+        bh.consume(BufferPtrAllocator.get(count++));
+    }
+
+    //@Benchmark
     public void structFieldGet(Blackhole bh) {
         bh.consume(testStruct.field4());
     }

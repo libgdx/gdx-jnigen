@@ -210,13 +210,12 @@ public class StackElementType implements MappedType, WritableClass {
         pointerAndParentTakingConstructor.getBody().addStatement("super(pointer, freeOnGC);")
                 .addStatement("setParent(parent);");
 
-        pointerClass.addConstructor(Keyword.PUBLIC).getBody().addStatement("this(1, true, true);");
+        pointerClass.addConstructor(Keyword.PUBLIC).getBody().addStatement("this(1, true);");
 
         ConstructorDeclaration defaultConstructorPointer = pointerClass.addConstructor(Keyword.PUBLIC);
         defaultConstructorPointer.addParameter(int.class, "count");
         defaultConstructorPointer.addParameter(boolean.class, "freeOnGC");
-        defaultConstructorPointer.addParameter(boolean.class, "guard");
-        defaultConstructorPointer.createBody().addStatement("super(__size, count, freeOnGC, guard);");
+        defaultConstructorPointer.createBody().addStatement("super(__size, count, freeOnGC);");
 
         pointerClass.addMethod("guardCount", Keyword.PUBLIC).setType(structPointerRef)
                 .addParameter(long.class, "count")
