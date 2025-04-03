@@ -52,15 +52,12 @@ public class BytePointer extends VoidPointer {
         CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value ? 1 : 0);
     }
 
-    public char getByte() {
+    public byte getByte() {
         return getByte(0);
     }
 
-    public char getByte(int index) {
-        if (IS_CHAR_SIGNED)
-            return (char) (byte)CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index));
-        else
-            return (char) CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index));
+    public byte getByte(int index) {
+        return (byte)CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index));
     }
 
     public void setByte(byte value) {
