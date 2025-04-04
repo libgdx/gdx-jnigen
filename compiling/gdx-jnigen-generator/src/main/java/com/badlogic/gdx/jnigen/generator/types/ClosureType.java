@@ -333,4 +333,9 @@ public class ClosureType implements MappedType, WritableClass {
     public Expression writeToBufferPtr(Expression bufferPtr, Expression offset, Expression valueToWrite) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public int getSize(boolean is32Bit, boolean isWin) {
+        return is32Bit ? 4 : 8;
+    }
 }

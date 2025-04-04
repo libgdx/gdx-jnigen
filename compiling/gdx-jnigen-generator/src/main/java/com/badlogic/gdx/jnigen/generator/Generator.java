@@ -142,7 +142,7 @@ public class Generator {
             return typeDefinition;
         }
 
-        if (typeKind == TypeKind.STACK_ELEMENT) {
+        if (typeKind.isStackElement()) {
             // For the moment, treat system header structs as unknown
             // Figure out later, whether this might be problematic
             if (clang_Location_isInSystemHeader(clang_getCursorLocation(clang_getTypeDeclaration(type))) != 0) {
@@ -151,7 +151,7 @@ public class Generator {
                 return definition;
             }
 
-            TypeDefinition typeDefinition = TypeDefinition.get(TypeKind.STACK_ELEMENT, name);
+            TypeDefinition typeDefinition = TypeDefinition.get(typeKind, name);
             typeDefinition.setAnonymous(clang_Cursor_isAnonymous(clang.clang_getTypeDeclaration(type)) != 0);
             Manager.getInstance().registerCTypeMapping(name, typeDefinition);
             StackElementParser parser = new StackElementParser(typeDefinition, type, alternativeName, parent);

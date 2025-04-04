@@ -135,4 +135,9 @@ public class GlobalType implements MappedType {
     public Expression writeToBufferPtr(Expression bufferPtr, Expression offset, Expression valueToWrite) {
         throw new IllegalArgumentException("Should not reach");
     }
+
+    @Override
+    public int getSize(boolean is32Bit, boolean isWin) {
+        throw new IllegalArgumentException("Should not reach");
+    }
 }

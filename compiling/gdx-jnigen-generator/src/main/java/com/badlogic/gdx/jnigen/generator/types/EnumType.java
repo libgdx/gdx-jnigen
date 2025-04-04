@@ -225,7 +225,7 @@ public class EnumType implements MappedType {
 
     @Override
     public int typeID() {
-        return Manager.getInstance().getCTypeID("int");
+        return definition.getNestedDefinition().getMappedType().typeID();
     }
 
     @Override
@@ -236,5 +236,10 @@ public class EnumType implements MappedType {
     @Override
     public Expression readFromBufferPtr(Expression bufferPtr, Expression offset) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getSize(boolean is32Bit, boolean isWin) {
+        return definition.getNestedDefinition().getTypeKind().getSize(is32Bit, isWin);
     }
 }

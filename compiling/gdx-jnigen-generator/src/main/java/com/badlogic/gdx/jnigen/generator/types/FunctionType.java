@@ -48,7 +48,7 @@ public class FunctionType {
         for (NamedType namedType : arguments) {
             namedType.getDefinition().getMappedType().importType(cu);
             callMethodCreate.addParameter(namedType.getDefinition().getMappedType().abstractType(), namedType.getName());
-            if (namedType.getDefinition().getTypeKind() == TypeKind.STACK_ELEMENT) {
+            if (namedType.getDefinition().getTypeKind().isStackElement()) {
                 nativeBody.append("*(").append(namedType.getDefinition().getTypeName()).append("*)").append(namedType.getName()).append(", ");
             } else {
                 nativeBody.append("(").append(namedType.getDefinition().getTypeName()).append(")").append(namedType.getName()).append(", ");
@@ -66,7 +66,7 @@ public class FunctionType {
                 nativeBody.insert(0, "return (j" + returnType.getMappedType().primitiveType() + ")");
                 body.addStatement(new ReturnStmt(callExprCreate));
             } else {
-                if (returnType.getTypeKind() == TypeKind.STACK_ELEMENT) {
+                if (returnType.getTypeKind().isStackElement()) {
                     MethodDeclaration callMethodParameter = callMethodCreate.clone();
                     callMethodParameter.addParameter(returnType.getMappedType().abstractType(), "_retPar");
                     MethodCallExpr callExprParameter = callExprCreate.clone();

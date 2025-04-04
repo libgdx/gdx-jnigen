@@ -29,7 +29,6 @@ public class StackElementParser {
 
     private StackElementType constructMappedType() {
         String name = clang_getTypeSpelling(toParse).getString();
-        CXCursor cursor = clang_getTypeDeclaration(toParse);
         String javaName;
         if (!typeDefinition.isAnonymous()) {
             parent = null;
@@ -38,7 +37,7 @@ public class StackElementParser {
             javaName = alternativeName;
         }
 
-        StackElementType type = new StackElementType(typeDefinition, javaName, parent, cursor.kind() == CXCursor_StructDecl);
+        StackElementType type = new StackElementType(typeDefinition, javaName, parent);
         Manager.getInstance().addStackElement(type, parent == null);
 
         return type;

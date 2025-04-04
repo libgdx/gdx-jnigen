@@ -496,7 +496,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackTestEnumArg_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(5) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(14) };
 
         void methodWithCallbackTestEnumArg_call(TestEnum arg0);
 
@@ -643,7 +643,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackTestEnumReturn_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(5) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(14) };
 
         TestEnum methodWithCallbackTestEnumReturn_call();
 

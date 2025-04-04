@@ -199,4 +199,9 @@ public class PrimitiveType implements MappedType {
         }
         return new MethodCallExpr(methodName, offset).setScope(bufferPtr);
     }
+
+    @Override
+    public int getSize(boolean is32Bit, boolean isWin) {
+        return definition.getTypeKind().getSize(is32Bit, isWin);
+    }
 }

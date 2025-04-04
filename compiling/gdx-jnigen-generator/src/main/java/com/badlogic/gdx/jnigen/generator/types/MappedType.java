@@ -43,4 +43,8 @@ public interface MappedType {
 
     Expression writeToBufferPtr(Expression bufferPtr, Expression offset, Expression valueToWrite);
     Expression readFromBufferPtr(Expression bufferPtr, Expression offset);
+    int getSize(boolean is32Bit, boolean isWin);
+    default int getAlignment(boolean is32Bit, boolean isWin) {
+        return getSize(is32Bit, isWin);
+    }
 }

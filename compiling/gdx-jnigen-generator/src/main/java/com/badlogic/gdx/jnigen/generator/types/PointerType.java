@@ -29,7 +29,7 @@ public class PointerType implements MappedType {
     }
 
     public boolean isStackElementPointer() {
-        return pointingTo.getTypeKind() == TypeKind.STACK_ELEMENT;
+        return pointingTo.getTypeKind().isStackElement();
     }
 
     public boolean isDoublePointer() {
@@ -192,5 +192,10 @@ public class PointerType implements MappedType {
     @Override
     public Expression readFromBufferPtr(Expression bufferPtr, Expression offset) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getSize(boolean is32Bit, boolean isWin) {
+        return is32Bit ? 4 : 8;
     }
 }
