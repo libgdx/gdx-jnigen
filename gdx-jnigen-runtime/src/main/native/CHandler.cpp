@@ -362,18 +362,6 @@ JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_setStac
     return true;
 }
 
-JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getPointerPart(JNIEnv* env, jclass clazz, jlong pointer, jint size, jint offset) {
-    char* ptr = reinterpret_cast<char*>(pointer);
-    jlong ret = 0;
-    ENDIAN_INTCPY(&ret, sizeof(jlong), ptr + offset, (size_t)size);
-    return ret;
-}
-
-JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_setPointerPart(JNIEnv* env, jclass clazz, jlong pointer, jint size, jint offset, jlong value) {
-    char* ptr = reinterpret_cast<char*>(pointer);
-    ENDIAN_INTCPY(ptr + offset, (size_t)size, &value, sizeof(jlong));
-}
-
 JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_setPointerAsString(JNIEnv* env, jclass clazz, jlong pointer, jstring obj_string) {
 	char* string = (char*)env->GetStringUTFChars(obj_string, 0);
 

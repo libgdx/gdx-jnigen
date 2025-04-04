@@ -93,6 +93,45 @@ public final class BufferPtr {
             buffer.put(index, value);
     }
 
+    public char getUByte() {
+        return (char)(buffer.get(0) & 0xFF);
+    }
+
+    public char getUByte(int index) {
+        assertBounds(index);
+        if (index >= buffer.capacity())
+            return (char)(next.get(index - buffer.capacity()) & 0xFF);
+        return (char)(buffer.get(index) & 0xFF);
+    }
+
+    public void setUByte(byte value) {
+        buffer.put(0, value);
+    }
+
+    public void setUByte(int index, byte value) {
+        assertBounds(index);
+        if (index >= buffer.capacity())
+            next.put(index - buffer.capacity(), value);
+        else
+            buffer.put(index, value);
+    }
+
+    public void setUByte(char value) {
+        if (value >= 1L << 8)
+            throw new IllegalArgumentException("UByte out of range: " + value);
+        buffer.put(0, (byte)value);
+    }
+
+    public void setUByte(int index, char value) {
+        if (value >= 1L << 8)
+            throw new IllegalArgumentException("UByte out of range: " + value);
+        assertBounds(index);
+        if (index >= buffer.capacity())
+            next.put(index - buffer.capacity(), (byte)value);
+        else
+            buffer.put(index, (byte)value);
+    }
+
     public char getChar() {
         return buffer.getChar(0);
     }
@@ -160,6 +199,45 @@ public final class BufferPtr {
             next.putInt(index - buffer.capacity(), value);
         else
             buffer.putInt(index, value);
+    }
+
+    public long getUInt() {
+        return buffer.getInt(0) & 0xFFFFFFFFL;
+    }
+
+    public long getUInt(int index) {
+        assertBounds(index);
+        if (index >= buffer.capacity())
+            return next.getInt(index - buffer.capacity()) & 0xFFFFFFFFL;
+        return buffer.getInt(index) & 0xFFFFFFFFL;
+    }
+
+    public void setUInt(int value) {
+        buffer.putInt(0, value);
+    }
+
+    public void setUInt(int index, int value) {
+        assertBounds(index);
+        if (index >= buffer.capacity())
+            next.putInt(index - buffer.capacity(), value);
+        else
+            buffer.putInt(index, value);
+    }
+
+    public void setUInt(long value) {
+        if (value >= 1L << 32)
+            throw new IllegalArgumentException("UInt out of range: " + value);
+        buffer.putInt(0, (int)value);
+    }
+
+    public void setUInt(int index, long value) {
+        if (value >= 1L << 32)
+            throw new IllegalArgumentException("UInt out of range: " + value);
+        assertBounds(index);
+        if (index >= buffer.capacity())
+            next.putInt(index - buffer.capacity(), (int)value);
+        else
+            buffer.putInt(index, (int)value);
     }
 
     public long getLong() {

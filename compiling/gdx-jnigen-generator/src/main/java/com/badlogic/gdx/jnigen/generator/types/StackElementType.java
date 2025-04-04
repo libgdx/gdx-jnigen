@@ -344,4 +344,14 @@ public class StackElementType implements MappedType, WritableClass {
             return parent.internalClass() + "." + internalClassName();
         return Manager.getInstance().getGlobalType().internalClass() + "." + internalClassName();
     }
+
+    @Override
+    public Expression readFromBufferPtr(Expression bufferPtr, Expression offset) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Expression writeToBufferPtr(Expression bufferPtr, Expression offset, Expression valueToWrite) {
+        throw new UnsupportedOperationException();
+    }
 }

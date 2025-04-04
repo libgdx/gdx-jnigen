@@ -69,11 +69,15 @@ public enum TestEnum implements CEnum {
             super(count, freeOnGC);
         }
 
-        protected TestEnum getEnum(int index) {
-            return getByIndex(index);
+        public TestEnum getEnumValue(int index) {
+            return getByIndex((int) getBufPtr().getUInt(index * __size));
         }
 
-        protected int getSize() {
+        public void setEnumValue(TestEnum value, int index) {
+            getBufPtr().setUInt(index * __size, value.getIndex());
+        }
+
+        public int getSize() {
             return __size;
         }
     }

@@ -53,11 +53,15 @@ public enum SpecialEnum implements CEnum {
             super(count, freeOnGC);
         }
 
-        protected SpecialEnum getEnum(int index) {
-            return getByIndex(index);
+        public SpecialEnum getEnumValue(int index) {
+            return getByIndex((int) getBufPtr().getNativeLong(index * __size));
         }
 
-        protected int getSize() {
+        public void setEnumValue(SpecialEnum value, int index) {
+            getBufPtr().setNativeLong(index * __size, value.getIndex());
+        }
+
+        public int getSize() {
             return __size;
         }
     }

@@ -48,15 +48,15 @@ public class UBytePointer extends VoidPointer {
     }
 
     public char getUByte(int index) {
-        return (char)(getBufPtr().getByte(index * BYTE_SIZE) & 0xFF);
+        return getBufPtr().getUByte(index * BYTE_SIZE);
     }
 
     public void setUByte(byte value) {
-        setUByte((char)(value & 0xFF), 0);
+        setUByte(value, 0);
     }
 
     public void setUByte(byte value, int index) {
-        setUByte((char)(value & 0xFF), index);
+        getBufPtr().setUByte(index * BYTE_SIZE, value);
     }
 
     public void setUByte(char value) {
@@ -64,8 +64,6 @@ public class UBytePointer extends VoidPointer {
     }
 
     public void setUByte(char value, int index) {
-        if (value >= 1L << (BYTE_SIZE * 8))
-            throw new IllegalArgumentException("UByte out of range: " + value);
-        getBufPtr().setByte(index * BYTE_SIZE, (byte)value);
+        getBufPtr().setUByte(index * BYTE_SIZE, (byte)value);
     }
 }

@@ -113,22 +113,6 @@ JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_setStac
 
 /*
  * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
- * Method:    getPointerPart
- * Signature: (JII)J
- */
-JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getPointerPart
-  (JNIEnv *, jclass, jlong, jint, jint);
-
-/*
- * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
- * Method:    setPointerPart
- * Signature: (JIIJ)V
- */
-JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_setPointerPart
-  (JNIEnv *, jclass, jlong, jint, jint, jlong);
-
-/*
- * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
  * Method:    setPointerAsString
  * Signature: (JLjava/lang/String;)V
  */

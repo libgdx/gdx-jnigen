@@ -183,4 +183,14 @@ public class PointerType implements MappedType {
     public int typeID() {
         return Manager.POINTER_FFI_ID;
     }
+
+    @Override
+    public Expression writeToBufferPtr(Expression bufferPtr, Expression offset, Expression valueToWrite) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Expression readFromBufferPtr(Expression bufferPtr, Expression offset) {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -32,15 +32,15 @@ public class UIntPointer extends VoidPointer {
     }
 
     public long getUInt(int index) {
-        return getBufPtr().getInt(index * BYTE_SIZE) & 0xFFFFFFFFL;
+        return getBufPtr().getUInt(index * BYTE_SIZE);
     }
 
     public void setUInt(int value) {
-        setUInt(value & 0xFFFFFFFFL, 0);
+        setUInt(value, 0);
     }
 
     public void setUInt(int value, int index) {
-        setUInt(value & 0xFFFFFFFFL, index);
+        getBufPtr().setUInt(index * BYTE_SIZE, value);
     }
 
     public void setUInt(long value) {
@@ -48,8 +48,6 @@ public class UIntPointer extends VoidPointer {
     }
 
     public void setUInt(long value, int index) {
-        if (value >= 1L << (BYTE_SIZE * 8))
-            throw new IllegalArgumentException("UInt out of range: " + value);
-        getBufPtr().setInt(index * BYTE_SIZE, (int)value);
+        getBufPtr().setUInt(index * BYTE_SIZE, value);
     }
 }

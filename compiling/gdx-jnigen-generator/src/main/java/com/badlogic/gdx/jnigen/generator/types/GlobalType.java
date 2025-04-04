@@ -125,4 +125,14 @@ public class GlobalType implements MappedType {
     public int typeID() {
         throw new IllegalArgumentException("Should not reach");
     }
+
+    @Override
+    public Expression readFromBufferPtr(Expression bufferPtr, Expression offset) {
+        throw new IllegalArgumentException("Should not reach");
+    }
+
+    @Override
+    public Expression writeToBufferPtr(Expression bufferPtr, Expression offset, Expression valueToWrite) {
+        throw new IllegalArgumentException("Should not reach");
+    }
 }

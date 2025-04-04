@@ -176,10 +176,6 @@ public class CHandler {
 
     public static native ByteBuffer wrapPointer(long pointer, int size);
 
-    public static native long getPointerPart(long pointer, int size, int offset);
-
-    public static native void setPointerPart(long pointer, int size, int offset, long value);
-
     public static native void setPointerAsString(long pointer, String string);
 
     public static native String getPointerAsString(long pointer);

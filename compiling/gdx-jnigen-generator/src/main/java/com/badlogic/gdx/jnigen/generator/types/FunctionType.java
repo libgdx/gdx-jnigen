@@ -55,9 +55,6 @@ public class FunctionType {
             }
             nativeMethod.addParameter(namedType.getDefinition().getMappedType().primitiveType(), namedType.getName());
 
-            Statement assertStatement = namedType.getDefinition().getMappedType().assertJava(new NameExpr(namedType.getName()));
-            if (!assertStatement.isEmptyStmt())
-                body.addStatement(assertStatement);
             callExprCreate.addArgument(namedType.getDefinition().getMappedType().toC(new NameExpr(namedType.getName())));
         }
         if (arguments.length != 0)

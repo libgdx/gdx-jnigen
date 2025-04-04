@@ -2,7 +2,6 @@ package com.badlogic.gdx.jnigen.generator.types;
 
 import com.badlogic.gdx.jnigen.generator.ClassNameConstants;
 import com.badlogic.gdx.jnigen.generator.Manager;
-import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.NodeList;
@@ -236,15 +235,7 @@ public class ClosureType implements MappedType, WritableClass {
         } else {
             MethodCallExpr returnTypeSetMethodCall = new MethodCallExpr("setValue");
             returnTypeSetMethodCall.setScope(new NameExpr("returnType"));
-            Statement assertStatement = returnType.getMappedType().assertJava(new NameExpr("_ret"));
-            if (!assertStatement.isEmptyStmt()) {
-                VariableDeclarationExpr declarationExpr = new VariableDeclarationExpr(new VariableDeclarator(StaticJavaParser.parseType(returnType.getMappedType().abstractType()), "_ret", callExpr));
-                returnTypeSetMethodCall.addArgument("_ret");
-                invokeBody.addStatement(declarationExpr);
-                invokeBody.addStatement(assertStatement);
-            } else {
-                returnTypeSetMethodCall.addArgument(callExpr);
-            }
+            returnTypeSetMethodCall.addArgument(callExpr);
             invokeBody.addStatement(returnTypeSetMethodCall);
         }
 
@@ -331,5 +322,15 @@ public class ClosureType implements MappedType, WritableClass {
     @Override
     public String internalClass() {
         return parent.internalClass() + "." + internalClassName();
+    }
+
+    @Override
+    public Expression readFromBufferPtr(Expression bufferPtr, Expression offset) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Expression writeToBufferPtr(Expression bufferPtr, Expression offset, Expression valueToWrite) {
+        throw new UnsupportedOperationException();
     }
 }

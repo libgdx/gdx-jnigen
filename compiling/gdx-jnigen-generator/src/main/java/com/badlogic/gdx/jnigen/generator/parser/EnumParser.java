@@ -42,7 +42,7 @@ public class EnumParser {
                 String cursorSpelling = clang_getCursorSpelling(current).getString();
                 if (current.kind() == CXCursor_EnumConstantDecl) {
                     long constantValue = clang_getEnumConstantDeclValue(current);
-                    if (constantValue > Integer.MAX_VALUE)
+                    if (constantValue > Integer.MAX_VALUE || constantValue < Integer.MIN_VALUE)
                         throw new IllegalArgumentException("Why is the enum " + enumType.abstractType() + " so biiig? Please open a issue in the gdx-jnigen repo");
                     EnumConstant constant = new EnumConstant((int) constantValue, cursorSpelling, new CommentParser(current).parse());
                     enumType.registerConstant(constant);
