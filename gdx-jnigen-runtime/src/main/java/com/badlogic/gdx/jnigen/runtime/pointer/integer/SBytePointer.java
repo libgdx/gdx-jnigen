@@ -57,4 +57,18 @@ public class SBytePointer extends VoidPointer {
     public void setByte(byte value, int index) {
         getBufPtr().setByte(index * BYTE_SIZE, value);
     }
+
+    public static SBytePointer fromString(String string, boolean freeOnGC) {
+        SBytePointer pointer = new SBytePointer(string.getBytes().length + 1, freeOnGC);
+        pointer.setString(string);
+        return pointer;
+    }
+
+    public void setString(String string) {
+        getBufPtr().setString(string);
+    }
+
+    public String getString() {
+        return getBufPtr().getString();
+    }
 }

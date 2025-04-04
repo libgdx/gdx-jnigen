@@ -176,10 +176,6 @@ public class CHandler {
 
     public static native ByteBuffer wrapPointer(long pointer, int size);
 
-    public static native void setPointerAsString(long pointer, String string);
-
-    public static native String getPointerAsString(long pointer);
-
     public static native int getSizeFromFFIType(long type);
 
     public static native boolean getSignFromFFIType(long type);

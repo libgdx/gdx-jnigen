@@ -67,6 +67,5 @@ public class BasicPointerTest extends BaseTest {
         BytePointer pointer = new BytePointer(0L, false);
         assertTrue(pointer.isNull());
         assertThrows(NullPointerException.class, pointer::getByte);
-        assertNull(pointer.getString());
     }
 }

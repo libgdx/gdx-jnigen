@@ -50,7 +50,7 @@ public enum SpecialEnum implements CEnum {
         }
 
         public SpecialEnumPointer(int count, boolean freeOnGC) {
-            super(count, freeOnGC);
+            super(count * __size, freeOnGC);
         }
 
         public SpecialEnum getEnumValue(int index) {

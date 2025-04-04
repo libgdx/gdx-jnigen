@@ -66,4 +66,18 @@ public class UBytePointer extends VoidPointer {
     public void setUByte(char value, int index) {
         getBufPtr().setUByte(index * BYTE_SIZE, (byte)value);
     }
+
+    public static UBytePointer fromString(String string, boolean freeOnGC) {
+        UBytePointer pointer = new UBytePointer(string.getBytes().length + 1, freeOnGC);
+        pointer.setString(string);
+        return pointer;
+    }
+
+    public void setString(String string) {
+        getBufPtr().setString(string);
+    }
+
+    public String getString() {
+        return getBufPtr().getString();
+    }
 }

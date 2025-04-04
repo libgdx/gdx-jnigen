@@ -362,18 +362,6 @@ JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_setStac
     return true;
 }
 
-JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_setPointerAsString(JNIEnv* env, jclass clazz, jlong pointer, jstring obj_string) {
-	char* string = (char*)env->GetStringUTFChars(obj_string, 0);
-
-    strcpy((char*)pointer, string);
-    
-	env->ReleaseStringUTFChars(obj_string, string);
-}
-
-JNIEXPORT jstring JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getPointerAsString(JNIEnv* env, jclass clazz, jlong pointer) {
-    return env->NewStringUTF(reinterpret_cast<const char*>(pointer));
-}
-
 JNIEXPORT jint JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getSizeFromFFIType(JNIEnv* env, jclass clazz, jlong type) {
     return reinterpret_cast<ffi_type*>(type)->size;
 }

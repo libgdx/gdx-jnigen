@@ -66,7 +66,7 @@ public enum TestEnum implements CEnum {
         }
 
         public TestEnumPointer(int count, boolean freeOnGC) {
-            super(count, freeOnGC);
+            super(count * __size, freeOnGC);
         }
 
         public TestEnum getEnumValue(int index) {

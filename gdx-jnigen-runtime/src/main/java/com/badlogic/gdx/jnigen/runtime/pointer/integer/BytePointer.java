@@ -75,21 +75,16 @@ public class BytePointer extends VoidPointer {
     }
 
     public static BytePointer fromString(String string, boolean freeOnGC) {
-        BytePointer pointer = new BytePointer(string.length() + 1, freeOnGC);
+        BytePointer pointer = new BytePointer(string.getBytes().length + 1, freeOnGC);
         pointer.setString(string);
         return pointer;
     }
 
-    // TODO: 01.04.2025 Probably not belongs here
     public void setString(String string) {
-        // TODO: 21.06.24 is that sane?
-        assertBounds(string.length());
-        CHandler.setPointerAsString(getPointer(), string);
+        getBufPtr().setString(string);
     }
 
     public String getString() {
-        if (isNull())
-            return null;
-        return CHandler.getPointerAsString(getPointer());
+        return getBufPtr().getString();
     }
 }

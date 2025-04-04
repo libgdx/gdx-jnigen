@@ -153,7 +153,7 @@ public class EnumType implements MappedType {
         ConstructorDeclaration defaultConstructorPointer = pointerClass.addConstructor(Keyword.PUBLIC);
         defaultConstructorPointer.addParameter(int.class, "count");
         defaultConstructorPointer.addParameter(boolean.class, "freeOnGC");
-        defaultConstructorPointer.createBody().addStatement("super(count, freeOnGC);");
+        defaultConstructorPointer.createBody().addStatement("super(count * __size, freeOnGC);");
 
         Expression readExpr = getBackingPrimitiveType().readFromBufferPtr(new MethodCallExpr("getBufPtr"), StaticJavaParser.parseExpression("index * __size"));
         CastExpr castToInt = new CastExpr().setType(int.class).setExpression(readExpr);
