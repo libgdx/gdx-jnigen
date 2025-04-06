@@ -163,7 +163,7 @@ public final class TestData_Internal {
         }
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackBooleanArg_call(parameters[0].asLong() != 0);
+            methodWithCallbackBooleanArg_call((boolean) parameters[0].asBoolean());
         }
 
         public static methodWithCallbackBooleanArg methodWithCallbackBooleanArg_downcall(long fnPtr) {
@@ -677,7 +677,7 @@ public final class TestData_Internal {
         }
 
         default void invoke(JavaTypeWrapper[] parameters, JavaTypeWrapper returnType) {
-            methodWithCallbackAllArgs_call((long) parameters[0].asLong(), (int) parameters[1].asLong(), (short) parameters[2].asLong(), (byte) parameters[3].asLong(), (char) parameters[4].asLong(), parameters[5].asLong() != 0, (float) parameters[6].asFloat(), (double) parameters[7].asDouble());
+            methodWithCallbackAllArgs_call((long) parameters[0].asLong(), (int) parameters[1].asLong(), (short) parameters[2].asLong(), (byte) parameters[3].asLong(), (char) parameters[4].asLong(), (boolean) parameters[5].asBoolean(), (float) parameters[6].asFloat(), (double) parameters[7].asDouble());
         }
 
         public static methodWithCallbackAllArgs methodWithCallbackAllArgs_downcall(long fnPtr) {
@@ -837,7 +837,7 @@ public final class TestData_Internal {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
                 JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackBooleanReturn_Internal.__ffi_cache[0]);
                 returnConvert.setValue(useEncoder.invoke());
-                return returnConvert.asLong() != 0;
+                return (boolean) returnConvert.asBoolean();
             };
         }
     }

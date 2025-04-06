@@ -186,12 +186,12 @@ public class PointerType implements MappedType {
 
     @Override
     public Expression writeToBufferPtr(Expression bufferPtr, Expression offset, Expression valueToWrite) {
-        throw new UnsupportedOperationException();
+        return new MethodCallExpr("setNativePointer", offset, valueToWrite).setScope(bufferPtr);
     }
 
     @Override
     public Expression readFromBufferPtr(Expression bufferPtr, Expression offset) {
-        throw new UnsupportedOperationException();
+        return new MethodCallExpr("getNativePointer", offset).setScope(bufferPtr);
     }
 
     @Override

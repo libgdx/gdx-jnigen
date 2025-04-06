@@ -230,12 +230,12 @@ public class EnumType implements MappedType {
 
     @Override
     public Expression writeToBufferPtr(Expression bufferPtr, Expression offset, Expression valueToWrite) {
-        throw new UnsupportedOperationException();
+        return getBackingPrimitiveType().writeToBufferPtr(bufferPtr, offset, valueToWrite);
     }
 
     @Override
     public Expression readFromBufferPtr(Expression bufferPtr, Expression offset) {
-        throw new UnsupportedOperationException();
+        return getBackingPrimitiveType().readFromBufferPtr(bufferPtr, offset);
     }
 
     @Override

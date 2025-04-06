@@ -38,33 +38,33 @@ public final class AnonymousStructNoFieldEnd extends Struct {
     }
 
     public int externalValue() {
-        return (int) getValue(0);
+        return (int) getBufPtr().getInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0));
     }
 
     public void externalValue(int externalValue) {
-        setValue(externalValue, 0);
+        getBufPtr().setInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), externalValue);
     }
 
     /**
      * Anon struct field
      */
     public int intValue() {
-        return (int) getValue(1);
+        return (int) getBufPtr().getInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 4 : 4) : (CHandler.IS_COMPILED_WIN ? 4 : 4));
     }
 
     /**
      * Anon struct field
      */
     public void intValue(int intValue) {
-        setValue(intValue, 1);
+        getBufPtr().setInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 4 : 4) : (CHandler.IS_COMPILED_WIN ? 4 : 4), intValue);
     }
 
     public float floatValue() {
-        return (float) getValueFloat(2);
+        return (float) getBufPtr().getFloat(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 8 : 8) : (CHandler.IS_COMPILED_WIN ? 8 : 8));
     }
 
     public void floatValue(float floatValue) {
-        setValue(floatValue, 2);
+        getBufPtr().setFloat(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 8 : 8) : (CHandler.IS_COMPILED_WIN ? 8 : 8), floatValue);
     }
 
     public static final class AnonymousStructNoFieldEndPointer extends StackElementPointer<AnonymousStructNoFieldEnd> {

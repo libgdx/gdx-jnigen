@@ -42,16 +42,16 @@ public final class AnonymousStructField extends Struct {
         return __inner;
     }
 
-    private static final int __inner_offset = CHandler.getOffsetForField(__ffi_type, 0);
+    private static final int __inner_offset = CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0);
 
     private final inner __inner = new inner(getPointer() + __inner_offset, false);
 
     public int externalValue() {
-        return (int) getValue(1);
+        return (int) getBufPtr().getInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 8 : 8) : (CHandler.IS_COMPILED_WIN ? 8 : 8));
     }
 
     public void externalValue(int externalValue) {
-        setValue(externalValue, 1);
+        getBufPtr().setInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 8 : 8) : (CHandler.IS_COMPILED_WIN ? 8 : 8), externalValue);
     }
 
     public static final class AnonymousStructFieldPointer extends StackElementPointer<AnonymousStructField> {
@@ -124,22 +124,22 @@ public final class AnonymousStructField extends Struct {
          * Innerr struct field
          */
         public int intValue() {
-            return (int) getValue(0);
+            return (int) getBufPtr().getInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0));
         }
 
         /**
          * Innerr struct field
          */
         public void intValue(int intValue) {
-            setValue(intValue, 0);
+            getBufPtr().setInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), intValue);
         }
 
         public float floatValue() {
-            return (float) getValueFloat(1);
+            return (float) getBufPtr().getFloat(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 4 : 4) : (CHandler.IS_COMPILED_WIN ? 4 : 4));
         }
 
         public void floatValue(float floatValue) {
-            setValue(floatValue, 1);
+            getBufPtr().setFloat(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 4 : 4) : (CHandler.IS_COMPILED_WIN ? 4 : 4), floatValue);
         }
 
         public static final class innerPointer extends StackElementPointer<inner> {

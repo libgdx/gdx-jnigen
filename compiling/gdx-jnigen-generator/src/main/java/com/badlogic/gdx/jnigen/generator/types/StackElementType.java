@@ -115,8 +115,8 @@ public class StackElementType implements MappedType, WritableClass {
                 .addStatement("return new " + structPointerRef + "(getPointer(), false, this);");
 
         // Fields
-        int index = 0;
-        for (StackElementField field : fields) {
+        for (int i = 0; i < fields.size(); i++) {
+            StackElementField field = fields.get(i);
             NamedType fieldType = field.getType();
             fieldType.getDefinition().getMappedType().importType(cuPublic);
             MethodDeclaration getMethod = toWriteToPublic.addMethod(fieldType.getName(), Keyword.PUBLIC);
@@ -126,12 +126,8 @@ public class StackElementType implements MappedType, WritableClass {
             if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY || fieldType.getDefinition()
                     .getTypeKind().isStackElement()) {
                 if (isStruct()) {
-                    MethodCallExpr getOffsetExpr = new MethodCallExpr("getOffsetForField");
-                    getOffsetExpr.setScope(new NameExpr("CHandler"));
-                    getOffsetExpr.addArgument("__ffi_type");
-                    getOffsetExpr.addArgument(index + "");
                     toWriteToPublic.addFieldWithInitializer(int.class, "__" + fieldType.getName() + "_offset",
-                            getOffsetExpr, Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
+                            getFieldOffsetAsExpression(i), Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
                 }
 
                 Expression pointer;
@@ -153,17 +149,10 @@ public class StackElementType implements MappedType, WritableClass {
                         "__" + fieldType.getName(), fromCExpression, Keyword.PRIVATE, Keyword.FINAL);
                 getBody.addStatement("return __" + fieldType.getName() + ";");
                 getMethod.setBody(getBody);
-                if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY)
-                    index += fieldType.getDefinition().getCount();
-                else index++;
                 continue;
             }
 
-            String appendix = "";
-            if (fieldType.getDefinition().getTypeKind() == TypeKind.FLOAT) appendix = "Float";
-            else if (fieldType.getDefinition().getTypeKind() == TypeKind.DOUBLE) appendix = "Double";
-            Expression expression = StaticJavaParser.parseExpression("getValue" + appendix + "(" + index + ")");
-            getBody.addStatement(new ReturnStmt(fieldType.getDefinition().getMappedType().fromC(expression)));
+            getBody.addStatement(new ReturnStmt(fieldType.getDefinition().getMappedType().fromC(fieldType.getDefinition().getMappedType().readFromBufferPtr(new MethodCallExpr("getBufPtr"), getFieldOffsetAsExpression(i)))));
             getMethod.setBody(getBody);
 
             MethodDeclaration setMethod = toWriteToPublic.addMethod(fieldType.getName(), Keyword.PUBLIC);
@@ -171,12 +160,8 @@ public class StackElementType implements MappedType, WritableClass {
             if (field.getComment() != null) setMethod.setJavadocComment(field.getComment());
             BlockStmt setBody = new BlockStmt();
 
-            MethodCallExpr callSetStruct = new MethodCallExpr("setValue");
-            callSetStruct.addArgument(fieldType.getDefinition().getMappedType().toC(new NameExpr(fieldType.getName())));
-            callSetStruct.addArgument(String.valueOf(index));
-            setBody.addStatement(callSetStruct);
+            setBody.addStatement(fieldType.getDefinition().getMappedType().writeToBufferPtr(new MethodCallExpr("getBufPtr"), getFieldOffsetAsExpression(i), fieldType.getDefinition().getMappedType().toC(new NameExpr(fieldType.getName()))));
             setMethod.setBody(setBody);
-            index++;
         }
 
         // Pointer
@@ -278,6 +263,54 @@ public class StackElementType implements MappedType, WritableClass {
         return generateFFIMethodBody.toString();
     }
 
+    public int getUnwrappedIndex(int index) {
+        int unwrappedStartIndex = 0;
+        for (int i = 0; i < index; i++) {
+            StackElementField field = fields.get(i);
+            NamedType fieldType = field.getType();
+            if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
+                unwrappedStartIndex += fieldType.getDefinition().getCount();
+            } else {
+                unwrappedStartIndex++;
+            }
+        }
+
+        return unwrappedStartIndex;
+    }
+
+    public int getFieldOffset(int index, boolean is32Bit, boolean isWin) {
+        if (!isStruct())
+            return 0;
+
+        ArrayList<NamedType> unwrappedFields = getUnwrappedFields();
+
+        if (index < 0 || index >= getFields().size())
+            throw new IndexOutOfBoundsException("Field index " + index + " is out of bounds for struct with " + getFields().size() + " fields");
+
+        int unwrappedStartIndex = getUnwrappedIndex(index);
+        int offset = 0;
+
+        for (int i = 0; i <= unwrappedStartIndex; i++) {
+            NamedType fieldType = unwrappedFields.get(i);
+            int fieldAlignment = fieldType.getDefinition().getMappedType().getAlignment(is32Bit, isWin);
+
+            if (offset % fieldAlignment != 0) {
+                offset += fieldAlignment - (offset % fieldAlignment);
+            }
+
+            if (i != unwrappedStartIndex) {
+                int fieldSize = fieldType.getDefinition().getMappedType().getSize(is32Bit, isWin);
+                offset += fieldSize;
+            }
+        }
+
+        return offset;
+    }
+
+    public Expression getFieldOffsetAsExpression(int index) {
+        return StaticJavaParser.parseExpression("CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? " + getFieldOffset(index, true, true) + " : " + getFieldOffset(index, true, false) + ") : (CHandler.IS_COMPILED_WIN ? " + getFieldOffset(index, false, true) + " : " + getFieldOffset(index, false, false) + ")");
+    }
+
     public boolean isStruct() {
         return definition.getTypeKind() == TypeKind.STRUCT;
     }
@@ -357,47 +390,6 @@ public class StackElementType implements MappedType, WritableClass {
     public Expression writeToBufferPtr(Expression bufferPtr, Expression offset, Expression valueToWrite) {
         throw new UnsupportedOperationException();
     }
-
-    public int getFieldOffset(int index, boolean is32Bit, boolean isWin) {
-        if (!isStruct()) {
-            return 0;
-        }
-
-        ArrayList<NamedType> unwrappedFields = getUnwrappedFields();
-
-        if (index < 0 || index >= getFields().size())
-            throw new IndexOutOfBoundsException("Field index " + index + " is out of bounds for struct with " + getFields().size() + " fields");
-
-        int unwrappedStartIndex = 0;
-        for (int i = 0; i < index; i++) {
-            StackElementField field = fields.get(i);
-            NamedType fieldType = field.getType();
-            if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
-                unwrappedStartIndex += fieldType.getDefinition().getCount();
-            } else {
-                unwrappedStartIndex++;
-            }
-        }
-
-        int offset = 0;
-
-        for (int i = 0; i <= unwrappedStartIndex; i++) {
-            NamedType fieldType = unwrappedFields.get(i);
-            int fieldAlignment = fieldType.getDefinition().getMappedType().getAlignment(is32Bit, isWin);
-
-            if (offset % fieldAlignment != 0) {
-                offset += fieldAlignment - (offset % fieldAlignment);
-            }
-
-            if (i != unwrappedStartIndex) {
-                int fieldSize = fieldType.getDefinition().getMappedType().getSize(is32Bit, isWin);
-                offset += fieldSize;
-            }
-        }
-
-        return offset;
-    }
-
 
     @Override
     public int getSize(boolean is32Bit, boolean isWin) {

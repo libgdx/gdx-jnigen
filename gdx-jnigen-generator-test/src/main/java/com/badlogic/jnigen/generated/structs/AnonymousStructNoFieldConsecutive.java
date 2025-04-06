@@ -38,43 +38,43 @@ public final class AnonymousStructNoFieldConsecutive extends Struct {
     }
 
     public int externalValue() {
-        return (int) getValue(0);
+        return (int) getBufPtr().getInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0));
     }
 
     public void externalValue(int externalValue) {
-        setValue(externalValue, 0);
+        getBufPtr().setInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), externalValue);
     }
 
     public int intValue1() {
-        return (int) getValue(1);
+        return (int) getBufPtr().getInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 4 : 4) : (CHandler.IS_COMPILED_WIN ? 4 : 4));
     }
 
     public void intValue1(int intValue1) {
-        setValue(intValue1, 1);
+        getBufPtr().setInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 4 : 4) : (CHandler.IS_COMPILED_WIN ? 4 : 4), intValue1);
     }
 
     public float floatValue1() {
-        return (float) getValueFloat(2);
+        return (float) getBufPtr().getFloat(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 8 : 8) : (CHandler.IS_COMPILED_WIN ? 8 : 8));
     }
 
     public void floatValue1(float floatValue1) {
-        setValue(floatValue1, 2);
+        getBufPtr().setFloat(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 8 : 8) : (CHandler.IS_COMPILED_WIN ? 8 : 8), floatValue1);
     }
 
     public int intValue2() {
-        return (int) getValue(3);
+        return (int) getBufPtr().getInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 12 : 12) : (CHandler.IS_COMPILED_WIN ? 12 : 12));
     }
 
     public void intValue2(int intValue2) {
-        setValue(intValue2, 3);
+        getBufPtr().setInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 12 : 12) : (CHandler.IS_COMPILED_WIN ? 12 : 12), intValue2);
     }
 
     public float floatValue2() {
-        return (float) getValueFloat(4);
+        return (float) getBufPtr().getFloat(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 16 : 16) : (CHandler.IS_COMPILED_WIN ? 16 : 16));
     }
 
     public void floatValue2(float floatValue2) {
-        setValue(floatValue2, 4);
+        getBufPtr().setFloat(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 16 : 16) : (CHandler.IS_COMPILED_WIN ? 16 : 16), floatValue2);
     }
 
     public static final class AnonymousStructNoFieldConsecutivePointer extends StackElementPointer<AnonymousStructNoFieldConsecutive> {

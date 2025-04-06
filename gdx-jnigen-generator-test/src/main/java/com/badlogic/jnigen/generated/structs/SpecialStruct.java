@@ -43,27 +43,27 @@ public final class SpecialStruct extends Struct {
     }
 
     public FloatPointer floatPtrField() {
-        return new FloatPointer(getValue(0), false);
+        return new FloatPointer(getBufPtr().getNativePointer(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0)), false);
     }
 
     public void floatPtrField(FloatPointer floatPtrField) {
-        setValue(floatPtrField.getPointer(), 0);
+        getBufPtr().setNativePointer(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), floatPtrField.getPointer());
     }
 
     public SIntPointer arrayField() {
         return __arrayField;
     }
 
-    private static final int __arrayField_offset = CHandler.getOffsetForField(__ffi_type, 1);
+    private static final int __arrayField_offset = CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 4 : 4) : (CHandler.IS_COMPILED_WIN ? 8 : 8);
 
     private final SIntPointer __arrayField = new SIntPointer(getPointer() + __arrayField_offset, false, 5);
 
     public SIntPointer intPtrField() {
-        return new SIntPointer(getValue(6), false);
+        return new SIntPointer(getBufPtr().getNativePointer(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 24 : 24) : (CHandler.IS_COMPILED_WIN ? 32 : 32)), false);
     }
 
     public void intPtrField(SIntPointer intPtrField) {
-        setValue(intPtrField.getPointer(), 6);
+        getBufPtr().setNativePointer(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 24 : 24) : (CHandler.IS_COMPILED_WIN ? 32 : 32), intPtrField.getPointer());
     }
 
     public static final class SpecialStructPointer extends StackElementPointer<SpecialStruct> {

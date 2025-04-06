@@ -42,16 +42,16 @@ public final class AnonymousStructFieldArray extends Struct {
         return __inner;
     }
 
-    private static final int __inner_offset = CHandler.getOffsetForField(__ffi_type, 0);
+    private static final int __inner_offset = CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0);
 
     private final inner.innerPointer __inner = new inner.innerPointer(getPointer() + __inner_offset, false, 2);
 
     public int externalValue() {
-        return (int) getValue(2);
+        return (int) getBufPtr().getInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 16 : 16) : (CHandler.IS_COMPILED_WIN ? 16 : 16));
     }
 
     public void externalValue(int externalValue) {
-        setValue(externalValue, 2);
+        getBufPtr().setInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 16 : 16) : (CHandler.IS_COMPILED_WIN ? 16 : 16), externalValue);
     }
 
     public static final class AnonymousStructFieldArrayPointer extends StackElementPointer<AnonymousStructFieldArray> {
@@ -118,19 +118,19 @@ public final class AnonymousStructFieldArray extends Struct {
         }
 
         public int intValue() {
-            return (int) getValue(0);
+            return (int) getBufPtr().getInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0));
         }
 
         public void intValue(int intValue) {
-            setValue(intValue, 0);
+            getBufPtr().setInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), intValue);
         }
 
         public float floatValue() {
-            return (float) getValueFloat(1);
+            return (float) getBufPtr().getFloat(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 4 : 4) : (CHandler.IS_COMPILED_WIN ? 4 : 4));
         }
 
         public void floatValue(float floatValue) {
-            setValue(floatValue, 1);
+            getBufPtr().setFloat(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 4 : 4) : (CHandler.IS_COMPILED_WIN ? 4 : 4), floatValue);
         }
 
         public static final class innerPointer extends StackElementPointer<inner> {

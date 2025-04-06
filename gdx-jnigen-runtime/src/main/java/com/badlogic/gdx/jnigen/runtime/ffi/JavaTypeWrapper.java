@@ -80,6 +80,10 @@ public final class JavaTypeWrapper {
         return wrappingType;
     }
 
+    public boolean asBoolean() {
+        return wrappingType != 0;
+    }
+
     public long asLong() {
         return wrappingType;
     }

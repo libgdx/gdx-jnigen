@@ -250,6 +250,8 @@ public class ClosureType implements MappedType, WritableClass {
             methodName = "asFloat";
         else if (type.getTypeKind() == TypeKind.DOUBLE)
             methodName = "asDouble";
+        else if (type.getTypeKind() == TypeKind.BOOLEAN)
+            methodName = "asBoolean";
         MethodCallExpr methodCallExpr = new MethodCallExpr(methodName);
         methodCallExpr.setScope(expression);
         return type.getMappedType().fromC(methodCallExpr);
@@ -325,13 +327,13 @@ public class ClosureType implements MappedType, WritableClass {
     }
 
     @Override
-    public Expression readFromBufferPtr(Expression bufferPtr, Expression offset) {
-        throw new UnsupportedOperationException();
+    public Expression writeToBufferPtr(Expression bufferPtr, Expression offset, Expression valueToWrite) {
+        return new MethodCallExpr("setNativePointer", offset, valueToWrite).setScope(bufferPtr);
     }
 
     @Override
-    public Expression writeToBufferPtr(Expression bufferPtr, Expression offset, Expression valueToWrite) {
-        throw new UnsupportedOperationException();
+    public Expression readFromBufferPtr(Expression bufferPtr, Expression offset) {
+        return new MethodCallExpr("getNativePointer", offset).setScope(bufferPtr);
     }
 
     @Override

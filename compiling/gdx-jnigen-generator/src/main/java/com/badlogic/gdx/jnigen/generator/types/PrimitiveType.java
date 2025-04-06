@@ -76,18 +76,10 @@ public class PrimitiveType implements MappedType {
 
     @Override
     public Expression fromC(Expression cRetrieved) {
-        if (getJavaRepresentation() == boolean.class) {
-            BinaryExpr compare = new BinaryExpr();
-            compare.setLeft(cRetrieved);
-            compare.setOperator(Operator.NOT_EQUALS);
-            compare.setRight(new IntegerLiteralExpr("0"));
-            return compare;
-        } else {
-            CastExpr castExpr = new CastExpr();
-            castExpr.setType(getJavaRepresentation());
-            castExpr.setExpression(cRetrieved);
-            return castExpr;
-        }
+        CastExpr castExpr = new CastExpr();
+        castExpr.setType(getJavaRepresentation());
+        castExpr.setExpression(cRetrieved);
+        return castExpr;
     }
 
     @Override
