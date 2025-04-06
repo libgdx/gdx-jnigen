@@ -10,21 +10,21 @@ import java.nio.charset.StandardCharsets;
 public final class BufferPtr {
 
     private final ByteBuffer buffer;
-    private final ByteBuffer next;
     private final long pointer;
     private final int capacity;
     private final boolean freeOnGC;
     private boolean freed = false;
     private BufferPtr parent;
 
-    public BufferPtr(ByteBuffer buffer, ByteBuffer next, long pointer, int capacity, boolean freeOnGC) {
+    public BufferPtr(ByteBuffer buffer, long pointer, int capacity, boolean freeOnGC) {
         this.buffer = buffer;
-        this.next = next;
         this.pointer = pointer;
         this.capacity = capacity;
         this.freeOnGC = freeOnGC;
         if (freeOnGC)
             GCHandler.enqueuePointer(this);
+        if (capacity > buffer.capacity())
+            throw new IllegalArgumentException("Buffer capacity (" + buffer.capacity() + ") exceeded by " + capacity + ". More then 1GB?");
     }
 
     public void free() {
@@ -55,8 +55,6 @@ public final class BufferPtr {
 
     public boolean getBoolean(int index) {
         assertBounds(index + 1);
-        if (index >= buffer.capacity())
-            return next.get(index - buffer.capacity()) != 0;
         return buffer.get(index) != 0;
     }
 
@@ -67,10 +65,7 @@ public final class BufferPtr {
 
     public void setBoolean(int index, boolean value) {
         assertBounds(index + 1);
-        if (index >= buffer.capacity())
-            next.put(index - buffer.capacity(), (byte)(value ? 1 : 0));
-        else
-            buffer.put(index, (byte)(value ? 1 : 0));
+        buffer.put(index, (byte)(value ? 1 : 0));
     }
 
     public byte getByte() {
@@ -80,8 +75,6 @@ public final class BufferPtr {
 
     public byte getByte(int index) {
         assertBounds(index + 1);
-        if (index >= buffer.capacity())
-            return next.get(index - buffer.capacity());
         return buffer.get(index);
     }
 
@@ -92,10 +85,7 @@ public final class BufferPtr {
 
     public void setByte(int index, byte value) {
         assertBounds(index + 1);
-        if (index >= buffer.capacity())
-            next.put(index - buffer.capacity(), value);
-        else
-            buffer.put(index, value);
+        buffer.put(index, value);
     }
 
     public char getUByte() {
@@ -105,8 +95,6 @@ public final class BufferPtr {
 
     public char getUByte(int index) {
         assertBounds(index + 1);
-        if (index >= buffer.capacity())
-            return (char)(next.get(index - buffer.capacity()) & 0xFF);
         return (char)(buffer.get(index) & 0xFF);
     }
 
@@ -117,10 +105,7 @@ public final class BufferPtr {
 
     public void setUByte(int index, byte value) {
         assertBounds(index + 1);
-        if (index >= buffer.capacity())
-            next.put(index - buffer.capacity(), value);
-        else
-            buffer.put(index, value);
+        buffer.put(index, value);
     }
 
     public void setUByte(char value) {
@@ -134,10 +119,7 @@ public final class BufferPtr {
         if (value >= 1L << 8)
             throw new IllegalArgumentException("UByte out of range: " + value);
         assertBounds(index + 1);
-        if (index >= buffer.capacity())
-            next.put(index - buffer.capacity(), (byte)value);
-        else
-            buffer.put(index, (byte)value);
+        buffer.put(index, (byte)value);
     }
 
     public char getChar() {
@@ -147,8 +129,6 @@ public final class BufferPtr {
 
     public char getChar(int index) {
         assertBounds(index + 2);
-        if (index >= buffer.capacity())
-            return next.getChar(index - buffer.capacity());
         return buffer.getChar(index);
     }
 
@@ -159,10 +139,7 @@ public final class BufferPtr {
 
     public void setChar(int index, char value) {
         assertBounds(index + 2);
-        if (index >= buffer.capacity())
-            next.putChar(index - buffer.capacity(), value);
-        else
-            buffer.putChar(index, value);
+        buffer.putChar(index, value);
     }
 
     public short getShort() {
@@ -172,8 +149,6 @@ public final class BufferPtr {
 
     public short getShort(int index) {
         assertBounds(index + 2);
-        if (index >= buffer.capacity())
-            return next.getShort(index - buffer.capacity());
         return buffer.getShort(index);
     }
 
@@ -184,10 +159,7 @@ public final class BufferPtr {
 
     public void setShort(int index, short value) {
         assertBounds(index + 2);
-        if (index >= buffer.capacity())
-            next.putShort(index - buffer.capacity(), value);
-        else
-            buffer.putShort(index, value);
+        buffer.putShort(index, value);
     }
 
     public int getInt() {
@@ -197,8 +169,6 @@ public final class BufferPtr {
 
     public int getInt(int index) {
         assertBounds(index + 4);
-        if (index >= buffer.capacity())
-            return next.getInt(index - buffer.capacity());
         return buffer.getInt(index);
     }
 
@@ -209,10 +179,7 @@ public final class BufferPtr {
 
     public void setInt(int index, int value) {
         assertBounds(index + 4);
-        if (index >= buffer.capacity())
-            next.putInt(index - buffer.capacity(), value);
-        else
-            buffer.putInt(index, value);
+        buffer.putInt(index, value);
     }
 
     public long getUInt() {
@@ -222,8 +189,6 @@ public final class BufferPtr {
 
     public long getUInt(int index) {
         assertBounds(index + 4);
-        if (index >= buffer.capacity())
-            return next.getInt(index - buffer.capacity()) & 0xFFFFFFFFL;
         return buffer.getInt(index) & 0xFFFFFFFFL;
     }
 
@@ -234,10 +199,7 @@ public final class BufferPtr {
 
     public void setUInt(int index, int value) {
         assertBounds(index + 4);
-        if (index >= buffer.capacity())
-            next.putInt(index - buffer.capacity(), value);
-        else
-            buffer.putInt(index, value);
+        buffer.putInt(index, value);
     }
 
     public void setUInt(long value) {
@@ -251,10 +213,7 @@ public final class BufferPtr {
         if (value >= 1L << 32)
             throw new IllegalArgumentException("UInt out of range: " + value);
         assertBounds(index + 4);
-        if (index >= buffer.capacity())
-            next.putInt(index - buffer.capacity(), (int)value);
-        else
-            buffer.putInt(index, (int)value);
+        buffer.putInt(index, (int)value);
     }
 
     public long getLong() {
@@ -264,8 +223,6 @@ public final class BufferPtr {
 
     public long getLong(int index) {
         assertBounds(index + 8);
-        if (index >= buffer.capacity())
-            return next.getLong(index - buffer.capacity());
         return buffer.getLong(index);
     }
 
@@ -276,10 +233,7 @@ public final class BufferPtr {
 
     public void setLong(int index, long value) {
         assertBounds(index + 8);
-        if (index >= buffer.capacity())
-            next.putLong(index - buffer.capacity(), value);
-        else
-            buffer.putLong(index, value);
+        buffer.putLong(index, value);
     }
 
     public float getFloat() {
@@ -289,8 +243,6 @@ public final class BufferPtr {
 
     public float getFloat(int index) {
         assertBounds(index + 4);
-        if (index >= buffer.capacity())
-            return next.getFloat(index - buffer.capacity());
         return buffer.getFloat(index);
     }
 
@@ -301,10 +253,7 @@ public final class BufferPtr {
 
     public void setFloat(int index, float value) {
         assertBounds(index + 4);
-        if (index >= buffer.capacity())
-            next.putFloat(index - buffer.capacity(), value);
-        else
-            buffer.putFloat(index, value);
+        buffer.putFloat(index, value);
     }
 
     public double getDouble() {
@@ -314,8 +263,6 @@ public final class BufferPtr {
 
     public double getDouble(int index) {
         assertBounds(index + 8);
-        if (index >= buffer.capacity())
-            return next.getDouble(index - buffer.capacity());
         return buffer.getDouble(index);
     }
 
@@ -326,10 +273,7 @@ public final class BufferPtr {
 
     public void setDouble(int index, double value) {
         assertBounds(index + 8);
-        if (index >= buffer.capacity())
-            next.putDouble(index - buffer.capacity(), value);
-        else
-            buffer.putDouble(index, value);
+        buffer.putDouble(index, value);
     }
 
     public long getNativePointer() {
@@ -343,17 +287,9 @@ public final class BufferPtr {
     public long getNativePointer(int index) {
         assertBounds(index + CHandler.POINTER_SIZE);
         if (CHandler.POINTER_SIZE == 4) {
-            if (index >= buffer.capacity()) {
-                return next.getInt(index - buffer.capacity());
-            } else {
-                return buffer.getInt(index);
-            }
+            return buffer.getInt(index);
         } else {
-            if (index >= buffer.capacity()) {
-                return next.getLong(index - buffer.capacity());
-            } else {
-                return buffer.getLong(index);
-            }
+            return buffer.getLong(index);
         }
     }
 
@@ -368,17 +304,9 @@ public final class BufferPtr {
     public void setNativePointer(int index, long value) {
         assertBounds(index + CHandler.POINTER_SIZE);
         if (CHandler.POINTER_SIZE == 4) {
-            if (index >= buffer.capacity()) {
-                next.putInt(index - buffer.capacity(), (int)value);
-            } else {
-                buffer.putInt(index, (int)value);
-            }
+            buffer.putInt(index, (int)value);
         } else {
-            if (index >= buffer.capacity()) {
-                next.putLong(index - buffer.capacity(), value);
-            } else {
-                buffer.putLong(index, value);
-            }
+            buffer.putLong(index, value);
         }
     }
 
@@ -393,17 +321,9 @@ public final class BufferPtr {
     public long getNativeLong(int index) {
         assertBounds(index + CHandler.LONG_SIZE);
         if (CHandler.LONG_SIZE == 4) {
-            if (index >= buffer.capacity()) {
-                return next.getInt(index - buffer.capacity());
-            } else {
-                return buffer.getInt(index);
-            }
+            return buffer.getInt(index);
         } else {
-            if (index >= buffer.capacity()) {
-                return next.getLong(index - buffer.capacity());
-            } else {
-                return buffer.getLong(index);
-            }
+            return buffer.getLong(index);
         }
     }
 
@@ -418,17 +338,9 @@ public final class BufferPtr {
     public void setNativeLong(int index, long value) {
         assertBounds(index + CHandler.LONG_SIZE);
         if (CHandler.LONG_SIZE == 4) {
-            if (index >= buffer.capacity()) {
-                next.putInt(index - buffer.capacity(), (int)value);
-            } else {
-                buffer.putInt(index, (int)value);
-            }
+            buffer.putInt(index, (int)value);
         } else {
-            if (index >= buffer.capacity()) {
-                next.putLong(index - buffer.capacity(), value);
-            } else {
-                buffer.putLong(index, value);
-            }
+            buffer.putLong(index, value);
         }
     }
 
@@ -443,17 +355,9 @@ public final class BufferPtr {
     public long getNativeULong(int index) {
         assertBounds(index + CHandler.LONG_SIZE);
         if (CHandler.LONG_SIZE == 4) {
-            if (index >= buffer.capacity()) {
-                return next.getInt(index - buffer.capacity()) & 0xFFFFFFFFL;
-            } else {
-                return buffer.getInt(index) & 0xFFFFFFFFL;
-            }
+            return buffer.getInt(index) & 0xFFFFFFFFL;
         } else {
-            if (index >= buffer.capacity()) {
-                return next.getLong(index - buffer.capacity());
-            } else {
-                return buffer.getLong(index);
-            }
+            return buffer.getLong(index);
         }
     }
 
@@ -468,17 +372,9 @@ public final class BufferPtr {
     public void setNativeULong(int index, long value) {
         assertBounds(index + CHandler.LONG_SIZE);
         if (CHandler.LONG_SIZE == 4) {
-            if (index >= buffer.capacity()) {
-                next.putInt(index - buffer.capacity(), (int)value);
-            } else {
-                buffer.putInt(index, (int)value);
-            }
+            buffer.putInt(index, (int)value);
         } else {
-            if (index >= buffer.capacity()) {
-                next.putLong(index - buffer.capacity(), value);
-            } else {
-                buffer.putLong(index, value);
-            }
+            buffer.putLong(index, value);
         }
     }
 
@@ -490,11 +386,11 @@ public final class BufferPtr {
     public String getString(Charset charset)
     {
         int length = 0;
-        while (getByte(length) != 0)
+        while (buffer.get(length) != 0)
             length++;
         byte[] bytes = new byte[length];
         for (int i = 0; i < length; i++) {
-            bytes[i] = getByte(i);
+            bytes[i] = buffer.get(i);
         }
         return new String(bytes, charset);
     }
@@ -509,9 +405,9 @@ public final class BufferPtr {
         byte[] bytes = string.getBytes(charset);
         assertBounds(bytes.length + 1);
         for (int i = 0; i < bytes.length; i++) {
-            setByte(i, bytes[i]);
+            buffer.put(i, bytes[i]);
         }
-        setByte(bytes.length, (byte) 0);
+        buffer.put(bytes.length, (byte) 0);
     }
 
     public boolean getsGCFreed() {

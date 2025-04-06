@@ -1,6 +1,7 @@
 package com.badlogic.jnigen.benchmark;
 
 import com.badlogic.gdx.jnigen.runtime.CHandler;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrAllocator;
 import com.badlogic.jnigen.generated.TestData;
 import com.badlogic.jnigen.generated.enums.SpecialEnum;
