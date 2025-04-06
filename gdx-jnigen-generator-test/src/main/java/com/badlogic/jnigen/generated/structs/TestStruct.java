@@ -44,56 +44,56 @@ public final class TestStruct extends Struct {
      * Field Comment 1
      */
     public long field1() {
-        return (long) getBufPtr().getLong(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0));
+        return (long) getBufPtr().getLong(0);
     }
 
     /**
      * Field Comment 1
      */
     public void field1(long field1) {
-        getBufPtr().setLong(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), field1);
+        getBufPtr().setLong(0, field1);
     }
 
     /**
      * Field Comment 2
      */
     public long field2() {
-        return (long) getBufPtr().getUInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 8 : 8) : (CHandler.IS_COMPILED_WIN ? 8 : 8));
+        return (long) getBufPtr().getUInt(8);
     }
 
     /**
      * Field Comment 2
      */
     public void field2(long field2) {
-        getBufPtr().setUInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 8 : 8) : (CHandler.IS_COMPILED_WIN ? 8 : 8), field2);
+        getBufPtr().setUInt(8, field2);
     }
 
     /**
      * Field Comment 3
      */
     public char field3() {
-        return (char) getBufPtr().getChar(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 12 : 12) : (CHandler.IS_COMPILED_WIN ? 12 : 12));
+        return (char) getBufPtr().getChar(12);
     }
 
     /**
      * Field Comment 3
      */
     public void field3(char field3) {
-        getBufPtr().setChar(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 12 : 12) : (CHandler.IS_COMPILED_WIN ? 12 : 12), field3);
+        getBufPtr().setChar(12, field3);
     }
 
     /**
      * Field Comment 4
      */
     public char field4() {
-        return (char) getBufPtr().getUByte(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 14 : 14) : (CHandler.IS_COMPILED_WIN ? 14 : 14));
+        return (char) getBufPtr().getUByte(14);
     }
 
     /**
      * Field Comment 4
      */
     public void field4(char field4) {
-        getBufPtr().setUByte(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 14 : 14) : (CHandler.IS_COMPILED_WIN ? 14 : 14), field4);
+        getBufPtr().setUByte(14, field4);
     }
 
     public static final class TestStructPointer extends StackElementPointer<TestStruct> {

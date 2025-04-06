@@ -1,8 +1,8 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
 import com.badlogic.gdx.jnigen.generator.ClassNameConstants;
+import com.badlogic.gdx.jnigen.generator.JavaUtils;
 import com.badlogic.gdx.jnigen.generator.Manager;
-import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Modifier.Keyword;
@@ -308,7 +308,7 @@ public class StackElementType implements MappedType, WritableClass {
     }
 
     public Expression getFieldOffsetAsExpression(int index) {
-        return StaticJavaParser.parseExpression("CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? " + getFieldOffset(index, true, true) + " : " + getFieldOffset(index, true, false) + ") : (CHandler.IS_COMPILED_WIN ? " + getFieldOffset(index, false, true) + " : " + getFieldOffset(index, false, false) + ")");
+        return JavaUtils.getOffsetAsExpression(index, this::getFieldOffset);
     }
 
     public boolean isStruct() {
@@ -382,13 +382,13 @@ public class StackElementType implements MappedType, WritableClass {
     }
 
     @Override
-    public Expression readFromBufferPtr(Expression bufferPtr, Expression offset) {
-        throw new UnsupportedOperationException();
+    public Expression writeToBufferPtr(Expression bufferPtr, Expression offset, Expression valueToWrite) {
+        return new MethodCallExpr("setNativePointer", offset, valueToWrite).setScope(bufferPtr);
     }
 
     @Override
-    public Expression writeToBufferPtr(Expression bufferPtr, Expression offset, Expression valueToWrite) {
-        throw new UnsupportedOperationException();
+    public Expression readFromBufferPtr(Expression bufferPtr, Expression offset) {
+        return new MethodCallExpr("getNativePointer", offset).setScope(bufferPtr);
     }
 
     @Override

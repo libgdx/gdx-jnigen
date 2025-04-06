@@ -6,6 +6,7 @@ import com.badlogic.gdx.jnigen.runtime.closure.Closure;
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.runtime.ffi.ClosureDecoder;
 import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrAllocator;
 import com.badlogic.gdx.jnigen.runtime.util.DowncallClosureSupplier;
 
 import java.io.PrintWriter;
@@ -20,7 +21,7 @@ public class CHandler {
     static {
         new SharedLibraryLoader().load("jnigen-runtime");
         try {
-            boolean res = init(CHandler.class.getDeclaredMethod("dispatchCallback", ClosureDecoder.class, ByteBuffer.class),
+            boolean res = init(CHandler.class.getDeclaredMethod("dispatchCallback", ClosureDecoder.class, long.class),
                     CHandler.class.getDeclaredMethod("getExceptionString", Throwable.class));
             if (!res)
                 throw new RuntimeException("JNI initialization failed, either CHandler#dispatchCallback or CHandler#getExceptionString are not JNI accessible.");
@@ -84,8 +85,8 @@ public class CHandler {
 
     public static native boolean reExportSymbolsGlobally(String libPath);
 
-    public static <T extends Closure> long dispatchCallback(ClosureDecoder<T> toCallOn, ByteBuffer parameter) {
-        return toCallOn.invoke(parameter);
+    public static <T extends Closure> void dispatchCallback(ClosureDecoder<T> toCallOn, long parameter) {
+        toCallOn.invoke(BufferPtrAllocator.get(parameter));
     }
 
     public static native long dispatchCCall(long fnPtr, long cif, ByteBuffer parameter);

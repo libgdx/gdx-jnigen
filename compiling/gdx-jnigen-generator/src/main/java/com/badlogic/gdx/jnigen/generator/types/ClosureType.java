@@ -1,6 +1,7 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
 import com.badlogic.gdx.jnigen.generator.ClassNameConstants;
+import com.badlogic.gdx.jnigen.generator.JavaUtils;
 import com.badlogic.gdx.jnigen.generator.Manager;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
@@ -183,6 +184,7 @@ public class ClosureType implements MappedType, WritableClass {
         cuPrivate.addImport(ClassNameConstants.JAVATYPEWRAPPER_CLASS);
         cuPrivate.addImport(ClassNameConstants.CTYPEINFO_CLASS);
         cuPrivate.addImport(ClassNameConstants.CLOSURE_CLASS);
+        cuPrivate.addImport(ClassNameConstants.BUFFER_PTR);
 
         NodeList<Expression> arrayInitializerExpr = new NodeList<>();
         ArrayCreationExpr arrayCreationExpr = new ArrayCreationExpr();
@@ -219,29 +221,38 @@ public class ClosureType implements MappedType, WritableClass {
                 .createBody().addStatement("return __ffi_cache;");
 
         MethodDeclaration invokeMethod = toWriteToPrivate.addMethod("invoke", Keyword.DEFAULT);
-        invokeMethod.addParameter("JavaTypeWrapper[]", "parameters");
-        invokeMethod.addParameter("JavaTypeWrapper", "returnType");
+        invokeMethod.addParameter("BufferPtr", "buf");
         BlockStmt invokeBody = new BlockStmt();
         MethodCallExpr callExpr = new MethodCallExpr(callMethod.getNameAsString());
         for (int i = 0; i < arguments.length; i++) {
             NamedType type = arguments[i];
             TypeDefinition definition = type.getDefinition();
-            ArrayAccessExpr arrayAccessExpr = new ArrayAccessExpr(new NameExpr("parameters"), new IntegerLiteralExpr(String.valueOf(i)));
-            callExpr.addArgument(getMethodCallExpr(arrayAccessExpr, definition));
+            Expression fromBuf = definition.getMappedType().readFromBufferPtr(new NameExpr("buf"), JavaUtils.getOffsetAsExpression(i, this::getParameterOffset));
+            callExpr.addArgument(definition.getMappedType().fromC(fromBuf));
         }
 
         if (returnType.getTypeKind() == TypeKind.VOID) {
             invokeBody.addStatement(callExpr);
         } else {
-            MethodCallExpr returnTypeSetMethodCall = new MethodCallExpr("setValue");
-            returnTypeSetMethodCall.setScope(new NameExpr("returnType"));
-            returnTypeSetMethodCall.addArgument(callExpr);
-            invokeBody.addStatement(returnTypeSetMethodCall);
+            Expression toBuf = returnType.getMappedType().writeToBufferPtr(new NameExpr("buf"), new IntegerLiteralExpr("0"), returnType.getMappedType().toC(callExpr));
+            invokeBody.addStatement(toBuf);
         }
 
         invokeMethod.setBody(invokeBody);
 
         writeHelper(cuPrivate, toWriteToPrivate);
+    }
+
+    private int getParameterOffset(int index, boolean is32Bit, boolean isWin) {
+        if (index < 0 || index > signature.getArguments().length)
+            throw new IllegalArgumentException("Index out of bounds: " + index);
+
+        int offset = 0;
+        for (int i = 0; i < index; i++) {
+            offset += signature.getArguments()[i].getDefinition().getMappedType().getSize(is32Bit, isWin);
+        }
+
+        return offset;
     }
 
     private static Expression getMethodCallExpr(Expression expression, TypeDefinition type) {

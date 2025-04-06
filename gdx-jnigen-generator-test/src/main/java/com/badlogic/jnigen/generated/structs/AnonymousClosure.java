@@ -46,22 +46,22 @@ public final class AnonymousClosure extends Struct {
      * Comment on internal callback
      */
     public ClosureObject<someClosure> someClosure() {
-        return CHandler.getClosureObject(getBufPtr().getNativePointer(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0)), someClosure_Internal::someClosure_downcall);
+        return CHandler.getClosureObject(getBufPtr().getNativePointer(0), someClosure_Internal::someClosure_downcall);
     }
 
     /**
      * Comment on internal callback
      */
     public void someClosure(ClosureObject<someClosure> someClosure) {
-        getBufPtr().setNativePointer(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), someClosure.getPointer());
+        getBufPtr().setNativePointer(0, someClosure.getPointer());
     }
 
     public ClosureObject<anotherClosure> anotherClosure() {
-        return CHandler.getClosureObject(getBufPtr().getNativePointer(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 4 : 4) : (CHandler.IS_COMPILED_WIN ? 8 : 8)), anotherClosure_Internal::anotherClosure_downcall);
+        return CHandler.getClosureObject(getBufPtr().getNativePointer(CHandler.IS_32_BIT ? 4 : 8), anotherClosure_Internal::anotherClosure_downcall);
     }
 
     public void anotherClosure(ClosureObject<anotherClosure> anotherClosure) {
-        getBufPtr().setNativePointer(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 4 : 4) : (CHandler.IS_COMPILED_WIN ? 8 : 8), anotherClosure.getPointer());
+        getBufPtr().setNativePointer(CHandler.IS_32_BIT ? 4 : 8, anotherClosure.getPointer());
     }
 
     public static final class AnonymousClosurePointer extends StackElementPointer<AnonymousClosure> {

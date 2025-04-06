@@ -42,16 +42,16 @@ public final class AnonymousStructField extends Struct {
         return __inner;
     }
 
-    private static final int __inner_offset = CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0);
+    private static final int __inner_offset = 0;
 
     private final inner __inner = new inner(getPointer() + __inner_offset, false);
 
     public int externalValue() {
-        return (int) getBufPtr().getInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 8 : 8) : (CHandler.IS_COMPILED_WIN ? 8 : 8));
+        return (int) getBufPtr().getInt(8);
     }
 
     public void externalValue(int externalValue) {
-        getBufPtr().setInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 8 : 8) : (CHandler.IS_COMPILED_WIN ? 8 : 8), externalValue);
+        getBufPtr().setInt(8, externalValue);
     }
 
     public static final class AnonymousStructFieldPointer extends StackElementPointer<AnonymousStructField> {
@@ -124,22 +124,22 @@ public final class AnonymousStructField extends Struct {
          * Innerr struct field
          */
         public int intValue() {
-            return (int) getBufPtr().getInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0));
+            return (int) getBufPtr().getInt(0);
         }
 
         /**
          * Innerr struct field
          */
         public void intValue(int intValue) {
-            getBufPtr().setInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), intValue);
+            getBufPtr().setInt(0, intValue);
         }
 
         public float floatValue() {
-            return (float) getBufPtr().getFloat(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 4 : 4) : (CHandler.IS_COMPILED_WIN ? 4 : 4));
+            return (float) getBufPtr().getFloat(4);
         }
 
         public void floatValue(float floatValue) {
-            getBufPtr().setFloat(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 4 : 4) : (CHandler.IS_COMPILED_WIN ? 4 : 4), floatValue);
+            getBufPtr().setFloat(4, floatValue);
         }
 
         public static final class innerPointer extends StackElementPointer<inner> {

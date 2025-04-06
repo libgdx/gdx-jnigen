@@ -43,19 +43,19 @@ public final class TestUnion extends Union {
     }
 
     public long uintType() {
-        return (long) getBufPtr().getLong(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0));
+        return (long) getBufPtr().getLong(0);
     }
 
     public void uintType(long uintType) {
-        getBufPtr().setLong(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), uintType);
+        getBufPtr().setLong(0, uintType);
     }
 
     public double doubleType() {
-        return (double) getBufPtr().getDouble(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0));
+        return (double) getBufPtr().getDouble(0);
     }
 
     public void doubleType(double doubleType) {
-        getBufPtr().setDouble(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), doubleType);
+        getBufPtr().setDouble(0, doubleType);
     }
 
     public SIntPointer fixedSizeInt() {

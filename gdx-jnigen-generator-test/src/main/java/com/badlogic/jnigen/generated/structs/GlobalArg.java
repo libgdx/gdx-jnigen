@@ -45,83 +45,83 @@ public final class GlobalArg extends Union {
     }
 
     public long longVal() {
-        return (long) getBufPtr().getLong(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0));
+        return (long) getBufPtr().getLong(0);
     }
 
     public void longVal(long longVal) {
-        getBufPtr().setLong(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), longVal);
+        getBufPtr().setLong(0, longVal);
     }
 
     public int intVal() {
-        return (int) getBufPtr().getInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0));
+        return (int) getBufPtr().getInt(0);
     }
 
     public void intVal(int intVal) {
-        getBufPtr().setInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), intVal);
+        getBufPtr().setInt(0, intVal);
     }
 
     public short shortVal() {
-        return (short) getBufPtr().getShort(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0));
+        return (short) getBufPtr().getShort(0);
     }
 
     public void shortVal(short shortVal) {
-        getBufPtr().setShort(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), shortVal);
+        getBufPtr().setShort(0, shortVal);
     }
 
     public byte byteVal() {
-        return (byte) getBufPtr().getByte(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0));
+        return (byte) getBufPtr().getByte(0);
     }
 
     public void byteVal(byte byteVal) {
-        getBufPtr().setByte(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), byteVal);
+        getBufPtr().setByte(0, byteVal);
     }
 
     public char charVal() {
-        return (char) getBufPtr().getChar(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0));
+        return (char) getBufPtr().getChar(0);
     }
 
     public void charVal(char charVal) {
-        getBufPtr().setChar(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), charVal);
+        getBufPtr().setChar(0, charVal);
     }
 
     public boolean boolVal() {
-        return (boolean) getBufPtr().getBoolean(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0));
+        return (boolean) getBufPtr().getBoolean(0);
     }
 
     public void boolVal(boolean boolVal) {
-        getBufPtr().setBoolean(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), boolVal);
+        getBufPtr().setBoolean(0, boolVal);
     }
 
     public float floatVal() {
-        return (float) getBufPtr().getFloat(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0));
+        return (float) getBufPtr().getFloat(0);
     }
 
     public void floatVal(float floatVal) {
-        getBufPtr().setFloat(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), floatVal);
+        getBufPtr().setFloat(0, floatVal);
     }
 
     public double doubleVal() {
-        return (double) getBufPtr().getDouble(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0));
+        return (double) getBufPtr().getDouble(0);
     }
 
     public void doubleVal(double doubleVal) {
-        getBufPtr().setDouble(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), doubleVal);
+        getBufPtr().setDouble(0, doubleVal);
     }
 
     public SIntPointer intPtr() {
-        return new SIntPointer(getBufPtr().getNativePointer(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0)), false);
+        return new SIntPointer(getBufPtr().getNativePointer(0), false);
     }
 
     public void intPtr(SIntPointer intPtr) {
-        getBufPtr().setNativePointer(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), intPtr.getPointer());
+        getBufPtr().setNativePointer(0, intPtr.getPointer());
     }
 
     public PointerPointer<SIntPointer> intPtrPtr() {
-        return new PointerPointer<>(getBufPtr().getNativePointer(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0)), false, SIntPointer::new);
+        return new PointerPointer<>(getBufPtr().getNativePointer(0), false, SIntPointer::new);
     }
 
     public void intPtrPtr(PointerPointer<SIntPointer> intPtrPtr) {
-        getBufPtr().setNativePointer(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), intPtrPtr.getPointer());
+        getBufPtr().setNativePointer(0, intPtrPtr.getPointer());
     }
 
     public TestStruct structVal() {
@@ -131,35 +131,35 @@ public final class GlobalArg extends Union {
     private final TestStruct __structVal = new TestStruct(getPointer(), false);
 
     public TestStruct.TestStructPointer structPtr() {
-        return new TestStruct.TestStructPointer(getBufPtr().getNativePointer(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0)), false);
+        return new TestStruct.TestStructPointer(getBufPtr().getNativePointer(0), false);
     }
 
     public void structPtr(TestStruct.TestStructPointer structPtr) {
-        getBufPtr().setNativePointer(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), structPtr.getPointer());
+        getBufPtr().setNativePointer(0, structPtr.getPointer());
     }
 
     public TestEnum enumVal() {
-        return TestEnum.getByIndex((int) getBufPtr().getUInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0)));
+        return TestEnum.getByIndex((int) getBufPtr().getUInt(0));
     }
 
     public void enumVal(TestEnum enumVal) {
-        getBufPtr().setUInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), enumVal.getIndex());
+        getBufPtr().setUInt(0, enumVal.getIndex());
     }
 
     public TestEnum.TestEnumPointer enumPtr() {
-        return new TestEnum.TestEnumPointer(getBufPtr().getNativePointer(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0)), false);
+        return new TestEnum.TestEnumPointer(getBufPtr().getNativePointer(0), false);
     }
 
     public void enumPtr(TestEnum.TestEnumPointer enumPtr) {
-        getBufPtr().setNativePointer(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), enumPtr.getPointer());
+        getBufPtr().setNativePointer(0, enumPtr.getPointer());
     }
 
     public TestUnion.TestUnionPointer unionPtr() {
-        return new TestUnion.TestUnionPointer(getBufPtr().getNativePointer(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0)), false);
+        return new TestUnion.TestUnionPointer(getBufPtr().getNativePointer(0), false);
     }
 
     public void unionPtr(TestUnion.TestUnionPointer unionPtr) {
-        getBufPtr().setNativePointer(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), unionPtr.getPointer());
+        getBufPtr().setNativePointer(0, unionPtr.getPointer());
     }
 
     public allArgs allArgs() {
@@ -232,67 +232,67 @@ public final class GlobalArg extends Union {
         }
 
         public long arg1() {
-            return (long) getBufPtr().getLong(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0));
+            return (long) getBufPtr().getLong(0);
         }
 
         public void arg1(long arg1) {
-            getBufPtr().setLong(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 0 : 0) : (CHandler.IS_COMPILED_WIN ? 0 : 0), arg1);
+            getBufPtr().setLong(0, arg1);
         }
 
         public int arg2() {
-            return (int) getBufPtr().getInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 8 : 8) : (CHandler.IS_COMPILED_WIN ? 8 : 8));
+            return (int) getBufPtr().getInt(8);
         }
 
         public void arg2(int arg2) {
-            getBufPtr().setInt(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 8 : 8) : (CHandler.IS_COMPILED_WIN ? 8 : 8), arg2);
+            getBufPtr().setInt(8, arg2);
         }
 
         public short arg3() {
-            return (short) getBufPtr().getShort(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 12 : 12) : (CHandler.IS_COMPILED_WIN ? 12 : 12));
+            return (short) getBufPtr().getShort(12);
         }
 
         public void arg3(short arg3) {
-            getBufPtr().setShort(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 12 : 12) : (CHandler.IS_COMPILED_WIN ? 12 : 12), arg3);
+            getBufPtr().setShort(12, arg3);
         }
 
         public byte arg4() {
-            return (byte) getBufPtr().getByte(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 14 : 14) : (CHandler.IS_COMPILED_WIN ? 14 : 14));
+            return (byte) getBufPtr().getByte(14);
         }
 
         public void arg4(byte arg4) {
-            getBufPtr().setByte(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 14 : 14) : (CHandler.IS_COMPILED_WIN ? 14 : 14), arg4);
+            getBufPtr().setByte(14, arg4);
         }
 
         public char arg5() {
-            return (char) getBufPtr().getChar(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 16 : 16) : (CHandler.IS_COMPILED_WIN ? 16 : 16));
+            return (char) getBufPtr().getChar(16);
         }
 
         public void arg5(char arg5) {
-            getBufPtr().setChar(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 16 : 16) : (CHandler.IS_COMPILED_WIN ? 16 : 16), arg5);
+            getBufPtr().setChar(16, arg5);
         }
 
         public boolean arg6() {
-            return (boolean) getBufPtr().getBoolean(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 18 : 18) : (CHandler.IS_COMPILED_WIN ? 18 : 18));
+            return (boolean) getBufPtr().getBoolean(18);
         }
 
         public void arg6(boolean arg6) {
-            getBufPtr().setBoolean(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 18 : 18) : (CHandler.IS_COMPILED_WIN ? 18 : 18), arg6);
+            getBufPtr().setBoolean(18, arg6);
         }
 
         public float arg7() {
-            return (float) getBufPtr().getFloat(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 20 : 20) : (CHandler.IS_COMPILED_WIN ? 20 : 20));
+            return (float) getBufPtr().getFloat(20);
         }
 
         public void arg7(float arg7) {
-            getBufPtr().setFloat(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 20 : 20) : (CHandler.IS_COMPILED_WIN ? 20 : 20), arg7);
+            getBufPtr().setFloat(20, arg7);
         }
 
         public double arg8() {
-            return (double) getBufPtr().getDouble(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 24 : 24) : (CHandler.IS_COMPILED_WIN ? 24 : 24));
+            return (double) getBufPtr().getDouble(24);
         }
 
         public void arg8(double arg8) {
-            getBufPtr().setDouble(CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? 24 : 24) : (CHandler.IS_COMPILED_WIN ? 24 : 24), arg8);
+            getBufPtr().setDouble(24, arg8);
         }
 
         public static final class allArgsPointer extends StackElementPointer<allArgs> {

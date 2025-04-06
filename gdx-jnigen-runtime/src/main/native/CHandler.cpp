@@ -78,10 +78,9 @@ void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
     JNIEnv* env;
     tls_attach_jni_env(gJVM, &env);
     closure_info* info = (closure_info*) user;
-    char backingBuffer[info->argumentSize];
-    jobject jBuffer = NULL;
+    ffi_type* rtype = cif->rtype;
+    char backingBuffer[info->argumentSize > rtype->size ? info->argumentSize : rtype->size];
     if (cif->nargs != 0) {
-        jBuffer = env->NewDirectByteBuffer(backingBuffer, info->argumentSize);
         size_t offset = 0;
         for (size_t i = 0; i < cif->nargs; i++) {
             ffi_type* type = cif->arg_types[i];
@@ -96,7 +95,8 @@ void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
             }
         }
     }
-    jlong ret = env->CallStaticLongMethod(globalClass, dispatchCallbackMethod, info->javaInfo, jBuffer);
+
+    env->CallStaticVoidMethod(globalClass, dispatchCallbackMethod, info->javaInfo, backingBuffer);
 
     jthrowable exc = env->ExceptionOccurred();
     if(exc != NULL) {
@@ -110,11 +110,10 @@ void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
         throw JavaExceptionMarker(gJVM, exc, cxxMessage);
     }
 
-    ffi_type* rtype = cif->rtype;
     if(rtype->type == FFI_TYPE_STRUCT) {
-        memcpy(result, reinterpret_cast<void*>(ret), rtype->size);
+        memcpy(result, *(void**)backingBuffer, rtype->size);
     } else {
-        ENDIAN_INTCPY(result, rtype->size, &ret, sizeof(jlong));
+        memcpy(result, &backingBuffer, rtype->size);
     }
 }
 

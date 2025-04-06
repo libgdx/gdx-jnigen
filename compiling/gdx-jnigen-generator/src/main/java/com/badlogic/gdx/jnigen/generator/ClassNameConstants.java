@@ -14,10 +14,10 @@ public final class ClassNameConstants {
     public static final String CXXEXCEPTION_CLASS = "com.badlogic.gdx.jnigen.runtime.c.CXXException";
     public static final String CENUM_CLASS = "com.badlogic.gdx.jnigen.runtime.c.CEnum";
     public static final String ENUMPOINTER_CLASS = "com.badlogic.gdx.jnigen.runtime.pointer.EnumPointer";
-    public static final String CSIZEDINTPOINTER_CLASS = "com.badlogic.gdx.jnigen.runtime.pointer.CSizedIntPointer";
     public static final String DOUBLEPOINTER_CLASS = "com.badlogic.gdx.jnigen.runtime.pointer.DoublePointer";
     public static final String FLOATPOINTER_CLASS = "com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer";
     public static final String POINTERPOINTER_CLASS = "com.badlogic.gdx.jnigen.runtime.pointer.PointerPointer";
     public static final String VOIDPOINTER_CLASS = "com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer";
     public static final String POINTING_CLASS = "com.badlogic.gdx.jnigen.runtime.pointer.Pointing";
+    public static final String BUFFER_PTR = "com.badlogic.gdx.jnigen.runtime.mem.BufferPtr";
 }
