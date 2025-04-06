@@ -163,18 +163,6 @@ public class CHandler {
         }
     }
 
-    public static native int getOffsetForField(long type_ptr, int index);
-
-    public static native long getStackElementField(long pointer, long type_ptr, int index, boolean calculateOffset);
-
-    public static void setStackElementField(long pointer, long type_ptr, int index, long value, boolean calculateOffset) {
-        boolean res = setStackElement_internal(pointer, type_ptr, index, value, calculateOffset);
-        if (!res)
-            throw new IllegalArgumentException("Type " + value + " is out of valid bounds");
-    }
-
-    private static native boolean setStackElement_internal(long pointer, long type_ptr, int index, long value, boolean calculateOffset);
-
     public static native ByteBuffer wrapPointer(long pointer, int size);
 
     public static native int getSizeFromFFIType(long type);
