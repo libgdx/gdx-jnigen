@@ -89,30 +89,6 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_createClos
 
 /*
  * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
- * Method:    getOffsetForField
- * Signature: (JI)I
- */
-JNIEXPORT jint JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getOffsetForField
-  (JNIEnv *, jclass, jlong, jint);
-
-/*
- * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
- * Method:    getStackElementField
- * Signature: (JJIZ)J
- */
-JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getStackElementField
-  (JNIEnv *, jclass, jlong, jlong, jint, jboolean);
-
-/*
- * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
- * Method:    setStackElement_internal
- * Signature: (JJIJZ)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_setStackElement_1internal
-  (JNIEnv *, jclass, jlong, jlong, jint, jlong, jboolean);
-
-/*
- * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
  * Method:    getSizeFromFFIType
  * Signature: (J)I
  */

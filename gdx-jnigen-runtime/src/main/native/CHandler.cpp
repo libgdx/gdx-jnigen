@@ -40,23 +40,6 @@ typedef struct _closure_info {
     size_t argumentSize;
 } closure_info;
 
-
-static inline size_t getOffsetForField(ffi_type* struct_type, uint32_t index) {
-    size_t offset = 0;
-
-    for (size_t i = 0; i <= index; i++) {
-        ffi_type* current_element = struct_type->elements[i];
-        size_t alignment = current_element->alignment;
-        if (offset % alignment != 0) {
-            offset += alignment - (offset % alignment);
-        }
-        if (i != index)
-            offset += current_element->size;
-    }
-
-    return offset;
-}
-
 // We do inline to silence compiler warnings, but it shouldn't actually inline
 static inline void calculateAlignmentAndOffset(ffi_type* type, bool isStruct) {
     int index = 0;
@@ -328,38 +311,6 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_createClos
     ffi_prep_closure_loc(closure, cif, callbackHandler, info, fnPtr);
     *((ffi_closure**) closureRet) = closure;
     return reinterpret_cast<jlong>(fnPtr);
-}
-
-JNIEXPORT jint JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getOffsetForField(JNIEnv* env, jclass clazz, jlong type_ptr, jint index) {
-    return getOffsetForField(reinterpret_cast<ffi_type*>(type_ptr), (uint32_t) index);
-}
-
-JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getStackElementField(JNIEnv* env, jclass clazz, jlong pointer, jlong type_ptr, jint index, jboolean calculateOffset) {
-    char* ptr = reinterpret_cast<char*>(pointer);
-    ffi_type* struct_type = reinterpret_cast<ffi_type*>(type_ptr);
-    uint32_t field = (uint32_t) index;
-
-    size_t offset = calculateOffset ? getOffsetForField(struct_type, field) : 0;
-
-    jlong ret = 0;
-    ENDIAN_INTCPY(&ret, sizeof(jlong), ptr + offset, struct_type->elements[field]->size);
-    return ret;
-}
-
-JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_setStackElement_1internal(JNIEnv* env, jclass clazz, jlong pointer, jlong type_ptr, jint index, jlong value, jboolean calculateOffset) {
-    char* ptr = reinterpret_cast<char*>(pointer);
-    ffi_type* struct_type = reinterpret_cast<ffi_type*>(type_ptr);
-    uint32_t field = (uint32_t) index;
-
-    bool valid_bounds = CHECK_BOUNDS_FFI_TYPE(struct_type->elements[field], value);
-    if(!valid_bounds) {
-        return false;
-    }
-
-    size_t offset = calculateOffset ? getOffsetForField(struct_type, field) : 0;
-
-    ENDIAN_INTCPY(ptr + offset, struct_type->elements[field]->size, &value, sizeof(jlong));
-    return true;
 }
 
 JNIEXPORT jint JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getSizeFromFFIType(JNIEnv* env, jclass clazz, jlong type) {
