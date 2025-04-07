@@ -97,30 +97,6 @@ JNIEXPORT jint JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getSizeFrom
 
 /*
  * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
- * Method:    getSignFromFFIType
- * Signature: (J)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getSignFromFFIType
-  (JNIEnv *, jclass, jlong);
-
-/*
- * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
- * Method:    isStruct
- * Signature: (J)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_isStruct
-  (JNIEnv *, jclass, jlong);
-
-/*
- * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
- * Method:    isVoid
- * Signature: (J)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_isVoid
-  (JNIEnv *, jclass, jlong);
-
-/*
- * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
  * Method:    freeClosure
  * Signature: (J)V
  */

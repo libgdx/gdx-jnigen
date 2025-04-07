@@ -401,7 +401,7 @@ public class Manager {
             for (int i = 0; i < orderedStackElements.size(); i++) {
                 int id = i + knownCTypes.size();
                 StackElementType stackElementType = orderedStackElements.get(i);
-                staticInit.addStatement("ffiIdMap.put(" + id + ", CHandler.constructStackElementCTypeFromNativeType(getNativeType(" + id + ")));");
+                staticInit.addStatement("ffiIdMap.put(" + id + ", CHandler.constructCTypeFromNativeType(getNativeType(" + id + ")));");
                 ffiTypeNativeBody.append("\tcase ").append(id).append(":\n");
                 ffiTypeNativeBody.append(stackElementType.getFFITypeBody(nativeGetFFIMethodName));
             }

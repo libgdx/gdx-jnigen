@@ -315,18 +315,6 @@ JNIEXPORT jint JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getSizeFrom
     return reinterpret_cast<ffi_type*>(type)->size;
 }
 
-JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getSignFromFFIType(JNIEnv* env, jclass clazz, jlong type) {
-    return (jboolean)(GET_FFI_TYPE_SIGN((ffi_type*)type));
-}
-
-JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_isStruct(JNIEnv* env, jclass clazz, jlong type) {
-    return ((ffi_type*)type)->type == FFI_TYPE_STRUCT;
-}
-
-JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_isVoid(JNIEnv* env, jclass clazz, jlong type) {
-    return ((ffi_type*)type)->type == FFI_TYPE_VOID;
-}
-
 JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_freeClosure(JNIEnv* env, jclass clazz, jlong closurePtr) {
     ffi_closure* closure = (ffi_closure*) closurePtr;
     env->DeleteGlobalRef(((closure_info*)closure->user_data)->javaInfo);

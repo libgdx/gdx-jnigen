@@ -93,18 +93,11 @@ public class CHandler {
 
     public static native long convertNativeTypeToFFIType(long nativeType);
 
-    public static CTypeInfo constructStackElementCTypeFromNativeType(long nativeType) {
-        if (nativeType == 0)
-            throw new IllegalArgumentException("CType maps to zero.");
-        long ffiType = convertNativeTypeToFFIType(nativeType);
-        return new CTypeInfo(ffiType, CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType), true, CHandler.isVoid(ffiType));
-    }
-
     public static CTypeInfo constructCTypeFromNativeType(long nativeType) {
         if (nativeType == 0)
             throw new IllegalArgumentException("CType maps to zero.");
         long ffiType = convertNativeTypeToFFIType(nativeType);
-        return new CTypeInfo(ffiType, CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType), false, CHandler.isVoid(ffiType));
+        return new CTypeInfo(ffiType, CHandler.getSizeFromFFIType(ffiType));
     }
 
     private static native long nativeCreateCif(long returnType, ByteBuffer parameters, int size); 
@@ -166,12 +159,6 @@ public class CHandler {
     public static native ByteBuffer wrapPointer(long pointer, int size);
 
     public static native int getSizeFromFFIType(long type);
-
-    public static native boolean getSignFromFFIType(long type);
-
-    public static native boolean isStruct(long type);
-
-    public static native boolean isVoid(long type);
 
     public static void deregisterFunctionPointer(long fnPtr) {
         synchronized (fnPtrClosureMap) {
