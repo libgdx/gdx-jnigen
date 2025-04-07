@@ -440,4 +440,9 @@ public class StackElementType implements MappedType, WritableClass {
 
         return maxAlignment;
     }
+
+    @Override
+    public int getSizeFromC(boolean is32Bit, boolean isWin) {
+        return is32Bit ? 4 : 8;
+    }
 }

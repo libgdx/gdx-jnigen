@@ -214,7 +214,7 @@ public class ClosureType implements MappedType, WritableClass {
 
         int offset = 0;
         for (int i = 0; i < index; i++) {
-            offset += signature.getArguments()[i].getDefinition().getMappedType().getSize(is32Bit, isWin);
+            offset += signature.getArguments()[i].getDefinition().getMappedType().getSizeFromC(is32Bit, isWin);
         }
 
         return offset;

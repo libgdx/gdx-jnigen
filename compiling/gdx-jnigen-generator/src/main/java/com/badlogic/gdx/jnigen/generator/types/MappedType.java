@@ -47,4 +47,7 @@ public interface MappedType {
     default int getAlignment(boolean is32Bit, boolean isWin) {
         return getSize(is32Bit, isWin);
     }
+    default int getSizeFromC(boolean is32Bit, boolean isWin) {
+        return getSize(is32Bit, isWin);
+    }
 }
