@@ -1,6 +1,5 @@
 package com.badlogic.gdx.jnigen.runtime.pointer.integer;
 
-import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 
 public class SBytePointer extends VoidPointer {

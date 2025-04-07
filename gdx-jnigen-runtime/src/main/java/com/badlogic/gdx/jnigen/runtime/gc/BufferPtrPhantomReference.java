@@ -2,7 +2,6 @@ package com.badlogic.gdx.jnigen.runtime.gc;
 
 import com.badlogic.gdx.jnigen.runtime.gc.ReferenceList.ReferenceListNode;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
-import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 
 import java.lang.ref.PhantomReference;
 

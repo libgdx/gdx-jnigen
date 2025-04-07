@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 public class BufferPtrAllocator {
 
-    // A ByteBuffer can address 2^31 bits. Furthermore, we want reduncancy around the edges of the sliced byte buffer, to allow for always at least 1GB size
+    // A ByteBuffer can address 2^31 bits. Furthermore, we want redundancy around the edges of the sliced byte buffer, to allow for always at least 1GB size
     // So for the whole 64bit spectrum, we have 34 bits to split up.
     // This is just an arbitrary split up, performance tests need to show, how to best split it up.
     private static final int L1_BITS = 12;
