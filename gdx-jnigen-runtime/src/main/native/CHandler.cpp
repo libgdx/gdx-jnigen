@@ -172,6 +172,14 @@ JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_isCharS
     return IS_SIGNED_TYPE(char);
 }
 
+JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_isCompiledAndroidX86(JNIEnv* env, jclass clazz) {
+    #if defined(__i386__) && defined(__ANDROID__)
+        return true;
+    #else
+        return false;
+    #endif
+}
+
 JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_init(JNIEnv* env, jclass clazz, jobject dispatchCallbackReflectedMethod, jobject getExceptionStringReflectedMethod) {
     env->GetJavaVM(&gJVM);
     globalClass = (jclass)env->NewGlobalRef(clazz);

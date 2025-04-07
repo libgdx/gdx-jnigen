@@ -13,8 +13,8 @@ public final class ClosureObject<T extends Closure> extends Pointing {
         return CHandler.createClosureForObject(object);
     }
 
-    public ClosureObject(T closure, long fnPtr, long closurePtr, boolean freeOnGC) {
-        super(fnPtr, freeOnGC);
+    public ClosureObject(T closure, long fnPtr, long closurePtr) {
+        super(fnPtr, false);
         this.closure = closure;
         this.closurePtr = closurePtr;
     }

@@ -35,14 +35,11 @@ public class BufferPtrAllocator {
     private static final int LRU_CACHE_CAPACITY = Integer.parseInt(System.getProperty("com.badlogic.jnigen.allocator.lru_cache_capacity", "256"));
 
     private static final LRUCache CACHE_UNMANAGED_NO_CAP = new LRUCache(LRU_CACHE_CAPACITY);
-    private static final LRUCache CACHE_MANAGED_NO_CAP = new LRUCache(LRU_CACHE_CAPACITY);
     private static final LRUCache[] CACHE_UNMANAGED_CAP = new LRUCache[MAX_CACHED_CAP_SIZE];
-    private static final LRUCache[] CACHE_MANAGED_CAP = new LRUCache[MAX_CACHED_CAP_SIZE];
 
     static {
         for (int i = 0; i < MAX_CACHED_CAP_SIZE; i++) {
             CACHE_UNMANAGED_CAP[i] = new LRUCache(LRU_CACHE_CAPACITY);
-            CACHE_MANAGED_CAP[i] = new LRUCache(LRU_CACHE_CAPACITY);
         }
     }
 
@@ -75,10 +72,10 @@ public class BufferPtrAllocator {
     }
 
     public static BufferPtr get(long pointer) {
-        return get(pointer, -1, false);
+        return get(pointer, -1);
     }
 
-    public static BufferPtr get(long pointer, int capacity, boolean freeOnGC) {
+    public static BufferPtr get(long pointer, int capacity) {
         if (pointer == 0)
             return null;
         if (capacity > PAGE_SIZE)
@@ -88,20 +85,14 @@ public class BufferPtrAllocator {
         long basePtr = pointer & ADDRESS_MASK;
 
         if (NO_CACHE || capacity >= MAX_CACHED_CAP_SIZE)
-            return new BufferPtr(getBuffer(basePtr), pointer, offset, capacity, freeOnGC);
+            return new BufferPtr(getBuffer(basePtr), pointer, offset, capacity);
 
         LRUCache cache;
 
         if (capacity == -1) {
-            if (freeOnGC)
-                cache = CACHE_MANAGED_NO_CAP;
-            else
-                cache = CACHE_UNMANAGED_NO_CAP;
+            cache = CACHE_UNMANAGED_NO_CAP;
         } else {
-            if (freeOnGC)
-                cache = CACHE_MANAGED_CAP[capacity];
-            else
-                cache = CACHE_UNMANAGED_CAP[capacity];
+            cache = CACHE_UNMANAGED_CAP[capacity];
         }
 
         synchronized (cache) {
@@ -109,7 +100,7 @@ public class BufferPtrAllocator {
             if (ptr != null)
                 return ptr;
 
-            ptr = new BufferPtr(getBuffer(basePtr), pointer, offset, capacity, freeOnGC);
+            ptr = new BufferPtr(getBuffer(basePtr), pointer, offset, capacity);
             cache.put(pointer, ptr);
             return ptr;
         }
@@ -119,9 +110,7 @@ public class BufferPtrAllocator {
         Arrays.fill(BUFFER_CACHE, null);
         for (int i = 0; i < MAX_CACHED_CAP_SIZE; i++) {
             CACHE_UNMANAGED_CAP[i].clear();
-            CACHE_MANAGED_CAP[i].clear();
         }
-        CACHE_MANAGED_NO_CAP.clear();
         CACHE_UNMANAGED_NO_CAP.clear();
     }
 }

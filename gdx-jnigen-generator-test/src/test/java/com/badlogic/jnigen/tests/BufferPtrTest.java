@@ -47,6 +47,6 @@ public class BufferPtrTest extends BaseTest {
 
     @Test
     public void testAllocateBufferPtrToLargeCapacity() {
-        assertThrows(IllegalArgumentException.class, () -> BufferPtrAllocator.get(10, Integer.MAX_VALUE / 2 + 2, false));
+        assertThrows(IllegalArgumentException.class, () -> BufferPtrAllocator.get(10, Integer.MAX_VALUE / 2 + 2));
     }
 }

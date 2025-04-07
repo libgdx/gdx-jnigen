@@ -3,13 +3,13 @@ package com.badlogic.gdx.jnigen.runtime.ffi;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
-import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrAllocator;
+import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class ClosureEncoder {
 
-    private final BufferPtr bufferPtr;
+    private final VoidPointer bufferPtr;
     private final int bufferPtrSize;
     private final AtomicBoolean locked;
     private final long fnPtr;
@@ -25,7 +25,7 @@ public final class ClosureEncoder {
         }
 
         this.bufferPtrSize = Math.max(parameterSize, functionSignature[0].getSize());
-        this.bufferPtr = BufferPtrAllocator.get(CHandler.calloc(1, bufferPtrSize), bufferPtrSize, true);
+        this.bufferPtr = new VoidPointer(bufferPtrSize, true);
         this.locked = new AtomicBoolean(false);
     }
 
@@ -33,7 +33,7 @@ public final class ClosureEncoder {
         this.fnPtr = closureEncoder.fnPtr;
         this.cif = closureEncoder.cif;
         this.bufferPtrSize = closureEncoder.bufferPtrSize;
-        this.bufferPtr = BufferPtrAllocator.get(CHandler.calloc(1, bufferPtrSize), bufferPtrSize, true);
+        this.bufferPtr = new VoidPointer(bufferPtrSize, true);
         this.locked = new AtomicBoolean(true);
     }
 
@@ -45,7 +45,7 @@ public final class ClosureEncoder {
     }
 
     public BufferPtr getBufPtr() {
-        return bufferPtr;
+        return bufferPtr.getBufPtr();
     }
 
     public void invoke() {

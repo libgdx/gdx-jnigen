@@ -31,6 +31,7 @@ public class CHandler {
         POINTER_SIZE = is32Bit() ? 4 : 8;
         IS_32_BIT = is32Bit();
         IS_COMPILED_WIN = isCompiledWin();
+        IS_COMPILED_ANDROID_X86 = isCompiledAndroidX86();
         IS_CHAR_SIGNED = isCharSigned();
         LONG_SIZE = is32Bit() || isCompiledWin() ? 4 : 8;
         testNativeSetup();
@@ -43,11 +44,13 @@ public class CHandler {
     public static final int POINTER_SIZE;
     public static final boolean IS_32_BIT;
     public static final boolean IS_COMPILED_WIN;
+    public static final boolean IS_COMPILED_ANDROID_X86;
     public static final boolean IS_CHAR_SIGNED;
     public static final int LONG_SIZE;
 
     private static native boolean is32Bit();
     private static native boolean isCompiledWin();
+    private static native boolean isCompiledAndroidX86();
     private static native boolean isCharSigned();
 
     private static final HashMap<CTypeInfo[], Long> classCifMap = new HashMap<>();
@@ -135,7 +138,7 @@ public class CHandler {
         long fnPtr = createClosureForObject(cif, closureDecoder, byteBuffer);
         long closurePtr = byteBuffer.getLong();
 
-        ClosureObject<T> closureObject = new ClosureObject<>(object, fnPtr, closurePtr, false);
+        ClosureObject<T> closureObject = new ClosureObject<>(object, fnPtr, closurePtr);
         synchronized (fnPtrClosureMap) {
             fnPtrClosureMap.put(fnPtr, closureObject);
         }
@@ -149,7 +152,7 @@ public class CHandler {
             @SuppressWarnings("unchecked")
             ClosureObject<T> closureObject = (ClosureObject<T>) fnPtrClosureMap.get(fnPtr);
             if (closureObject == null) {
-                closureObject = new ClosureObject<>(closureFallback.get(fnPtr), fnPtr, 0, false);
+                closureObject = new ClosureObject<>(closureFallback.get(fnPtr), fnPtr, 0);
                 fnPtrClosureMap.put(fnPtr, closureObject);
             }
             return closureObject;

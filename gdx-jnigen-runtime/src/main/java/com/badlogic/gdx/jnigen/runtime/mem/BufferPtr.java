@@ -1,7 +1,6 @@
 package com.badlogic.gdx.jnigen.runtime.mem;
 
 import com.badlogic.gdx.jnigen.runtime.CHandler;
-import com.badlogic.gdx.jnigen.runtime.gc.GCHandler;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -13,29 +12,18 @@ public final class BufferPtr {
     private final long pointer;
     private final int offset;
     private final int capacity;
-    private final boolean freeOnGC;
-    private BufferPtr parent;
 
-    public BufferPtr(ByteBuffer buffer, long pointer, int offset, int capacity, boolean freeOnGC) {
+    public BufferPtr(ByteBuffer buffer, long pointer, int offset, int capacity) {
         this.buffer = buffer;
         this.pointer = pointer;
         this.offset = offset;
         this.capacity = capacity;
-        this.freeOnGC = freeOnGC;
-        if (freeOnGC)
-            GCHandler.enqueuePointer(this);
         if (capacity > buffer.capacity())
             throw new IllegalArgumentException("Buffer capacity (" + buffer.capacity() + ") exceeded by " + capacity + ". More then 1GB?");
     }
 
     public void free() {
-        if (getsGCFreed())
-            throw new IllegalStateException("Can't free a object, that gets freed by GC.");
         CHandler.free(pointer);
-    }
-
-    public void setParent(BufferPtr parent) {
-        this.parent = parent;
     }
 
     public void assertBounds(int expectedCapacity) {
@@ -402,12 +390,6 @@ public final class BufferPtr {
             buffer.put(offset + i, bytes[i]);
         }
         buffer.put(offset + bytes.length, (byte) 0);
-    }
-
-    public boolean getsGCFreed() {
-        if (parent != null)
-            return parent.getsGCFreed();
-        return freeOnGC;
     }
 
     public boolean isNull() {

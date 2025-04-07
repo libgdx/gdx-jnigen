@@ -2,19 +2,20 @@ package com.badlogic.gdx.jnigen.runtime.gc;
 
 import com.badlogic.gdx.jnigen.runtime.gc.ReferenceList.ReferenceListNode;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
+import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 
 import java.lang.ref.PhantomReference;
 
-public final class BufferPtrPhantomReference extends PhantomReference<BufferPtr> {
+public final class PointingPhantomReference extends PhantomReference<Pointing> {
 
-    private final long pointer;
+    private final BufferPtr bufferPtr;
     private ReferenceListNode node;
     private int position;
 
 
-    public BufferPtrPhantomReference(BufferPtr referent) {
+    public PointingPhantomReference(Pointing referent) {
         super(referent, GCHandler.REFERENCE_QUEUE);
-        this.pointer = referent.getPointer();
+        this.bufferPtr = referent.getBufPtr();
     }
 
     public void setNode(ReferenceListNode node) {
@@ -33,7 +34,7 @@ public final class BufferPtrPhantomReference extends PhantomReference<BufferPtr>
         return position;
     }
 
-    public long getPointer() {
-        return pointer;
+    public BufferPtr getBufferPtr() {
+        return bufferPtr;
     }
 }
