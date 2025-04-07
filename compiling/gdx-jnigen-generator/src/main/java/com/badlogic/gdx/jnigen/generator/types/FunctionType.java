@@ -36,7 +36,7 @@ public class FunctionType {
             callMethodCreate.setJavadocComment(comment);
         BlockStmt body = new BlockStmt();
 
-        MethodDeclaration nativeMethod = wrappingClass.addMethod(name + "_internal").setPrivate(true).setStatic(true).setNative(true).setBody(null);
+        MethodDeclaration nativeMethod = wrappingClass.addMethod(name + "_internal").setPublic(true).setStatic(true).setNative(true).setBody(null);
         callMethodCreate.setType(returnType.getMappedType().abstractType());
         returnType.getMappedType().importType(cu);
         nativeMethod.setType(returnType.getMappedType().primitiveType());
