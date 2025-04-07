@@ -42,16 +42,16 @@ public final class AnonymousStructField extends Struct {
         return __inner;
     }
 
-    private static final int __inner_offset = CHandler.getOffsetForField(__ffi_type, 0);
+    private static final int __inner_offset = 0;
 
     private final inner __inner = new inner(getPointer() + __inner_offset, false);
 
     public int externalValue() {
-        return (int) getValue(1);
+        return getBufPtr().getInt(8);
     }
 
     public void externalValue(int externalValue) {
-        setValue(externalValue, 1);
+        getBufPtr().setInt(8, externalValue);
     }
 
     public static final class AnonymousStructFieldPointer extends StackElementPointer<AnonymousStructField> {
@@ -60,22 +60,21 @@ public final class AnonymousStructField extends Struct {
             super(pointer, freeOnGC);
         }
 
+        public AnonymousStructFieldPointer(long pointer, boolean freeOnGC, int capacity) {
+            super(pointer, freeOnGC, capacity * __size);
+        }
+
         public AnonymousStructFieldPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
             setParent(parent);
         }
 
         public AnonymousStructFieldPointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public AnonymousStructFieldPointer(int count, boolean freeOnGC, boolean guard) {
-            super(__size, count, freeOnGC, guard);
-        }
-
-        public AnonymousStructField.AnonymousStructFieldPointer guardCount(long count) {
-            super.guardCount(count);
-            return this;
+        public AnonymousStructFieldPointer(int count, boolean freeOnGC) {
+            super(__size, count, freeOnGC);
         }
 
         public int getSize() {
@@ -125,22 +124,22 @@ public final class AnonymousStructField extends Struct {
          * Innerr struct field
          */
         public int intValue() {
-            return (int) getValue(0);
+            return getBufPtr().getInt(0);
         }
 
         /**
          * Innerr struct field
          */
         public void intValue(int intValue) {
-            setValue(intValue, 0);
+            getBufPtr().setInt(0, intValue);
         }
 
         public float floatValue() {
-            return (float) getValueFloat(1);
+            return getBufPtr().getFloat(4);
         }
 
         public void floatValue(float floatValue) {
-            setValue(floatValue, 1);
+            getBufPtr().setFloat(4, floatValue);
         }
 
         public static final class innerPointer extends StackElementPointer<inner> {
@@ -149,22 +148,21 @@ public final class AnonymousStructField extends Struct {
                 super(pointer, freeOnGC);
             }
 
+            public innerPointer(long pointer, boolean freeOnGC, int capacity) {
+                super(pointer, freeOnGC, capacity * __size);
+            }
+
             public innerPointer(long pointer, boolean freeOnGC, Pointing parent) {
                 super(pointer, freeOnGC);
                 setParent(parent);
             }
 
             public innerPointer() {
-                this(1, true, true);
+                this(1, true);
             }
 
-            public innerPointer(int count, boolean freeOnGC, boolean guard) {
-                super(__size, count, freeOnGC, guard);
-            }
-
-            public inner.innerPointer guardCount(long count) {
-                super.guardCount(count);
-                return this;
+            public innerPointer(int count, boolean freeOnGC) {
+                super(__size, count, freeOnGC);
             }
 
             public int getSize() {

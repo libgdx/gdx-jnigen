@@ -43,26 +43,26 @@ public final class TestUnion extends Union {
     }
 
     public long uintType() {
-        return (long) getValue(0);
+        return getBufPtr().getLong(0);
     }
 
     public void uintType(long uintType) {
-        setValue(uintType, 0);
+        getBufPtr().setLong(0, uintType);
     }
 
     public double doubleType() {
-        return (double) getValueDouble(1);
+        return getBufPtr().getDouble(0);
     }
 
     public void doubleType(double doubleType) {
-        setValue(doubleType, 1);
+        getBufPtr().setDouble(0, doubleType);
     }
 
     public SIntPointer fixedSizeInt() {
         return __fixedSizeInt;
     }
 
-    private final SIntPointer __fixedSizeInt = new SIntPointer(getPointer(), false).guardCount(3);
+    private final SIntPointer __fixedSizeInt = new SIntPointer(getPointer(), false, 3);
 
     public TestStruct structType() {
         return __structType;
@@ -76,22 +76,21 @@ public final class TestUnion extends Union {
             super(pointer, freeOnGC);
         }
 
+        public TestUnionPointer(long pointer, boolean freeOnGC, int capacity) {
+            super(pointer, freeOnGC, capacity * __size);
+        }
+
         public TestUnionPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
             setParent(parent);
         }
 
         public TestUnionPointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public TestUnionPointer(int count, boolean freeOnGC, boolean guard) {
-            super(__size, count, freeOnGC, guard);
-        }
-
-        public TestUnion.TestUnionPointer guardCount(long count) {
-            super.guardCount(count);
-            return this;
+        public TestUnionPointer(int count, boolean freeOnGC) {
+            super(__size, count, freeOnGC);
         }
 
         public int getSize() {

@@ -59,14 +59,13 @@ public class BasicPointerTest extends BaseTest {
     public void testPointerBoundCheck() {
         UIntPointer uIntPointer = new UIntPointer(4);
         assertDoesNotThrow(() -> uIntPointer.getUInt(3));
-        assertThrows(IllegalArgumentException.class, () -> uIntPointer.getUInt(4));
+        assertThrows(IndexOutOfBoundsException.class, () -> uIntPointer.getUInt(4));
     }
 
     @Test
     public void testPointerNullCheck() {
-        BytePointer pointer = new BytePointer(0, false);
+        BytePointer pointer = new BytePointer(0L, false);
         assertTrue(pointer.isNull());
         assertThrows(NullPointerException.class, pointer::getByte);
-        assertNull(pointer.getString());
     }
 }

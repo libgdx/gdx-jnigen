@@ -241,12 +241,34 @@ public class Manager {
 
     private void createStaticAsserts(List<String> assertBuilder, boolean windows) {
         assertBuilder.add("#if ARCH_BITS == 32");
+        assertBuilder.add("static_assert(sizeof(void*) == 4, \"Expected size of void* on 32bit is 4\");");
         knownCTypes.forEach((name, typeKind) -> {
             assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getTypeKind().getSize(true, windows) + ", \"Type " + name + " has unexpected size.\");");
+            assertBuilder.add("static_assert(alignof(" + name + ") == " + typeKind.getTypeKind().getAlignment(true, windows) + ", \"Type " + name + " has unexpected alignment.\");");
+        });
+        stackElements.forEach((name, stackElementType) -> {
+            if (stackElementType.getFields().isEmpty()) // TODO: 04.04.2025 Add proper forwardDecl detection
+                return;
+            assertBuilder.add("static_assert(sizeof(" + name + ") == " + stackElementType.getSize(true, windows) + ", \"Type " + name + " has unexpected size.\");");
+            assertBuilder.add("static_assert(alignof(" + name + ") == " + stackElementType.getAlignment(true, windows) + ", \"Type " + name + " has unexpected alignment.\");");
+            for (int i = 0; i < stackElementType.getFields().size(); i++) {
+                assertBuilder.add("static_assert(offsetof(" + name + ", " + stackElementType.getFields().get(i).getName() + ") == " + stackElementType.getFieldOffset(i, true, windows) + ", \"Type " + name + " has unexpected offset.\");");
+            }
         });
         assertBuilder.add("#elif ARCH_BITS == 64");
+        assertBuilder.add("static_assert(sizeof(void*) == 8, \"Expected size of void* on 64bit is 8\");");
         knownCTypes.forEach((name, typeKind) -> {
             assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getTypeKind().getSize(false, windows) + ", \"Type " + name + " has unexpected size.\");");
+            assertBuilder.add("static_assert(alignof(" + name + ") == " + typeKind.getTypeKind().getAlignment(false, windows) + ", \"Type " + name + " has unexpected alignment.\");");
+        });
+        stackElements.forEach((name, stackElementType) -> {
+            if (stackElementType.getFields().isEmpty()) // TODO: 04.04.2025 Add proper forwardDecl detection
+                return;
+            assertBuilder.add("static_assert(sizeof(" + name + ") == " + stackElementType.getSize(false, windows) + ", \"Type " + name + " has unexpected size.\");");
+            assertBuilder.add("static_assert(alignof(" + name + ") == " + stackElementType.getAlignment(false, windows) + ", \"Type " + name + " has unexpected alignment.\");");
+            for (int i = 0; i < stackElementType.getFields().size(); i++) {
+                assertBuilder.add("static_assert(offsetof(" + name + ", " + stackElementType.getFields().get(i).getName() + ") == " + stackElementType.getFieldOffset(i, false, windows) + ", \"Type " + name + " has unexpected offset.\");");
+            }
         });
         assertBuilder.add("#else");
         assertBuilder.add("#error Unsupported OS");
@@ -379,7 +401,7 @@ public class Manager {
             for (int i = 0; i < orderedStackElements.size(); i++) {
                 int id = i + knownCTypes.size();
                 StackElementType stackElementType = orderedStackElements.get(i);
-                staticInit.addStatement("ffiIdMap.put(" + id + ", CHandler.constructStackElementCTypeFromNativeType(getNativeType(" + id + ")));");
+                staticInit.addStatement("ffiIdMap.put(" + id + ", CHandler.constructCTypeFromNativeType(getNativeType(" + id + ")));");
                 ffiTypeNativeBody.append("\tcase ").append(id).append(":\n");
                 ffiTypeNativeBody.append(stackElementType.getFFITypeBody(nativeGetFFIMethodName));
             }

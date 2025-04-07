@@ -89,90 +89,10 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_createClos
 
 /*
  * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
- * Method:    getOffsetForField
- * Signature: (JI)I
- */
-JNIEXPORT jint JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getOffsetForField
-  (JNIEnv *, jclass, jlong, jint);
-
-/*
- * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
- * Method:    getStackElementField
- * Signature: (JJIZ)J
- */
-JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getStackElementField
-  (JNIEnv *, jclass, jlong, jlong, jint, jboolean);
-
-/*
- * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
- * Method:    setStackElement_internal
- * Signature: (JJIJZ)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_setStackElement_1internal
-  (JNIEnv *, jclass, jlong, jlong, jint, jlong, jboolean);
-
-/*
- * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
- * Method:    getPointerPart
- * Signature: (JII)J
- */
-JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getPointerPart
-  (JNIEnv *, jclass, jlong, jint, jint);
-
-/*
- * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
- * Method:    setPointerPart
- * Signature: (JIIJ)V
- */
-JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_setPointerPart
-  (JNIEnv *, jclass, jlong, jint, jint, jlong);
-
-/*
- * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
- * Method:    setPointerAsString
- * Signature: (JLjava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_setPointerAsString
-  (JNIEnv *, jclass, jlong, jstring);
-
-/*
- * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
- * Method:    getPointerAsString
- * Signature: (J)Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getPointerAsString
-  (JNIEnv *, jclass, jlong);
-
-/*
- * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
  * Method:    getSizeFromFFIType
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getSizeFromFFIType
-  (JNIEnv *, jclass, jlong);
-
-/*
- * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
- * Method:    getSignFromFFIType
- * Signature: (J)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getSignFromFFIType
-  (JNIEnv *, jclass, jlong);
-
-/*
- * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
- * Method:    isStruct
- * Signature: (J)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_isStruct
-  (JNIEnv *, jclass, jlong);
-
-/*
- * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
- * Method:    isVoid
- * Signature: (J)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_isVoid
   (JNIEnv *, jclass, jlong);
 
 /*
@@ -234,10 +154,18 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_convertNat
 /*
  * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
  * Method:    dispatchCCall
- * Signature: (JJLjava/nio/ByteBuffer;)J
+ * Signature: (JJJ)V
  */
-JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_dispatchCCall
-  (JNIEnv *, jclass, jlong, jlong, jobject);
+JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_dispatchCCall
+  (JNIEnv *, jclass, jlong, jlong, jlong);
+
+/*
+ * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
+ * Method:    wrapPointer
+ * Signature: (JI)Ljava/nio/ByteBuffer;
+ */
+JNIEXPORT jobject JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_wrapPointer
+  (JNIEnv *, jclass, jlong, jint);
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved);
 JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *reserved);

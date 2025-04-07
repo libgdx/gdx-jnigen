@@ -1,5 +1,6 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
+import org.bytedeco.llvm.clang.CXCursor;
 import org.bytedeco.llvm.clang.CXType;
 
 import static org.bytedeco.llvm.global.clang.*;
@@ -22,7 +23,8 @@ public enum TypeKind {
     FLOAT(CXType_Float),
     DOUBLE(CXType_Double, CXType_LongDouble),
     POINTER(CXType_Pointer, CXType_IncompleteArray),
-    STACK_ELEMENT(CXType_Record),
+    STRUCT(),
+    UNION(),
     CLOSURE(CXType_FunctionProto, CXType_FunctionNoProto),
     ENUM(CXType_Enum),
     FIXED_SIZE_ARRAY(CXType_ConstantArray);
@@ -37,8 +39,13 @@ public enum TypeKind {
 
     public static TypeKind getTypeKind(CXType type) {
         // TODO: 20.03.24 Get rid of at some point
-        type = clang_getCanonicalType(type);
-        int kind = type.kind();
+        CXType canonicalType = clang_getCanonicalType(type);
+        int kind = canonicalType.kind();
+
+        if (kind == CXType_Record) {
+            CXCursor cursor = clang_getTypeDeclaration(type);
+            return cursor.kind() == CXCursor_StructDecl ? TypeKind.STRUCT : TypeKind.UNION;
+        }
 
         for (TypeKind typeKind : CACHE) {
             for (int k : typeKind.getKinds()) {
@@ -56,10 +63,14 @@ public enum TypeKind {
     }
 
     public boolean isSpecial() {
-        return this == POINTER || this == STACK_ELEMENT || this == CLOSURE || this == ENUM || this == FIXED_SIZE_ARRAY;
+        return this == POINTER || this == STRUCT || this == UNION || this == CLOSURE || this == ENUM || this == FIXED_SIZE_ARRAY;
     }
     public boolean isPrimitive() {
         return !isSpecial() && this != VOID;
+    }
+
+    public boolean isStackElement() {
+        return this == STRUCT || this == UNION;
     }
 
     public boolean isSigned() {
@@ -82,6 +93,10 @@ public enum TypeKind {
         default:
             throw new IllegalArgumentException("Type " + this + " is not a primitive type");
         }
+    }
+
+    public boolean hasPlatformDependentSize() {
+        return this == LONG || this == PROMOTED_LONG;
     }
 
     public int getSize(boolean is32Bit, boolean isWin) {
@@ -108,5 +123,9 @@ public enum TypeKind {
         default:
             throw new IllegalArgumentException("Type " + this + " is not a primitive type");
         }
+    }
+
+    public int getAlignment(boolean is32Bit, boolean isWin) {
+        return getSize(is32Bit, isWin);
     }
 }

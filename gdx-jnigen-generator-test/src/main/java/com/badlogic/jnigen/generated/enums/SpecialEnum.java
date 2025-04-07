@@ -8,7 +8,7 @@ public enum SpecialEnum implements CEnum {
 
     LOWER(0), HIGH(160);
 
-    private static final int __size = CHandler.IS_32_BIT || CHandler.IS_COMPILED_WIN ? 4 : 8;
+    private static final int __size = CHandler.LONG_SIZE;
 
     private final int index;
 
@@ -41,24 +41,27 @@ public enum SpecialEnum implements CEnum {
             super(pointer, freeOnGC);
         }
 
+        public SpecialEnumPointer(long pointer, boolean freeOnGC, int capacity) {
+            super(pointer, freeOnGC, capacity * __size);
+        }
+
         public SpecialEnumPointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public SpecialEnumPointer(int count, boolean freeOnGC, boolean guard) {
-            super(count, freeOnGC, guard);
+        public SpecialEnumPointer(int count, boolean freeOnGC) {
+            super(count * __size, freeOnGC);
         }
 
-        public SpecialEnum.SpecialEnumPointer guardCount(long count) {
-            super.guardCount(count);
-            return this;
+        public SpecialEnum getEnumValue(int index) {
+            return getByIndex((int) getBufPtr().getNativeLong(index * __size));
         }
 
-        protected SpecialEnum getEnum(int index) {
-            return getByIndex(index);
+        public void setEnumValue(SpecialEnum value, int index) {
+            getBufPtr().setNativeLong(index * __size, value.getIndex());
         }
 
-        protected int getSize() {
+        public int getSize() {
             return __size;
         }
     }

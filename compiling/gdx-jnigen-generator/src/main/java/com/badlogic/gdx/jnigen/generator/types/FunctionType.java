@@ -36,7 +36,7 @@ public class FunctionType {
             callMethodCreate.setJavadocComment(comment);
         BlockStmt body = new BlockStmt();
 
-        MethodDeclaration nativeMethod = wrappingClass.addMethod(name + "_internal").setPrivate(true).setStatic(true).setNative(true).setBody(null);
+        MethodDeclaration nativeMethod = wrappingClass.addMethod(name + "_internal").setPublic(true).setStatic(true).setNative(true).setBody(null);
         callMethodCreate.setType(returnType.getMappedType().abstractType());
         returnType.getMappedType().importType(cu);
         nativeMethod.setType(returnType.getMappedType().primitiveType());
@@ -48,16 +48,13 @@ public class FunctionType {
         for (NamedType namedType : arguments) {
             namedType.getDefinition().getMappedType().importType(cu);
             callMethodCreate.addParameter(namedType.getDefinition().getMappedType().abstractType(), namedType.getName());
-            if (namedType.getDefinition().getTypeKind() == TypeKind.STACK_ELEMENT) {
+            if (namedType.getDefinition().getTypeKind().isStackElement()) {
                 nativeBody.append("*(").append(namedType.getDefinition().getTypeName()).append("*)").append(namedType.getName()).append(", ");
             } else {
                 nativeBody.append("(").append(namedType.getDefinition().getTypeName()).append(")").append(namedType.getName()).append(", ");
             }
             nativeMethod.addParameter(namedType.getDefinition().getMappedType().primitiveType(), namedType.getName());
 
-            Statement assertStatement = namedType.getDefinition().getMappedType().assertJava(new NameExpr(namedType.getName()));
-            if (!assertStatement.isEmptyStmt())
-                body.addStatement(assertStatement);
             callExprCreate.addArgument(namedType.getDefinition().getMappedType().toC(new NameExpr(namedType.getName())));
         }
         if (arguments.length != 0)
@@ -69,7 +66,7 @@ public class FunctionType {
                 nativeBody.insert(0, "return (j" + returnType.getMappedType().primitiveType() + ")");
                 body.addStatement(new ReturnStmt(callExprCreate));
             } else {
-                if (returnType.getTypeKind() == TypeKind.STACK_ELEMENT) {
+                if (returnType.getTypeKind().isStackElement()) {
                     MethodDeclaration callMethodParameter = callMethodCreate.clone();
                     callMethodParameter.addParameter(returnType.getMappedType().abstractType(), "_retPar");
                     MethodCallExpr callExprParameter = callExprCreate.clone();

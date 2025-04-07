@@ -1,14 +1,13 @@
 package com.badlogic.gdx.jnigen.runtime.pointer.integer;
 
-import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 
 public class UIntPointer extends VoidPointer {
 
     private static final int BYTE_SIZE = 4;
 
-    public UIntPointer(int count, boolean freeOnGC, boolean guard) {
-        super(count * BYTE_SIZE, freeOnGC, guard);
+    public UIntPointer(int count, boolean freeOnGC) {
+        super(count * BYTE_SIZE, freeOnGC);
     }
 
     public UIntPointer() {
@@ -23,15 +22,8 @@ public class UIntPointer extends VoidPointer {
         super(pointer, freeOnGC);
     }
 
-    public UIntPointer guardCount(long count) {
-        super.guardBytes(count * BYTE_SIZE);
-        return this;
-    }
-
-    private int calculateOffset(int index) {
-        int offset = index * BYTE_SIZE;
-        assertBounds(offset);
-        return offset;
+    public UIntPointer(long pointer, boolean freeOnGC, int capacity) {
+        super(pointer, freeOnGC, capacity * BYTE_SIZE);
     }
 
     public long getUInt() {
@@ -39,15 +31,15 @@ public class UIntPointer extends VoidPointer {
     }
 
     public long getUInt(int index) {
-        return CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index));
+        return getBufPtr().getUInt(index * BYTE_SIZE);
     }
 
     public void setUInt(int value) {
-        setUInt(value & 0xFFFFFFFFL, 0);
+        setUInt(value, 0);
     }
 
     public void setUInt(int value, int index) {
-        setUInt(value & 0xFFFFFFFFL, index);
+        getBufPtr().setUInt(index * BYTE_SIZE, value);
     }
 
     public void setUInt(long value) {
@@ -55,8 +47,6 @@ public class UIntPointer extends VoidPointer {
     }
 
     public void setUInt(long value, int index) {
-        if (value >= 1L << (BYTE_SIZE * 8))
-            throw new IllegalArgumentException("UInt out of range: " + value);
-        CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value);
+        getBufPtr().setUInt(index * BYTE_SIZE, value);
     }
 }

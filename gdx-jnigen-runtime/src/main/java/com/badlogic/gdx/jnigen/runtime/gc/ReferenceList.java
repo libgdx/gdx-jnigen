@@ -11,7 +11,7 @@ public final class ReferenceList {
         this.head = new ReferenceListNode();
     }
 
-    public synchronized void insertReference(PointingPhantomReference reference) {
+    public synchronized void insertReference(BufferPtrPhantomReference reference) {
         if (head.size >= ReferenceListNode.NODE_SIZE) {
             if (poolCache != null) {
                 poolCache.next = head;
@@ -28,8 +28,8 @@ public final class ReferenceList {
         size++;
     }
 
-    public synchronized void removeReference(PointingPhantomReference reference) {
-        PointingPhantomReference headLastNode = head.getLastNode();
+    public synchronized void removeReference(BufferPtrPhantomReference reference) {
+        BufferPtrPhantomReference headLastNode = head.getLastNode();
         if (headLastNode != reference) {
             reference.getNode().setNode(headLastNode, reference.getPosition());
         }
@@ -52,24 +52,24 @@ public final class ReferenceList {
     public final static class ReferenceListNode {
         private static final int NODE_SIZE = 4096;
 
-        private final PointingPhantomReference[] elements = new PointingPhantomReference[NODE_SIZE];
+        private final BufferPtrPhantomReference[] elements = new BufferPtrPhantomReference[NODE_SIZE];
         private int size = 0;
         private ReferenceListNode next = null;
 
-        public void addNode(PointingPhantomReference reference) {
+        public void addNode(BufferPtrPhantomReference reference) {
             reference.setNode(this);
             reference.setPosition(size);
             elements[size] = reference;
             size++;
         }
 
-        public void setNode(PointingPhantomReference reference, int position) {
+        public void setNode(BufferPtrPhantomReference reference, int position) {
             reference.setPosition(position);
             reference.setNode(this);
             elements[position] = reference;
         }
 
-        public PointingPhantomReference getLastNode() {
+        public BufferPtrPhantomReference getLastNode() {
             return elements[size - 1];
         }
 

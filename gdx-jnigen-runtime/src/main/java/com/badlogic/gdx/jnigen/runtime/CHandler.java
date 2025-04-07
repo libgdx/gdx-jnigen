@@ -6,6 +6,7 @@ import com.badlogic.gdx.jnigen.runtime.closure.Closure;
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.runtime.ffi.ClosureDecoder;
 import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrAllocator;
 import com.badlogic.gdx.jnigen.runtime.util.DowncallClosureSupplier;
 
 import java.io.PrintWriter;
@@ -20,7 +21,7 @@ public class CHandler {
     static {
         new SharedLibraryLoader().load("jnigen-runtime");
         try {
-            boolean res = init(CHandler.class.getDeclaredMethod("dispatchCallback", ClosureDecoder.class, ByteBuffer.class),
+            boolean res = init(CHandler.class.getDeclaredMethod("dispatchCallback", ClosureDecoder.class, long.class),
                     CHandler.class.getDeclaredMethod("getExceptionString", Throwable.class));
             if (!res)
                 throw new RuntimeException("JNI initialization failed, either CHandler#dispatchCallback or CHandler#getExceptionString are not JNI accessible.");
@@ -31,6 +32,7 @@ public class CHandler {
         IS_32_BIT = is32Bit();
         IS_COMPILED_WIN = isCompiledWin();
         IS_CHAR_SIGNED = isCharSigned();
+        LONG_SIZE = is32Bit() || isCompiledWin() ? 4 : 8;
         testNativeSetup();
     }
 
@@ -42,6 +44,7 @@ public class CHandler {
     public static final boolean IS_32_BIT;
     public static final boolean IS_COMPILED_WIN;
     public static final boolean IS_CHAR_SIGNED;
+    public static final int LONG_SIZE;
 
     private static native boolean is32Bit();
     private static native boolean isCompiledWin();
@@ -82,26 +85,19 @@ public class CHandler {
 
     public static native boolean reExportSymbolsGlobally(String libPath);
 
-    public static <T extends Closure> long dispatchCallback(ClosureDecoder<T> toCallOn, ByteBuffer parameter) {
-        return toCallOn.invoke(parameter);
+    public static <T extends Closure> void dispatchCallback(ClosureDecoder<T> toCallOn, long parameter) {
+        toCallOn.invoke(BufferPtrAllocator.get(parameter));
     }
 
-    public static native long dispatchCCall(long fnPtr, long cif, ByteBuffer parameter);
+    public static native void dispatchCCall(long fnPtr, long cif, long parameter);
 
     public static native long convertNativeTypeToFFIType(long nativeType);
-
-    public static CTypeInfo constructStackElementCTypeFromNativeType(long nativeType) {
-        if (nativeType == 0)
-            throw new IllegalArgumentException("CType maps to zero.");
-        long ffiType = convertNativeTypeToFFIType(nativeType);
-        return new CTypeInfo(ffiType, CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType), true, CHandler.isVoid(ffiType));
-    }
 
     public static CTypeInfo constructCTypeFromNativeType(long nativeType) {
         if (nativeType == 0)
             throw new IllegalArgumentException("CType maps to zero.");
         long ffiType = convertNativeTypeToFFIType(nativeType);
-        return new CTypeInfo(ffiType, CHandler.getSizeFromFFIType(ffiType), CHandler.getSignFromFFIType(ffiType), false, CHandler.isVoid(ffiType));
+        return new CTypeInfo(ffiType, CHandler.getSizeFromFFIType(ffiType));
     }
 
     private static native long nativeCreateCif(long returnType, ByteBuffer parameters, int size); 
@@ -160,37 +156,19 @@ public class CHandler {
         }
     }
 
-    public static native int getOffsetForField(long type_ptr, int index);
-
-    public static native long getStackElementField(long pointer, long type_ptr, int index, boolean calculateOffset);
-
-    public static void setStackElementField(long pointer, long type_ptr, int index, long value, boolean calculateOffset) {
-        boolean res = setStackElement_internal(pointer, type_ptr, index, value, calculateOffset);
-        if (!res)
-            throw new IllegalArgumentException("Type " + value + " is out of valid bounds");
-    }
-
-    private static native boolean setStackElement_internal(long pointer, long type_ptr, int index, long value, boolean calculateOffset);
-
-    public static native long getPointerPart(long pointer, int size, int offset);
-
-    public static native void setPointerPart(long pointer, int size, int offset, long value);
-
-    public static native void setPointerAsString(long pointer, String string);
-
-    public static native String getPointerAsString(long pointer);
+    public static native ByteBuffer wrapPointer(long pointer, int size);
 
     public static native int getSizeFromFFIType(long type);
-
-    public static native boolean getSignFromFFIType(long type);
-
-    public static native boolean isStruct(long type);
-
-    public static native boolean isVoid(long type);
 
     public static void deregisterFunctionPointer(long fnPtr) {
         synchronized (fnPtrClosureMap) {
             fnPtrClosureMap.remove(fnPtr);
+        }
+    }
+
+    public static void clearRegisteredFunctionPointer() {
+        synchronized (fnPtrClosureMap) {
+            fnPtrClosureMap.clear();
         }
     }
 

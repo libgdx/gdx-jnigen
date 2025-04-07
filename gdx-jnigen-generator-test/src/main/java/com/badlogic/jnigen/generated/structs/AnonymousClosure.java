@@ -46,22 +46,22 @@ public final class AnonymousClosure extends Struct {
      * Comment on internal callback
      */
     public ClosureObject<someClosure> someClosure() {
-        return CHandler.getClosureObject(getValue(0), someClosure_Internal::someClosure_downcall);
+        return CHandler.getClosureObject(getBufPtr().getNativePointer(0), someClosure_Internal::someClosure_downcall);
     }
 
     /**
      * Comment on internal callback
      */
     public void someClosure(ClosureObject<someClosure> someClosure) {
-        setValue(someClosure.getPointer(), 0);
+        getBufPtr().setNativePointer(0, someClosure.getPointer());
     }
 
     public ClosureObject<anotherClosure> anotherClosure() {
-        return CHandler.getClosureObject(getValue(1), anotherClosure_Internal::anotherClosure_downcall);
+        return CHandler.getClosureObject(getBufPtr().getNativePointer(CHandler.IS_32_BIT ? 4 : 8), anotherClosure_Internal::anotherClosure_downcall);
     }
 
     public void anotherClosure(ClosureObject<anotherClosure> anotherClosure) {
-        setValue(anotherClosure.getPointer(), 1);
+        getBufPtr().setNativePointer(CHandler.IS_32_BIT ? 4 : 8, anotherClosure.getPointer());
     }
 
     public static final class AnonymousClosurePointer extends StackElementPointer<AnonymousClosure> {
@@ -70,22 +70,21 @@ public final class AnonymousClosure extends Struct {
             super(pointer, freeOnGC);
         }
 
+        public AnonymousClosurePointer(long pointer, boolean freeOnGC, int capacity) {
+            super(pointer, freeOnGC, capacity * __size);
+        }
+
         public AnonymousClosurePointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
             setParent(parent);
         }
 
         public AnonymousClosurePointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public AnonymousClosurePointer(int count, boolean freeOnGC, boolean guard) {
-            super(__size, count, freeOnGC, guard);
-        }
-
-        public AnonymousClosure.AnonymousClosurePointer guardCount(long count) {
-            super.guardCount(count);
-            return this;
+        public AnonymousClosurePointer(int count, boolean freeOnGC) {
+            super(__size, count, freeOnGC);
         }
 
         public int getSize() {

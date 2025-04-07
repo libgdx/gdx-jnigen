@@ -23,7 +23,6 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.SwitchEntry;
 import com.github.javaparser.ast.stmt.SwitchStmt;
-import com.github.javaparser.ast.type.PrimitiveType;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -38,8 +37,8 @@ public class EnumType implements MappedType {
     private String comment;
 
     public EnumType(TypeDefinition definition, String javaName) {
-        this.javaName = javaName;
         this.definition = definition;
+        this.javaName = javaName;
     }
 
     public void setComment(String comment) {
@@ -74,10 +73,13 @@ public class EnumType implements MappedType {
             declaration.setJavadocComment(comment);
 
         TypeKind nestedKind = definition.getNestedDefinition().getTypeKind();
-        if (nestedKind.getSize(false, false) == nestedKind.getSize(true, true))
-            declaration.addFieldWithInitializer("int", "__size", new IntegerLiteralExpr(String.valueOf(nestedKind.getSize(false, false))), Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
+        if (!nestedKind.isPrimitive())
+            throw new IllegalArgumentException("Enum " + definition.getTypeName() + " does not have a primitive type");
+
+        if (nestedKind.hasPlatformDependentSize())
+            declaration.addFieldWithInitializer("int", "__size", StaticJavaParser.parseExpression("CHandler.LONG_SIZE"), Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
         else
-            declaration.addFieldWithInitializer("int", "__size", StaticJavaParser.parseExpression("CHandler.IS_32_BIT || CHandler.IS_COMPILED_WIN ? " + nestedKind.getSize(true, true) + " : " + nestedKind.getSize(false, false)), Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
+            declaration.addFieldWithInitializer("int", "__size", new IntegerLiteralExpr(String.valueOf(nestedKind.getSize(false, false))), Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
 
         constants.values().stream()
                 .sorted(Comparator.comparingInt(EnumConstant::getId))
@@ -132,32 +134,51 @@ public class EnumType implements MappedType {
         declaration.addMember(pointerClass);
         pointerClass.addExtendedType("EnumPointer<" + javaName + ">");
         ConstructorDeclaration pointerConstructor = pointerClass.addConstructor(Keyword.PUBLIC);
-        pointerConstructor.addParameter(new Parameter(com.github.javaparser.ast.type.PrimitiveType.longType(), "pointer"));
-        pointerConstructor.addParameter(new Parameter(PrimitiveType.booleanType(), "freeOnGC"));
+        pointerConstructor.addParameter(long.class, "pointer");
+        pointerConstructor.addParameter(boolean.class, "freeOnGC");
         BlockStmt body = new BlockStmt();
         body.addStatement("super(pointer, freeOnGC);");
         pointerConstructor.setBody(body);
 
-        pointerClass.addConstructor(Keyword.PUBLIC).getBody().addStatement("this(1, true, true);");
+        ConstructorDeclaration pointerConstructorCapacity = pointerClass.addConstructor(Keyword.PUBLIC);
+        pointerConstructorCapacity.addParameter(long.class, "pointer");
+        pointerConstructorCapacity.addParameter(boolean.class, "freeOnGC");
+        pointerConstructorCapacity.addParameter(int.class, "capacity");
+        BlockStmt bodyCapacity = new BlockStmt();
+        bodyCapacity.addStatement("super(pointer, freeOnGC, capacity * __size);");
+        pointerConstructorCapacity.setBody(bodyCapacity);
+
+        pointerClass.addConstructor(Keyword.PUBLIC).getBody().addStatement("this(1, true);");
 
         ConstructorDeclaration defaultConstructorPointer = pointerClass.addConstructor(Keyword.PUBLIC);
         defaultConstructorPointer.addParameter(int.class, "count");
         defaultConstructorPointer.addParameter(boolean.class, "freeOnGC");
-        defaultConstructorPointer.addParameter(boolean.class, "guard");
-        defaultConstructorPointer.createBody().addStatement("super(count, freeOnGC, guard);");
+        defaultConstructorPointer.createBody().addStatement("super(count * __size, freeOnGC);");
 
-        pointerClass.addMethod("guardCount", Keyword.PUBLIC).setType(javaName + "." + pointerName)
-                .addParameter(long.class, "count")
-                .createBody()
-                .addStatement("super.guardCount(count);")
-                .addStatement("return this;");
+        Expression readExpr = getBackingPrimitiveType().readFromBufferPtr(new MethodCallExpr("getBufPtr"), StaticJavaParser.parseExpression("index * __size"));
+        CastExpr castToInt = new CastExpr().setType(int.class).setExpression(readExpr);
 
-        pointerClass.addMethod("getEnum", Keyword.PROTECTED).setType(javaName)
+        pointerClass.addMethod("getEnumValue", Keyword.PUBLIC).setType(javaName)
                 .addParameter(int.class, "index")
-                .createBody().addStatement("return getByIndex(index);");
+                .createBody()
+                .addStatement(new ReturnStmt(new MethodCallExpr("getByIndex", castToInt)));
 
-        pointerClass.addMethod("getSize", Keyword.PROTECTED).setType(int.class)
+        Expression writeExpr = getBackingPrimitiveType().writeToBufferPtr(new MethodCallExpr("getBufPtr"), StaticJavaParser.parseExpression("index * __size"),
+                new MethodCallExpr("getIndex").setScope(new NameExpr("value")));
+
+        pointerClass.addMethod("setEnumValue", Keyword.PUBLIC)
+                .setType(void.class)
+                .addParameter(javaName, "value")
+                .addParameter(int.class, "index")
+                .createBody()
+                .addStatement(writeExpr);
+
+        pointerClass.addMethod("getSize", Keyword.PUBLIC).setType(int.class)
                 .createBody().addStatement("return __size;");
+    }
+
+    public PrimitiveType getBackingPrimitiveType() {
+        return (PrimitiveType)definition.getNestedDefinition().getMappedType();
     }
 
     @Override
@@ -204,6 +225,21 @@ public class EnumType implements MappedType {
 
     @Override
     public int typeID() {
-        return Manager.getInstance().getCTypeID("int");
+        return definition.getNestedDefinition().getMappedType().typeID();
+    }
+
+    @Override
+    public Expression writeToBufferPtr(Expression bufferPtr, Expression offset, Expression valueToWrite) {
+        return getBackingPrimitiveType().writeToBufferPtr(bufferPtr, offset, valueToWrite);
+    }
+
+    @Override
+    public Expression readFromBufferPtr(Expression bufferPtr, Expression offset) {
+        return getBackingPrimitiveType().readFromBufferPtr(bufferPtr, offset);
+    }
+
+    @Override
+    public int getSize(boolean is32Bit, boolean isWin) {
+        return definition.getNestedDefinition().getTypeKind().getSize(is32Bit, isWin);
     }
 }

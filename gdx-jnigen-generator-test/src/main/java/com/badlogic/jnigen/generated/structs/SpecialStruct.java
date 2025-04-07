@@ -43,27 +43,27 @@ public final class SpecialStruct extends Struct {
     }
 
     public FloatPointer floatPtrField() {
-        return new FloatPointer(getValue(0), false);
+        return new FloatPointer(getBufPtr().getNativePointer(0), false);
     }
 
     public void floatPtrField(FloatPointer floatPtrField) {
-        setValue(floatPtrField.getPointer(), 0);
+        getBufPtr().setNativePointer(0, floatPtrField.getPointer());
     }
 
     public SIntPointer arrayField() {
         return __arrayField;
     }
 
-    private static final int __arrayField_offset = CHandler.getOffsetForField(__ffi_type, 1);
+    private static final int __arrayField_offset = CHandler.IS_32_BIT ? 4 : 8;
 
-    private final SIntPointer __arrayField = new SIntPointer(getPointer() + __arrayField_offset, false).guardCount(5);
+    private final SIntPointer __arrayField = new SIntPointer(getPointer() + __arrayField_offset, false, 5);
 
     public SIntPointer intPtrField() {
-        return new SIntPointer(getValue(6), false);
+        return new SIntPointer(getBufPtr().getNativePointer(CHandler.IS_32_BIT ? 24 : 32), false);
     }
 
     public void intPtrField(SIntPointer intPtrField) {
-        setValue(intPtrField.getPointer(), 6);
+        getBufPtr().setNativePointer(CHandler.IS_32_BIT ? 24 : 32, intPtrField.getPointer());
     }
 
     public static final class SpecialStructPointer extends StackElementPointer<SpecialStruct> {
@@ -72,22 +72,21 @@ public final class SpecialStruct extends Struct {
             super(pointer, freeOnGC);
         }
 
+        public SpecialStructPointer(long pointer, boolean freeOnGC, int capacity) {
+            super(pointer, freeOnGC, capacity * __size);
+        }
+
         public SpecialStructPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
             setParent(parent);
         }
 
         public SpecialStructPointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public SpecialStructPointer(int count, boolean freeOnGC, boolean guard) {
-            super(__size, count, freeOnGC, guard);
-        }
-
-        public SpecialStruct.SpecialStructPointer guardCount(long count) {
-            super.guardCount(count);
-            return this;
+        public SpecialStructPointer(int count, boolean freeOnGC) {
+            super(__size, count, freeOnGC);
         }
 
         public int getSize() {

@@ -9,9 +9,4 @@ public abstract class Union extends StackElement {
     protected Union(int size) {
         super(size);
     }
-
-    @Override
-    public boolean hasElementOffsets() {
-        return false;
-    }
 }

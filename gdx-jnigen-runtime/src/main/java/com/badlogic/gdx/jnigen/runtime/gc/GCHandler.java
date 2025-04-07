@@ -1,15 +1,15 @@
 package com.badlogic.gdx.jnigen.runtime.gc;
 
 import com.badlogic.gdx.jnigen.runtime.CHandler;
-import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.ref.ReferenceQueue;
 
 public class GCHandler {
-    private static final boolean NO_GC_FREE = System.getProperty("com.badlogic.jnigen.gc_disabled", "false").equals("true");
-    private static final boolean ENABLE_GC_LOG = System.getProperty("com.badlogic.jnigen.gc_log", "false").equals("true");
-    protected static final ReferenceQueue<Pointing> REFERENCE_QUEUE = new ReferenceQueue<>();
+    private static final boolean NO_GC_FREE = System.getProperty("com.badlogic.jnigen.gc.gc_disabled", "false").equals("true");
+    private static final boolean ENABLE_GC_LOG = System.getProperty("com.badlogic.jnigen.gc.gc_log", "false").equals("true");
+    protected static final ReferenceQueue<BufferPtr> REFERENCE_QUEUE = new ReferenceQueue<>();
     private static final ReferenceList referenceList = new ReferenceList();
 
     private static final Thread RELEASER = new Thread() {
@@ -18,13 +18,13 @@ public class GCHandler {
         public void run() {
             while (true) {
                 try {
-                    PointingPhantomReference releasedStructRef = (PointingPhantomReference)REFERENCE_QUEUE.remove();
-                    referenceList.removeReference(releasedStructRef);
+                    BufferPtrPhantomReference bufPtrRef = (BufferPtrPhantomReference)REFERENCE_QUEUE.remove();
+                    referenceList.removeReference(bufPtrRef);
 
                     if (ENABLE_GC_LOG)
-                        System.out.println("Freeing Pointer: " + releasedStructRef.getPointer());
+                        System.out.println("Freeing Pointer: " + bufPtrRef.getPointer());
 
-                    CHandler.free(releasedStructRef.getPointer());
+                    CHandler.free(bufPtrRef.getPointer());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -45,13 +45,13 @@ public class GCHandler {
         RELEASER.start();
     }
 
-    public static void enqueuePointer(Pointing pointing) {
+    public static void enqueuePointer(BufferPtr bufferPtr) {
         if (NO_GC_FREE)
             return;
         if (ENABLE_GC_LOG)
-            System.out.println("Enqueuing Pointer: " + pointing.getPointer() + " -> " + pointing.getClass().getSimpleName());
+            System.out.println("Enqueuing Pointer: " + bufferPtr.getPointer());
 
-        PointingPhantomReference structPhantomReference = new PointingPhantomReference(pointing);
+        BufferPtrPhantomReference structPhantomReference = new BufferPtrPhantomReference(bufferPtr);
         referenceList.insertReference(structPhantomReference);
     }
 

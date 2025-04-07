@@ -1,8 +1,8 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
 import com.badlogic.gdx.jnigen.generator.ClassNameConstants;
+import com.badlogic.gdx.jnigen.generator.JavaUtils;
 import com.badlogic.gdx.jnigen.generator.Manager;
-import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.NodeList;
@@ -99,12 +99,9 @@ public class ClosureType implements MappedType, WritableClass {
         NodeList<Statement> arguments = new NodeList<>();
         for (int i = 0; i < signature.getArguments().length; i++) {
             NamedType argument = signature.getArguments()[i];
-            ExpressionStmt setValueStmt = new ExpressionStmt(
-                    new MethodCallExpr(new NameExpr("useEncoder"), "setValue")
-                            .addArgument(new IntegerLiteralExpr(String.valueOf(i)))
-                            .addArgument(new NameExpr(argument.getName()))
-            );
-            arguments.add(setValueStmt);
+            Expression writeArgExpr = argument.getDefinition().getMappedType().writeToBufferPtr(new MethodCallExpr(new NameExpr("useEncoder"), "getBufPtr"), JavaUtils.getOffsetAsExpression(i, this::getParameterOffset), argument.getDefinition().getMappedType().toC(new NameExpr(argument.getName())));
+
+            arguments.add(new ExpressionStmt(writeArgExpr));
         }
 
         BlockStmt lambdaBody = new BlockStmt()
@@ -114,44 +111,13 @@ public class ClosureType implements MappedType, WritableClass {
             lambdaBody.addStatement(statement);
         }
 
-        if (signature.getReturnType().getTypeKind() == TypeKind.VOID) {
-            lambdaBody.addStatement(new MethodCallExpr(
-                    new NameExpr("useEncoder"),
-                    "invoke"
-            ));
-        } else {
+        lambdaBody.addStatement(new MethodCallExpr( new NameExpr("useEncoder"), "invoke"));
 
-            VariableDeclarationExpr returnConvertDeclaration = new VariableDeclarationExpr(
-                    new VariableDeclarator()
-                            .setType("JavaTypeWrapper")
-                            .setName("returnConvert")
-                            .setInitializer(new ObjectCreationExpr()
-                                    .setType("JavaTypeWrapper")
-                                    .addArgument(new ArrayAccessExpr(
-                                            new FieldAccessExpr(
-                                                    new NameExpr(internalClassName()),
-                                                    "__ffi_cache"
-                                            ),
-                                            new IntegerLiteralExpr("0")
-                                    ))
-                            )
-            );
+        if (signature.getReturnType().getTypeKind() != TypeKind.VOID) {
+            MappedType retMappedType = signature.getReturnType().getMappedType();
+            Expression readRetExpr = retMappedType.fromC(retMappedType.readFromBufferPtr(new MethodCallExpr(new NameExpr("useEncoder"), "getBufPtr"), new IntegerLiteralExpr("0")));
 
-            ExpressionStmt returnSetValueStatement = new ExpressionStmt(
-                    new MethodCallExpr(
-                            new NameExpr("returnConvert"),
-                            "setValue"
-                    ).addArgument(new MethodCallExpr(
-                            new NameExpr("useEncoder"),
-                            "invoke"
-                    ))
-            );
-
-            Statement returnStatement = new ReturnStmt(getMethodCallExpr(new NameExpr("returnConvert"), signature.getReturnType()));
-
-            lambdaBody.addStatement(new ExpressionStmt(returnConvertDeclaration))
-                    .addStatement(returnSetValueStatement)
-                    .addStatement(returnStatement);
+            lambdaBody.addStatement(new ReturnStmt(readRetExpr));
         }
 
         LambdaExpr lambda = new LambdaExpr()
@@ -181,9 +147,9 @@ public class ClosureType implements MappedType, WritableClass {
         cuPublic.addImport(ClassNameConstants.CLOSURE_CLASS);
         cuPublic.addImport(internalClass());
 
-        cuPrivate.addImport(ClassNameConstants.JAVATYPEWRAPPER_CLASS);
         cuPrivate.addImport(ClassNameConstants.CTYPEINFO_CLASS);
         cuPrivate.addImport(ClassNameConstants.CLOSURE_CLASS);
+        cuPrivate.addImport(ClassNameConstants.BUFFER_PTR);
 
         NodeList<Expression> arrayInitializerExpr = new NodeList<>();
         ArrayCreationExpr arrayCreationExpr = new ArrayCreationExpr();
@@ -220,37 +186,38 @@ public class ClosureType implements MappedType, WritableClass {
                 .createBody().addStatement("return __ffi_cache;");
 
         MethodDeclaration invokeMethod = toWriteToPrivate.addMethod("invoke", Keyword.DEFAULT);
-        invokeMethod.addParameter("JavaTypeWrapper[]", "parameters");
-        invokeMethod.addParameter("JavaTypeWrapper", "returnType");
+        invokeMethod.addParameter("BufferPtr", "buf");
         BlockStmt invokeBody = new BlockStmt();
         MethodCallExpr callExpr = new MethodCallExpr(callMethod.getNameAsString());
         for (int i = 0; i < arguments.length; i++) {
             NamedType type = arguments[i];
             TypeDefinition definition = type.getDefinition();
-            ArrayAccessExpr arrayAccessExpr = new ArrayAccessExpr(new NameExpr("parameters"), new IntegerLiteralExpr(String.valueOf(i)));
-            callExpr.addArgument(getMethodCallExpr(arrayAccessExpr, definition));
+            Expression fromBuf = definition.getMappedType().readFromBufferPtr(new NameExpr("buf"), JavaUtils.getOffsetAsExpression(i, this::getParameterOffset));
+            callExpr.addArgument(definition.getMappedType().fromC(fromBuf));
         }
 
         if (returnType.getTypeKind() == TypeKind.VOID) {
             invokeBody.addStatement(callExpr);
         } else {
-            MethodCallExpr returnTypeSetMethodCall = new MethodCallExpr("setValue");
-            returnTypeSetMethodCall.setScope(new NameExpr("returnType"));
-            Statement assertStatement = returnType.getMappedType().assertJava(new NameExpr("_ret"));
-            if (!assertStatement.isEmptyStmt()) {
-                VariableDeclarationExpr declarationExpr = new VariableDeclarationExpr(new VariableDeclarator(StaticJavaParser.parseType(returnType.getMappedType().abstractType()), "_ret", callExpr));
-                returnTypeSetMethodCall.addArgument("_ret");
-                invokeBody.addStatement(declarationExpr);
-                invokeBody.addStatement(assertStatement);
-            } else {
-                returnTypeSetMethodCall.addArgument(callExpr);
-            }
-            invokeBody.addStatement(returnTypeSetMethodCall);
+            Expression toBuf = returnType.getMappedType().writeToBufferPtr(new NameExpr("buf"), new IntegerLiteralExpr("0"), returnType.getMappedType().toC(callExpr));
+            invokeBody.addStatement(toBuf);
         }
 
         invokeMethod.setBody(invokeBody);
 
         writeHelper(cuPrivate, toWriteToPrivate);
+    }
+
+    private int getParameterOffset(int index, boolean is32Bit, boolean isWin) {
+        if (index < 0 || index > signature.getArguments().length)
+            throw new IllegalArgumentException("Index out of bounds: " + index);
+
+        int offset = 0;
+        for (int i = 0; i < index; i++) {
+            offset += signature.getArguments()[i].getDefinition().getMappedType().getSizeFromC(is32Bit, isWin);
+        }
+
+        return offset;
     }
 
     private static Expression getMethodCallExpr(Expression expression, TypeDefinition type) {
@@ -259,6 +226,8 @@ public class ClosureType implements MappedType, WritableClass {
             methodName = "asFloat";
         else if (type.getTypeKind() == TypeKind.DOUBLE)
             methodName = "asDouble";
+        else if (type.getTypeKind() == TypeKind.BOOLEAN)
+            methodName = "asBoolean";
         MethodCallExpr methodCallExpr = new MethodCallExpr(methodName);
         methodCallExpr.setScope(expression);
         return type.getMappedType().fromC(methodCallExpr);
@@ -331,5 +300,20 @@ public class ClosureType implements MappedType, WritableClass {
     @Override
     public String internalClass() {
         return parent.internalClass() + "." + internalClassName();
+    }
+
+    @Override
+    public Expression writeToBufferPtr(Expression bufferPtr, Expression offset, Expression valueToWrite) {
+        return new MethodCallExpr("setNativePointer", offset, valueToWrite).setScope(bufferPtr);
+    }
+
+    @Override
+    public Expression readFromBufferPtr(Expression bufferPtr, Expression offset) {
+        return new MethodCallExpr("getNativePointer", offset).setScope(bufferPtr);
+    }
+
+    @Override
+    public int getSize(boolean is32Bit, boolean isWin) {
+        return is32Bit ? 4 : 8;
     }
 }

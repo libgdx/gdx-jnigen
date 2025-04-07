@@ -38,27 +38,27 @@ public final class AnonymousStructNoFieldNested extends Struct {
     }
 
     public int intValue1() {
-        return (int) getValue(0);
+        return getBufPtr().getInt(0);
     }
 
     public void intValue1(int intValue1) {
-        setValue(intValue1, 0);
+        getBufPtr().setInt(0, intValue1);
     }
 
     public float floatValue2() {
-        return (float) getValueFloat(1);
+        return getBufPtr().getFloat(4);
     }
 
     public void floatValue2(float floatValue2) {
-        setValue(floatValue2, 1);
+        getBufPtr().setFloat(4, floatValue2);
     }
 
     public int externalValue() {
-        return (int) getValue(2);
+        return getBufPtr().getInt(8);
     }
 
     public void externalValue(int externalValue) {
-        setValue(externalValue, 2);
+        getBufPtr().setInt(8, externalValue);
     }
 
     public static final class AnonymousStructNoFieldNestedPointer extends StackElementPointer<AnonymousStructNoFieldNested> {
@@ -67,22 +67,21 @@ public final class AnonymousStructNoFieldNested extends Struct {
             super(pointer, freeOnGC);
         }
 
+        public AnonymousStructNoFieldNestedPointer(long pointer, boolean freeOnGC, int capacity) {
+            super(pointer, freeOnGC, capacity * __size);
+        }
+
         public AnonymousStructNoFieldNestedPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
             setParent(parent);
         }
 
         public AnonymousStructNoFieldNestedPointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public AnonymousStructNoFieldNestedPointer(int count, boolean freeOnGC, boolean guard) {
-            super(__size, count, freeOnGC, guard);
-        }
-
-        public AnonymousStructNoFieldNested.AnonymousStructNoFieldNestedPointer guardCount(long count) {
-            super.guardCount(count);
-            return this;
+        public AnonymousStructNoFieldNestedPointer(int count, boolean freeOnGC) {
+            super(__size, count, freeOnGC);
         }
 
         public int getSize() {

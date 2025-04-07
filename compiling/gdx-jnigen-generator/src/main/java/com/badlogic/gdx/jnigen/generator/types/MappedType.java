@@ -2,14 +2,10 @@ package com.badlogic.gdx.jnigen.generator.types;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.stmt.EmptyStmt;
-import com.github.javaparser.ast.stmt.Statement;
 
 public interface MappedType {
 
-    default void importType(CompilationUnit cu) {
-        throw new IllegalArgumentException();
-    }
+    void importType(CompilationUnit cu);
 
     String classFile();
 
@@ -33,14 +29,6 @@ public interface MappedType {
 
     int typeID();
 
-    default Statement assertJava(Expression scope) {
-        return new EmptyStmt();
-    }
-
-    default String assertC(Expression scope) {
-        return "";
-    }
-
     default boolean isLibFFIConvertible() {
         return true;
     }
@@ -51,5 +39,15 @@ public interface MappedType {
 
     default String internalClass() {
         return classFile() + "_Internal";
+    }
+
+    Expression writeToBufferPtr(Expression bufferPtr, Expression offset, Expression valueToWrite);
+    Expression readFromBufferPtr(Expression bufferPtr, Expression offset);
+    int getSize(boolean is32Bit, boolean isWin);
+    default int getAlignment(boolean is32Bit, boolean isWin) {
+        return getSize(is32Bit, isWin);
+    }
+    default int getSizeFromC(boolean is32Bit, boolean isWin) {
+        return getSize(is32Bit, isWin);
     }
 }

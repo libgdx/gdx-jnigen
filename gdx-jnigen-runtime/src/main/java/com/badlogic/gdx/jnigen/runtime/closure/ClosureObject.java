@@ -7,6 +7,7 @@ public final class ClosureObject<T extends Closure> extends Pointing {
 
     private final T closure;
     private final long closurePtr;
+    private boolean freed = false;
 
     public static <T extends Closure> ClosureObject<T> fromClosure(T object) {
         return CHandler.createClosureForObject(object);
@@ -20,7 +21,7 @@ public final class ClosureObject<T extends Closure> extends Pointing {
 
     @Override
     public void free() {
-        if (isFreed())
+        if (freed)
             throw new IllegalArgumentException("Closure already freed");
         if (closurePtr == 0)
             throw new IllegalArgumentException("Closure is not java closure: " + getPointer());

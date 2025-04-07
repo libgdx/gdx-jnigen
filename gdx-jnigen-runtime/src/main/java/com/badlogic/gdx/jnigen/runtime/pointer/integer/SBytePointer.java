@@ -1,13 +1,12 @@
 package com.badlogic.gdx.jnigen.runtime.pointer.integer;
 
-import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 
 public class SBytePointer extends VoidPointer {
     private static final int BYTE_SIZE = 1;
 
-    public SBytePointer(int count, boolean freeOnGC, boolean guard) {
-        super(count * BYTE_SIZE, freeOnGC, guard);
+    public SBytePointer(int count, boolean freeOnGC) {
+        super(count * BYTE_SIZE, freeOnGC);
     }
 
     public SBytePointer() {
@@ -22,15 +21,8 @@ public class SBytePointer extends VoidPointer {
         super(pointer, freeOnGC);
     }
 
-    public SBytePointer guardCount(long count) {
-        super.guardBytes(count * BYTE_SIZE);
-        return this;
-    }
-
-    private int calculateOffset(int index) {
-        int offset = index * BYTE_SIZE;
-        assertBounds(offset);
-        return offset;
+    public SBytePointer(long pointer, boolean freeOnGC, int capacity) {
+        super(pointer, freeOnGC, capacity * BYTE_SIZE);
     }
 
     public boolean getBoolean() {
@@ -38,7 +30,7 @@ public class SBytePointer extends VoidPointer {
     }
 
     public boolean getBoolean(int index) {
-        return CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index)) != 0;
+        return getBufPtr().getBoolean(index * BYTE_SIZE);
     }
 
     public void setBoolean(boolean value) {
@@ -46,7 +38,7 @@ public class SBytePointer extends VoidPointer {
     }
 
     public void setBoolean(boolean value, int index) {
-        CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value ? 1 : 0);
+        getBufPtr().setBoolean(index * BYTE_SIZE, value);
     }
 
     public byte getByte() {
@@ -54,7 +46,7 @@ public class SBytePointer extends VoidPointer {
     }
 
     public byte getByte(int index) {
-        return (byte)CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index));
+        return getBufPtr().getByte(index * BYTE_SIZE);
     }
 
     public void setByte(byte value) {
@@ -62,6 +54,20 @@ public class SBytePointer extends VoidPointer {
     }
 
     public void setByte(byte value, int index) {
-        CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value);
+        getBufPtr().setByte(index * BYTE_SIZE, value);
+    }
+
+    public static SBytePointer fromString(String string, boolean freeOnGC) {
+        SBytePointer pointer = new SBytePointer(string.getBytes().length + 1, freeOnGC);
+        pointer.setString(string);
+        return pointer;
+    }
+
+    public void setString(String string) {
+        getBufPtr().setString(string);
+    }
+
+    public String getString() {
+        return getBufPtr().getString();
     }
 }

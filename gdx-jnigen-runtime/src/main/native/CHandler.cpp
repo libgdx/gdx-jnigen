@@ -40,23 +40,6 @@ typedef struct _closure_info {
     size_t argumentSize;
 } closure_info;
 
-
-static inline size_t getOffsetForField(ffi_type* struct_type, uint32_t index) {
-    size_t offset = 0;
-
-    for (size_t i = 0; i <= index; i++) {
-        ffi_type* current_element = struct_type->elements[i];
-        size_t alignment = current_element->alignment;
-        if (offset % alignment != 0) {
-            offset += alignment - (offset % alignment);
-        }
-        if (i != index)
-            offset += current_element->size;
-    }
-
-    return offset;
-}
-
 // We do inline to silence compiler warnings, but it shouldn't actually inline
 static inline void calculateAlignmentAndOffset(ffi_type* type, bool isStruct) {
     int index = 0;
@@ -95,10 +78,9 @@ void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
     JNIEnv* env;
     tls_attach_jni_env(gJVM, &env);
     closure_info* info = (closure_info*) user;
-    char backingBuffer[info->argumentSize];
-    jobject jBuffer = NULL;
+    ffi_type* rtype = cif->rtype;
+    char backingBuffer[info->argumentSize > rtype->size ? info->argumentSize : rtype->size];
     if (cif->nargs != 0) {
-        jBuffer = env->NewDirectByteBuffer(backingBuffer, info->argumentSize);
         size_t offset = 0;
         for (size_t i = 0; i < cif->nargs; i++) {
             ffi_type* type = cif->arg_types[i];
@@ -113,7 +95,8 @@ void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
             }
         }
     }
-    jlong ret = env->CallStaticLongMethod(globalClass, dispatchCallbackMethod, info->javaInfo, jBuffer);
+
+    env->CallStaticVoidMethod(globalClass, dispatchCallbackMethod, info->javaInfo, backingBuffer);
 
     jthrowable exc = env->ExceptionOccurred();
     if(exc != NULL) {
@@ -127,30 +110,32 @@ void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
         throw JavaExceptionMarker(gJVM, exc, cxxMessage);
     }
 
-    ffi_type* rtype = cif->rtype;
     if(rtype->type == FFI_TYPE_STRUCT) {
-        memcpy(result, reinterpret_cast<void*>(ret), rtype->size);
+        memcpy(result, *(void**)backingBuffer, rtype->size);
     } else {
-        ENDIAN_INTCPY(result, rtype->size, &ret, sizeof(jlong));
+        memcpy(result, &backingBuffer, rtype->size);
     }
 }
 
-JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_dispatchCCall(JNIEnv* env, jclass clazz, jlong fnPtr_j, jlong cif_j, jobject arg_buf) {
+JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_dispatchCCall(JNIEnv* env, jclass clazz, jlong fnPtr_j, jlong cif_j, jlong arg_buf) {
     HANDLE_JAVA_EXCEPTION_START()
 
-    void** arguments = (void**)(arg_buf ? env->GetDirectBufferAddress(arg_buf) : 0);
+    void** arguments = (void**)arg_buf;
     void* fnPtr = (void*) fnPtr_j;
     ffi_cif* cif = (ffi_cif*) cif_j;
 
     void** decodedArguments = (void**)alloca(cif->nargs * (sizeof(void*)));
+    int offset = 0;
     for (int i = 0; i < cif->nargs; ++i) {
         ffi_type* arg = cif->arg_types[i];
         if (arg->type == FFI_TYPE_STRUCT) {
             decodedArguments[i] = arguments[i];
         } else {
             decodedArguments[i] = alloca(arg->size);
-            ENDIAN_INTCPY(decodedArguments[i], arg->size, &arguments[i], 8);
+            memcpy(decodedArguments[i], (char*)arguments + offset, arg->size);
         }
+
+        offset += arg->size;
     }
 
     void* result = (void*)alloca(cif->rtype->size);
@@ -159,20 +144,16 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_dispatchCC
     ffi_type* rtype = cif->rtype;
 
     if (rtype->type == FFI_TYPE_VOID)
-        return 0;
+        return;
     if(rtype->type == FFI_TYPE_STRUCT) {
         void* struct_ret = malloc(rtype->size);
         memcpy(struct_ret, result, rtype->size);
-        return (jlong) struct_ret;
+        arguments[0] = struct_ret;
     } else {
-        jlong ret = 0;
-        ENDIAN_INTCPY(&ret, sizeof(jlong), result, rtype->size);
-        return ret;
+        memcpy(arguments, result, rtype->size);
     }
 
     HANDLE_JAVA_EXCEPTION_END()
-
-    return 0;
 }
 
 JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_is32Bit(JNIEnv* env, jclass clazz) {
@@ -330,76 +311,8 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_createClos
     return reinterpret_cast<jlong>(fnPtr);
 }
 
-JNIEXPORT jint JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getOffsetForField(JNIEnv* env, jclass clazz, jlong type_ptr, jint index) {
-    return getOffsetForField(reinterpret_cast<ffi_type*>(type_ptr), (uint32_t) index);
-}
-
-JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getStackElementField(JNIEnv* env, jclass clazz, jlong pointer, jlong type_ptr, jint index, jboolean calculateOffset) {
-    char* ptr = reinterpret_cast<char*>(pointer);
-    ffi_type* struct_type = reinterpret_cast<ffi_type*>(type_ptr);
-    uint32_t field = (uint32_t) index;
-
-    size_t offset = calculateOffset ? getOffsetForField(struct_type, field) : 0;
-
-    jlong ret = 0;
-    ENDIAN_INTCPY(&ret, sizeof(jlong), ptr + offset, struct_type->elements[field]->size);
-    return ret;
-}
-
-JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_setStackElement_1internal(JNIEnv* env, jclass clazz, jlong pointer, jlong type_ptr, jint index, jlong value, jboolean calculateOffset) {
-    char* ptr = reinterpret_cast<char*>(pointer);
-    ffi_type* struct_type = reinterpret_cast<ffi_type*>(type_ptr);
-    uint32_t field = (uint32_t) index;
-
-    bool valid_bounds = CHECK_BOUNDS_FFI_TYPE(struct_type->elements[field], value);
-    if(!valid_bounds) {
-        return false;
-    }
-
-    size_t offset = calculateOffset ? getOffsetForField(struct_type, field) : 0;
-
-    ENDIAN_INTCPY(ptr + offset, struct_type->elements[field]->size, &value, sizeof(jlong));
-    return true;
-}
-
-JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getPointerPart(JNIEnv* env, jclass clazz, jlong pointer, jint size, jint offset) {
-    char* ptr = reinterpret_cast<char*>(pointer);
-    jlong ret = 0;
-    ENDIAN_INTCPY(&ret, sizeof(jlong), ptr + offset, (size_t)size);
-    return ret;
-}
-
-JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_setPointerPart(JNIEnv* env, jclass clazz, jlong pointer, jint size, jint offset, jlong value) {
-    char* ptr = reinterpret_cast<char*>(pointer);
-    ENDIAN_INTCPY(ptr + offset, (size_t)size, &value, sizeof(jlong));
-}
-
-JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_setPointerAsString(JNIEnv* env, jclass clazz, jlong pointer, jstring obj_string) {
-	char* string = (char*)env->GetStringUTFChars(obj_string, 0);
-
-    strcpy((char*)pointer, string);
-    
-	env->ReleaseStringUTFChars(obj_string, string);
-}
-
-JNIEXPORT jstring JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getPointerAsString(JNIEnv* env, jclass clazz, jlong pointer) {
-    return env->NewStringUTF(reinterpret_cast<const char*>(pointer));
-}
-
 JNIEXPORT jint JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getSizeFromFFIType(JNIEnv* env, jclass clazz, jlong type) {
     return reinterpret_cast<ffi_type*>(type)->size;
-}
-
-JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_getSignFromFFIType(JNIEnv* env, jclass clazz, jlong type) {
-    return (jboolean)(GET_FFI_TYPE_SIGN((ffi_type*)type));
-}
-
-JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_isStruct(JNIEnv* env, jclass clazz, jlong type) {
-    return ((ffi_type*)type)->type == FFI_TYPE_STRUCT;
-}
-
-JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_isVoid(JNIEnv* env, jclass clazz, jlong type) {
-    return ((ffi_type*)type)->type == FFI_TYPE_VOID;
 }
 
 JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_freeClosure(JNIEnv* env, jclass clazz, jlong closurePtr) {
@@ -429,6 +342,11 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_clone(JNIE
     void* dst = malloc(size);
     memcpy((void*)dst, (void*)src, size);
     return reinterpret_cast<jlong>(dst);
+}
+
+JNIEXPORT jobject JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_wrapPointer
+  (JNIEnv* env, jclass clazz, jlong ptr, jint capacity) {
+    return env->NewDirectByteBuffer((void*)ptr, capacity);
 }
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {

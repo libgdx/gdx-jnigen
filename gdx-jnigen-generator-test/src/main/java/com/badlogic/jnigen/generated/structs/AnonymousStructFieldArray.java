@@ -42,16 +42,16 @@ public final class AnonymousStructFieldArray extends Struct {
         return __inner;
     }
 
-    private static final int __inner_offset = CHandler.getOffsetForField(__ffi_type, 0);
+    private static final int __inner_offset = 0;
 
-    private final inner.innerPointer __inner = new inner.innerPointer(getPointer() + __inner_offset, false).guardCount(2);
+    private final inner.innerPointer __inner = new inner.innerPointer(getPointer() + __inner_offset, false, 2);
 
     public int externalValue() {
-        return (int) getValue(2);
+        return getBufPtr().getInt(16);
     }
 
     public void externalValue(int externalValue) {
-        setValue(externalValue, 2);
+        getBufPtr().setInt(16, externalValue);
     }
 
     public static final class AnonymousStructFieldArrayPointer extends StackElementPointer<AnonymousStructFieldArray> {
@@ -60,22 +60,21 @@ public final class AnonymousStructFieldArray extends Struct {
             super(pointer, freeOnGC);
         }
 
+        public AnonymousStructFieldArrayPointer(long pointer, boolean freeOnGC, int capacity) {
+            super(pointer, freeOnGC, capacity * __size);
+        }
+
         public AnonymousStructFieldArrayPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
             setParent(parent);
         }
 
         public AnonymousStructFieldArrayPointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public AnonymousStructFieldArrayPointer(int count, boolean freeOnGC, boolean guard) {
-            super(__size, count, freeOnGC, guard);
-        }
-
-        public AnonymousStructFieldArray.AnonymousStructFieldArrayPointer guardCount(long count) {
-            super.guardCount(count);
-            return this;
+        public AnonymousStructFieldArrayPointer(int count, boolean freeOnGC) {
+            super(__size, count, freeOnGC);
         }
 
         public int getSize() {
@@ -119,19 +118,19 @@ public final class AnonymousStructFieldArray extends Struct {
         }
 
         public int intValue() {
-            return (int) getValue(0);
+            return getBufPtr().getInt(0);
         }
 
         public void intValue(int intValue) {
-            setValue(intValue, 0);
+            getBufPtr().setInt(0, intValue);
         }
 
         public float floatValue() {
-            return (float) getValueFloat(1);
+            return getBufPtr().getFloat(4);
         }
 
         public void floatValue(float floatValue) {
-            setValue(floatValue, 1);
+            getBufPtr().setFloat(4, floatValue);
         }
 
         public static final class innerPointer extends StackElementPointer<inner> {
@@ -140,22 +139,21 @@ public final class AnonymousStructFieldArray extends Struct {
                 super(pointer, freeOnGC);
             }
 
+            public innerPointer(long pointer, boolean freeOnGC, int capacity) {
+                super(pointer, freeOnGC, capacity * __size);
+            }
+
             public innerPointer(long pointer, boolean freeOnGC, Pointing parent) {
                 super(pointer, freeOnGC);
                 setParent(parent);
             }
 
             public innerPointer() {
-                this(1, true, true);
+                this(1, true);
             }
 
-            public innerPointer(int count, boolean freeOnGC, boolean guard) {
-                super(__size, count, freeOnGC, guard);
-            }
-
-            public inner.innerPointer guardCount(long count) {
-                super.guardCount(count);
-                return this;
+            public innerPointer(int count, boolean freeOnGC) {
+                super(__size, count, freeOnGC);
             }
 
             public int getSize() {

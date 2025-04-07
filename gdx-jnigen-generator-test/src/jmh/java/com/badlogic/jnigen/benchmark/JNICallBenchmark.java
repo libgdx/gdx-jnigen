@@ -1,6 +1,8 @@
 package com.badlogic.jnigen.benchmark;
 
 import com.badlogic.gdx.jnigen.runtime.CHandler;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrAllocator;
 import com.badlogic.jnigen.generated.TestData;
 import com.badlogic.jnigen.generated.enums.SpecialEnum;
 import com.badlogic.jnigen.generated.enums.TestEnum;
@@ -21,11 +23,13 @@ public class JNICallBenchmark {
 
     private TestStruct testStruct;
     private CharBuffer charBuffer = ByteBuffer.allocateDirect(2).order(ByteOrder.nativeOrder()).asCharBuffer();
+    private BufferPtr bufferPtr;
 
     @Setup(Level.Trial)
     public void setup() {
         TestData.initialize();
         testStruct = new TestStruct();
+        bufferPtr = BufferPtrAllocator.get(CHandler.calloc(1, 2), 2, true);
     }
 
     @Benchmark
@@ -34,7 +38,13 @@ public class JNICallBenchmark {
         CHandler.free(ptr);
     }
 
+    int count = 1;
     @Benchmark
+    public void bufferPtrResolveSpeed(Blackhole bh) {
+        bh.consume(BufferPtrAllocator.get(count++));
+    }
+
+    //@Benchmark
     public void structFieldGet(Blackhole bh) {
         bh.consume(testStruct.field4());
     }
@@ -62,5 +72,15 @@ public class JNICallBenchmark {
     @Benchmark
     public void bufferFieldSet(Blackhole bh) {
         charBuffer.put(0, 'a');
+    }
+
+    @Benchmark
+    public void bufferPtrFieldGet(Blackhole bh) {
+        bh.consume(bufferPtr.getChar());
+    }
+
+    @Benchmark
+    public void bufferPtrFieldSet(Blackhole bh) {
+        bufferPtr.setChar('a');
     }
 }

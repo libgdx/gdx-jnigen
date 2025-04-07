@@ -1,14 +1,13 @@
 package com.badlogic.gdx.jnigen.runtime.pointer.integer;
 
-import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 
 public class UBytePointer extends VoidPointer {
 
     private static final int BYTE_SIZE = 1;
 
-    public UBytePointer(int count, boolean freeOnGC, boolean guard) {
-        super(count * BYTE_SIZE, freeOnGC, guard);
+    public UBytePointer(int count, boolean freeOnGC) {
+        super(count * BYTE_SIZE, freeOnGC);
     }
 
     public UBytePointer() {
@@ -23,15 +22,8 @@ public class UBytePointer extends VoidPointer {
         super(pointer, freeOnGC);
     }
 
-    public UBytePointer guardCount(long count) {
-        super.guardBytes(count * BYTE_SIZE);
-        return this;
-    }
-
-    private int calculateOffset(int index) {
-        int offset = index * BYTE_SIZE;
-        assertBounds(offset);
-        return offset;
+    public UBytePointer(long pointer, boolean freeOnGC, int capacity) {
+        super(pointer, freeOnGC, capacity * BYTE_SIZE);
     }
 
     public boolean getBoolean() {
@@ -39,7 +31,7 @@ public class UBytePointer extends VoidPointer {
     }
 
     public boolean getBoolean(int index) {
-        return CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index)) != 0;
+        return getBufPtr().getBoolean(index * BYTE_SIZE);
     }
 
     public void setBoolean(boolean value) {
@@ -47,7 +39,7 @@ public class UBytePointer extends VoidPointer {
     }
 
     public void setBoolean(boolean value, int index) {
-        CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value ? 1 : 0);
+        getBufPtr().setBoolean(index * BYTE_SIZE, value);
     }
 
     public char getUByte() {
@@ -55,15 +47,15 @@ public class UBytePointer extends VoidPointer {
     }
 
     public char getUByte(int index) {
-        return (char)CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index));
+        return getBufPtr().getUByte(index * BYTE_SIZE);
     }
 
     public void setUByte(byte value) {
-        setUByte((char)(value & 0xFF), 0);
+        setUByte(value, 0);
     }
 
     public void setUByte(byte value, int index) {
-        setUByte((char)(value & 0xFF), index);
+        getBufPtr().setUByte(index * BYTE_SIZE, value);
     }
 
     public void setUByte(char value) {
@@ -71,8 +63,20 @@ public class UBytePointer extends VoidPointer {
     }
 
     public void setUByte(char value, int index) {
-        if (value >= 1L << (BYTE_SIZE * 8))
-            throw new IllegalArgumentException("UByte out of range: " + value);
-        CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value);
+        getBufPtr().setUByte(index * BYTE_SIZE, (byte)value);
+    }
+
+    public static UBytePointer fromString(String string, boolean freeOnGC) {
+        UBytePointer pointer = new UBytePointer(string.getBytes().length + 1, freeOnGC);
+        pointer.setString(string);
+        return pointer;
+    }
+
+    public void setString(String string) {
+        getBufPtr().setString(string);
+    }
+
+    public String getString() {
+        return getBufPtr().getString();
     }
 }

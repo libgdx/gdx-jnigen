@@ -9,9 +9,4 @@ public abstract class Struct extends StackElement {
     protected Struct(int size) {
         super(size);
     }
-
-    @Override
-    public boolean hasElementOffsets() {
-        return true;
-    }
 }

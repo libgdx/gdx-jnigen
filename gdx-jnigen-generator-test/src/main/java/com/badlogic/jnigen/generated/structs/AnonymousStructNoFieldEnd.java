@@ -38,33 +38,33 @@ public final class AnonymousStructNoFieldEnd extends Struct {
     }
 
     public int externalValue() {
-        return (int) getValue(0);
+        return getBufPtr().getInt(0);
     }
 
     public void externalValue(int externalValue) {
-        setValue(externalValue, 0);
+        getBufPtr().setInt(0, externalValue);
     }
 
     /**
      * Anon struct field
      */
     public int intValue() {
-        return (int) getValue(1);
+        return getBufPtr().getInt(4);
     }
 
     /**
      * Anon struct field
      */
     public void intValue(int intValue) {
-        setValue(intValue, 1);
+        getBufPtr().setInt(4, intValue);
     }
 
     public float floatValue() {
-        return (float) getValueFloat(2);
+        return getBufPtr().getFloat(8);
     }
 
     public void floatValue(float floatValue) {
-        setValue(floatValue, 2);
+        getBufPtr().setFloat(8, floatValue);
     }
 
     public static final class AnonymousStructNoFieldEndPointer extends StackElementPointer<AnonymousStructNoFieldEnd> {
@@ -73,22 +73,21 @@ public final class AnonymousStructNoFieldEnd extends Struct {
             super(pointer, freeOnGC);
         }
 
+        public AnonymousStructNoFieldEndPointer(long pointer, boolean freeOnGC, int capacity) {
+            super(pointer, freeOnGC, capacity * __size);
+        }
+
         public AnonymousStructNoFieldEndPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
             setParent(parent);
         }
 
         public AnonymousStructNoFieldEndPointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public AnonymousStructNoFieldEndPointer(int count, boolean freeOnGC, boolean guard) {
-            super(__size, count, freeOnGC, guard);
-        }
-
-        public AnonymousStructNoFieldEnd.AnonymousStructNoFieldEndPointer guardCount(long count) {
-            super.guardCount(count);
-            return this;
+        public AnonymousStructNoFieldEndPointer(int count, boolean freeOnGC) {
+            super(__size, count, freeOnGC);
         }
 
         public int getSize() {

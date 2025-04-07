@@ -57,24 +57,27 @@ public enum TestEnum implements CEnum {
             super(pointer, freeOnGC);
         }
 
+        public TestEnumPointer(long pointer, boolean freeOnGC, int capacity) {
+            super(pointer, freeOnGC, capacity * __size);
+        }
+
         public TestEnumPointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public TestEnumPointer(int count, boolean freeOnGC, boolean guard) {
-            super(count, freeOnGC, guard);
+        public TestEnumPointer(int count, boolean freeOnGC) {
+            super(count * __size, freeOnGC);
         }
 
-        public TestEnum.TestEnumPointer guardCount(long count) {
-            super.guardCount(count);
-            return this;
+        public TestEnum getEnumValue(int index) {
+            return getByIndex((int) getBufPtr().getUInt(index * __size));
         }
 
-        protected TestEnum getEnum(int index) {
-            return getByIndex(index);
+        public void setEnumValue(TestEnum value, int index) {
+            getBufPtr().setUInt(index * __size, value.getIndex());
         }
 
-        protected int getSize() {
+        public int getSize() {
             return __size;
         }
     }

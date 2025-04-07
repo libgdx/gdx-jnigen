@@ -1,14 +1,13 @@
 package com.badlogic.gdx.jnigen.runtime.pointer.integer;
 
-import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 
 public class UInt64Pointer extends VoidPointer {
 
     private static final int BYTE_SIZE = 8;
 
-    public UInt64Pointer(int count, boolean freeOnGC, boolean guard) {
-        super(count * BYTE_SIZE, freeOnGC, guard);
+    public UInt64Pointer(int count, boolean freeOnGC) {
+        super(count * BYTE_SIZE, freeOnGC);
     }
 
     public UInt64Pointer() {
@@ -23,15 +22,8 @@ public class UInt64Pointer extends VoidPointer {
         super(pointer, freeOnGC);
     }
 
-    public UInt64Pointer guardCount(long count) {
-        super.guardBytes(count * BYTE_SIZE);
-        return this;
-    }
-
-    private int calculateOffset(int index) {
-        int offset = index * BYTE_SIZE;
-        assertBounds(offset);
-        return offset;
+    public UInt64Pointer(long pointer, boolean freeOnGC, int capacity) {
+        super(pointer, freeOnGC, capacity * BYTE_SIZE);
     }
 
     public long getLong() {
@@ -39,7 +31,7 @@ public class UInt64Pointer extends VoidPointer {
     }
 
     public long getLong(int index) {
-        return CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index));
+        return getBufPtr().getLong(index * BYTE_SIZE);
     }
 
     public void setLong(long value) {
@@ -47,6 +39,6 @@ public class UInt64Pointer extends VoidPointer {
     }
 
     public void setLong(long value, int index) {
-        CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value);
+        getBufPtr().setLong(index * BYTE_SIZE, value);
     }
 }

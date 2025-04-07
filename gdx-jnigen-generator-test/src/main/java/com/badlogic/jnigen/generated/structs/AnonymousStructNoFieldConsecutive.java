@@ -38,43 +38,43 @@ public final class AnonymousStructNoFieldConsecutive extends Struct {
     }
 
     public int externalValue() {
-        return (int) getValue(0);
+        return getBufPtr().getInt(0);
     }
 
     public void externalValue(int externalValue) {
-        setValue(externalValue, 0);
+        getBufPtr().setInt(0, externalValue);
     }
 
     public int intValue1() {
-        return (int) getValue(1);
+        return getBufPtr().getInt(4);
     }
 
     public void intValue1(int intValue1) {
-        setValue(intValue1, 1);
+        getBufPtr().setInt(4, intValue1);
     }
 
     public float floatValue1() {
-        return (float) getValueFloat(2);
+        return getBufPtr().getFloat(8);
     }
 
     public void floatValue1(float floatValue1) {
-        setValue(floatValue1, 2);
+        getBufPtr().setFloat(8, floatValue1);
     }
 
     public int intValue2() {
-        return (int) getValue(3);
+        return getBufPtr().getInt(12);
     }
 
     public void intValue2(int intValue2) {
-        setValue(intValue2, 3);
+        getBufPtr().setInt(12, intValue2);
     }
 
     public float floatValue2() {
-        return (float) getValueFloat(4);
+        return getBufPtr().getFloat(16);
     }
 
     public void floatValue2(float floatValue2) {
-        setValue(floatValue2, 4);
+        getBufPtr().setFloat(16, floatValue2);
     }
 
     public static final class AnonymousStructNoFieldConsecutivePointer extends StackElementPointer<AnonymousStructNoFieldConsecutive> {
@@ -83,22 +83,21 @@ public final class AnonymousStructNoFieldConsecutive extends Struct {
             super(pointer, freeOnGC);
         }
 
+        public AnonymousStructNoFieldConsecutivePointer(long pointer, boolean freeOnGC, int capacity) {
+            super(pointer, freeOnGC, capacity * __size);
+        }
+
         public AnonymousStructNoFieldConsecutivePointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
             setParent(parent);
         }
 
         public AnonymousStructNoFieldConsecutivePointer() {
-            this(1, true, true);
+            this(1, true);
         }
 
-        public AnonymousStructNoFieldConsecutivePointer(int count, boolean freeOnGC, boolean guard) {
-            super(__size, count, freeOnGC, guard);
-        }
-
-        public AnonymousStructNoFieldConsecutive.AnonymousStructNoFieldConsecutivePointer guardCount(long count) {
-            super.guardCount(count);
-            return this;
+        public AnonymousStructNoFieldConsecutivePointer(int count, boolean freeOnGC) {
+            super(__size, count, freeOnGC);
         }
 
         public int getSize() {

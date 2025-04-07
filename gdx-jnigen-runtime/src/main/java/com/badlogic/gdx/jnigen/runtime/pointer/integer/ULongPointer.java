@@ -6,10 +6,10 @@ import com.badlogic.gdx.jnigen.runtime.util.Utils;
 
 public class ULongPointer extends VoidPointer {
 
-    private static final int BYTE_SIZE = CHandler.IS_32_BIT || CHandler.IS_COMPILED_WIN ? 4 : 8;
+    private static final int BYTE_SIZE = CHandler.LONG_SIZE;
 
-    public ULongPointer(int count, boolean freeOnGC, boolean guard) {
-        super(count * BYTE_SIZE, freeOnGC, guard);
+    public ULongPointer(int count, boolean freeOnGC) {
+        super(count * BYTE_SIZE, freeOnGC);
     }
 
     public ULongPointer() {
@@ -20,19 +20,8 @@ public class ULongPointer extends VoidPointer {
         super(count * BYTE_SIZE);
     }
 
-    public ULongPointer(long pointer, boolean freeOnGC) {
-        super(pointer, freeOnGC);
-    }
-
-    public ULongPointer guardCount(long count) {
-        super.guardBytes(count * BYTE_SIZE);
-        return this;
-    }
-
-    private int calculateOffset(int index) {
-        int offset = index * BYTE_SIZE;
-        assertBounds(offset);
-        return offset;
+    public ULongPointer(long pointer, boolean freeOnGC, int capacity) {
+        super(pointer, freeOnGC, capacity * BYTE_SIZE);
     }
 
     public long getLong() {
@@ -40,7 +29,7 @@ public class ULongPointer extends VoidPointer {
     }
 
     public long getLong(int index) {
-        return CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index));
+        return getBufPtr().getNativeULong(index * BYTE_SIZE);
     }
 
     public void setLong(long value) {
@@ -49,7 +38,7 @@ public class ULongPointer extends VoidPointer {
 
     public void setLong(long value, int index) {
         if (Utils.checkBoundsForNumber(value, BYTE_SIZE, false))
-            throw new IllegalArgumentException("SLong out of range: " + value);
-        CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value);
+            throw new IllegalArgumentException("ULong out of range: " + value);
+        getBufPtr().setNativeULong(index * BYTE_SIZE, value);
     }
 }

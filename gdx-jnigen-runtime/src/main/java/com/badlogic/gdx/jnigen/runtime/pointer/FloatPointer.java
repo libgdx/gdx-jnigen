@@ -1,7 +1,5 @@
 package com.badlogic.gdx.jnigen.runtime.pointer;
 
-import com.badlogic.gdx.jnigen.runtime.CHandler;
-
 public final class FloatPointer extends VoidPointer {
 
     private static final int __float_size = 4;
@@ -10,22 +8,22 @@ public final class FloatPointer extends VoidPointer {
         super(pointer, freeOnGC);
     }
 
+    public FloatPointer(long pointer, boolean freeOnGC, int capacity) {
+        super(pointer, freeOnGC, capacity * __float_size);
+    }
+
     public FloatPointer() {
         this(1);
     }
 
     public FloatPointer(int size) {
-        this(size, true, true);
+        this(size, true);
     }
 
-    public FloatPointer(int size, boolean freeOnGC, boolean guard) {
-        super(__float_size * size, freeOnGC, guard);
+    public FloatPointer(int size, boolean freeOnGC) {
+        super(__float_size * size, freeOnGC);
     }
 
-    public FloatPointer guardCount(long count) {
-        super.guardBytes(count * __float_size);
-        return this;
-    }
 
     public float getFloat() {
         return getFloat(0);
@@ -33,8 +31,7 @@ public final class FloatPointer extends VoidPointer {
 
     public float getFloat(int index) {
         int offset = index * __float_size;
-        assertBounds(offset);
-        return Float.intBitsToFloat((int)CHandler.getPointerPart(getPointer(), __float_size, offset));
+        return getBufPtr().getFloat(offset);
     }
 
     public void setFloat(float value) {
@@ -43,7 +40,6 @@ public final class FloatPointer extends VoidPointer {
 
     public void setFloat(float value, int index) {
         int offset = index * __float_size;
-        assertBounds(offset);
-        CHandler.setPointerPart(getPointer(), __float_size, offset, Float.floatToIntBits(value));
+        getBufPtr().setFloat(offset, value);
     }
 }

@@ -8,17 +8,16 @@ public abstract class StackElementPointer<T extends StackElement> extends VoidPo
         super(pointer, freeOnGC);
     }
 
+    protected StackElementPointer(long pointer, boolean freeOnGC, int capacity) {
+        super(pointer, freeOnGC, capacity);
+    }
+
     public StackElementPointer(int size, int count) {
-        this(size, count, true, true);
+        this(size, count, true);
     }
 
-    public StackElementPointer(int size, int count, boolean freeOnGC, boolean guard) {
-        super(size * count, freeOnGC, guard);
-    }
-
-    public StackElementPointer<T> guardCount(long count) {
-        super.guardBytes(count * getSize());
-        return this;
+    public StackElementPointer(int size, int count, boolean freeOnGC) {
+        super(size * count, freeOnGC);
     }
 
     public T get() {
@@ -40,7 +39,9 @@ public abstract class StackElementPointer<T extends StackElement> extends VoidPo
         int offset = getSize() * index;
         assertBounds(offset);
         T stackElement = createStackElement(getPointer() + offset, false);
-        stackElement.setParent(this);
+        // TODO: 07.04.25 Maybe it's smarter to allow creating Pointing objects via BufferPtr
+        if (stackElement.getBufPtr() != getBufPtr())
+            stackElement.setParent(this);
         return stackElement;
     }
 

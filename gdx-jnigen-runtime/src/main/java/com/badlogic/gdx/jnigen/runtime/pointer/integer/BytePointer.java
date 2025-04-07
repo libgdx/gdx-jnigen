@@ -9,8 +9,8 @@ public class BytePointer extends VoidPointer {
     private static final int BYTE_SIZE = 1;
     private static final boolean IS_CHAR_SIGNED = CHandler.IS_CHAR_SIGNED;
 
-    public BytePointer(int count, boolean freeOnGC, boolean guard) {
-        super(count * BYTE_SIZE, freeOnGC, guard);
+    public BytePointer(int count, boolean freeOnGC) {
+        super(count * BYTE_SIZE, freeOnGC);
     }
 
     public BytePointer() {
@@ -25,15 +25,8 @@ public class BytePointer extends VoidPointer {
         super(pointer, freeOnGC);
     }
 
-    public BytePointer guardCount(long count) {
-        super.guardBytes(count * BYTE_SIZE);
-        return this;
-    }
-
-    private int calculateOffset(int index) {
-        int offset = index * BYTE_SIZE;
-        assertBounds(offset);
-        return offset;
+    public BytePointer(long pointer, boolean freeOnGC, int capacity) {
+        super(pointer, freeOnGC, capacity * BYTE_SIZE);
     }
 
     public boolean getBoolean() {
@@ -41,7 +34,7 @@ public class BytePointer extends VoidPointer {
     }
 
     public boolean getBoolean(int index) {
-        return CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index)) != 0;
+        return getBufPtr().getBoolean(index * BYTE_SIZE);
     }
 
     public void setBoolean(boolean value) {
@@ -49,7 +42,7 @@ public class BytePointer extends VoidPointer {
     }
 
     public void setBoolean(boolean value, int index) {
-        CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value ? 1 : 0);
+        getBufPtr().setBoolean(index * BYTE_SIZE, value);
     }
 
     public byte getByte() {
@@ -57,7 +50,7 @@ public class BytePointer extends VoidPointer {
     }
 
     public byte getByte(int index) {
-        return (byte)CHandler.getPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index));
+        return getBufPtr().getByte(index * BYTE_SIZE);
     }
 
     public void setByte(byte value) {
@@ -78,25 +71,20 @@ public class BytePointer extends VoidPointer {
     public void setByte(char value, int index) {
         if (Utils.checkBoundsForNumber(value, BYTE_SIZE, IS_CHAR_SIGNED))
             throw new IllegalArgumentException("Byte out of range: " + value);
-        CHandler.setPointerPart(getPointer(), BYTE_SIZE, calculateOffset(index), value);
+        getBufPtr().setByte(index, (byte) value);
     }
 
     public static BytePointer fromString(String string, boolean freeOnGC) {
-        BytePointer pointer = new BytePointer(string.length() + 1, freeOnGC, true);
+        BytePointer pointer = new BytePointer(string.getBytes().length + 1, freeOnGC);
         pointer.setString(string);
         return pointer;
     }
 
-    // TODO: 01.04.2025 Probably not belongs here
     public void setString(String string) {
-        // TODO: 21.06.24 is that sane?
-        assertBounds(string.length());
-        CHandler.setPointerAsString(getPointer(), string);
+        getBufPtr().setString(string);
     }
 
     public String getString() {
-        if (isNull())
-            return null;
-        return CHandler.getPointerAsString(getPointer());
+        return getBufPtr().getString();
     }
 }
