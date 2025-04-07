@@ -11,14 +11,16 @@ public final class BufferPtr {
 
     private final ByteBuffer buffer;
     private final long pointer;
+    private final int offset;
     private final int capacity;
     private final boolean freeOnGC;
     private boolean freed = false;
     private BufferPtr parent;
 
-    public BufferPtr(ByteBuffer buffer, long pointer, int capacity, boolean freeOnGC) {
+    public BufferPtr(ByteBuffer buffer, long pointer, int offset, int capacity, boolean freeOnGC) {
         this.buffer = buffer;
         this.pointer = pointer;
+        this.offset = offset;
         this.capacity = capacity;
         this.freeOnGC = freeOnGC;
         if (freeOnGC)
@@ -50,331 +52,331 @@ public final class BufferPtr {
     }
 
     public boolean getBoolean() {
-        return buffer.get(0) != 0;
+        return buffer.get(offset) != 0;
     }
 
     public boolean getBoolean(int index) {
         assertBounds(index + 1);
-        return buffer.get(index) != 0;
+        return buffer.get(offset + index) != 0;
     }
 
     public void setBoolean(boolean value) {
         assertBounds(1);
-        buffer.put(0, (byte)(value ? 1 : 0));
+        buffer.put(offset, (byte)(value ? 1 : 0));
     }
 
     public void setBoolean(int index, boolean value) {
         assertBounds(index + 1);
-        buffer.put(index, (byte)(value ? 1 : 0));
+        buffer.put(offset + index, (byte)(value ? 1 : 0));
     }
 
     public byte getByte() {
         assertBounds(1);
-        return buffer.get(0);
+        return buffer.get(offset);
     }
 
     public byte getByte(int index) {
         assertBounds(index + 1);
-        return buffer.get(index);
+        return buffer.get(offset + index);
     }
 
     public void setByte(byte value) {
         assertBounds(1);
-        buffer.put(0, value);
+        buffer.put(offset, value);
     }
 
     public void setByte(int index, byte value) {
         assertBounds(index + 1);
-        buffer.put(index, value);
+        buffer.put(offset + index, value);
     }
 
     public char getUByte() {
         assertBounds(1);
-        return (char)(buffer.get(0) & 0xFF);
+        return (char)(buffer.get(offset) & 0xFF);
     }
 
     public char getUByte(int index) {
         assertBounds(index + 1);
-        return (char)(buffer.get(index) & 0xFF);
+        return (char)(buffer.get(offset + index) & 0xFF);
     }
 
     public void setUByte(byte value) {
         assertBounds(1);
-        buffer.put(0, value);
+        buffer.put(offset, value);
     }
 
     public void setUByte(int index, byte value) {
         assertBounds(index + 1);
-        buffer.put(index, value);
+        buffer.put(offset + index, value);
     }
 
     public void setUByte(char value) {
         if (value >= 1L << 8)
             throw new IllegalArgumentException("UByte out of range: " + value);
         assertBounds(1);
-        buffer.put(0, (byte)value);
+        buffer.put(offset, (byte)value);
     }
 
     public void setUByte(int index, char value) {
         if (value >= 1L << 8)
             throw new IllegalArgumentException("UByte out of range: " + value);
         assertBounds(index + 1);
-        buffer.put(index, (byte)value);
+        buffer.put(offset + index, (byte)value);
     }
 
     public char getChar() {
         assertBounds(2);
-        return buffer.getChar(0);
+        return buffer.getChar(offset);
     }
 
     public char getChar(int index) {
         assertBounds(index + 2);
-        return buffer.getChar(index);
+        return buffer.getChar(offset + index);
     }
 
     public void setChar(char value) {
         assertBounds(2);
-        buffer.putChar(0, value);
+        buffer.putChar(offset, value);
     }
 
     public void setChar(int index, char value) {
         assertBounds(index + 2);
-        buffer.putChar(index, value);
+        buffer.putChar(offset + index, value);
     }
 
     public short getShort() {
         assertBounds(2);
-        return buffer.getShort(0);
+        return buffer.getShort(offset);
     }
 
     public short getShort(int index) {
         assertBounds(index + 2);
-        return buffer.getShort(index);
+        return buffer.getShort(offset + index);
     }
 
     public void setShort(short value) {
         assertBounds(2);
-        buffer.putShort(0, value);
+        buffer.putShort(offset, value);
     }
 
     public void setShort(int index, short value) {
         assertBounds(index + 2);
-        buffer.putShort(index, value);
+        buffer.putShort(offset + index, value);
     }
 
     public int getInt() {
         assertBounds(4);
-        return buffer.getInt(0);
+        return buffer.getInt(offset);
     }
 
     public int getInt(int index) {
         assertBounds(index + 4);
-        return buffer.getInt(index);
+        return buffer.getInt(offset + index);
     }
 
     public void setInt(int value) {
         assertBounds(4);
-        buffer.putInt(0, value);
+        buffer.putInt(offset, value);
     }
 
     public void setInt(int index, int value) {
         assertBounds(index + 4);
-        buffer.putInt(index, value);
+        buffer.putInt(offset + index, value);
     }
 
     public long getUInt() {
         assertBounds(4);
-        return buffer.getInt(0) & 0xFFFFFFFFL;
+        return buffer.getInt(offset) & 0xFFFFFFFFL;
     }
 
     public long getUInt(int index) {
         assertBounds(index + 4);
-        return buffer.getInt(index) & 0xFFFFFFFFL;
+        return buffer.getInt(offset + index) & 0xFFFFFFFFL;
     }
 
     public void setUInt(int value) {
         assertBounds(4);
-        buffer.putInt(0, value);
+        buffer.putInt(offset, value);
     }
 
     public void setUInt(int index, int value) {
         assertBounds(index + 4);
-        buffer.putInt(index, value);
+        buffer.putInt(offset + index, value);
     }
 
     public void setUInt(long value) {
         if (value >= 1L << 32)
             throw new IllegalArgumentException("UInt out of range: " + value);
         assertBounds(4);
-        buffer.putInt(0, (int)value);
+        buffer.putInt(offset, (int)value);
     }
 
     public void setUInt(int index, long value) {
         if (value >= 1L << 32)
             throw new IllegalArgumentException("UInt out of range: " + value);
         assertBounds(index + 4);
-        buffer.putInt(index, (int)value);
+        buffer.putInt(offset + index, (int)value);
     }
 
     public long getLong() {
         assertBounds(8);
-        return buffer.getLong(0);
+        return buffer.getLong(offset);
     }
 
     public long getLong(int index) {
         assertBounds(index + 8);
-        return buffer.getLong(index);
+        return buffer.getLong(offset + index);
     }
 
     public void setLong(long value) {
         assertBounds(8);
-        buffer.putLong(0, value);
+        buffer.putLong(offset, value);
     }
 
     public void setLong(int index, long value) {
         assertBounds(index + 8);
-        buffer.putLong(index, value);
+        buffer.putLong(offset + index, value);
     }
 
     public float getFloat() {
         assertBounds(4);
-        return buffer.getFloat(0);
+        return buffer.getFloat(offset);
     }
 
     public float getFloat(int index) {
         assertBounds(index + 4);
-        return buffer.getFloat(index);
+        return buffer.getFloat(offset + index);
     }
 
     public void setFloat(float value) {
         assertBounds(4);
-        buffer.putFloat(0, value);
+        buffer.putFloat(offset, value);
     }
 
     public void setFloat(int index, float value) {
         assertBounds(index + 4);
-        buffer.putFloat(index, value);
+        buffer.putFloat(offset + index, value);
     }
 
     public double getDouble() {
         assertBounds(8);
-        return buffer.getDouble(0);
+        return buffer.getDouble(offset);
     }
 
     public double getDouble(int index) {
         assertBounds(index + 8);
-        return buffer.getDouble(index);
+        return buffer.getDouble(offset + index);
     }
 
     public void setDouble(double value) {
         assertBounds(8);
-        buffer.putDouble(0, value);
+        buffer.putDouble(offset, value);
     }
 
     public void setDouble(int index, double value) {
         assertBounds(index + 8);
-        buffer.putDouble(index, value);
+        buffer.putDouble(offset + index, value);
     }
 
     public long getNativePointer() {
         assertBounds(CHandler.POINTER_SIZE);
         if (CHandler.POINTER_SIZE == 4)
-            return buffer.getInt(0);
+            return buffer.getInt(offset);
         else
-            return buffer.getLong(0);
+            return buffer.getLong(offset);
     }
 
     public long getNativePointer(int index) {
         assertBounds(index + CHandler.POINTER_SIZE);
         if (CHandler.POINTER_SIZE == 4) {
-            return buffer.getInt(index);
+            return buffer.getInt(offset + index);
         } else {
-            return buffer.getLong(index);
+            return buffer.getLong(offset + index);
         }
     }
 
     public void setNativePointer(long value) {
         assertBounds(CHandler.POINTER_SIZE);
         if (CHandler.POINTER_SIZE == 4)
-            buffer.putInt(0, (int)value);
+            buffer.putInt(offset, (int)value);
         else
-            buffer.putLong(0, value);
+            buffer.putLong(offset, value);
     }
 
     public void setNativePointer(int index, long value) {
         assertBounds(index + CHandler.POINTER_SIZE);
         if (CHandler.POINTER_SIZE == 4) {
-            buffer.putInt(index, (int)value);
+            buffer.putInt(offset + index, (int)value);
         } else {
-            buffer.putLong(index, value);
+            buffer.putLong(offset + index, value);
         }
     }
 
     public long getNativeLong() {
         assertBounds(CHandler.LONG_SIZE);
         if (CHandler.LONG_SIZE == 4)
-            return buffer.getInt(0);
+            return buffer.getInt(offset);
         else
-            return buffer.getLong(0);
+            return buffer.getLong(offset);
     }
 
     public long getNativeLong(int index) {
         assertBounds(index + CHandler.LONG_SIZE);
         if (CHandler.LONG_SIZE == 4) {
-            return buffer.getInt(index);
+            return buffer.getInt(offset + index);
         } else {
-            return buffer.getLong(index);
+            return buffer.getLong(offset + index);
         }
     }
 
     public void setNativeLong(long value) {
         assertBounds(CHandler.LONG_SIZE);
         if (CHandler.LONG_SIZE == 4)
-            buffer.putInt(0, (int)value);
+            buffer.putInt(offset, (int)value);
         else
-            buffer.putLong(0, value);
+            buffer.putLong(offset, value);
     }
 
     public void setNativeLong(int index, long value) {
         assertBounds(index + CHandler.LONG_SIZE);
         if (CHandler.LONG_SIZE == 4) {
-            buffer.putInt(index, (int)value);
+            buffer.putInt(offset + index, (int)value);
         } else {
-            buffer.putLong(index, value);
+            buffer.putLong(offset + index, value);
         }
     }
 
     public long getNativeULong() {
         assertBounds(CHandler.LONG_SIZE);
         if (CHandler.LONG_SIZE == 4)
-            return buffer.getInt(0) & 0xFFFFFFFFL;
+            return buffer.getInt(offset) & 0xFFFFFFFFL;
         else
-            return buffer.getLong(0);
+            return buffer.getLong(offset);
     }
 
     public long getNativeULong(int index) {
         assertBounds(index + CHandler.LONG_SIZE);
         if (CHandler.LONG_SIZE == 4) {
-            return buffer.getInt(index) & 0xFFFFFFFFL;
+            return buffer.getInt(offset + index) & 0xFFFFFFFFL;
         } else {
-            return buffer.getLong(index);
+            return buffer.getLong(offset + index);
         }
     }
 
     public void setNativeULong(long value) {
         assertBounds(CHandler.LONG_SIZE);
         if (CHandler.LONG_SIZE == 4)
-            buffer.putInt(0, (int)value);
+            buffer.putInt(offset, (int)value);
         else
-            buffer.putLong(0, value);
+            buffer.putLong(offset, value);
     }
 
     public void setNativeULong(int index, long value) {
         assertBounds(index + CHandler.LONG_SIZE);
         if (CHandler.LONG_SIZE == 4) {
-            buffer.putInt(index, (int)value);
+            buffer.putInt(offset + index, (int)value);
         } else {
-            buffer.putLong(index, value);
+            buffer.putLong(offset + index, value);
         }
     }
 
@@ -386,11 +388,11 @@ public final class BufferPtr {
     public String getString(Charset charset)
     {
         int length = 0;
-        while (buffer.get(length) != 0)
+        while (buffer.get(offset + length) != 0)
             length++;
         byte[] bytes = new byte[length];
         for (int i = 0; i < length; i++) {
-            bytes[i] = buffer.get(i);
+            bytes[i] = buffer.get(offset + i);
         }
         return new String(bytes, charset);
     }
@@ -405,9 +407,9 @@ public final class BufferPtr {
         byte[] bytes = string.getBytes(charset);
         assertBounds(bytes.length + 1);
         for (int i = 0; i < bytes.length; i++) {
-            buffer.put(i, bytes[i]);
+            buffer.put(offset + i, bytes[i]);
         }
-        buffer.put(bytes.length, (byte) 0);
+        buffer.put(offset + bytes.length, (byte) 0);
     }
 
     public boolean getsGCFreed() {

@@ -50,7 +50,7 @@ public class BufferPtrAllocator {
 
         ByteBuffer L3 = L2[l3_index];
         if (L3 == null) {
-            L3 = CHandler.wrapPointer(basePtr, Integer.MAX_VALUE);
+            L3 = CHandler.wrapPointer(basePtr, Integer.MAX_VALUE).order(ByteOrder.nativeOrder());
             L2[l3_index] = L3;
         }
 
@@ -72,12 +72,7 @@ public class BufferPtrAllocator {
 
         ByteBuffer base = getBuffer(basePtr);
 
-        // TODO: This creates uneccessary overhead to be thread safe
-        //  As BufferPtr is a abstraction anyway, we might not need to do that and would get by, by just manually calculating offsets later
-        synchronized (base) {
-            ByteBuffer start = base.position(offset).slice().order(ByteOrder.nativeOrder());
-            return new BufferPtr(start, pointer, capacity, freeOnGC);
-        }
+        return new BufferPtr(base, pointer, offset, capacity, freeOnGC);
     }
 
     public static void reset() {
