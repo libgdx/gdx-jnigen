@@ -25,16 +25,16 @@ public class BufferPtrAllocator {
     private static final int L2_MASK = (1 << L2_BITS) - 1;
     private static final int L3_MASK = (1 << L3_BITS) - 1;
     private static final long PAGE_OFFSET_MASK = (1L << PAGE_OFFSET_BITS) - 1;
+    private static final long ADDRESS_MASK = ~PAGE_OFFSET_MASK;
 
     private static final ByteBuffer[][][] BUFFER_CACHE = new ByteBuffer[L1_SIZE][][];
 
-    private static ByteBuffer getBuffer(long pointer) {
-        long basePtr = pointer & ~PAGE_OFFSET_MASK;
+    private static ByteBuffer getBuffer(long basePtr) {
 
         // Address format: [L1 (12 bits) | L2 (11 bits) | L3 (11 bits) | offset (30 bits)]
-        int l1_index = (int)(pointer >> (PAGE_OFFSET_BITS + L3_BITS + L2_BITS)) & L1_MASK;
-        int l2_index = (int)(pointer >> (PAGE_OFFSET_BITS + L3_BITS)) & L2_MASK;
-        int l3_index = (int)(pointer >> (PAGE_OFFSET_BITS)) & L3_MASK;
+        int l1_index = (int)(basePtr >> (PAGE_OFFSET_BITS + L3_BITS + L2_BITS)) & L1_MASK;
+        int l2_index = (int)(basePtr >> (PAGE_OFFSET_BITS + L3_BITS)) & L2_MASK;
+        int l3_index = (int)(basePtr >> (PAGE_OFFSET_BITS)) & L3_MASK;
 
         ByteBuffer[][] L1 = BUFFER_CACHE[l1_index];
         if (L1 == null) {
@@ -68,14 +68,16 @@ public class BufferPtrAllocator {
             throw new IllegalArgumentException("capacity > PAGE_SIZE (" + capacity + " > " + PAGE_SIZE + ")");
 
         int offset = (int)(pointer & PAGE_OFFSET_MASK);
+        long basePtr = pointer & ADDRESS_MASK;
 
-        ByteBuffer base = getBuffer(pointer);
+        ByteBuffer base = getBuffer(basePtr);
 
-        // TODO: This creates uneccessary garbage to be thread safe
+        // TODO: This creates uneccessary overhead to be thread safe
         //  As BufferPtr is a abstraction anyway, we might not need to do that and would get by, by just manually calculating offsets later
-        ByteBuffer start = base.duplicate().position(offset).slice().order(ByteOrder.nativeOrder());
-
-        return new BufferPtr(start, pointer, capacity, freeOnGC);
+        synchronized (base) {
+            ByteBuffer start = base.position(offset).slice().order(ByteOrder.nativeOrder());
+            return new BufferPtr(start, pointer, capacity, freeOnGC);
+        }
     }
 
     public static void reset() {
