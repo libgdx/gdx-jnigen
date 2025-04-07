@@ -43,7 +43,7 @@ public final class TestUnion extends Union {
     }
 
     public long uintType() {
-        return (long) getBufPtr().getLong(0);
+        return getBufPtr().getLong(0);
     }
 
     public void uintType(long uintType) {
@@ -51,7 +51,7 @@ public final class TestUnion extends Union {
     }
 
     public double doubleType() {
-        return (double) getBufPtr().getDouble(0);
+        return getBufPtr().getDouble(0);
     }
 
     public void doubleType(double doubleType) {

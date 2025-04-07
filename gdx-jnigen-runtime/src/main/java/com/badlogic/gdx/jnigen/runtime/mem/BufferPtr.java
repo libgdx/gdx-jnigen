@@ -423,4 +423,8 @@ public final class BufferPtr {
     public long getPointer() {
         return pointer;
     }
+
+    public int getCapacity() {
+        return capacity;
+    }
 }

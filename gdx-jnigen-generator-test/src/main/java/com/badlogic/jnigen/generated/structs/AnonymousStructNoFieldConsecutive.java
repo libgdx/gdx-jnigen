@@ -38,7 +38,7 @@ public final class AnonymousStructNoFieldConsecutive extends Struct {
     }
 
     public int externalValue() {
-        return (int) getBufPtr().getInt(0);
+        return getBufPtr().getInt(0);
     }
 
     public void externalValue(int externalValue) {
@@ -46,7 +46,7 @@ public final class AnonymousStructNoFieldConsecutive extends Struct {
     }
 
     public int intValue1() {
-        return (int) getBufPtr().getInt(4);
+        return getBufPtr().getInt(4);
     }
 
     public void intValue1(int intValue1) {
@@ -54,7 +54,7 @@ public final class AnonymousStructNoFieldConsecutive extends Struct {
     }
 
     public float floatValue1() {
-        return (float) getBufPtr().getFloat(8);
+        return getBufPtr().getFloat(8);
     }
 
     public void floatValue1(float floatValue1) {
@@ -62,7 +62,7 @@ public final class AnonymousStructNoFieldConsecutive extends Struct {
     }
 
     public int intValue2() {
-        return (int) getBufPtr().getInt(12);
+        return getBufPtr().getInt(12);
     }
 
     public void intValue2(int intValue2) {
@@ -70,7 +70,7 @@ public final class AnonymousStructNoFieldConsecutive extends Struct {
     }
 
     public float floatValue2() {
-        return (float) getBufPtr().getFloat(16);
+        return getBufPtr().getFloat(16);
     }
 
     public void floatValue2(float floatValue2) {

@@ -117,22 +117,25 @@ void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
     }
 }
 
-JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_dispatchCCall(JNIEnv* env, jclass clazz, jlong fnPtr_j, jlong cif_j, jobject arg_buf) {
+JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_dispatchCCall(JNIEnv* env, jclass clazz, jlong fnPtr_j, jlong cif_j, jlong arg_buf) {
     HANDLE_JAVA_EXCEPTION_START()
 
-    void** arguments = (void**)(arg_buf ? env->GetDirectBufferAddress(arg_buf) : 0);
+    void** arguments = (void**)arg_buf;
     void* fnPtr = (void*) fnPtr_j;
     ffi_cif* cif = (ffi_cif*) cif_j;
 
     void** decodedArguments = (void**)alloca(cif->nargs * (sizeof(void*)));
+    int offset = 0;
     for (int i = 0; i < cif->nargs; ++i) {
         ffi_type* arg = cif->arg_types[i];
         if (arg->type == FFI_TYPE_STRUCT) {
             decodedArguments[i] = arguments[i];
         } else {
             decodedArguments[i] = alloca(arg->size);
-            ENDIAN_INTCPY(decodedArguments[i], arg->size, &arguments[i], 8);
+            memcpy(decodedArguments[i], (char*)arguments + offset, arg->size);
         }
+
+        offset += arg->size;
     }
 
     void* result = (void*)alloca(cif->rtype->size);
@@ -141,20 +144,16 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_dispatchCC
     ffi_type* rtype = cif->rtype;
 
     if (rtype->type == FFI_TYPE_VOID)
-        return 0;
+        return;
     if(rtype->type == FFI_TYPE_STRUCT) {
         void* struct_ret = malloc(rtype->size);
         memcpy(struct_ret, result, rtype->size);
-        return (jlong) struct_ret;
+        arguments[0] = struct_ret;
     } else {
-        jlong ret = 0;
-        ENDIAN_INTCPY(&ret, sizeof(jlong), result, rtype->size);
-        return ret;
+        memcpy(arguments, result, rtype->size);
     }
 
     HANDLE_JAVA_EXCEPTION_END()
-
-    return 0;
 }
 
 JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_is32Bit(JNIEnv* env, jclass clazz) {

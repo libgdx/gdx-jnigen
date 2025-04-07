@@ -47,7 +47,7 @@ public final class AnonymousStructField extends Struct {
     private final inner __inner = new inner(getPointer() + __inner_offset, false);
 
     public int externalValue() {
-        return (int) getBufPtr().getInt(8);
+        return getBufPtr().getInt(8);
     }
 
     public void externalValue(int externalValue) {
@@ -124,7 +124,7 @@ public final class AnonymousStructField extends Struct {
          * Innerr struct field
          */
         public int intValue() {
-            return (int) getBufPtr().getInt(0);
+            return getBufPtr().getInt(0);
         }
 
         /**
@@ -135,7 +135,7 @@ public final class AnonymousStructField extends Struct {
         }
 
         public float floatValue() {
-            return (float) getBufPtr().getFloat(4);
+            return getBufPtr().getFloat(4);
         }
 
         public void floatValue(float floatValue) {

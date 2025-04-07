@@ -38,7 +38,7 @@ public final class AnonymousStructNoFieldEnd extends Struct {
     }
 
     public int externalValue() {
-        return (int) getBufPtr().getInt(0);
+        return getBufPtr().getInt(0);
     }
 
     public void externalValue(int externalValue) {
@@ -49,7 +49,7 @@ public final class AnonymousStructNoFieldEnd extends Struct {
      * Anon struct field
      */
     public int intValue() {
-        return (int) getBufPtr().getInt(4);
+        return getBufPtr().getInt(4);
     }
 
     /**
@@ -60,7 +60,7 @@ public final class AnonymousStructNoFieldEnd extends Struct {
     }
 
     public float floatValue() {
-        return (float) getBufPtr().getFloat(8);
+        return getBufPtr().getFloat(8);
     }
 
     public void floatValue(float floatValue) {

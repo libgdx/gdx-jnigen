@@ -45,7 +45,7 @@ public final class GlobalArg extends Union {
     }
 
     public long longVal() {
-        return (long) getBufPtr().getLong(0);
+        return getBufPtr().getLong(0);
     }
 
     public void longVal(long longVal) {
@@ -53,7 +53,7 @@ public final class GlobalArg extends Union {
     }
 
     public int intVal() {
-        return (int) getBufPtr().getInt(0);
+        return getBufPtr().getInt(0);
     }
 
     public void intVal(int intVal) {
@@ -61,7 +61,7 @@ public final class GlobalArg extends Union {
     }
 
     public short shortVal() {
-        return (short) getBufPtr().getShort(0);
+        return getBufPtr().getShort(0);
     }
 
     public void shortVal(short shortVal) {
@@ -69,7 +69,7 @@ public final class GlobalArg extends Union {
     }
 
     public byte byteVal() {
-        return (byte) getBufPtr().getByte(0);
+        return getBufPtr().getByte(0);
     }
 
     public void byteVal(byte byteVal) {
@@ -77,7 +77,7 @@ public final class GlobalArg extends Union {
     }
 
     public char charVal() {
-        return (char) getBufPtr().getChar(0);
+        return getBufPtr().getChar(0);
     }
 
     public void charVal(char charVal) {
@@ -85,7 +85,7 @@ public final class GlobalArg extends Union {
     }
 
     public boolean boolVal() {
-        return (boolean) getBufPtr().getBoolean(0);
+        return getBufPtr().getBoolean(0);
     }
 
     public void boolVal(boolean boolVal) {
@@ -93,7 +93,7 @@ public final class GlobalArg extends Union {
     }
 
     public float floatVal() {
-        return (float) getBufPtr().getFloat(0);
+        return getBufPtr().getFloat(0);
     }
 
     public void floatVal(float floatVal) {
@@ -101,7 +101,7 @@ public final class GlobalArg extends Union {
     }
 
     public double doubleVal() {
-        return (double) getBufPtr().getDouble(0);
+        return getBufPtr().getDouble(0);
     }
 
     public void doubleVal(double doubleVal) {
@@ -232,7 +232,7 @@ public final class GlobalArg extends Union {
         }
 
         public long arg1() {
-            return (long) getBufPtr().getLong(0);
+            return getBufPtr().getLong(0);
         }
 
         public void arg1(long arg1) {
@@ -240,7 +240,7 @@ public final class GlobalArg extends Union {
         }
 
         public int arg2() {
-            return (int) getBufPtr().getInt(8);
+            return getBufPtr().getInt(8);
         }
 
         public void arg2(int arg2) {
@@ -248,7 +248,7 @@ public final class GlobalArg extends Union {
         }
 
         public short arg3() {
-            return (short) getBufPtr().getShort(12);
+            return getBufPtr().getShort(12);
         }
 
         public void arg3(short arg3) {
@@ -256,7 +256,7 @@ public final class GlobalArg extends Union {
         }
 
         public byte arg4() {
-            return (byte) getBufPtr().getByte(14);
+            return getBufPtr().getByte(14);
         }
 
         public void arg4(byte arg4) {
@@ -264,7 +264,7 @@ public final class GlobalArg extends Union {
         }
 
         public char arg5() {
-            return (char) getBufPtr().getChar(16);
+            return getBufPtr().getChar(16);
         }
 
         public void arg5(char arg5) {
@@ -272,7 +272,7 @@ public final class GlobalArg extends Union {
         }
 
         public boolean arg6() {
-            return (boolean) getBufPtr().getBoolean(18);
+            return getBufPtr().getBoolean(18);
         }
 
         public void arg6(boolean arg6) {
@@ -280,7 +280,7 @@ public final class GlobalArg extends Union {
         }
 
         public float arg7() {
-            return (float) getBufPtr().getFloat(20);
+            return getBufPtr().getFloat(20);
         }
 
         public void arg7(float arg7) {
@@ -288,7 +288,7 @@ public final class GlobalArg extends Union {
         }
 
         public double arg8() {
-            return (double) getBufPtr().getDouble(24);
+            return getBufPtr().getDouble(24);
         }
 
         public void arg8(double arg8) {

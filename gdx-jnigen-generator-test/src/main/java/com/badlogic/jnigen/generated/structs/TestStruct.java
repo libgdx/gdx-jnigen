@@ -44,7 +44,7 @@ public final class TestStruct extends Struct {
      * Field Comment 1
      */
     public long field1() {
-        return (long) getBufPtr().getLong(0);
+        return getBufPtr().getLong(0);
     }
 
     /**
@@ -58,7 +58,7 @@ public final class TestStruct extends Struct {
      * Field Comment 2
      */
     public long field2() {
-        return (long) getBufPtr().getUInt(8);
+        return getBufPtr().getUInt(8);
     }
 
     /**
@@ -72,7 +72,7 @@ public final class TestStruct extends Struct {
      * Field Comment 3
      */
     public char field3() {
-        return (char) getBufPtr().getChar(12);
+        return getBufPtr().getChar(12);
     }
 
     /**
@@ -86,7 +86,7 @@ public final class TestStruct extends Struct {
      * Field Comment 4
      */
     public char field4() {
-        return (char) getBufPtr().getUByte(14);
+        return getBufPtr().getUByte(14);
     }
 
     /**

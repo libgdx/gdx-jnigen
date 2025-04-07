@@ -76,10 +76,7 @@ public class PrimitiveType implements MappedType {
 
     @Override
     public Expression fromC(Expression cRetrieved) {
-        CastExpr castExpr = new CastExpr();
-        castExpr.setType(getJavaRepresentation());
-        castExpr.setExpression(cRetrieved);
-        return castExpr;
+        return cRetrieved;
     }
 
     @Override

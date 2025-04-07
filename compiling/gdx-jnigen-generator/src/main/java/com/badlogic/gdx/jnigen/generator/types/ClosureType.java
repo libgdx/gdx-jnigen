@@ -99,12 +99,9 @@ public class ClosureType implements MappedType, WritableClass {
         NodeList<Statement> arguments = new NodeList<>();
         for (int i = 0; i < signature.getArguments().length; i++) {
             NamedType argument = signature.getArguments()[i];
-            ExpressionStmt setValueStmt = new ExpressionStmt(
-                    new MethodCallExpr(new NameExpr("useEncoder"), "setValue")
-                            .addArgument(new IntegerLiteralExpr(String.valueOf(i)))
-                            .addArgument(new NameExpr(argument.getName()))
-            );
-            arguments.add(setValueStmt);
+            Expression writeArgExpr = argument.getDefinition().getMappedType().writeToBufferPtr(new MethodCallExpr(new NameExpr("useEncoder"), "getBufPtr"), JavaUtils.getOffsetAsExpression(i, this::getParameterOffset), argument.getDefinition().getMappedType().toC(new NameExpr(argument.getName())));
+
+            arguments.add(new ExpressionStmt(writeArgExpr));
         }
 
         BlockStmt lambdaBody = new BlockStmt()
@@ -114,44 +111,13 @@ public class ClosureType implements MappedType, WritableClass {
             lambdaBody.addStatement(statement);
         }
 
-        if (signature.getReturnType().getTypeKind() == TypeKind.VOID) {
-            lambdaBody.addStatement(new MethodCallExpr(
-                    new NameExpr("useEncoder"),
-                    "invoke"
-            ));
-        } else {
+        lambdaBody.addStatement(new MethodCallExpr( new NameExpr("useEncoder"), "invoke"));
 
-            VariableDeclarationExpr returnConvertDeclaration = new VariableDeclarationExpr(
-                    new VariableDeclarator()
-                            .setType("JavaTypeWrapper")
-                            .setName("returnConvert")
-                            .setInitializer(new ObjectCreationExpr()
-                                    .setType("JavaTypeWrapper")
-                                    .addArgument(new ArrayAccessExpr(
-                                            new FieldAccessExpr(
-                                                    new NameExpr(internalClassName()),
-                                                    "__ffi_cache"
-                                            ),
-                                            new IntegerLiteralExpr("0")
-                                    ))
-                            )
-            );
+        if (signature.getReturnType().getTypeKind() != TypeKind.VOID) {
+            MappedType retMappedType = signature.getReturnType().getMappedType();
+            Expression readRetExpr = retMappedType.fromC(retMappedType.readFromBufferPtr(new MethodCallExpr(new NameExpr("useEncoder"), "getBufPtr"), new IntegerLiteralExpr("0")));
 
-            ExpressionStmt returnSetValueStatement = new ExpressionStmt(
-                    new MethodCallExpr(
-                            new NameExpr("returnConvert"),
-                            "setValue"
-                    ).addArgument(new MethodCallExpr(
-                            new NameExpr("useEncoder"),
-                            "invoke"
-                    ))
-            );
-
-            Statement returnStatement = new ReturnStmt(getMethodCallExpr(new NameExpr("returnConvert"), signature.getReturnType()));
-
-            lambdaBody.addStatement(new ExpressionStmt(returnConvertDeclaration))
-                    .addStatement(returnSetValueStatement)
-                    .addStatement(returnStatement);
+            lambdaBody.addStatement(new ReturnStmt(readRetExpr));
         }
 
         LambdaExpr lambda = new LambdaExpr()
@@ -181,7 +147,6 @@ public class ClosureType implements MappedType, WritableClass {
         cuPublic.addImport(ClassNameConstants.CLOSURE_CLASS);
         cuPublic.addImport(internalClass());
 
-        cuPrivate.addImport(ClassNameConstants.JAVATYPEWRAPPER_CLASS);
         cuPrivate.addImport(ClassNameConstants.CTYPEINFO_CLASS);
         cuPrivate.addImport(ClassNameConstants.CLOSURE_CLASS);
         cuPrivate.addImport(ClassNameConstants.BUFFER_PTR);

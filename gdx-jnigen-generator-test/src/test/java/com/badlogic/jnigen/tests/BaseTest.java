@@ -3,6 +3,7 @@ package com.badlogic.jnigen.tests;
 import com.badlogic.gdx.jnigen.commons.HostDetection;
 import com.badlogic.gdx.jnigen.commons.Os;
 import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
+import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.gc.GCHandler;
 import com.badlogic.jnigen.generated.TestData;
 import org.junit.jupiter.api.AfterEach;
@@ -25,6 +26,7 @@ public class BaseTest {
     @BeforeEach
     @AfterEach
     public void emptyGC() {
+        CHandler.clearRegisteredFunctionPointer();
         String javaHome = System.getProperty("java.home");
         if (javaHome == null)
             throw new RuntimeException("System property 'java.home' is not set, can't force GC run");

@@ -1,6 +1,5 @@
 package com.badlogic.jnigen.generated;
 
-import com.badlogic.gdx.jnigen.runtime.ffi.JavaTypeWrapper;
 import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;
 import com.badlogic.gdx.jnigen.runtime.closure.Closure;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
@@ -85,18 +84,17 @@ public final class TestData_Internal {
             }
 
             default void invoke(BufferPtr buf) {
-                buf.setInt(0, someClosure_call(new SIntPointer(buf.getNativePointer(0), false), (double) buf.getDouble(CHandler.IS_32_BIT ? 4 : 8)));
+                buf.setInt(0, someClosure_call(new SIntPointer(buf.getNativePointer(0), false), buf.getDouble(CHandler.IS_32_BIT ? 4 : 8)));
             }
 
             public static someClosure someClosure_downcall(long fnPtr) {
                 ClosureEncoder encoder = new ClosureEncoder(fnPtr, someClosure_Internal.__ffi_cache);
                 return (t, p) -> {
                     ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                    useEncoder.setValue(0, t);
-                    useEncoder.setValue(1, p);
-                    JavaTypeWrapper returnConvert = new JavaTypeWrapper(someClosure_Internal.__ffi_cache[0]);
-                    returnConvert.setValue(useEncoder.invoke());
-                    return (int) returnConvert.asLong();
+                    useEncoder.getBufPtr().setNativePointer(0, t.getPointer());
+                    useEncoder.getBufPtr().setDouble(CHandler.IS_32_BIT ? 4 : 8, p);
+                    useEncoder.invoke();
+                    return useEncoder.getBufPtr().getInt(0);
                 };
             }
         }
@@ -112,18 +110,17 @@ public final class TestData_Internal {
             }
 
             default void invoke(BufferPtr buf) {
-                buf.setFloat(0, anotherClosure_call((int) buf.getInt(0), (double) buf.getDouble(4)));
+                buf.setFloat(0, anotherClosure_call(buf.getInt(0), buf.getDouble(4)));
             }
 
             public static anotherClosure anotherClosure_downcall(long fnPtr) {
                 ClosureEncoder encoder = new ClosureEncoder(fnPtr, anotherClosure_Internal.__ffi_cache);
                 return (t, p) -> {
                     ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                    useEncoder.setValue(0, t);
-                    useEncoder.setValue(1, p);
-                    JavaTypeWrapper returnConvert = new JavaTypeWrapper(anotherClosure_Internal.__ffi_cache[0]);
-                    returnConvert.setValue(useEncoder.invoke());
-                    return (float) returnConvert.asFloat();
+                    useEncoder.getBufPtr().setInt(0, t);
+                    useEncoder.getBufPtr().setDouble(4, p);
+                    useEncoder.invoke();
+                    return useEncoder.getBufPtr().getFloat(0);
                 };
             }
         }
@@ -164,14 +161,14 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
-            methodWithCallbackBooleanArg_call((boolean) buf.getBoolean(0));
+            methodWithCallbackBooleanArg_call(buf.getBoolean(0));
         }
 
         public static methodWithCallbackBooleanArg methodWithCallbackBooleanArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackBooleanArg_Internal.__ffi_cache);
             return (arg0) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
+                useEncoder.getBufPtr().setBoolean(0, arg0);
                 useEncoder.invoke();
             };
         }
@@ -195,7 +192,7 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestEnumPointerArg_Internal.__ffi_cache);
             return (arg0) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
+                useEncoder.getBufPtr().setNativePointer(0, arg0.getPointer());
                 useEncoder.invoke();
             };
         }
@@ -219,9 +216,8 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackDoubleReturn_Internal.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackDoubleReturn_Internal.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return (double) returnConvert.asDouble();
+                useEncoder.invoke();
+                return useEncoder.getBufPtr().getDouble(0);
             };
         }
     }
@@ -260,14 +256,14 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
-            methodWithCallbackIntArg_call((int) buf.getInt(0));
+            methodWithCallbackIntArg_call(buf.getInt(0));
         }
 
         public static methodWithCallbackIntArg methodWithCallbackIntArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackIntArg_Internal.__ffi_cache);
             return (arg0) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
+                useEncoder.getBufPtr().setInt(0, arg0);
                 useEncoder.invoke();
             };
         }
@@ -291,9 +287,8 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestStructPointerReturn_Internal.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackTestStructPointerReturn_Internal.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return new TestStruct.TestStructPointer(returnConvert.asLong(), false);
+                useEncoder.invoke();
+                return new TestStruct.TestStructPointer(useEncoder.getBufPtr().getNativePointer(0), false);
             };
         }
     }
@@ -316,9 +311,8 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackShortReturn_Internal.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackShortReturn_Internal.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return (short) returnConvert.asLong();
+                useEncoder.invoke();
+                return useEncoder.getBufPtr().getShort(0);
             };
         }
     }
@@ -341,9 +335,8 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestEnumPointerReturn_Internal.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackTestEnumPointerReturn_Internal.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return new TestEnum.TestEnumPointer(returnConvert.asLong(), false);
+                useEncoder.invoke();
+                return new TestEnum.TestEnumPointer(useEncoder.getBufPtr().getNativePointer(0), false);
             };
         }
     }
@@ -366,7 +359,7 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestStructArg_Internal.__ffi_cache);
             return (arg0) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
+                useEncoder.getBufPtr().setNativePointer(0, arg0.getPointer());
                 useEncoder.invoke();
             };
         }
@@ -390,9 +383,8 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackIntPointerReturn_Internal.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackIntPointerReturn_Internal.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return new SIntPointer(returnConvert.asLong(), false);
+                useEncoder.invoke();
+                return new SIntPointer(useEncoder.getBufPtr().getNativePointer(0), false);
             };
         }
     }
@@ -408,14 +400,14 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
-            methodWithCallbackLongArg_call((long) buf.getLong(0));
+            methodWithCallbackLongArg_call(buf.getLong(0));
         }
 
         public static methodWithCallbackLongArg methodWithCallbackLongArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackLongArg_Internal.__ffi_cache);
             return (test) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, test);
+                useEncoder.getBufPtr().setLong(0, test);
                 useEncoder.invoke();
             };
         }
@@ -432,14 +424,14 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
-            methodWithCallbackFloatArg_call((float) buf.getFloat(0));
+            methodWithCallbackFloatArg_call(buf.getFloat(0));
         }
 
         public static methodWithCallbackFloatArg methodWithCallbackFloatArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackFloatArg_Internal.__ffi_cache);
             return (arg0) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
+                useEncoder.getBufPtr().setFloat(0, arg0);
                 useEncoder.invoke();
             };
         }
@@ -456,14 +448,14 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
-            methodWithCallbackDoubleArg_call((double) buf.getDouble(0));
+            methodWithCallbackDoubleArg_call(buf.getDouble(0));
         }
 
         public static methodWithCallbackDoubleArg methodWithCallbackDoubleArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackDoubleArg_Internal.__ffi_cache);
             return (arg0) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
+                useEncoder.getBufPtr().setDouble(0, arg0);
                 useEncoder.invoke();
             };
         }
@@ -487,10 +479,9 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackIntPointerArg_Internal.__ffi_cache);
             return (arg0) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackIntPointerArg_Internal.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return (int) returnConvert.asLong();
+                useEncoder.getBufPtr().setNativePointer(0, arg0.getPointer());
+                useEncoder.invoke();
+                return useEncoder.getBufPtr().getInt(0);
             };
         }
     }
@@ -513,7 +504,7 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestEnumArg_Internal.__ffi_cache);
             return (arg0) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
+                useEncoder.getBufPtr().setUInt(0, arg0.getIndex());
                 useEncoder.invoke();
             };
         }
@@ -537,7 +528,7 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackCallThrowingCallback_Internal.__ffi_cache);
             return (arg0) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
+                useEncoder.getBufPtr().setNativePointer(0, arg0.getPointer());
                 useEncoder.invoke();
             };
         }
@@ -561,7 +552,7 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestStructPointerArg_Internal.__ffi_cache);
             return (arg0) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
+                useEncoder.getBufPtr().setNativePointer(0, arg0.getPointer());
                 useEncoder.invoke();
             };
         }
@@ -585,9 +576,8 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestUnionPointerReturn_Internal.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackTestUnionPointerReturn_Internal.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return new TestUnion.TestUnionPointer(returnConvert.asLong(), false);
+                useEncoder.invoke();
+                return new TestUnion.TestUnionPointer(useEncoder.getBufPtr().getNativePointer(0), false);
             };
         }
     }
@@ -610,9 +600,8 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackByteReturn_Internal.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackByteReturn_Internal.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return (byte) returnConvert.asLong();
+                useEncoder.invoke();
+                return useEncoder.getBufPtr().getByte(0);
             };
         }
     }
@@ -635,9 +624,8 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackCharReturn_Internal.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackCharReturn_Internal.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return (char) returnConvert.asLong();
+                useEncoder.invoke();
+                return useEncoder.getBufPtr().getChar(0);
             };
         }
     }
@@ -660,9 +648,8 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestEnumReturn_Internal.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackTestEnumReturn_Internal.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return TestEnum.getByIndex((int) returnConvert.asLong());
+                useEncoder.invoke();
+                return TestEnum.getByIndex((int) useEncoder.getBufPtr().getUInt(0));
             };
         }
     }
@@ -678,21 +665,21 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
-            methodWithCallbackAllArgs_call((long) buf.getLong(0), (int) buf.getInt(8), (short) buf.getShort(12), (byte) buf.getByte(14), (char) buf.getChar(15), (boolean) buf.getBoolean(17), (float) buf.getFloat(18), (double) buf.getDouble(22));
+            methodWithCallbackAllArgs_call(buf.getLong(0), buf.getInt(8), buf.getShort(12), buf.getByte(14), buf.getChar(15), buf.getBoolean(17), buf.getFloat(18), buf.getDouble(22));
         }
 
         public static methodWithCallbackAllArgs methodWithCallbackAllArgs_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackAllArgs_Internal.__ffi_cache);
             return (arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                useEncoder.setValue(1, arg1);
-                useEncoder.setValue(2, arg2);
-                useEncoder.setValue(3, arg3);
-                useEncoder.setValue(4, arg4);
-                useEncoder.setValue(5, arg5);
-                useEncoder.setValue(6, arg6);
-                useEncoder.setValue(7, arg7);
+                useEncoder.getBufPtr().setLong(0, arg0);
+                useEncoder.getBufPtr().setInt(8, arg1);
+                useEncoder.getBufPtr().setShort(12, arg2);
+                useEncoder.getBufPtr().setByte(14, arg3);
+                useEncoder.getBufPtr().setChar(15, arg4);
+                useEncoder.getBufPtr().setBoolean(17, arg5);
+                useEncoder.getBufPtr().setFloat(18, arg6);
+                useEncoder.getBufPtr().setDouble(22, arg7);
                 useEncoder.invoke();
             };
         }
@@ -739,9 +726,8 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithIntPtrPtrRet_Internal.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithIntPtrPtrRet_Internal.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return new PointerPointer<>(returnConvert.asLong(), false, SIntPointer::new);
+                useEncoder.invoke();
+                return new PointerPointer<>(useEncoder.getBufPtr().getNativePointer(0), false, SIntPointer::new);
             };
         }
     }
@@ -764,7 +750,7 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestUnionPointerArg_Internal.__ffi_cache);
             return (arg0) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
+                useEncoder.getBufPtr().setNativePointer(0, arg0.getPointer());
                 useEncoder.invoke();
             };
         }
@@ -781,14 +767,14 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
-            methodWithCallbackShortArg_call((short) buf.getShort(0));
+            methodWithCallbackShortArg_call(buf.getShort(0));
         }
 
         public static methodWithCallbackShortArg methodWithCallbackShortArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackShortArg_Internal.__ffi_cache);
             return (arg0) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
+                useEncoder.getBufPtr().setShort(0, arg0);
                 useEncoder.invoke();
             };
         }
@@ -805,14 +791,14 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
-            methodWithCallbackByteArg_call((byte) buf.getByte(0));
+            methodWithCallbackByteArg_call(buf.getByte(0));
         }
 
         public static methodWithCallbackByteArg methodWithCallbackByteArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackByteArg_Internal.__ffi_cache);
             return (arg0) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
+                useEncoder.getBufPtr().setByte(0, arg0);
                 useEncoder.invoke();
             };
         }
@@ -836,9 +822,8 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackBooleanReturn_Internal.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackBooleanReturn_Internal.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return (boolean) returnConvert.asBoolean();
+                useEncoder.invoke();
+                return useEncoder.getBufPtr().getBoolean(0);
             };
         }
     }
@@ -861,9 +846,8 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackIntReturn_Internal.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackIntReturn_Internal.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return (int) returnConvert.asLong();
+                useEncoder.invoke();
+                return useEncoder.getBufPtr().getInt(0);
             };
         }
     }
@@ -886,9 +870,8 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackLongReturn_Internal.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackLongReturn_Internal.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return (long) returnConvert.asLong();
+                useEncoder.invoke();
+                return useEncoder.getBufPtr().getLong(0);
             };
         }
     }
@@ -904,14 +887,14 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
-            methodWithCallbackCharArg_call((char) buf.getChar(0));
+            methodWithCallbackCharArg_call(buf.getChar(0));
         }
 
         public static methodWithCallbackCharArg methodWithCallbackCharArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackCharArg_Internal.__ffi_cache);
             return (arg0) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
+                useEncoder.getBufPtr().setChar(0, arg0);
                 useEncoder.invoke();
             };
         }
@@ -935,7 +918,7 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithIntPtrPtrArg_Internal.__ffi_cache);
             return (arg0) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
+                useEncoder.getBufPtr().setNativePointer(0, arg0.getPointer());
                 useEncoder.invoke();
             };
         }
@@ -959,10 +942,9 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, thread_callback_Internal.__ffi_cache);
             return (arg0) -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                useEncoder.setValue(0, arg0);
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(thread_callback_Internal.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return new VoidPointer(returnConvert.asLong(), false);
+                useEncoder.getBufPtr().setNativePointer(0, arg0.getPointer());
+                useEncoder.invoke();
+                return new VoidPointer(useEncoder.getBufPtr().getNativePointer(0), false);
             };
         }
     }
@@ -985,9 +967,8 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestStructReturn_Internal.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackTestStructReturn_Internal.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return new TestStruct(returnConvert.asLong(), true);
+                useEncoder.invoke();
+                return new TestStruct(useEncoder.getBufPtr().getNativePointer(0), true);
             };
         }
     }
@@ -1010,9 +991,8 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackFloatReturn_Internal.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                JavaTypeWrapper returnConvert = new JavaTypeWrapper(methodWithCallbackFloatReturn_Internal.__ffi_cache[0]);
-                returnConvert.setValue(useEncoder.invoke());
-                return (float) returnConvert.asFloat();
+                useEncoder.invoke();
+                return useEncoder.getBufPtr().getFloat(0);
             };
         }
     }

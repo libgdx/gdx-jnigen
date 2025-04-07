@@ -89,7 +89,7 @@ public class CHandler {
         toCallOn.invoke(BufferPtrAllocator.get(parameter));
     }
 
-    public static native long dispatchCCall(long fnPtr, long cif, ByteBuffer parameter);
+    public static native void dispatchCCall(long fnPtr, long cif, long parameter);
 
     public static native long convertNativeTypeToFFIType(long nativeType);
 
@@ -176,6 +176,12 @@ public class CHandler {
     public static void deregisterFunctionPointer(long fnPtr) {
         synchronized (fnPtrClosureMap) {
             fnPtrClosureMap.remove(fnPtr);
+        }
+    }
+
+    public static void clearRegisteredFunctionPointer() {
+        synchronized (fnPtrClosureMap) {
+            fnPtrClosureMap.clear();
         }
     }
 

@@ -47,7 +47,7 @@ public final class AnonymousStructFieldArray extends Struct {
     private final inner.innerPointer __inner = new inner.innerPointer(getPointer() + __inner_offset, false, 2);
 
     public int externalValue() {
-        return (int) getBufPtr().getInt(16);
+        return getBufPtr().getInt(16);
     }
 
     public void externalValue(int externalValue) {
@@ -118,7 +118,7 @@ public final class AnonymousStructFieldArray extends Struct {
         }
 
         public int intValue() {
-            return (int) getBufPtr().getInt(0);
+            return getBufPtr().getInt(0);
         }
 
         public void intValue(int intValue) {
@@ -126,7 +126,7 @@ public final class AnonymousStructFieldArray extends Struct {
         }
 
         public float floatValue() {
-            return (float) getBufPtr().getFloat(4);
+            return getBufPtr().getFloat(4);
         }
 
         public void floatValue(float floatValue) {
