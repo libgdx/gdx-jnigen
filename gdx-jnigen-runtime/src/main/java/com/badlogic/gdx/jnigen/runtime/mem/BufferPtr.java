@@ -14,7 +14,6 @@ public final class BufferPtr {
     private final int offset;
     private final int capacity;
     private final boolean freeOnGC;
-    private boolean freed = false;
     private BufferPtr parent;
 
     public BufferPtr(ByteBuffer buffer, long pointer, int offset, int capacity, boolean freeOnGC) {
@@ -30,16 +29,9 @@ public final class BufferPtr {
     }
 
     public void free() {
-        if (freed)
-            throw new IllegalStateException("Double free on " + pointer);
         if (getsGCFreed())
             throw new IllegalStateException("Can't free a object, that gets freed by GC.");
         CHandler.free(pointer);
-        freed = true;
-    }
-
-    public boolean isFreed() {
-        return freed;
     }
 
     public void setParent(BufferPtr parent) {

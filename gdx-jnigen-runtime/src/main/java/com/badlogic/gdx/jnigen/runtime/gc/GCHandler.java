@@ -7,8 +7,8 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.ref.ReferenceQueue;
 
 public class GCHandler {
-    private static final boolean NO_GC_FREE = System.getProperty("com.badlogic.jnigen.gc_disabled", "false").equals("true");
-    private static final boolean ENABLE_GC_LOG = System.getProperty("com.badlogic.jnigen.gc_log", "false").equals("true");
+    private static final boolean NO_GC_FREE = System.getProperty("com.badlogic.jnigen.gc.gc_disabled", "false").equals("true");
+    private static final boolean ENABLE_GC_LOG = System.getProperty("com.badlogic.jnigen.gc.gc_log", "false").equals("true");
     protected static final ReferenceQueue<BufferPtr> REFERENCE_QUEUE = new ReferenceQueue<>();
     private static final ReferenceList referenceList = new ReferenceList();
 

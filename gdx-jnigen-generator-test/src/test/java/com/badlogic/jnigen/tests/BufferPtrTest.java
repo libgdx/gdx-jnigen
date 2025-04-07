@@ -37,6 +37,7 @@ public class BufferPtrTest extends BaseTest {
     public void testAllocateBufferPtrEquals() {
         long addr = CHandler.calloc(1, 1);
         BufferPtr buffPtr1 = BufferPtrAllocator.get(addr);
+        BufferPtrAllocator.reset();
         BufferPtr buffPtr2 = BufferPtrAllocator.get(addr);
         assertNotEquals(buffPtr1, buffPtr2);
         buffPtr1.setBoolean(true);

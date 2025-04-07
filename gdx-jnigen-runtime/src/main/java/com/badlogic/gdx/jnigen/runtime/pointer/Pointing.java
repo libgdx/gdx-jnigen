@@ -7,6 +7,7 @@ import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrAllocator;
 public class Pointing {
 
     private final BufferPtr bufPtr;
+    private boolean freed = false;
 
     public Pointing(long pointer, boolean freeOnGC) {
         this.bufPtr = BufferPtrAllocator.get(pointer, -1, freeOnGC);
@@ -31,11 +32,14 @@ public class Pointing {
     }
 
     public void free() {
+        if (freed)
+            throw new IllegalStateException("Double free on " + bufPtr.getPointer());
         bufPtr.free();
+        freed = true;
     }
 
     public boolean isFreed() {
-        return bufPtr.isFreed();
+        return freed;
     }
 
     public void setParent(Pointing parent) {
