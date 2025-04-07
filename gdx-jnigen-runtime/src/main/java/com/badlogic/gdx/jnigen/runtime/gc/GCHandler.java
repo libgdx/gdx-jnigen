@@ -1,6 +1,6 @@
 package com.badlogic.gdx.jnigen.runtime.gc;
 
-import com.badlogic.gdx.jnigen.runtime.CHandler;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrAllocator;
 import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -25,6 +25,7 @@ public class GCHandler {
                         System.out.println("Freeing Pointer: " + pointingRef.getBufferPtr().getPointer());
 
                     pointingRef.getBufferPtr().free();
+                    BufferPtrAllocator.insertPool(pointingRef.getBufferPtr());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

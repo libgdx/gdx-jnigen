@@ -8,10 +8,10 @@ import java.nio.charset.StandardCharsets;
 
 public final class BufferPtr {
 
-    private final ByteBuffer buffer;
-    private final long pointer;
-    private final int offset;
-    private final int capacity;
+    private ByteBuffer buffer;
+    private long pointer;
+    private int offset;
+    private int capacity;
 
     public BufferPtr(ByteBuffer buffer, long pointer, int offset, int capacity) {
         this.buffer = buffer;
@@ -20,6 +20,13 @@ public final class BufferPtr {
         this.capacity = capacity;
         if (capacity > buffer.capacity())
             throw new IllegalArgumentException("Buffer capacity (" + buffer.capacity() + ") exceeded by " + capacity + ". More then 1GB?");
+    }
+
+    void reset(ByteBuffer buffer, long pointer, int offset, int capacity) {
+        this.buffer = buffer;
+        this.pointer = pointer;
+        this.offset = offset;
+        this.capacity = capacity;
     }
 
     public void free() {
