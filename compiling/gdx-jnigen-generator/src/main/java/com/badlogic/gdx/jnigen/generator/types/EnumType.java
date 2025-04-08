@@ -1,6 +1,7 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
 import com.badlogic.gdx.jnigen.generator.ClassNameConstants;
+import com.badlogic.gdx.jnigen.generator.JavaUtils;
 import com.badlogic.gdx.jnigen.generator.Manager;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
@@ -72,14 +73,7 @@ public class EnumType implements MappedType {
         if (comment != null)
             declaration.setJavadocComment(comment);
 
-        TypeKind nestedKind = definition.getNestedDefinition().getTypeKind();
-        if (!nestedKind.isPrimitive())
-            throw new IllegalArgumentException("Enum " + definition.getTypeName() + " does not have a primitive type");
-
-        if (nestedKind.hasPlatformDependentSize())
-            declaration.addFieldWithInitializer("int", "__size", StaticJavaParser.parseExpression("CHandler.LONG_SIZE"), Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
-        else
-            declaration.addFieldWithInitializer("int", "__size", new IntegerLiteralExpr(String.valueOf(nestedKind.getSize(false, false))), Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
+        declaration.addFieldWithInitializer("int", "__size", JavaUtils.getSizeAsExpression(this::getSize), Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
 
         constants.values().stream()
                 .sorted(Comparator.comparingInt(EnumConstant::getId))
@@ -240,6 +234,6 @@ public class EnumType implements MappedType {
 
     @Override
     public int getSize(boolean is32Bit, boolean isWin) {
-        return definition.getNestedDefinition().getTypeKind().getSize(is32Bit, isWin);
+        return definition.getNestedDefinition().getMappedType().getSize(is32Bit, isWin);
     }
 }
