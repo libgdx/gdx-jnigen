@@ -15,22 +15,19 @@ public class Pointing {
     public Pointing(long pointer, boolean freeOnGC) {
         this.bufPtr = BufferPtrAllocator.get(pointer, -1);
         this.freeOnGC = freeOnGC;
-        if (freeOnGC)
-            GCHandler.enqueuePointer(this);
+        GCHandler.enqueuePointer(this, freeOnGC);
     }
 
     public Pointing(long pointer, boolean freeOnGC, int capacity) {
         this.bufPtr = BufferPtrAllocator.get(pointer, capacity);
         this.freeOnGC = freeOnGC;
-        if (freeOnGC)
-            GCHandler.enqueuePointer(this);
+        GCHandler.enqueuePointer(this, freeOnGC);
     }
 
     public Pointing(int size, boolean freeOnGC) {
         this.bufPtr = BufferPtrAllocator.get(CHandler.calloc(1, size), size);
         this.freeOnGC = freeOnGC;
-        if (freeOnGC)
-            GCHandler.enqueuePointer(this);
+        GCHandler.enqueuePointer(this, freeOnGC);
     }
 
     public boolean isNull() {

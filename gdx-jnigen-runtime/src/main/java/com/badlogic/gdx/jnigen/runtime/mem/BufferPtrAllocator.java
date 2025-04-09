@@ -5,6 +5,7 @@ import com.badlogic.gdx.jnigen.runtime.CHandler;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import java.util.concurrent.ArrayBlockingQueue;
 
 public class BufferPtrAllocator {
 
@@ -31,6 +32,8 @@ public class BufferPtrAllocator {
 
     private static final boolean NO_POOLING = System.getProperty("com.badlogic.jnigen.allocator.no_pooling", "false").equals("true");
     private static final int POOL_SIZE = Integer.parseInt(System.getProperty("com.badlogic.jnigen.allocator.pool_size", "256"));
+
+    private static final ArrayBlockingQueue<BufferPtr> BUFFER_PTR_POOL = new ArrayBlockingQueue<>(POOL_SIZE);
 
     private static ByteBuffer getBuffer(long basePtr) {
 
@@ -73,20 +76,26 @@ public class BufferPtrAllocator {
         int offset = (int)(pointer & PAGE_OFFSET_MASK);
         long basePtr = pointer & ADDRESS_MASK;
 
+        ByteBuffer buffer = getBuffer(basePtr);
         if (NO_POOLING)
-            return new BufferPtr(getBuffer(basePtr), pointer, offset, capacity);
+            return new BufferPtr(buffer, pointer, offset, capacity);
+        BufferPtr bufferPtr = BUFFER_PTR_POOL.poll();
+        if (bufferPtr == null)
+            return new BufferPtr(buffer, pointer, offset, capacity);
 
-        return new BufferPtr(getBuffer(basePtr), pointer, offset, capacity);
+        bufferPtr.reset(buffer, pointer, offset, capacity);
+        return bufferPtr;
     }
 
     public static void insertPool(BufferPtr bufferPtr) {
         if (NO_POOLING)
             return;
 
-        // TODO: 07.04.2025 Insert into pool
+        BUFFER_PTR_POOL.offer(bufferPtr);
     }
 
     public static void reset() {
         Arrays.fill(BUFFER_CACHE, null);
+        BUFFER_PTR_POOL.clear();
     }
 }

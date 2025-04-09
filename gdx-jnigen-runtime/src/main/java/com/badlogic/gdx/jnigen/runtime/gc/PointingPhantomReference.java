@@ -9,13 +9,15 @@ import java.lang.ref.PhantomReference;
 public final class PointingPhantomReference extends PhantomReference<Pointing> {
 
     private final BufferPtr bufferPtr;
+    private final boolean freeOnGC;
     private ReferenceListNode node;
     private int position;
 
 
-    public PointingPhantomReference(Pointing referent) {
+    public PointingPhantomReference(Pointing referent, boolean freeOnGC) {
         super(referent, GCHandler.REFERENCE_QUEUE);
         this.bufferPtr = referent.getBufPtr();
+        this.freeOnGC = freeOnGC;
     }
 
     public void setNode(ReferenceListNode node) {
@@ -36,5 +38,9 @@ public final class PointingPhantomReference extends PhantomReference<Pointing> {
 
     public BufferPtr getBufferPtr() {
         return bufferPtr;
+    }
+
+    public boolean isFreeOnGC() {
+        return freeOnGC;
     }
 }

@@ -24,7 +24,8 @@ public class GCHandler {
                     if (ENABLE_GC_LOG)
                         System.out.println("Freeing Pointer: " + pointingRef.getBufferPtr().getPointer());
 
-                    pointingRef.getBufferPtr().free();
+                    if (pointingRef.isFreeOnGC())
+                        pointingRef.getBufferPtr().free();
                     BufferPtrAllocator.insertPool(pointingRef.getBufferPtr());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -46,13 +47,19 @@ public class GCHandler {
         RELEASER.start();
     }
 
-    public static void enqueuePointer(Pointing pointing) {
+    public static void enqueuePointer(Pointing pointing, boolean freeOnGC) {
         if (NO_GC_FREE)
             return;
         if (ENABLE_GC_LOG)
-            System.out.println("Enqueuing Pointer: " + pointing.getPointer() + " of class " + pointing.getClass());
+            System.out.println("Enqueuing Pointer: " + pointing.getPointer() + " of class " + pointing.getClass() + " freeOnGC: " + freeOnGC);
+        if (pointing.isNull())
+            return;
 
-        PointingPhantomReference structPhantomReference = new PointingPhantomReference(pointing);
+        // TODO: The memory pressure gets to much on many object allocations. Revisit this switch, once Arena is implemented
+        if (!freeOnGC)
+            return;
+
+        PointingPhantomReference structPhantomReference = new PointingPhantomReference(pointing, freeOnGC);
         referenceList.insertReference(structPhantomReference);
     }
 
