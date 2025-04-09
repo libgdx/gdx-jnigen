@@ -399,6 +399,18 @@ public final class BufferPtr {
         buffer.put(offset + bytes.length, (byte) 0);
     }
 
+    public void copyFrom(BufferPtr src, int size) {
+        assertBounds(size);
+        src.assertBounds(size);
+        CHandler.memcpy(pointer, src.pointer, size);
+    }
+
+    public void copyFrom(int index, BufferPtr src, int srcOffset, int size) {
+        assertBounds(index + size);
+        src.assertBounds(srcOffset + size);
+        CHandler.memcpy(pointer + index, src.pointer + srcOffset, size);
+    }
+
     public boolean isNull() {
         return pointer == 0;
     }
