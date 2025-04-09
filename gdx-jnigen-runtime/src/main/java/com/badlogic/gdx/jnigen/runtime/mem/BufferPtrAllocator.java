@@ -91,6 +91,7 @@ public class BufferPtrAllocator {
         if (NO_POOLING)
             return;
 
+        bufferPtr.reset(null, 0, 0, 0);
         BUFFER_PTR_POOL.offer(bufferPtr);
     }
 

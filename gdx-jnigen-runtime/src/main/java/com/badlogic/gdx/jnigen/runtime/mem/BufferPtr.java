@@ -30,15 +30,20 @@ public final class BufferPtr {
     }
 
     public void free() {
+        if (buffer == null)
+            throw new IllegalStateException("Buffer invalid (use-after-free?)");
         CHandler.free(pointer);
     }
 
     public void assertBounds(int expectedCapacity) {
+        if (buffer == null)
+            throw new IllegalStateException("Buffer invalid (use-after-free?)");
         if (capacity > 0 && (expectedCapacity < 0 || expectedCapacity > capacity))
             throw new IndexOutOfBoundsException("Index: " + expectedCapacity + ", Size: " + capacity);
     }
 
     public boolean getBoolean() {
+        assertBounds(1);
         return buffer.get(offset) != 0;
     }
 
@@ -411,15 +416,15 @@ public final class BufferPtr {
         CHandler.memcpy(pointer + index, src.pointer + srcOffset, size);
     }
 
-    public boolean isNull() {
-        return pointer == 0;
-    }
-
     public long getPointer() {
+        if (buffer == null)
+            throw new IllegalStateException("Buffer invalid (use-after-free?)");
         return pointer;
     }
 
     public int getCapacity() {
+        if (buffer == null)
+            throw new IllegalStateException("Buffer invalid (use-after-free?)");
         return capacity;
     }
 }

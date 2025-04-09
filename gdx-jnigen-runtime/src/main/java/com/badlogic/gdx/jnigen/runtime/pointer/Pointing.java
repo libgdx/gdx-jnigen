@@ -10,7 +10,7 @@ public class Pointing {
     private final BufferPtr bufPtr;
     private final boolean freeOnGC;
     private Pointing parent;
-    private boolean freed = false;
+    protected boolean freed = false;
 
     public Pointing(long pointer, boolean freeOnGC) {
         this.bufPtr = BufferPtrAllocator.get(pointer, -1);
@@ -31,10 +31,14 @@ public class Pointing {
     }
 
     public boolean isNull() {
+        if (freed)
+            throw new IllegalStateException("Pointer is freed: " + bufPtr.getPointer());
         return bufPtr == null;
     }
 
     public void assertBounds(int index) {
+        if (freed)
+            throw new IllegalStateException("Pointer is freed: " + bufPtr.getPointer());
         if (isNull())
             throw new NullPointerException("Pointer is null");
         bufPtr.assertBounds(index);
@@ -64,10 +68,14 @@ public class Pointing {
     }
 
     public BufferPtr getBufPtr() {
+        if (freed)
+            throw new IllegalStateException("Pointer is freed: " + bufPtr.getPointer());
         return bufPtr;
     }
 
     public long getPointer() {
+        if (freed)
+            throw new IllegalStateException("Pointer is freed: " + bufPtr.getPointer());
         if (bufPtr == null)
             return 0;
         return bufPtr.getPointer();
