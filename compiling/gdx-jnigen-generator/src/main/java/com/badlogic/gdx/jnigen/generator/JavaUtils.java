@@ -47,8 +47,8 @@ public class JavaUtils {
             return StaticJavaParser.parseExpression("CHandler.IS_COMPILED_WIN ? " + offset32BitWin + " : " + offset32BitNonWin);
         }
 
-        if (offset32BitWin == 4 && offset64BitWin == 4 && offset32BitNonWin == 4 && offset64BitNonWin == 8)
-            return StaticJavaParser.parseExpression("CHandler.LONG_SIZE");
+        if (offset32BitWin == offset64BitWin && offset32BitWin == offset32BitNonWin)
+            return StaticJavaParser.parseExpression("CHandler.IS_32_BIT || CHandler.IS_COMPILED_WIN ? " + offset32BitWin + " : " + offset64BitNonWin);
 
         return StaticJavaParser.parseExpression("CHandler.IS_32_BIT ? (CHandler.IS_COMPILED_WIN ? " +
                 offset32BitWin + " : " + offset32BitNonWin + ") : (CHandler.IS_COMPILED_WIN ? " +
