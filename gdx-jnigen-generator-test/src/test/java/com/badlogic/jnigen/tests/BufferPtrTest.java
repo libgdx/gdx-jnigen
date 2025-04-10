@@ -3,6 +3,7 @@ package com.badlogic.jnigen.tests;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrAllocator;
+import com.badlogic.gdx.jnigen.runtime.mem.MemoryManagementStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,22 +24,22 @@ public class BufferPtrTest extends BaseTest {
         random.setSeed(12345678);
         for (int i = 0; i < 10; i++) {
             long addr = random.nextLong();
-            BufferPtr ptr = BufferPtrAllocator.get(addr);
+            BufferPtr ptr = BufferPtrAllocator.get(addr, MemoryManagementStrategy.UNMANAGED);
             assertEquals(addr, ptr.getPointer());
         }
     }
 
     @Test
     public void testAllocateNullBufferPtr() {
-        assertNull(BufferPtrAllocator.get(0));
+        assertNull(BufferPtrAllocator.get(0, MemoryManagementStrategy.UNMANAGED));
     }
 
     @Test
     public void testAllocateBufferPtrEquals() {
         long addr = CHandler.calloc(1, 1);
-        BufferPtr buffPtr1 = BufferPtrAllocator.get(addr);
+        BufferPtr buffPtr1 = BufferPtrAllocator.get(addr, MemoryManagementStrategy.UNMANAGED);
         BufferPtrAllocator.reset();
-        BufferPtr buffPtr2 = BufferPtrAllocator.get(addr);
+        BufferPtr buffPtr2 = BufferPtrAllocator.get(addr, MemoryManagementStrategy.UNMANAGED);
         assertNotEquals(buffPtr1, buffPtr2);
         buffPtr1.setBoolean(true);
         assertTrue(buffPtr2.getBoolean());
@@ -47,12 +48,12 @@ public class BufferPtrTest extends BaseTest {
 
     @Test
     public void testAllocateBufferPtrToLargeCapacity() {
-        assertThrows(IllegalArgumentException.class, () -> BufferPtrAllocator.get(10, Integer.MAX_VALUE / 2 + 2));
+        assertThrows(IllegalArgumentException.class, () -> BufferPtrAllocator.get(10, Integer.MAX_VALUE / 2 + 2, MemoryManagementStrategy.UNMANAGED));
     }
 
     @Test
     public void testUseAfterFree() {
-        BufferPtr ptr = BufferPtrAllocator.get(10, 16);
+        BufferPtr ptr = BufferPtrAllocator.get(10, 16, MemoryManagementStrategy.UNMANAGED);
         BufferPtrAllocator.insertPool(ptr);
         assertThrows(IllegalStateException.class, () -> ptr.getPointer());
     }

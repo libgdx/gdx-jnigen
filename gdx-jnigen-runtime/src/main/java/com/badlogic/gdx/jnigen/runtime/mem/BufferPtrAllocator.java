@@ -5,6 +5,7 @@ import com.badlogic.gdx.jnigen.runtime.CHandler;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class BufferPtrAllocator {
@@ -33,7 +34,7 @@ public class BufferPtrAllocator {
     private static final boolean NO_POOLING = System.getProperty("com.badlogic.jnigen.allocator.no_pooling", "false").equals("true");
     private static final int POOL_SIZE = Integer.parseInt(System.getProperty("com.badlogic.jnigen.allocator.pool_size", "256"));
 
-    private static final ArrayBlockingQueue<BufferPtr> BUFFER_PTR_POOL = new ArrayBlockingQueue<>(POOL_SIZE);
+    private static final BufferPtrPool BUFFER_PTR_POOL = new BufferPtrPool(POOL_SIZE);
 
     private static ByteBuffer getBuffer(long basePtr) {
 
@@ -63,11 +64,11 @@ public class BufferPtrAllocator {
         return L3;
     }
 
-    public static BufferPtr get(long pointer) {
-        return get(pointer, -1);
+    public static BufferPtr get(long pointer, MemoryManagementStrategy memoryManagementStrategy) {
+        return get(pointer, -1, memoryManagementStrategy);
     }
 
-    public static BufferPtr get(long pointer, int capacity) {
+    public static BufferPtr get(long pointer, int capacity, MemoryManagementStrategy memoryManagementStrategy) {
         if (pointer == 0)
             return null;
         if (capacity > PAGE_SIZE)
@@ -78,12 +79,12 @@ public class BufferPtrAllocator {
 
         ByteBuffer buffer = getBuffer(basePtr);
         if (NO_POOLING)
-            return new BufferPtr(buffer, pointer, offset, capacity);
+            return new BufferPtr(buffer, pointer, offset, capacity, memoryManagementStrategy);
         BufferPtr bufferPtr = BUFFER_PTR_POOL.poll();
         if (bufferPtr == null)
-            return new BufferPtr(buffer, pointer, offset, capacity);
+            return new BufferPtr(buffer, pointer, offset, capacity, memoryManagementStrategy);
 
-        bufferPtr.reset(buffer, pointer, offset, capacity);
+        bufferPtr.reset(buffer, pointer, offset, capacity, memoryManagementStrategy);
         return bufferPtr;
     }
 
@@ -91,12 +92,26 @@ public class BufferPtrAllocator {
         if (NO_POOLING)
             return;
 
-        bufferPtr.reset(null, 0, 0, 0);
         BUFFER_PTR_POOL.offer(bufferPtr);
+    }
+
+    public static void insertPool(Collection<BufferPtr> bufferPtr) {
+        if (NO_POOLING)
+            return;
+
+        BUFFER_PTR_POOL.offerAll(bufferPtr);
     }
 
     public static void reset() {
         Arrays.fill(BUFFER_CACHE, null);
         BUFFER_PTR_POOL.clear();
+    }
+
+    public static boolean isPoolingEnabled() {
+        return !NO_POOLING;
+    }
+
+    public static int getMaxPoolSize() {
+        return POOL_SIZE;
     }
 }

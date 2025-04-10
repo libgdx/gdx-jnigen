@@ -12,21 +12,24 @@ public final class BufferPtr {
     private long pointer;
     private int offset;
     private int capacity;
+    private MemoryManagementStrategy memoryManagementStrategy;
 
-    public BufferPtr(ByteBuffer buffer, long pointer, int offset, int capacity) {
+    public BufferPtr(ByteBuffer buffer, long pointer, int offset, int capacity, MemoryManagementStrategy memoryManagementStrategy) {
         this.buffer = buffer;
         this.pointer = pointer;
         this.offset = offset;
         this.capacity = capacity;
+        this.memoryManagementStrategy = memoryManagementStrategy;
         if (capacity > buffer.capacity())
             throw new IllegalArgumentException("Buffer capacity (" + buffer.capacity() + ") exceeded by " + capacity + ". More then 1GB?");
     }
 
-    void reset(ByteBuffer buffer, long pointer, int offset, int capacity) {
+    void reset(ByteBuffer buffer, long pointer, int offset, int capacity, MemoryManagementStrategy memoryManagementStrategy) {
         this.buffer = buffer;
         this.pointer = pointer;
         this.offset = offset;
         this.capacity = capacity;
+        this.memoryManagementStrategy = memoryManagementStrategy;
     }
 
     public void free() {
@@ -426,5 +429,9 @@ public final class BufferPtr {
         if (buffer == null)
             throw new IllegalStateException("Buffer invalid (use-after-free?)");
         return capacity;
+    }
+
+    public MemoryManagementStrategy getManagementStrategy() {
+        return memoryManagementStrategy;
     }
 }

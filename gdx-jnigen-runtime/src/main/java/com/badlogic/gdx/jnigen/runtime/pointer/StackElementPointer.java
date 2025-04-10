@@ -49,8 +49,7 @@ public abstract class StackElementPointer<T extends StackElement> extends VoidPo
         assertBounds(offset);
         T stackElement = createStackElement(getPointer() + offset, false);
         // TODO: 07.04.25 Maybe it's smarter to allow creating Pointing objects via BufferPtr
-        if (stackElement.getBufPtr() != getBufPtr())
-            stackElement.setParent(this);
+        stackElement.setParent(this);
         return stackElement;
     }
 
