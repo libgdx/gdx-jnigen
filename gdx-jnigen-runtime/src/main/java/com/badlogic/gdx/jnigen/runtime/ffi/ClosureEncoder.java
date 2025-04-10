@@ -19,13 +19,14 @@ public final class ClosureEncoder {
         this.fnPtr = fnPtr;
         this.cif = CHandler.getFFICifForSignature(functionSignature);
 
-        int parameterSize = 0;
-        for (int i = 1; i < functionSignature.length; i++) {
-            parameterSize += functionSignature[i].getSize();
+        int bufSize = 0;
+        for (CTypeInfo cTypeInfo : functionSignature) {
+            bufSize += cTypeInfo.getSize();
         }
 
-        this.bufferPtrSize = Math.max(parameterSize, functionSignature[0].getSize());
-        this.bufferPtr = new VoidPointer(bufferPtrSize, true);
+        this.bufferPtrSize = bufSize;
+        // TODO: This technically leaks, but we don't want to risk that a ClosureEncoder is allocated on an Arena
+        this.bufferPtr = new VoidPointer(bufferPtrSize, false);
         this.locked = new AtomicBoolean(false);
     }
 

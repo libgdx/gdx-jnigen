@@ -19,9 +19,12 @@ public class AllocationManager {
     }
 
     public static BufferPtr allocate (int size, boolean free) {
+        if (!free)
+            return BufferPtrAllocator.get(CHandler.calloc(1, size), size, MemoryManagementStrategy.UNMANAGED);
+
         ArenaAllocator allocator = currentAllocator.get();
         if (allocator == null)
-            return BufferPtrAllocator.get(CHandler.calloc(1, size), size, free ? MemoryManagementStrategy.GC : MemoryManagementStrategy.UNMANAGED);
+            return BufferPtrAllocator.get(CHandler.calloc(1, size), size, MemoryManagementStrategy.GC);
 
         return allocator.allocate(size);
     }

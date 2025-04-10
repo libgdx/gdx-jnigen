@@ -87,8 +87,6 @@ public class FunctionType {
                     nativeBody.insert(0, returnType.getTypeName() + "* _ret = (" + returnType.getTypeName() + "*) _retPar;\n");
                     nativeBody.append("\nreturn (jlong)_ret;");
 
-
-
                     VariableDeclarator declarator = new VariableDeclarator();
                     declarator.setType(returnType.getMappedType().abstractType());
                     declarator.setName("_retPar");
