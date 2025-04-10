@@ -1,6 +1,6 @@
 package com.badlogic.gdx.jnigen.runtime.gc;
 
-import com.badlogic.gdx.jnigen.runtime.CHandler;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrAllocator;
 import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -25,6 +25,7 @@ public class GCHandler {
                         System.out.println("Freeing Pointer: " + pointingRef.getBufferPtr().getPointer());
 
                     pointingRef.getBufferPtr().free();
+                    BufferPtrAllocator.insertPool(pointingRef.getBufferPtr());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -50,6 +51,8 @@ public class GCHandler {
             return;
         if (ENABLE_GC_LOG)
             System.out.println("Enqueuing Pointer: " + pointing.getPointer() + " of class " + pointing.getClass());
+        if (pointing.isNull())
+            return;
 
         PointingPhantomReference structPhantomReference = new PointingPhantomReference(pointing);
         referenceList.insertReference(structPhantomReference);
