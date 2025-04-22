@@ -34,7 +34,7 @@ public class BufferPtrPool {
             if (size >= capacity)
                 return false;
 
-            buffer.reset(null, 0, 0, 0, null);
+            buffer.reset(null, 0, 0, 0);
             pool[size++] = buffer;
             return true;
         } finally {
@@ -52,7 +52,7 @@ public class BufferPtrPool {
                 if (count >= remaining)
                     break;
 
-                buffer.reset(null, 0, 0, 0, null);
+                buffer.reset(null, 0, 0, 0);
                 pool[size++] = buffer;
                 count++;
             }

@@ -64,11 +64,11 @@ public class BufferPtrAllocator {
         return L3;
     }
 
-    public static BufferPtr get(long pointer, MemoryManagementStrategy memoryManagementStrategy) {
-        return get(pointer, -1, memoryManagementStrategy);
+    public static BufferPtr get(long pointer) {
+        return get(pointer, -1);
     }
 
-    public static BufferPtr get(long pointer, int capacity, MemoryManagementStrategy memoryManagementStrategy) {
+    public static BufferPtr get(long pointer, int capacity) {
         if (pointer == 0)
             return null;
         if (capacity > PAGE_SIZE)
@@ -79,12 +79,12 @@ public class BufferPtrAllocator {
 
         ByteBuffer buffer = getBuffer(basePtr);
         if (NO_POOLING)
-            return new BufferPtr(buffer, pointer, offset, capacity, memoryManagementStrategy);
+            return new BufferPtr(buffer, pointer, offset, capacity);
         BufferPtr bufferPtr = BUFFER_PTR_POOL.poll();
         if (bufferPtr == null)
-            return new BufferPtr(buffer, pointer, offset, capacity, memoryManagementStrategy);
+            return new BufferPtr(buffer, pointer, offset, capacity);
 
-        bufferPtr.reset(buffer, pointer, offset, capacity, memoryManagementStrategy);
+        bufferPtr.reset(buffer, pointer, offset, capacity);
         return bufferPtr;
     }
 

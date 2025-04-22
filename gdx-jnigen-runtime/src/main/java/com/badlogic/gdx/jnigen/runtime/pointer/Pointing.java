@@ -3,30 +3,33 @@ package com.badlogic.gdx.jnigen.runtime.pointer;
 import com.badlogic.gdx.jnigen.runtime.gc.GCHandler;
 import com.badlogic.gdx.jnigen.runtime.mem.AllocationManager;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
-import com.badlogic.gdx.jnigen.runtime.mem.MemoryManagementStrategy;
 
 public class Pointing {
 
     private final BufferPtr bufPtr;
+    private final boolean freeOnGC;
     private Pointing parent;
     protected boolean freed = false;
 
     public Pointing(long pointer, boolean freeOnGC) {
-        this.bufPtr = AllocationManager.wrap(pointer, freeOnGC);
-        if (bufPtr != null && bufPtr.getManagementStrategy() == MemoryManagementStrategy.GC)
-            GCHandler.enqueuePointer(this);
+        this.bufPtr = AllocationManager.wrap(pointer);
+        this.freeOnGC = freeOnGC;
+        if (freeOnGC)
+            GCHandler.enqueuePointer(this, bufPtr);
     }
 
     public Pointing(long pointer, boolean freeOnGC, int capacity) {
-        this.bufPtr = AllocationManager.wrap(pointer, capacity, freeOnGC);
-        if (bufPtr != null && bufPtr.getManagementStrategy() == MemoryManagementStrategy.GC)
-            GCHandler.enqueuePointer(this);
+        this.bufPtr = AllocationManager.wrap(pointer, capacity);
+        this.freeOnGC = freeOnGC;
+        if (freeOnGC)
+            GCHandler.enqueuePointer(this, bufPtr);
     }
 
     public Pointing(int size, boolean freeOnGC) {
-        this.bufPtr = AllocationManager.allocate(size, freeOnGC);
-        if (bufPtr.getManagementStrategy() == MemoryManagementStrategy.GC)
-            GCHandler.enqueuePointer(this);
+        this.bufPtr = AllocationManager.allocate(size);
+        this.freeOnGC = freeOnGC;
+        if (freeOnGC)
+            GCHandler.enqueuePointer(this, bufPtr);
     }
 
     public boolean isNull() {
@@ -46,7 +49,7 @@ public class Pointing {
     public void free() {
         if (freed)
             throw new IllegalStateException("Double free on " + bufPtr.getPointer());
-        if (getManagementStrategy() != MemoryManagementStrategy.UNMANAGED)
+        if (freeOnGC)
             throw new IllegalStateException("Can only free unmanaged objects");
         if (parent != null)
             throw new IllegalStateException("Can't free object that has parent");
@@ -62,13 +65,7 @@ public class Pointing {
         this.parent = parent;
     }
 
-    public MemoryManagementStrategy getManagementStrategy() {
-        if (parent != null)
-            return parent.getManagementStrategy();
-        return bufPtr.getManagementStrategy();
-    }
-
-    public BufferPtr getBufPtr() {
+    protected BufferPtr getBufPtr() {
         if (freed)
             throw new IllegalStateException("Pointer is freed: " + bufPtr.getPointer());
         return bufPtr;

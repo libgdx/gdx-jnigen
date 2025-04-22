@@ -1,5 +1,6 @@
 package com.badlogic.gdx.jnigen.runtime.gc;
 
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrAllocator;
 import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 
@@ -46,7 +47,7 @@ public class GCHandler {
         RELEASER.start();
     }
 
-    public static void enqueuePointer(Pointing pointing) {
+    public static void enqueuePointer(Pointing pointing, BufferPtr bufferPtr) {
         if (NO_GC_FREE)
             return;
         if (ENABLE_GC_LOG)
@@ -54,7 +55,7 @@ public class GCHandler {
         if (pointing.isNull())
             return;
 
-        PointingPhantomReference structPhantomReference = new PointingPhantomReference(pointing);
+        PointingPhantomReference structPhantomReference = new PointingPhantomReference(pointing, bufferPtr);
         referenceList.insertReference(structPhantomReference);
     }
 
