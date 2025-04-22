@@ -3,7 +3,7 @@ package com.badlogic.jnigen.benchmark;
 import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
-import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrAllocator;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrManager;
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.jnigen.generated.TestData;
 import com.badlogic.jnigen.generated.enums.SpecialEnum;
@@ -34,7 +34,7 @@ public class JNICallBenchmark {
         new SharedLibraryLoader().load("test-natives");
         TestData.initialize();
         testStruct = new TestStruct();
-        bufferPtr = BufferPtrAllocator.get(CHandler.calloc(1, 2), 2);
+        bufferPtr = BufferPtrManager.get(CHandler.calloc(1, 2), 2);
         voidPointer1 = new VoidPointer(1024);
         voidPointer2 = new VoidPointer(1024);
     }
@@ -48,7 +48,7 @@ public class JNICallBenchmark {
     int count = 1;
     @Benchmark
     public void bufferPtrResolveSpeed(Blackhole bh) {
-        bh.consume(BufferPtrAllocator.get(count++));
+        bh.consume(BufferPtrManager.get(count++));
     }
 
     //@Benchmark

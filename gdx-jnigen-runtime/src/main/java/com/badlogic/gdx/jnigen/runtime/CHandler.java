@@ -8,7 +8,7 @@ import com.badlogic.gdx.jnigen.runtime.ffi.ClosureDecoder;
 import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
 import com.badlogic.gdx.jnigen.runtime.mem.AllocationManager;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
-import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrAllocator;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrManager;
 import com.badlogic.gdx.jnigen.runtime.util.DowncallClosureSupplier;
 
 import java.io.PrintWriter;
@@ -93,7 +93,7 @@ public class CHandler {
     public static <T extends Closure> void dispatchCallback(ClosureDecoder<T> toCallOn, long parameter) {
         BufferPtr ptr = AllocationManager.wrap(parameter);
         toCallOn.invoke(ptr);
-        BufferPtrAllocator.insertPool(ptr);
+        BufferPtrManager.insertPool(ptr);
     }
 
     public static native void dispatchCCall(long fnPtr, long cif, long parameter);

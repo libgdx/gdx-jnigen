@@ -6,9 +6,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.concurrent.ArrayBlockingQueue;
 
-public class BufferPtrAllocator {
+public class BufferPtrManager {
 
     // A ByteBuffer can address 2^31 bits. Furthermore, we want redundancy around the edges of the sliced byte buffer, to allow for always at least 1GB size
     // So for the whole 64bit spectrum, we have 34 bits to split up.
@@ -86,6 +85,19 @@ public class BufferPtrAllocator {
 
         bufferPtr.reset(buffer, pointer, offset, capacity);
         return bufferPtr;
+    }
+
+    public static void setBufferPtrPointer(BufferPtr bufferPtr, long newPointer) {
+        setBufferPtrPointer(bufferPtr, newPointer, -1);
+    }
+
+    public static void setBufferPtrPointer(BufferPtr bufferPtr, long newPointer, int capacity) {
+        int offset = (int)(newPointer & PAGE_OFFSET_MASK);
+        long basePtr = newPointer & ADDRESS_MASK;
+
+        ByteBuffer buffer = getBuffer(basePtr);
+
+        bufferPtr.reset(buffer, newPointer, offset, capacity);
     }
 
     public static void insertPool(BufferPtr bufferPtr) {

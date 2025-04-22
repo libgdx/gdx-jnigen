@@ -3,6 +3,7 @@ package com.badlogic.gdx.jnigen.runtime.pointer;
 import com.badlogic.gdx.jnigen.runtime.gc.GCHandler;
 import com.badlogic.gdx.jnigen.runtime.mem.AllocationManager;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrManager;
 
 public class Pointing {
 
@@ -54,6 +55,7 @@ public class Pointing {
         if (parent != null)
             throw new IllegalStateException("Can't free object that has parent");
         bufPtr.free();
+        BufferPtrManager.insertPool(bufPtr);
         freed = true;
     }
 
@@ -65,10 +67,33 @@ public class Pointing {
         this.parent = parent;
     }
 
+    /**
+     * Exposes the underlying BufferPtr. Manually handling the BufferPtr is highly discouraged.
+     */
     protected BufferPtr getBufPtr() {
         if (freed)
             throw new IllegalStateException("Pointer is freed: " + bufPtr.getPointer());
         return bufPtr;
+    }
+
+    /**
+     * This method swaps out the underlying pointer of this object. Use with caution.
+     */
+    public void setPointer(long pointer) {
+        if (freeOnGC)
+            throw new IllegalStateException("Can't change address of GC registered pointer");
+        BufferPtrManager.setBufferPtrPointer(bufPtr, pointer);
+        this.freed = false;
+    }
+
+    /**
+     * This method swaps out the underlying pointer of this object. Use with caution.
+     */
+    public void setPointer(long pointer, int capacity) {
+        if (freeOnGC)
+            throw new IllegalStateException("Can't change address of GC registered pointer");
+        BufferPtrManager.setBufferPtrPointer(bufPtr, pointer, capacity);
+        this.freed = false;
     }
 
     public long getPointer() {
