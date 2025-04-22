@@ -146,9 +146,11 @@ JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_dispatchCCa
     if (rtype->type == FFI_TYPE_VOID)
         return;
     if(rtype->type == FFI_TYPE_STRUCT) {
-        memcpy(*(void**)(arguments + offset), result, rtype->size);
+        void* struct_ret = malloc(rtype->size);
+        memcpy(struct_ret, result, rtype->size);
+        arguments[0] = struct_ret;
     } else {
-        memcpy(arguments + offset, result, rtype->size);
+        memcpy(arguments, result, rtype->size);
     }
 
     HANDLE_JAVA_EXCEPTION_END()

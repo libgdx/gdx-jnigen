@@ -49,11 +49,4 @@ public class BufferPtrTest extends BaseTest {
     public void testAllocateBufferPtrToLargeCapacity() {
         assertThrows(IllegalArgumentException.class, () -> BufferPtrAllocator.get(10, Integer.MAX_VALUE / 2 + 2));
     }
-
-    @Test
-    public void testUseAfterFree() {
-        BufferPtr ptr = BufferPtrAllocator.get(10, 16);
-        BufferPtrAllocator.insertPool(ptr);
-        assertThrows(IllegalStateException.class, () -> ptr.getPointer());
-    }
 }

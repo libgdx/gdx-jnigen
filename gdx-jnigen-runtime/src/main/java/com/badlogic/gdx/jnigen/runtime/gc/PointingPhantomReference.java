@@ -13,11 +13,9 @@ public final class PointingPhantomReference extends PhantomReference<Pointing> {
     private int position;
 
 
-    public PointingPhantomReference(Pointing referent, BufferPtr bufferPtr) {
+    public PointingPhantomReference(Pointing referent) {
         super(referent, GCHandler.REFERENCE_QUEUE);
-        this.bufferPtr = bufferPtr;
-        if (bufferPtr == null)
-            throw new IllegalArgumentException("Trying to register null pointer for GC");
+        this.bufferPtr = referent.getBufPtr();
     }
 
     public void setNode(ReferenceListNode node) {

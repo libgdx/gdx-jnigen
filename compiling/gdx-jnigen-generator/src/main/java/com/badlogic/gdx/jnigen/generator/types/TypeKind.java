@@ -125,29 +125,7 @@ public enum TypeKind {
         }
     }
 
-    public int getAlignment(boolean is32Bit, boolean isWin, boolean isAndroidX86) {
-        switch (this) {
-        case BOOLEAN:
-        case NATIVE_BYTE:
-        case SIGNED_BYTE:
-        case PROMOTED_BYTE:
-            return 1;
-        case SHORT:
-        case CHAR:
-            return 2;
-        case INT:
-        case PROMOTED_INT:
-        case FLOAT:
-            return 4;
-        case LONG:
-        case PROMOTED_LONG:
-            return is32Bit || isWin ? 4 : 8;
-        case LONG_LONG:
-        case PROMOTED_LONG_LONG:
-        case DOUBLE:
-            return isAndroidX86 ? 4 : 8;
-        default:
-            throw new IllegalArgumentException("Type " + this + " is not a primitive type");
-        }
+    public int getAlignment(boolean is32Bit, boolean isWin) {
+        return getSize(is32Bit, isWin);
     }
 }

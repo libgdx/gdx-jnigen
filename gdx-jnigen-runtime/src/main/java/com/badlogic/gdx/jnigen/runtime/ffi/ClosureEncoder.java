@@ -7,35 +7,33 @@ import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public final class ClosureEncoder extends VoidPointer {
+public final class ClosureEncoder {
 
+    private final VoidPointer bufferPtr;
     private final int bufferPtrSize;
     private final AtomicBoolean locked;
     private final long fnPtr;
     private final long cif;
 
-    private static int calculateBufferPtrSize(CTypeInfo[] functionSignature) {
-        int bufSize = 0;
-        for (CTypeInfo cTypeInfo : functionSignature) {
-            bufSize += cTypeInfo.getSize();
-        }
-
-        return bufSize;
-    }
-
     public ClosureEncoder(long fnPtr, CTypeInfo[] functionSignature) {
-        super(calculateBufferPtrSize(functionSignature), true);
         this.fnPtr = fnPtr;
         this.cif = CHandler.getFFICifForSignature(functionSignature);
-        this.bufferPtrSize = calculateBufferPtrSize(functionSignature);
+
+        int parameterSize = 0;
+        for (int i = 1; i < functionSignature.length; i++) {
+            parameterSize += functionSignature[i].getSize();
+        }
+
+        this.bufferPtrSize = Math.max(parameterSize, functionSignature[0].getSize());
+        this.bufferPtr = new VoidPointer(bufferPtrSize, true);
         this.locked = new AtomicBoolean(false);
     }
 
     private ClosureEncoder(ClosureEncoder closureEncoder) {
-        super(closureEncoder.bufferPtrSize, true);
         this.fnPtr = closureEncoder.fnPtr;
         this.cif = closureEncoder.cif;
         this.bufferPtrSize = closureEncoder.bufferPtrSize;
+        this.bufferPtr = new VoidPointer(bufferPtrSize, true);
         this.locked = new AtomicBoolean(true);
     }
 
@@ -47,11 +45,11 @@ public final class ClosureEncoder extends VoidPointer {
     }
 
     public BufferPtr getBufPtr() {
-        return super.getBufPtr();
+        return bufferPtr.getBufPtr();
     }
 
     public void invoke() {
-        CHandler.dispatchCCall(fnPtr, cif, getPointer());
+        CHandler.dispatchCCall(fnPtr, cif, bufferPtr.getPointer());
         locked.set(false);
     }
 }

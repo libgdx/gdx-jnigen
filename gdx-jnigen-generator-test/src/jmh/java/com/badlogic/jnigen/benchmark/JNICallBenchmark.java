@@ -1,10 +1,8 @@
 package com.badlogic.jnigen.benchmark;
 
-import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrAllocator;
-import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.jnigen.generated.TestData;
 import com.badlogic.jnigen.generated.enums.SpecialEnum;
 import com.badlogic.jnigen.generated.enums.TestEnum;
@@ -26,17 +24,12 @@ public class JNICallBenchmark {
     private TestStruct testStruct;
     private CharBuffer charBuffer = ByteBuffer.allocateDirect(2).order(ByteOrder.nativeOrder()).asCharBuffer();
     private BufferPtr bufferPtr;
-    private VoidPointer voidPointer1;
-    private VoidPointer voidPointer2;
 
     @Setup(Level.Trial)
     public void setup() {
-        new SharedLibraryLoader().load("test-natives");
         TestData.initialize();
         testStruct = new TestStruct();
-        bufferPtr = BufferPtrAllocator.get(CHandler.calloc(1, 2), 2);
-        voidPointer1 = new VoidPointer(1024);
-        voidPointer2 = new VoidPointer(1024);
+        bufferPtr = BufferPtrAllocator.get(CHandler.calloc(1, 2), 2, true);
     }
 
     @Benchmark
@@ -89,25 +82,5 @@ public class JNICallBenchmark {
     @Benchmark
     public void bufferPtrFieldSet(Blackhole bh) {
         bufferPtr.setChar('a');
-    }
-
-    @Benchmark
-    public void memcpyVerySmall(Blackhole bh) {
-        voidPointer1.getBufPtr().copyFrom(voidPointer2.getBufPtr(), 8);
-    }
-
-    @Benchmark
-    public void memcpySmall(Blackhole bh) {
-        voidPointer1.getBufPtr().copyFrom(voidPointer2.getBufPtr(), 32);
-    }
-
-    @Benchmark
-    public void memcpyLarge(Blackhole bh) {
-        voidPointer1.getBufPtr().copyFrom(voidPointer2.getBufPtr(), 256);
-    }
-
-    @Benchmark
-    public void memcpyVeryLarge(Blackhole bh) {
-        voidPointer1.getBufPtr().copyFrom(voidPointer2.getBufPtr(), 1024);
     }
 }

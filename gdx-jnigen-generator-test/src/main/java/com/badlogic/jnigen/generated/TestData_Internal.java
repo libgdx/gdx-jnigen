@@ -94,7 +94,7 @@ public final class TestData_Internal {
                     useEncoder.getBufPtr().setNativePointer(0, t.getPointer());
                     useEncoder.getBufPtr().setDouble(CHandler.IS_32_BIT ? 4 : 8, p);
                     useEncoder.invoke();
-                    return useEncoder.getBufPtr().getInt(CHandler.IS_32_BIT ? 12 : 16);
+                    return useEncoder.getBufPtr().getInt(0);
                 };
             }
         }
@@ -120,7 +120,7 @@ public final class TestData_Internal {
                     useEncoder.getBufPtr().setInt(0, t);
                     useEncoder.getBufPtr().setDouble(4, p);
                     useEncoder.invoke();
-                    return useEncoder.getBufPtr().getFloat(12);
+                    return useEncoder.getBufPtr().getFloat(0);
                 };
             }
         }
@@ -481,7 +481,7 @@ public final class TestData_Internal {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
                 useEncoder.getBufPtr().setNativePointer(0, arg0.getPointer());
                 useEncoder.invoke();
-                return useEncoder.getBufPtr().getInt(CHandler.IS_32_BIT ? 4 : 8);
+                return useEncoder.getBufPtr().getInt(0);
             };
         }
     }
@@ -944,7 +944,7 @@ public final class TestData_Internal {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
                 useEncoder.getBufPtr().setNativePointer(0, arg0.getPointer());
                 useEncoder.invoke();
-                return new VoidPointer(useEncoder.getBufPtr().getNativePointer(CHandler.IS_32_BIT ? 4 : 8), false);
+                return new VoidPointer(useEncoder.getBufPtr().getNativePointer(0), false);
             };
         }
     }
@@ -967,10 +967,8 @@ public final class TestData_Internal {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, methodWithCallbackTestStructReturn_Internal.__ffi_cache);
             return () -> {
                 ClosureEncoder useEncoder = encoder.lockOrDuplicate();
-                TestStruct _retPar = new TestStruct();
-                useEncoder.getBufPtr().setNativePointer(0, _retPar.getPointer());
                 useEncoder.invoke();
-                return _retPar;
+                return new TestStruct(useEncoder.getBufPtr().getNativePointer(0), true);
             };
         }
     }

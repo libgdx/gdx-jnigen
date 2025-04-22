@@ -1,46 +1,43 @@
 package com.badlogic.gdx.jnigen.runtime.pointer;
 
+import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.gc.GCHandler;
-import com.badlogic.gdx.jnigen.runtime.mem.AllocationManager;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrAllocator;
 
 public class Pointing {
 
     private final BufferPtr bufPtr;
     private final boolean freeOnGC;
     private Pointing parent;
-    protected boolean freed = false;
+    private boolean freed = false;
 
     public Pointing(long pointer, boolean freeOnGC) {
-        this.bufPtr = AllocationManager.wrap(pointer);
+        this.bufPtr = BufferPtrAllocator.get(pointer, -1);
         this.freeOnGC = freeOnGC;
         if (freeOnGC)
-            GCHandler.enqueuePointer(this, bufPtr);
+            GCHandler.enqueuePointer(this);
     }
 
     public Pointing(long pointer, boolean freeOnGC, int capacity) {
-        this.bufPtr = AllocationManager.wrap(pointer, capacity);
+        this.bufPtr = BufferPtrAllocator.get(pointer, capacity);
         this.freeOnGC = freeOnGC;
         if (freeOnGC)
-            GCHandler.enqueuePointer(this, bufPtr);
+            GCHandler.enqueuePointer(this);
     }
 
     public Pointing(int size, boolean freeOnGC) {
-        this.bufPtr = AllocationManager.allocate(size);
+        this.bufPtr = BufferPtrAllocator.get(CHandler.calloc(1, size), size);
         this.freeOnGC = freeOnGC;
         if (freeOnGC)
-            GCHandler.enqueuePointer(this, bufPtr);
+            GCHandler.enqueuePointer(this);
     }
 
     public boolean isNull() {
-        if (freed)
-            throw new IllegalStateException("Pointer is freed: " + bufPtr.getPointer());
         return bufPtr == null;
     }
 
     public void assertBounds(int index) {
-        if (freed)
-            throw new IllegalStateException("Pointer is freed: " + bufPtr.getPointer());
         if (isNull())
             throw new NullPointerException("Pointer is null");
         bufPtr.assertBounds(index);
@@ -49,10 +46,8 @@ public class Pointing {
     public void free() {
         if (freed)
             throw new IllegalStateException("Double free on " + bufPtr.getPointer());
-        if (freeOnGC)
-            throw new IllegalStateException("Can only free unmanaged objects");
-        if (parent != null)
-            throw new IllegalStateException("Can't free object that has parent");
+        if (getsGCFreed())
+            throw new IllegalStateException("Can't free a object, that gets freed by GC.");
         bufPtr.free();
         freed = true;
     }
@@ -65,15 +60,17 @@ public class Pointing {
         this.parent = parent;
     }
 
-    protected BufferPtr getBufPtr() {
-        if (freed)
-            throw new IllegalStateException("Pointer is freed: " + bufPtr.getPointer());
+    public boolean getsGCFreed() {
+        if (parent != null)
+            return parent.getsGCFreed();
+        return freeOnGC;
+    }
+
+    public BufferPtr getBufPtr() {
         return bufPtr;
     }
 
     public long getPointer() {
-        if (freed)
-            throw new IllegalStateException("Pointer is freed: " + bufPtr.getPointer());
         if (bufPtr == null)
             return 0;
         return bufPtr.getPointer();

@@ -8,7 +8,7 @@ public enum SpecialEnum implements CEnum {
 
     LOWER(0), HIGH(160);
 
-    private static final int __size = CHandler.IS_32_BIT || CHandler.IS_COMPILED_WIN ? 4 : 8;
+    private static final int __size = CHandler.LONG_SIZE;
 
     private final int index;
 

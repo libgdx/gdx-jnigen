@@ -90,7 +90,7 @@ jobs:
           path: natives-macos.zip
 
   natives-linux:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -135,7 +135,7 @@ jobs:
           path: natives-linux.zip
 
   natives-windows:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -173,7 +173,7 @@ jobs:
           path: natives-windows.zip
 
   natives-android:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -240,7 +240,7 @@ jobs:
 #          ./gradlew test
 
   publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: [natives-macos, natives-linux, natives-windows, natives-ios, natives-android, test-windows]
     steps:
       - uses: actions/checkout@v4

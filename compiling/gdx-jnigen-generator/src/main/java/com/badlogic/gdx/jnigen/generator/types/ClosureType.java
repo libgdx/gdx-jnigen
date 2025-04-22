@@ -104,22 +104,6 @@ public class ClosureType implements MappedType, WritableClass {
             arguments.add(new ExpressionStmt(writeArgExpr));
         }
 
-        if (signature.getReturnType().getTypeKind().isStackElement()) {
-            MappedType returnType = signature.getReturnType().getMappedType();
-            VariableDeclarator declarator = new VariableDeclarator();
-            declarator.setType(returnType.abstractType());
-            declarator.setName("_retPar");
-            declarator.setInitializer(new ObjectCreationExpr().setType(returnType.abstractType()));
-
-            VariableDeclarationExpr varDecl = new VariableDeclarationExpr();
-            varDecl.addVariable(declarator);
-
-            arguments.add(new ExpressionStmt(varDecl));
-
-            Expression writeArgExpr = returnType.writeToBufferPtr(new MethodCallExpr(new NameExpr("useEncoder"), "getBufPtr"), JavaUtils.getOffsetAsExpression(signature.getArguments().length, this::getParameterOffset), returnType.toC(new NameExpr("_retPar")));
-            arguments.add(new ExpressionStmt(writeArgExpr));
-        }
-
         BlockStmt lambdaBody = new BlockStmt()
                 .addStatement(new ExpressionStmt(useEncoderDeclaration));
 
@@ -131,12 +115,9 @@ public class ClosureType implements MappedType, WritableClass {
 
         if (signature.getReturnType().getTypeKind() != TypeKind.VOID) {
             MappedType retMappedType = signature.getReturnType().getMappedType();
-            if (signature.getReturnType().getTypeKind().isStackElement()) {
-                lambdaBody.addStatement(new ReturnStmt(new NameExpr("_retPar")));
-            } else {
-                Expression readRetExpr = retMappedType.fromC(retMappedType.readFromBufferPtr(new MethodCallExpr(new NameExpr("useEncoder"), "getBufPtr"), JavaUtils.getOffsetAsExpression(signature.getArguments().length, this::getParameterOffset)));
-                lambdaBody.addStatement(new ReturnStmt(readRetExpr));
-            }
+            Expression readRetExpr = retMappedType.fromC(retMappedType.readFromBufferPtr(new MethodCallExpr(new NameExpr("useEncoder"), "getBufPtr"), new IntegerLiteralExpr("0")));
+
+            lambdaBody.addStatement(new ReturnStmt(readRetExpr));
         }
 
         LambdaExpr lambda = new LambdaExpr()

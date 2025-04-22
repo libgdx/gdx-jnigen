@@ -20,15 +20,6 @@ public abstract class StackElementPointer<T extends StackElement> extends VoidPo
         super(size * count, freeOnGC);
     }
 
-    public void get(T toWrite) {
-        toWrite.getBufPtr().copyFrom(getBufPtr(), getSize());
-    }
-
-    public void get(int index, T toWrite) {
-        int offset = getSize() * index;
-        toWrite.getBufPtr().copyFrom(0, getBufPtr(), offset, getSize());
-    }
-
     public T get() {
         return get(0);
     }
@@ -49,17 +40,19 @@ public abstract class StackElementPointer<T extends StackElement> extends VoidPo
         assertBounds(offset);
         T stackElement = createStackElement(getPointer() + offset, false);
         // TODO: 07.04.25 Maybe it's smarter to allow creating Pointing objects via BufferPtr
-        stackElement.setParent(this);
+        if (stackElement.getBufPtr() != getBufPtr())
+            stackElement.setParent(this);
         return stackElement;
     }
 
     public void set(T struct) {
-        getBufPtr().copyFrom(struct.getBufPtr(), getSize());
+        set(struct, 0);
     }
 
     public void set(T struct, int index) {
         int offset = getSize() * index;
-        getBufPtr().copyFrom(offset, struct.getBufPtr(), 0, getSize());
+        assertBounds(offset);
+        CHandler.memcpy(getPointer() + offset, struct.getPointer(), struct.getSize());
     }
 
     public abstract int getSize();
