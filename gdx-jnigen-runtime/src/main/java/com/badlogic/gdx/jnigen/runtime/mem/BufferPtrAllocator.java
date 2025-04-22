@@ -5,6 +5,8 @@ import com.badlogic.gdx.jnigen.runtime.CHandler;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.concurrent.ArrayBlockingQueue;
 
 public class BufferPtrAllocator {
 
@@ -29,19 +31,10 @@ public class BufferPtrAllocator {
 
     private static final ByteBuffer[][][] BUFFER_CACHE = new ByteBuffer[L1_SIZE][][];
 
+    private static final boolean NO_POOLING = System.getProperty("com.badlogic.jnigen.allocator.no_pooling", "false").equals("true");
+    private static final int POOL_SIZE = Integer.parseInt(System.getProperty("com.badlogic.jnigen.allocator.pool_size", "256"));
 
-    private static final boolean NO_CACHE = System.getProperty("com.badlogic.jnigen.allocator.no_cache", "true").equals("true");
-    private static final int MAX_CACHED_CAP_SIZE = Integer.parseInt(System.getProperty("com.badlogic.jnigen.allocator.max_cached_capacity", "32"));
-    private static final int LRU_CACHE_CAPACITY = Integer.parseInt(System.getProperty("com.badlogic.jnigen.allocator.lru_cache_capacity", "256"));
-
-    private static final LRUCache CACHE_UNMANAGED_NO_CAP = new LRUCache(LRU_CACHE_CAPACITY);
-    private static final LRUCache[] CACHE_UNMANAGED_CAP = new LRUCache[MAX_CACHED_CAP_SIZE];
-
-    static {
-        for (int i = 0; i < MAX_CACHED_CAP_SIZE; i++) {
-            CACHE_UNMANAGED_CAP[i] = new LRUCache(LRU_CACHE_CAPACITY);
-        }
-    }
+    private static final BufferPtrPool BUFFER_PTR_POOL = new BufferPtrPool(POOL_SIZE);
 
     private static ByteBuffer getBuffer(long basePtr) {
 
@@ -84,33 +77,41 @@ public class BufferPtrAllocator {
         int offset = (int)(pointer & PAGE_OFFSET_MASK);
         long basePtr = pointer & ADDRESS_MASK;
 
-        if (NO_CACHE || capacity >= MAX_CACHED_CAP_SIZE)
-            return new BufferPtr(getBuffer(basePtr), pointer, offset, capacity);
+        ByteBuffer buffer = getBuffer(basePtr);
+        if (NO_POOLING)
+            return new BufferPtr(buffer, pointer, offset, capacity);
+        BufferPtr bufferPtr = BUFFER_PTR_POOL.poll();
+        if (bufferPtr == null)
+            return new BufferPtr(buffer, pointer, offset, capacity);
 
-        LRUCache cache;
+        bufferPtr.reset(buffer, pointer, offset, capacity);
+        return bufferPtr;
+    }
 
-        if (capacity == -1) {
-            cache = CACHE_UNMANAGED_NO_CAP;
-        } else {
-            cache = CACHE_UNMANAGED_CAP[capacity];
-        }
+    public static void insertPool(BufferPtr bufferPtr) {
+        if (NO_POOLING)
+            return;
 
-        synchronized (cache) {
-            BufferPtr ptr = cache.get(pointer);
-            if (ptr != null)
-                return ptr;
+        BUFFER_PTR_POOL.offer(bufferPtr);
+    }
 
-            ptr = new BufferPtr(getBuffer(basePtr), pointer, offset, capacity);
-            cache.put(pointer, ptr);
-            return ptr;
-        }
+    public static void insertPool(Collection<BufferPtr> bufferPtr) {
+        if (NO_POOLING)
+            return;
+
+        BUFFER_PTR_POOL.offerAll(bufferPtr);
     }
 
     public static void reset() {
         Arrays.fill(BUFFER_CACHE, null);
-        for (int i = 0; i < MAX_CACHED_CAP_SIZE; i++) {
-            CACHE_UNMANAGED_CAP[i].clear();
-        }
-        CACHE_UNMANAGED_NO_CAP.clear();
+        BUFFER_PTR_POOL.clear();
+    }
+
+    public static boolean isPoolingEnabled() {
+        return !NO_POOLING;
+    }
+
+    public static int getMaxPoolSize() {
+        return POOL_SIZE;
     }
 }

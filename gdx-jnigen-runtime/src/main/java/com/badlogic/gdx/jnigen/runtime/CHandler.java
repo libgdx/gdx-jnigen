@@ -6,6 +6,8 @@ import com.badlogic.gdx.jnigen.runtime.closure.Closure;
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.runtime.ffi.ClosureDecoder;
 import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
+import com.badlogic.gdx.jnigen.runtime.mem.AllocationManager;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrAllocator;
 import com.badlogic.gdx.jnigen.runtime.util.DowncallClosureSupplier;
 
@@ -89,7 +91,9 @@ public class CHandler {
     public static native boolean reExportSymbolsGlobally(String libPath);
 
     public static <T extends Closure> void dispatchCallback(ClosureDecoder<T> toCallOn, long parameter) {
-        toCallOn.invoke(BufferPtrAllocator.get(parameter));
+        BufferPtr ptr = AllocationManager.wrap(parameter);
+        toCallOn.invoke(ptr);
+        BufferPtrAllocator.insertPool(ptr);
     }
 
     public static native void dispatchCCall(long fnPtr, long cif, long parameter);

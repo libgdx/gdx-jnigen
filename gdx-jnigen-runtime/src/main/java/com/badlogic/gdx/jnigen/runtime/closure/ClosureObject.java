@@ -7,7 +7,6 @@ public final class ClosureObject<T extends Closure> extends Pointing {
 
     private final T closure;
     private final long closurePtr;
-    private boolean freed = false;
 
     public static <T extends Closure> ClosureObject<T> fromClosure(T object) {
         return CHandler.createClosureForObject(object);

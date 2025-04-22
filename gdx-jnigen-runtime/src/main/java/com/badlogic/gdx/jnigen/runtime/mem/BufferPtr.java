@@ -8,10 +8,10 @@ import java.nio.charset.StandardCharsets;
 
 public final class BufferPtr {
 
-    private final ByteBuffer buffer;
-    private final long pointer;
-    private final int offset;
-    private final int capacity;
+    private ByteBuffer buffer;
+    private long pointer;
+    private int offset;
+    private int capacity;
 
     public BufferPtr(ByteBuffer buffer, long pointer, int offset, int capacity) {
         this.buffer = buffer;
@@ -22,16 +22,28 @@ public final class BufferPtr {
             throw new IllegalArgumentException("Buffer capacity (" + buffer.capacity() + ") exceeded by " + capacity + ". More then 1GB?");
     }
 
+    void reset(ByteBuffer buffer, long pointer, int offset, int capacity) {
+        this.buffer = buffer;
+        this.pointer = pointer;
+        this.offset = offset;
+        this.capacity = capacity;
+    }
+
     public void free() {
+        if (buffer == null)
+            throw new IllegalStateException("Buffer invalid (use-after-free?)");
         CHandler.free(pointer);
     }
 
     public void assertBounds(int expectedCapacity) {
+        if (buffer == null)
+            throw new IllegalStateException("Buffer invalid (use-after-free?)");
         if (capacity > 0 && (expectedCapacity < 0 || expectedCapacity > capacity))
             throw new IndexOutOfBoundsException("Index: " + expectedCapacity + ", Size: " + capacity);
     }
 
     public boolean getBoolean() {
+        assertBounds(1);
         return buffer.get(offset) != 0;
     }
 
@@ -392,15 +404,27 @@ public final class BufferPtr {
         buffer.put(offset + bytes.length, (byte) 0);
     }
 
-    public boolean isNull() {
-        return pointer == 0;
+    public void copyFrom(BufferPtr src, int size) {
+        assertBounds(size);
+        src.assertBounds(size);
+        CHandler.memcpy(pointer, src.pointer, size);
+    }
+
+    public void copyFrom(int index, BufferPtr src, int srcOffset, int size) {
+        assertBounds(index + size);
+        src.assertBounds(srcOffset + size);
+        CHandler.memcpy(pointer + index, src.pointer + srcOffset, size);
     }
 
     public long getPointer() {
+        if (buffer == null)
+            throw new IllegalStateException("Buffer invalid (use-after-free?)");
         return pointer;
     }
 
     public int getCapacity() {
+        if (buffer == null)
+            throw new IllegalStateException("Buffer invalid (use-after-free?)");
         return capacity;
     }
 }
