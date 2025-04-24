@@ -13,12 +13,16 @@ public final class BufferPtr {
     private int offset;
     private int capacity;
 
+    public BufferPtr() {
+
+    }
+
     public BufferPtr(ByteBuffer buffer, long pointer, int offset, int capacity) {
         this.buffer = buffer;
         this.pointer = pointer;
         this.offset = offset;
         this.capacity = capacity;
-        if (capacity > buffer.capacity())
+        if (capacity > buffer.capacity() - offset)
             throw new IllegalArgumentException("Buffer capacity (" + buffer.capacity() + ") exceeded by " + capacity + ". More then 1GB?");
     }
 
@@ -27,17 +31,24 @@ public final class BufferPtr {
         this.pointer = pointer;
         this.offset = offset;
         this.capacity = capacity;
+        if (buffer != null && capacity > buffer.capacity() - offset)
+            throw new IllegalArgumentException("Buffer capacity (" + buffer.capacity() + ") exceeded by " + capacity + ". More then 1GB?");
     }
 
     public void free() {
         if (buffer == null)
             throw new IllegalStateException("Buffer invalid (use-after-free?)");
+        if (isNull())
+            throw new NullPointerException("Buffer is null");
         CHandler.free(pointer);
+        reset(null, 0, 0, 0);
     }
 
     public void assertBounds(int expectedCapacity) {
         if (buffer == null)
             throw new IllegalStateException("Buffer invalid (use-after-free?)");
+        if (isNull())
+            throw new NullPointerException("Buffer is null");
         if (capacity > 0 && (expectedCapacity < 0 || expectedCapacity > capacity))
             throw new IndexOutOfBoundsException("Index: " + expectedCapacity + ", Size: " + capacity);
     }
@@ -426,5 +437,11 @@ public final class BufferPtr {
         if (buffer == null)
             throw new IllegalStateException("Buffer invalid (use-after-free?)");
         return capacity;
+    }
+
+    public boolean isNull() {
+        if (buffer == null)
+            throw new IllegalStateException("Buffer invalid (use-after-free?)");
+        return pointer == 0;
     }
 }

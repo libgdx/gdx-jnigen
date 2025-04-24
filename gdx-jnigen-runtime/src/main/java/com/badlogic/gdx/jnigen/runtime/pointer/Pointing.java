@@ -36,7 +36,7 @@ public class Pointing {
     public boolean isNull() {
         if (freed)
             throw new IllegalStateException("Pointer is freed: " + bufPtr.getPointer());
-        return bufPtr == null;
+        return bufPtr.isNull();
     }
 
     public void assertBounds(int index) {
@@ -54,6 +54,8 @@ public class Pointing {
             throw new IllegalStateException("Can only free unmanaged objects");
         if (parent != null)
             throw new IllegalStateException("Can't free object that has parent");
+        if (isNull())
+            throw new NullPointerException("Pointer is null");
         bufPtr.free();
         BufferPtrManager.insertPool(bufPtr);
         freed = true;
@@ -73,6 +75,8 @@ public class Pointing {
     protected BufferPtr getBufPtr() {
         if (freed)
             throw new IllegalStateException("Pointer is freed: " + bufPtr.getPointer());
+        if (isNull())
+            throw new NullPointerException("Pointer is null");
         return bufPtr;
     }
 
@@ -99,8 +103,6 @@ public class Pointing {
     public long getPointer() {
         if (freed)
             throw new IllegalStateException("Pointer is freed: " + bufPtr.getPointer());
-        if (bufPtr == null)
-            return 0;
         return bufPtr.getPointer();
     }
 }

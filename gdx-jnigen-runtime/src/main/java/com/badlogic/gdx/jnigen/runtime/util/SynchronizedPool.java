@@ -30,6 +30,7 @@ public abstract class SynchronizedPool<T> {
     }
     
     public abstract void reset(T obj);
+    public abstract T pollOrCreate();
 
     public boolean offer(T obj) {
         lock.lock();

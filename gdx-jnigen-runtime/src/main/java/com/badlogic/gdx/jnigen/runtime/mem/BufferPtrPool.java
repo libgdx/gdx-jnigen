@@ -9,6 +9,14 @@ public class BufferPtrPool extends SynchronizedPool<BufferPtr> {
     }
 
     @Override
+    public BufferPtr pollOrCreate() {
+        BufferPtr obj = poll();
+        if(obj != null)
+            return obj;
+        return new BufferPtr();
+    }
+
+    @Override
     public void reset(BufferPtr obj) {
         obj.reset(null, 0, 0, 0);
     }

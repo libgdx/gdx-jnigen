@@ -30,7 +30,7 @@ public class BufferPtrTest extends BaseTest {
 
     @Test
     public void testAllocateNullBufferPtr() {
-        assertNull(BufferPtrManager.get(0));
+          assertThrows(NullPointerException.class, BufferPtrManager.get(0)::getByte);
     }
 
     @Test
@@ -54,6 +54,6 @@ public class BufferPtrTest extends BaseTest {
     public void testUseAfterFree() {
         BufferPtr ptr = BufferPtrManager.get(10, 16);
         BufferPtrManager.insertPool(ptr);
-        assertThrows(IllegalStateException.class, () -> ptr.getPointer());
+        assertThrows(IllegalStateException.class, ptr::getPointer);
     }
 }

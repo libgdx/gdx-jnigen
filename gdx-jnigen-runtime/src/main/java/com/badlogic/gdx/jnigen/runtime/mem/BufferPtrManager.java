@@ -29,6 +29,7 @@ public class BufferPtrManager {
     private static final long ADDRESS_MASK = ~PAGE_OFFSET_MASK;
 
     private static final ByteBuffer[][][] BUFFER_CACHE = new ByteBuffer[L1_SIZE][][];
+    private static final ByteBuffer NULL_BUFFER = CHandler.wrapPointer(0, 0);
 
     private static final boolean NO_POOLING = System.getProperty("com.badlogic.jnigen.allocator.no_pooling", "false").equals("true");
     private static final int POOL_SIZE = Integer.parseInt(System.getProperty("com.badlogic.jnigen.allocator.pool_size", "256"));
@@ -69,7 +70,7 @@ public class BufferPtrManager {
 
     public static BufferPtr get(long pointer, int capacity) {
         if (pointer == 0)
-            return null;
+            return new BufferPtr(NULL_BUFFER, 0, 0, 0);
         if (capacity > PAGE_SIZE)
             throw new IllegalArgumentException("capacity > PAGE_SIZE (" + capacity + " > " + PAGE_SIZE + ")");
 
@@ -79,10 +80,8 @@ public class BufferPtrManager {
         ByteBuffer buffer = getBuffer(basePtr);
         if (NO_POOLING)
             return new BufferPtr(buffer, pointer, offset, capacity);
-        BufferPtr bufferPtr = BUFFER_PTR_POOL.poll();
-        if (bufferPtr == null)
-            return new BufferPtr(buffer, pointer, offset, capacity);
 
+        BufferPtr bufferPtr = BUFFER_PTR_POOL.pollOrCreate();
         bufferPtr.reset(buffer, pointer, offset, capacity);
         return bufferPtr;
     }
