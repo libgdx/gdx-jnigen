@@ -23,7 +23,6 @@ public class BaseTest {
         TestData.initialize();
     }
 
-    @SuppressWarnings("all")
     @BeforeEach
     @AfterEach
     public void emptyGC() {

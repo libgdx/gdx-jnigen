@@ -65,10 +65,11 @@ public class ClosureType implements MappedType, WritableClass {
     public void writeHelper(CompilationUnit cu, ClassOrInterfaceDeclaration closureHelperClass) {
         cu.addImport(classFile() + "." + signature.getName());
         cu.addImport(ClassNameConstants.CLOSUREENCODER_CLASS);
+        cu.addImport(ClassNameConstants.CCLOSUREOBJECT_CLASS);
 
         MethodDeclaration downcallMethod = closureHelperClass.addMethod(getName() + "_downcall", Keyword.PUBLIC, Keyword.STATIC);
         downcallMethod.addParameter(long.class, "fnPtr");
-        downcallMethod.setType(getName());
+        downcallMethod.setType("CClosureObject<" + getName() + ">");
 
         BlockStmt stmt = downcallMethod.createBody();
 
@@ -79,10 +80,7 @@ public class ClosureType implements MappedType, WritableClass {
                         .setInitializer(new ObjectCreationExpr()
                                 .setType("ClosureEncoder")
                                 .addArgument(new NameExpr("fnPtr"))
-                                .addArgument(new FieldAccessExpr(
-                                        new NameExpr(internalClassName()),
-                                        "__ffi_cache"
-                                ))
+                                .addArgument(new NameExpr("__ffi_cache"))
                         )
         );
 
@@ -148,7 +146,13 @@ public class ClosureType implements MappedType, WritableClass {
             lambda.addAndGetParameter(new UnknownType(), namedType.getName());
         }
 
-        ReturnStmt returnStmt = new ReturnStmt(lambda);
+        ObjectCreationExpr closureObjectCreationExpr = new ObjectCreationExpr()
+                .setType("CClosureObject<>")
+                .addArgument(lambda)
+                .addArgument("fnPtr")
+                .addArgument("encoder");
+
+        ReturnStmt returnStmt = new ReturnStmt(closureObjectCreationExpr);
         stmt.addStatement(new ExpressionStmt(encoderDeclaration));
         stmt.addStatement(returnStmt);
     }
