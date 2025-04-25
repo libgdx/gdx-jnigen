@@ -59,16 +59,36 @@ public final class TestUnion extends Union {
     }
 
     public SIntPointer fixedSizeInt() {
-        return __fixedSizeInt;
+        return new SIntPointer(getPointer(), false, 3);
     }
 
-    private final SIntPointer __fixedSizeInt = new SIntPointer(getPointer(), false, 3);
+    public SIntPointer getFixedSizeInt() {
+        return new SIntPointer(getBufPtr().duplicate(0, 12), false, 3);
+    }
+
+    public void getFixedSizeInt(SIntPointer toCopyTo) {
+        toCopyTo.getBufPtr().copyFrom(0, getBufPtr(), 0, 12);
+    }
+
+    public void setFixedSizeInt(SIntPointer toCopyFrom) {
+        getBufPtr().copyFrom(0, toCopyFrom.getBufPtr(), 0, 12);
+    }
 
     public TestStruct structType() {
-        return __structType;
+        return new TestStruct(getPointer(), false);
     }
 
-    private final TestStruct __structType = new TestStruct(getPointer(), false);
+    public TestStruct getStructType() {
+        return new TestStruct(getBufPtr().duplicate(0, 16), true);
+    }
+
+    public void getStructType(TestStruct toCopyTo) {
+        toCopyTo.getBufPtr().copyFrom(0, getBufPtr(), 0, 16);
+    }
+
+    public void setStructType(TestStruct toCopyFrom) {
+        getBufPtr().copyFrom(0, toCopyFrom.getBufPtr(), 0, 16);
+    }
 
     public static final class TestUnionPointer extends StackElementPointer<TestUnion> {
 

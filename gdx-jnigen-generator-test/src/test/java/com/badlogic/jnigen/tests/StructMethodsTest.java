@@ -61,8 +61,6 @@ public class StructMethodsTest extends BaseTest {
     @Test
     public void fixedSizeArrayInStructTest() {
         SpecialStruct struct = new SpecialStruct();
-        //noinspection EqualsWithItself
-        assertEquals(struct.arrayField(), struct.arrayField());
         SIntPointer arrayField = struct.arrayField();
         for (int i = 0; i < 5; i++) {
             arrayField.setInt(i + 1, i);

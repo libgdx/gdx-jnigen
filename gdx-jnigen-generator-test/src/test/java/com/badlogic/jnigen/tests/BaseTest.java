@@ -5,7 +5,7 @@ import com.badlogic.gdx.jnigen.commons.Os;
 import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.gc.GCHandler;
-import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrAllocator;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrManager;
 import com.badlogic.jnigen.generated.TestData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,11 +23,10 @@ public class BaseTest {
         TestData.initialize();
     }
 
-    @SuppressWarnings("all")
     @BeforeEach
     @AfterEach
     public void emptyGC() {
-        BufferPtrAllocator.reset();
+        BufferPtrManager.reset();
         CHandler.clearRegisteredFunctionPointer();
         String javaHome = System.getProperty("java.home");
         if (javaHome == null)

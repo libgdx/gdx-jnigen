@@ -5,8 +5,9 @@ import com.badlogic.gdx.jnigen.runtime.CHandler;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import java.util.Collection;
 
-public class BufferPtrAllocator {
+public class BufferPtrManager {
 
     // A ByteBuffer can address 2^31 bits. Furthermore, we want redundancy around the edges of the sliced byte buffer, to allow for always at least 1GB size
     // So for the whole 64bit spectrum, we have 34 bits to split up.
@@ -28,20 +29,12 @@ public class BufferPtrAllocator {
     private static final long ADDRESS_MASK = ~PAGE_OFFSET_MASK;
 
     private static final ByteBuffer[][][] BUFFER_CACHE = new ByteBuffer[L1_SIZE][][];
+    private static final ByteBuffer NULL_BUFFER = CHandler.wrapPointer(0, 0);
 
+    private static final boolean NO_POOLING = System.getProperty("com.badlogic.jnigen.allocator.no_pooling", "false").equals("true");
+    private static final int POOL_SIZE = Integer.parseInt(System.getProperty("com.badlogic.jnigen.allocator.pool_size", "256"));
 
-    private static final boolean NO_CACHE = System.getProperty("com.badlogic.jnigen.allocator.no_cache", "true").equals("true");
-    private static final int MAX_CACHED_CAP_SIZE = Integer.parseInt(System.getProperty("com.badlogic.jnigen.allocator.max_cached_capacity", "32"));
-    private static final int LRU_CACHE_CAPACITY = Integer.parseInt(System.getProperty("com.badlogic.jnigen.allocator.lru_cache_capacity", "256"));
-
-    private static final LRUCache CACHE_UNMANAGED_NO_CAP = new LRUCache(LRU_CACHE_CAPACITY);
-    private static final LRUCache[] CACHE_UNMANAGED_CAP = new LRUCache[MAX_CACHED_CAP_SIZE];
-
-    static {
-        for (int i = 0; i < MAX_CACHED_CAP_SIZE; i++) {
-            CACHE_UNMANAGED_CAP[i] = new LRUCache(LRU_CACHE_CAPACITY);
-        }
-    }
+    private static final BufferPtrPool BUFFER_PTR_POOL = new BufferPtrPool(POOL_SIZE);
 
     private static ByteBuffer getBuffer(long basePtr) {
 
@@ -77,40 +70,59 @@ public class BufferPtrAllocator {
 
     public static BufferPtr get(long pointer, int capacity) {
         if (pointer == 0)
-            return null;
+            return new BufferPtr(NULL_BUFFER, 0, 0, 0);
         if (capacity > PAGE_SIZE)
             throw new IllegalArgumentException("capacity > PAGE_SIZE (" + capacity + " > " + PAGE_SIZE + ")");
 
         int offset = (int)(pointer & PAGE_OFFSET_MASK);
         long basePtr = pointer & ADDRESS_MASK;
 
-        if (NO_CACHE || capacity >= MAX_CACHED_CAP_SIZE)
-            return new BufferPtr(getBuffer(basePtr), pointer, offset, capacity);
+        ByteBuffer buffer = getBuffer(basePtr);
+        if (NO_POOLING)
+            return new BufferPtr(buffer, pointer, offset, capacity);
 
-        LRUCache cache;
+        BufferPtr bufferPtr = BUFFER_PTR_POOL.pollOrCreate();
+        bufferPtr.reset(buffer, pointer, offset, capacity);
+        return bufferPtr;
+    }
 
-        if (capacity == -1) {
-            cache = CACHE_UNMANAGED_NO_CAP;
-        } else {
-            cache = CACHE_UNMANAGED_CAP[capacity];
-        }
+    public static void setBufferPtrPointer(BufferPtr bufferPtr, long newPointer) {
+        setBufferPtrPointer(bufferPtr, newPointer, -1);
+    }
 
-        synchronized (cache) {
-            BufferPtr ptr = cache.get(pointer);
-            if (ptr != null)
-                return ptr;
+    public static void setBufferPtrPointer(BufferPtr bufferPtr, long newPointer, int capacity) {
+        int offset = (int)(newPointer & PAGE_OFFSET_MASK);
+        long basePtr = newPointer & ADDRESS_MASK;
 
-            ptr = new BufferPtr(getBuffer(basePtr), pointer, offset, capacity);
-            cache.put(pointer, ptr);
-            return ptr;
-        }
+        ByteBuffer buffer = getBuffer(basePtr);
+
+        bufferPtr.reset(buffer, newPointer, offset, capacity);
+    }
+
+    public static void insertPool(BufferPtr bufferPtr) {
+        if (NO_POOLING)
+            return;
+
+        BUFFER_PTR_POOL.offer(bufferPtr);
+    }
+
+    public static void insertPool(Collection<BufferPtr> bufferPtr) {
+        if (NO_POOLING)
+            return;
+
+        BUFFER_PTR_POOL.offerAll(bufferPtr);
     }
 
     public static void reset() {
         Arrays.fill(BUFFER_CACHE, null);
-        for (int i = 0; i < MAX_CACHED_CAP_SIZE; i++) {
-            CACHE_UNMANAGED_CAP[i].clear();
-        }
-        CACHE_UNMANAGED_NO_CAP.clear();
+        BUFFER_PTR_POOL.clear();
+    }
+
+    public static boolean isPoolingEnabled() {
+        return !NO_POOLING;
+    }
+
+    public static int getMaxPoolSize() {
+        return POOL_SIZE;
     }
 }

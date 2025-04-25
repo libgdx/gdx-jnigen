@@ -25,6 +25,10 @@ public interface MappedType {
         return fromC(cRetrieved);
     }
 
+    default Expression fromCPooled(Expression cRetrieved, Expression pool) {
+        return fromC(cRetrieved);
+    }
+
     Expression toC(Expression cSend);
 
     int typeID();

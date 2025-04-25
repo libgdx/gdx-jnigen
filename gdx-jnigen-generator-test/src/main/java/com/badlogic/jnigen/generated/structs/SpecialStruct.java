@@ -51,12 +51,20 @@ public final class SpecialStruct extends Struct {
     }
 
     public SIntPointer arrayField() {
-        return __arrayField;
+        return new SIntPointer(getPointer() + (CHandler.IS_32_BIT ? 4 : 8), false, 5);
     }
 
-    private static final int __arrayField_offset = CHandler.IS_32_BIT ? 4 : 8;
+    public SIntPointer getArrayField() {
+        return new SIntPointer(getBufPtr().duplicate(CHandler.IS_32_BIT ? 4 : 8, 20), false, 5);
+    }
 
-    private final SIntPointer __arrayField = new SIntPointer(getPointer() + __arrayField_offset, false, 5);
+    public void getArrayField(SIntPointer toCopyTo) {
+        toCopyTo.getBufPtr().copyFrom(0, getBufPtr(), CHandler.IS_32_BIT ? 4 : 8, 20);
+    }
+
+    public void setArrayField(SIntPointer toCopyFrom) {
+        getBufPtr().copyFrom(CHandler.IS_32_BIT ? 4 : 8, toCopyFrom.getBufPtr(), 0, 20);
+    }
 
     public SIntPointer intPtrField() {
         return new SIntPointer(getBufPtr().getNativePointer(CHandler.IS_32_BIT ? 24 : 32), false);

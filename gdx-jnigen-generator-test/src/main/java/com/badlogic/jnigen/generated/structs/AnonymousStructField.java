@@ -39,12 +39,20 @@ public final class AnonymousStructField extends Struct {
     }
 
     public inner inner() {
-        return __inner;
+        return new inner(getPointer(), false);
     }
 
-    private static final int __inner_offset = 0;
+    public inner getInner() {
+        return new inner(getBufPtr().duplicate(0, 8), true);
+    }
 
-    private final inner __inner = new inner(getPointer() + __inner_offset, false);
+    public void getInner(inner toCopyTo) {
+        toCopyTo.getBufPtr().copyFrom(0, getBufPtr(), 0, 8);
+    }
+
+    public void setInner(inner toCopyFrom) {
+        getBufPtr().copyFrom(0, toCopyFrom.getBufPtr(), 0, 8);
+    }
 
     public int externalValue() {
         return getBufPtr().getInt(8);

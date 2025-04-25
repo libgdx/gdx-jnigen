@@ -4,10 +4,13 @@ import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;
 import com.badlogic.gdx.jnigen.runtime.c.CXXException;
 import com.badlogic.gdx.jnigen.runtime.closure.Closure;
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
+import com.badlogic.gdx.jnigen.runtime.closure.JavaClosureObject;
 import com.badlogic.gdx.jnigen.runtime.ffi.ClosureDecoder;
 import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
-import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrAllocator;
-import com.badlogic.gdx.jnigen.runtime.util.DowncallClosureSupplier;
+import com.badlogic.gdx.jnigen.runtime.mem.AllocationManager;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrManager;
+import com.badlogic.gdx.jnigen.runtime.util.DowncallCClosureObjectSupplier;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -89,7 +92,9 @@ public class CHandler {
     public static native boolean reExportSymbolsGlobally(String libPath);
 
     public static <T extends Closure> void dispatchCallback(ClosureDecoder<T> toCallOn, long parameter) {
-        toCallOn.invoke(BufferPtrAllocator.get(parameter));
+        BufferPtr ptr = AllocationManager.wrap(parameter);
+        toCallOn.invoke(ptr);
+        BufferPtrManager.insertPool(ptr);
     }
 
     public static native void dispatchCCall(long fnPtr, long cif, long parameter);
@@ -138,7 +143,7 @@ public class CHandler {
         long fnPtr = createClosureForObject(cif, closureDecoder, byteBuffer);
         long closurePtr = byteBuffer.getLong();
 
-        ClosureObject<T> closureObject = new ClosureObject<>(object, fnPtr, closurePtr);
+        ClosureObject<T> closureObject = new JavaClosureObject<>(object, fnPtr, closurePtr, closureDecoder);
         synchronized (fnPtrClosureMap) {
             fnPtrClosureMap.put(fnPtr, closureObject);
         }
@@ -147,12 +152,14 @@ public class CHandler {
 
     public static native <T extends Closure> long createClosureForObject(long cifArg, ClosureDecoder<T> object, ByteBuffer closureRet);
 
-    public static <T extends Closure> ClosureObject<T> getClosureObject(long fnPtr, DowncallClosureSupplier<T> closureFallback) {
+    public static <T extends Closure> ClosureObject<T> getClosureObject(long fnPtr, DowncallCClosureObjectSupplier<T> closureFallback) {
         synchronized (fnPtrClosureMap) {
             @SuppressWarnings("unchecked")
             ClosureObject<T> closureObject = (ClosureObject<T>) fnPtrClosureMap.get(fnPtr);
             if (closureObject == null) {
-                closureObject = new ClosureObject<>(closureFallback.get(fnPtr), fnPtr, 0);
+                if (closureFallback == null)
+                    throw new RuntimeException("No Closure object found for " + fnPtr);
+                closureObject = closureFallback.get(fnPtr);
                 fnPtrClosureMap.put(fnPtr, closureObject);
             }
             return closureObject;

@@ -4,11 +4,7 @@ import com.badlogic.gdx.jnigen.generator.ClassNameConstants;
 import com.badlogic.gdx.jnigen.generator.Manager;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.expr.BooleanLiteralExpr;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.LambdaExpr;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 
 public class PointerType implements MappedType {
@@ -143,6 +139,27 @@ public class PointerType implements MappedType {
         return long.class.getName();
     }
 
+    private Expression getPointerPointerSupplier()
+    {
+        if (!isPointerPointer())
+            throw new IllegalArgumentException("Can't get supplier for non PointerPointer type");
+        PointerType childPointerType = (PointerType) pointingTo.getMappedType();
+        if (childPointerType.isPointerPointer()) {
+            LambdaExpr expr = new LambdaExpr();
+            expr.setEnclosingParameters(true);
+            Parameter peerPar = expr.addAndGetParameter(long.class, "peer" + pointingTo.getDepth());
+            Parameter ownedPar = expr.addAndGetParameter(boolean.class, "owned" + pointingTo.getDepth());
+            expr.setBody(new ExpressionStmt(pointingTo.getMappedType()
+                    .fromC(peerPar.getNameAsExpression(), ownedPar.getNameAsExpression())));
+
+            return expr;
+        } else {
+            return new MethodReferenceExpr()
+                    .setScope(new NameExpr(pointingTo.getMappedType().abstractType()))
+                    .setIdentifier("new");
+        }
+    }
+
     @Override
     public Expression fromC(Expression cRetrieved) {
         return fromC(cRetrieved, new BooleanLiteralExpr(false));
@@ -154,22 +171,24 @@ public class PointerType implements MappedType {
         createObject.setType(instantiationType());
         createObject.addArgument(cRetrieved);
         createObject.addArgument(String.valueOf(owned));
-        if (isPointerPointer()) {
-            PointerType childPointerType = (PointerType) pointingTo.getMappedType();
-            if (childPointerType.isPointerPointer()) {
-                LambdaExpr expr = new LambdaExpr();
-                expr.setEnclosingParameters(true);
-                Parameter peerPar = expr.addAndGetParameter(long.class, "peer" + pointingTo.getDepth());
-                Parameter ownedPar = expr.addAndGetParameter(boolean.class, "owned" + pointingTo.getDepth());
-                expr.setBody(new ExpressionStmt(pointingTo.getMappedType()
-                        .fromC(peerPar.getNameAsExpression(), ownedPar.getNameAsExpression())));
-
-                createObject.addArgument(expr);
-            } else {
-                createObject.addArgument(pointingTo.getMappedType().abstractType() + "::new");
-            }
-        }
+        if (isPointerPointer())
+            createObject.addArgument(getPointerPointerSupplier());
         return createObject;
+    }
+
+    @Override
+    public Expression fromCPooled(Expression cRetrieved, Expression pool) {
+        if (isPointerPointer()) {
+            return new MethodCallExpr("getPointerPointer")
+                    .setScope(pool)
+                    .addArgument(new ClassExpr().setType("PointerPointer"))
+                    .addArgument(cRetrieved)
+                    .addArgument(getPointerPointerSupplier());
+        }
+        return new MethodCallExpr("getPointing")
+                .setScope(pool)
+                .addArgument(new ClassExpr().setType(abstractType()))
+                .addArgument(cRetrieved);
     }
 
     @Override

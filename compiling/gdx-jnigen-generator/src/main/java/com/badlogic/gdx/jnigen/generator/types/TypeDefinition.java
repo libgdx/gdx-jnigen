@@ -1,8 +1,6 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
 import com.badlogic.gdx.jnigen.generator.Manager;
-import org.bytedeco.llvm.clang.CXType;
-import org.bytedeco.llvm.global.clang;
 
 public class TypeDefinition {
 
@@ -10,7 +8,7 @@ public class TypeDefinition {
     private TypeKind typeKind;
     private TypeDefinition nestedDefinition;
     private boolean constMarked = false;
-    private int count;
+    private int count = 1;
     private boolean anonymous;
     private MappedType mappedType;
 
