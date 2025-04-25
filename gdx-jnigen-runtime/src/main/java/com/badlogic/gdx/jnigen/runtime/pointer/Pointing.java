@@ -57,7 +57,6 @@ public class Pointing {
         if (isNull())
             throw new NullPointerException("Pointer is null");
         bufPtr.free();
-        BufferPtrManager.insertPool(bufPtr);
         freed = true;
     }
 
