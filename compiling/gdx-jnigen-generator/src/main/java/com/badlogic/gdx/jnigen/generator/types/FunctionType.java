@@ -4,11 +4,8 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 
@@ -80,28 +77,16 @@ public class FunctionType {
                     callMethodParameter.setBody(bodyParameter);
                     wrappingClass.addMember(callMethodParameter);
 
-                    callExprCreate.addArgument(returnType.getMappedType().toC(new NameExpr("_retPar")));
+                    callExprCreate.addArgument("0");
 
                     nativeMethod.addParameter(long.class, "_retPar");
                     nativeBody.insert(0, "*_ret = ");
-                    nativeBody.insert(0, returnType.getTypeName() + "* _ret = (" + returnType.getTypeName() + "*) _retPar;\n");
+                    nativeBody.insert(0, returnType.getTypeName() + "* _ret = (" + returnType.getTypeName() + "*) (_retPar == 0 ? malloc(sizeof(" + returnType.getTypeName() + ")) : (void*)_retPar);\n");
                     nativeBody.append("\nreturn (jlong)_ret;");
-
-                    VariableDeclarator declarator = new VariableDeclarator();
-                    declarator.setType(returnType.getMappedType().abstractType());
-                    declarator.setName("_retPar");
-                    declarator.setInitializer(new ObjectCreationExpr().setType(returnType.getMappedType().abstractType()));
-
-                    VariableDeclarationExpr varDecl = new VariableDeclarationExpr();
-                    varDecl.addVariable(declarator);
-
-                    body.addStatement(varDecl);
-                    body.addStatement(callExprCreate);
-                    body.addStatement(new ReturnStmt(new NameExpr("_retPar")));
                 } else {
                     nativeBody.insert(0, "return (j" + returnType.getMappedType().primitiveType() + ")");
-                    body.addStatement(new ReturnStmt(returnType.getMappedType().fromC(callExprCreate)));
                 }
+                body.addStatement(new ReturnStmt(returnType.getMappedType().fromC(callExprCreate)));
             }
         } else {
             body.addStatement(callExprCreate);
