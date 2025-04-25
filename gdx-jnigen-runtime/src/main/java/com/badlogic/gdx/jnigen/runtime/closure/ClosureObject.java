@@ -18,6 +18,7 @@ public abstract class ClosureObject<T extends Closure> extends Pointing {
 
     @Override
     public abstract void free();
+    public abstract void setPoolManager(PointingPoolManager manager);
 
     public T getClosure() {
         return closure;

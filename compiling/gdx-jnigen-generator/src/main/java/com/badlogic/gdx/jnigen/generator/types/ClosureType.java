@@ -9,11 +9,9 @@ import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.ArrayAccessExpr;
 import com.github.javaparser.ast.expr.ArrayCreationExpr;
 import com.github.javaparser.ast.expr.ArrayInitializerExpr;
 import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -173,6 +171,7 @@ public class ClosureType implements MappedType, WritableClass {
         cuPrivate.addImport(ClassNameConstants.CTYPEINFO_CLASS);
         cuPrivate.addImport(ClassNameConstants.CLOSURE_CLASS);
         cuPrivate.addImport(ClassNameConstants.BUFFER_PTR);
+        cuPrivate.addImport(ClassNameConstants.POINTINGPOOLMANAGER_CLASS);
 
         NodeList<Expression> arrayInitializerExpr = new NodeList<>();
         ArrayCreationExpr arrayCreationExpr = new ArrayCreationExpr();
@@ -227,6 +226,29 @@ public class ClosureType implements MappedType, WritableClass {
         }
 
         invokeMethod.setBody(invokeBody);
+
+        MethodDeclaration invokePooledMethod = toWriteToPrivate.addMethod("invokePooled", Keyword.DEFAULT);
+        invokePooledMethod.addParameter("BufferPtr", "buf");
+        invokePooledMethod.addParameter("PointingPoolManager", "manager");
+
+        BlockStmt invokePooledBody = new BlockStmt();
+
+        MethodCallExpr pooledCallExpr = new MethodCallExpr(callMethod.getNameAsString());
+        for (int i = 0; i < arguments.length; i++) {
+            NamedType type = arguments[i];
+            TypeDefinition definition = type.getDefinition();
+            Expression fromBuf = definition.getMappedType().readFromBufferPtr(new NameExpr("buf"), JavaUtils.getOffsetAsExpression(i, this::getParameterOffset));
+            pooledCallExpr.addArgument(definition.getMappedType().fromCPooled(fromBuf, new NameExpr("manager")));
+        }
+
+        if (returnType.getTypeKind() == TypeKind.VOID) {
+            invokePooledBody.addStatement(pooledCallExpr);
+        } else {
+            Expression toBuf = returnType.getMappedType().writeToBufferPtr(new NameExpr("buf"), new IntegerLiteralExpr("0"), returnType.getMappedType().toC(pooledCallExpr));
+            invokePooledBody.addStatement(toBuf);
+        }
+
+        invokePooledMethod.setBody(invokePooledBody);
 
         writeHelper(cuPrivate, toWriteToPrivate);
     }

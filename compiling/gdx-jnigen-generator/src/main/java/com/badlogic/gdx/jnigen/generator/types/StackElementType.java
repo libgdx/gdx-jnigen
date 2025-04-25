@@ -11,13 +11,8 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.expr.BinaryExpr.Operator;
-import com.github.javaparser.ast.expr.BooleanLiteralExpr;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.PrimitiveType;
@@ -125,19 +120,9 @@ public class StackElementType implements MappedType, WritableClass {
             BlockStmt getBody = new BlockStmt();
             if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY || fieldType.getDefinition()
                     .getTypeKind().isStackElement()) {
-                if (isStruct()) {
-                    toWriteToPublic.addFieldWithInitializer(int.class, "__" + fieldType.getName() + "_offset",
-                            getFieldOffsetAsExpression(i), Keyword.PRIVATE, Keyword.STATIC, Keyword.FINAL);
-                }
-
-                Expression pointer;
-                if (isStruct()) {
-                    MethodCallExpr getPointer = new MethodCallExpr("getPointer");
-                    pointer = new BinaryExpr(getPointer, new NameExpr("__" + fieldType.getName() + "_offset"),
-                            Operator.PLUS);
-                } else {
-                    pointer = new MethodCallExpr("getPointer");
-                }
+                Expression pointer = new MethodCallExpr("getPointer");
+                if (isStruct() && !getFieldOffsetAsExpression(i).toString().equals("0"))
+                    pointer = new BinaryExpr(pointer, new EnclosedExpr(getFieldOffsetAsExpression(i)), Operator.PLUS);
 
                 Expression fromCExpression = fieldType.getDefinition().getMappedType()
                         .fromC(pointer, new BooleanLiteralExpr(false));
@@ -145,9 +130,8 @@ public class StackElementType implements MappedType, WritableClass {
                 if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
                     fromCExpression.asObjectCreationExpr().addArgument(fieldType.getDefinition().getCount() + "");
                 }
-                toWriteToPublic.addFieldWithInitializer(fieldType.getDefinition().getMappedType().abstractType(),
-                        "__" + fieldType.getName(), fromCExpression, Keyword.PRIVATE, Keyword.FINAL);
-                getBody.addStatement("return __" + fieldType.getName() + ";");
+
+                getBody.addStatement(new ReturnStmt(fromCExpression));
                 getMethod.setBody(getBody);
                 continue;
             }
@@ -354,6 +338,14 @@ public class StackElementType implements MappedType, WritableClass {
         createObject.addArgument(cRetrieved);
         createObject.addArgument(String.valueOf(owned));
         return createObject;
+    }
+
+    @Override
+    public Expression fromCPooled(Expression cRetrieved, Expression pool) {
+        return new MethodCallExpr("getPointing")
+                .setScope(pool)
+                .addArgument(new ClassExpr().setType(abstractType()))
+                .addArgument(cRetrieved);
     }
 
     @Override

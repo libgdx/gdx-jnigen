@@ -1,7 +1,6 @@
 package com.badlogic.gdx.jnigen.runtime.closure;
 
-import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
-import com.badlogic.gdx.jnigen.runtime.pointer.PointingPool;
+import com.badlogic.gdx.jnigen.runtime.pointer.*;
 
 import java.util.HashMap;
 
@@ -28,9 +27,23 @@ public class PointingPoolManager {
     }
 
     public <T extends Pointing> T getPointing(Class<T> clazz, long ptr) {
+        if (PointerPointer.class.isAssignableFrom(clazz))
+            throw new IllegalArgumentException("Call getPointerPointer to retrieve a PointerPointer");
         T pointing = poll(clazz);
         pointing.setPointer(ptr);
         return pointing;
+    }
+
+    public <S extends Pointing, T extends PointerPointer<S>> T getPointerPointer(Class<T> clazz, long ptr, PointerDereferenceSupplier<S> supplier) {
+        T pointing = poll(clazz);
+        pointing.setPointer(ptr);
+        pointing.setPointerSupplier(supplier);
+        return pointing;
+    }
+
+    public <T extends Pointing> void addPool(PointerDereferenceSupplier<T> supplier, int capacity) {
+        PointingPool<T> pool = new PointingPool<>(capacity, supplier);
+        addPool(pool);
     }
 
     public <T extends Pointing> void addPool(PointingPool<T> pool) {
@@ -43,6 +56,8 @@ public class PointingPoolManager {
     public void flush() {
         for (int i = 0; i < count; i++) {
             Pointing obj = frame[i];
+            if (obj instanceof StackElement)
+                obj.free();
             PointingPool pool = pools.get(obj.getClass());
             pool.offer(obj);
             frame[i] = null;

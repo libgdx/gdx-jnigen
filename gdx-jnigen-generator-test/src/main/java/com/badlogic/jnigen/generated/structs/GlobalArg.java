@@ -125,10 +125,8 @@ public final class GlobalArg extends Union {
     }
 
     public TestStruct structVal() {
-        return __structVal;
+        return new TestStruct(getPointer(), false);
     }
-
-    private final TestStruct __structVal = new TestStruct(getPointer(), false);
 
     public TestStruct.TestStructPointer structPtr() {
         return new TestStruct.TestStructPointer(getBufPtr().getNativePointer(0), false);
@@ -163,10 +161,8 @@ public final class GlobalArg extends Union {
     }
 
     public allArgs allArgs() {
-        return __allArgs;
+        return new allArgs(getPointer(), false);
     }
-
-    private final allArgs __allArgs = new allArgs(getPointer(), false);
 
     public static final class GlobalArgPointer extends StackElementPointer<GlobalArg> {
 

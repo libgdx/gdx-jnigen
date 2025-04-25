@@ -8,4 +8,5 @@ public interface Closure {
     CTypeInfo[] functionSignature();
 
     void invoke(BufferPtr buf);
+    void invokePooled(BufferPtr buf, PointingPoolManager poolManager);
 }

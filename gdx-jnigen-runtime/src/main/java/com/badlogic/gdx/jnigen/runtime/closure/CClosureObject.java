@@ -15,4 +15,9 @@ public class CClosureObject<T extends Closure> extends ClosureObject<T> {
     public void free() {
         throw new IllegalArgumentException("Can't free C closure");
     }
+
+    @Override
+    public void setPoolManager(PointingPoolManager manager) {
+        throw new IllegalArgumentException("Can't set pool manager (yet)");
+    }
 }

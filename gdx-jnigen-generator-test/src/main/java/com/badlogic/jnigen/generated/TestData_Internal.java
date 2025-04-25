@@ -3,6 +3,7 @@ package com.badlogic.jnigen.generated;
 import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;
 import com.badlogic.gdx.jnigen.runtime.closure.Closure;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
+import com.badlogic.gdx.jnigen.runtime.closure.PointingPoolManager;
 import com.badlogic.jnigen.generated.structs.AnonymousClosure.someClosure;
 import com.badlogic.gdx.jnigen.runtime.ffi.ClosureEncoder;
 import com.badlogic.gdx.jnigen.runtime.closure.CClosureObject;
@@ -88,6 +89,10 @@ public final class TestData_Internal {
                 buf.setInt(0, someClosure_call(new SIntPointer(buf.getNativePointer(0), false), buf.getDouble(CHandler.IS_32_BIT ? 4 : 8)));
             }
 
+            default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+                buf.setInt(0, someClosure_call(manager.getPointing(SIntPointer.class, buf.getNativePointer(0)), buf.getDouble(CHandler.IS_32_BIT ? 4 : 8)));
+            }
+
             public static CClosureObject<someClosure> someClosure_downcall(long fnPtr) {
                 ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
                 return new CClosureObject<>((t, p) -> {
@@ -111,6 +116,10 @@ public final class TestData_Internal {
             }
 
             default void invoke(BufferPtr buf) {
+                buf.setFloat(0, anotherClosure_call(buf.getInt(0), buf.getDouble(4)));
+            }
+
+            default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
                 buf.setFloat(0, anotherClosure_call(buf.getInt(0), buf.getDouble(4)));
             }
 
@@ -165,6 +174,10 @@ public final class TestData_Internal {
             methodWithCallbackBooleanArg_call(buf.getBoolean(0));
         }
 
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            methodWithCallbackBooleanArg_call(buf.getBoolean(0));
+        }
+
         public static CClosureObject<methodWithCallbackBooleanArg> methodWithCallbackBooleanArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
@@ -189,6 +202,10 @@ public final class TestData_Internal {
             methodWithCallbackTestEnumPointerArg_call(new TestEnum.TestEnumPointer(buf.getNativePointer(0), false));
         }
 
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            methodWithCallbackTestEnumPointerArg_call(manager.getPointing(TestEnum.TestEnumPointer.class, buf.getNativePointer(0)));
+        }
+
         public static CClosureObject<methodWithCallbackTestEnumPointerArg> methodWithCallbackTestEnumPointerArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
@@ -210,6 +227,10 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
+            buf.setDouble(0, methodWithCallbackDoubleReturn_call());
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
             buf.setDouble(0, methodWithCallbackDoubleReturn_call());
         }
 
@@ -237,6 +258,10 @@ public final class TestData_Internal {
             methodWithThrowingCallback_call();
         }
 
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            methodWithThrowingCallback_call();
+        }
+
         public static CClosureObject<methodWithThrowingCallback> methodWithThrowingCallback_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
@@ -257,6 +282,10 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
+            methodWithCallbackIntArg_call(buf.getInt(0));
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
             methodWithCallbackIntArg_call(buf.getInt(0));
         }
 
@@ -284,6 +313,10 @@ public final class TestData_Internal {
             buf.setNativePointer(0, methodWithCallbackTestStructPointerReturn_call().getPointer());
         }
 
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            buf.setNativePointer(0, methodWithCallbackTestStructPointerReturn_call().getPointer());
+        }
+
         public static CClosureObject<methodWithCallbackTestStructPointerReturn> methodWithCallbackTestStructPointerReturn_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
@@ -305,6 +338,10 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
+            buf.setShort(0, methodWithCallbackShortReturn_call());
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
             buf.setShort(0, methodWithCallbackShortReturn_call());
         }
 
@@ -332,6 +369,10 @@ public final class TestData_Internal {
             buf.setNativePointer(0, methodWithCallbackTestEnumPointerReturn_call().getPointer());
         }
 
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            buf.setNativePointer(0, methodWithCallbackTestEnumPointerReturn_call().getPointer());
+        }
+
         public static CClosureObject<methodWithCallbackTestEnumPointerReturn> methodWithCallbackTestEnumPointerReturn_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
@@ -356,6 +397,10 @@ public final class TestData_Internal {
             methodWithCallbackTestStructArg_call(new TestStruct(buf.getNativePointer(0), true));
         }
 
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            methodWithCallbackTestStructArg_call(manager.getPointing(TestStruct.class, buf.getNativePointer(0)));
+        }
+
         public static CClosureObject<methodWithCallbackTestStructArg> methodWithCallbackTestStructArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
@@ -377,6 +422,10 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
+            buf.setNativePointer(0, methodWithCallbackIntPointerReturn_call().getPointer());
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
             buf.setNativePointer(0, methodWithCallbackIntPointerReturn_call().getPointer());
         }
 
@@ -404,6 +453,10 @@ public final class TestData_Internal {
             methodWithCallbackLongArg_call(buf.getLong(0));
         }
 
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            methodWithCallbackLongArg_call(buf.getLong(0));
+        }
+
         public static CClosureObject<methodWithCallbackLongArg> methodWithCallbackLongArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((test) -> {
@@ -425,6 +478,10 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
+            methodWithCallbackFloatArg_call(buf.getFloat(0));
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
             methodWithCallbackFloatArg_call(buf.getFloat(0));
         }
 
@@ -452,6 +509,10 @@ public final class TestData_Internal {
             methodWithCallbackDoubleArg_call(buf.getDouble(0));
         }
 
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            methodWithCallbackDoubleArg_call(buf.getDouble(0));
+        }
+
         public static CClosureObject<methodWithCallbackDoubleArg> methodWithCallbackDoubleArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
@@ -474,6 +535,10 @@ public final class TestData_Internal {
 
         default void invoke(BufferPtr buf) {
             buf.setInt(0, methodWithCallbackIntPointerArg_call(new SIntPointer(buf.getNativePointer(0), false)));
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            buf.setInt(0, methodWithCallbackIntPointerArg_call(manager.getPointing(SIntPointer.class, buf.getNativePointer(0))));
         }
 
         public static CClosureObject<methodWithCallbackIntPointerArg> methodWithCallbackIntPointerArg_downcall(long fnPtr) {
@@ -501,6 +566,10 @@ public final class TestData_Internal {
             methodWithCallbackTestEnumArg_call(TestEnum.getByIndex((int) buf.getUInt(0)));
         }
 
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            methodWithCallbackTestEnumArg_call(TestEnum.getByIndex((int) buf.getUInt(0)));
+        }
+
         public static CClosureObject<methodWithCallbackTestEnumArg> methodWithCallbackTestEnumArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
@@ -522,6 +591,10 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
+            methodWithCallbackCallThrowingCallback_call(CHandler.getClosureObject(buf.getNativePointer(0), methodWithThrowingCallback_Internal::methodWithThrowingCallback_downcall));
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
             methodWithCallbackCallThrowingCallback_call(CHandler.getClosureObject(buf.getNativePointer(0), methodWithThrowingCallback_Internal::methodWithThrowingCallback_downcall));
         }
 
@@ -549,6 +622,10 @@ public final class TestData_Internal {
             methodWithCallbackTestStructPointerArg_call(new TestStruct.TestStructPointer(buf.getNativePointer(0), false));
         }
 
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            methodWithCallbackTestStructPointerArg_call(manager.getPointing(TestStruct.TestStructPointer.class, buf.getNativePointer(0)));
+        }
+
         public static CClosureObject<methodWithCallbackTestStructPointerArg> methodWithCallbackTestStructPointerArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
@@ -570,6 +647,10 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
+            buf.setNativePointer(0, methodWithCallbackTestUnionPointerReturn_call().getPointer());
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
             buf.setNativePointer(0, methodWithCallbackTestUnionPointerReturn_call().getPointer());
         }
 
@@ -597,6 +678,10 @@ public final class TestData_Internal {
             buf.setByte(0, methodWithCallbackByteReturn_call());
         }
 
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            buf.setByte(0, methodWithCallbackByteReturn_call());
+        }
+
         public static CClosureObject<methodWithCallbackByteReturn> methodWithCallbackByteReturn_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
@@ -618,6 +703,10 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
+            buf.setChar(0, methodWithCallbackCharReturn_call());
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
             buf.setChar(0, methodWithCallbackCharReturn_call());
         }
 
@@ -645,6 +734,10 @@ public final class TestData_Internal {
             buf.setUInt(0, methodWithCallbackTestEnumReturn_call().getIndex());
         }
 
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            buf.setUInt(0, methodWithCallbackTestEnumReturn_call().getIndex());
+        }
+
         public static CClosureObject<methodWithCallbackTestEnumReturn> methodWithCallbackTestEnumReturn_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
@@ -666,6 +759,10 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
+            methodWithCallbackAllArgs_call(buf.getLong(0), buf.getInt(8), buf.getShort(12), buf.getByte(14), buf.getChar(15), buf.getBoolean(17), buf.getFloat(18), buf.getDouble(22));
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
             methodWithCallbackAllArgs_call(buf.getLong(0), buf.getInt(8), buf.getShort(12), buf.getByte(14), buf.getChar(15), buf.getBoolean(17), buf.getFloat(18), buf.getDouble(22));
         }
 
@@ -700,6 +797,10 @@ public final class TestData_Internal {
             methodWithCallback_call();
         }
 
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            methodWithCallback_call();
+        }
+
         public static CClosureObject<methodWithCallback> methodWithCallback_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
@@ -720,6 +821,10 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
+            buf.setNativePointer(0, methodWithIntPtrPtrRet_call().getPointer());
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
             buf.setNativePointer(0, methodWithIntPtrPtrRet_call().getPointer());
         }
 
@@ -747,6 +852,10 @@ public final class TestData_Internal {
             methodWithCallbackTestUnionPointerArg_call(new TestUnion.TestUnionPointer(buf.getNativePointer(0), false));
         }
 
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            methodWithCallbackTestUnionPointerArg_call(manager.getPointing(TestUnion.TestUnionPointer.class, buf.getNativePointer(0)));
+        }
+
         public static CClosureObject<methodWithCallbackTestUnionPointerArg> methodWithCallbackTestUnionPointerArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
@@ -768,6 +877,10 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
+            methodWithCallbackShortArg_call(buf.getShort(0));
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
             methodWithCallbackShortArg_call(buf.getShort(0));
         }
 
@@ -795,6 +908,10 @@ public final class TestData_Internal {
             methodWithCallbackByteArg_call(buf.getByte(0));
         }
 
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            methodWithCallbackByteArg_call(buf.getByte(0));
+        }
+
         public static CClosureObject<methodWithCallbackByteArg> methodWithCallbackByteArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
@@ -816,6 +933,10 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
+            buf.setBoolean(0, methodWithCallbackBooleanReturn_call());
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
             buf.setBoolean(0, methodWithCallbackBooleanReturn_call());
         }
 
@@ -843,6 +964,10 @@ public final class TestData_Internal {
             buf.setInt(0, methodWithCallbackIntReturn_call());
         }
 
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            buf.setInt(0, methodWithCallbackIntReturn_call());
+        }
+
         public static CClosureObject<methodWithCallbackIntReturn> methodWithCallbackIntReturn_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
@@ -864,6 +989,10 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
+            buf.setLong(0, methodWithCallbackLongReturn_call());
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
             buf.setLong(0, methodWithCallbackLongReturn_call());
         }
 
@@ -891,6 +1020,10 @@ public final class TestData_Internal {
             methodWithCallbackCharArg_call(buf.getChar(0));
         }
 
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            methodWithCallbackCharArg_call(buf.getChar(0));
+        }
+
         public static CClosureObject<methodWithCallbackCharArg> methodWithCallbackCharArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
@@ -915,6 +1048,10 @@ public final class TestData_Internal {
             methodWithIntPtrPtrArg_call(new PointerPointer<>(buf.getNativePointer(0), false, SIntPointer::new));
         }
 
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            methodWithIntPtrPtrArg_call(manager.getPointerPointer(PointerPointer.class, buf.getNativePointer(0), SIntPointer::new));
+        }
+
         public static CClosureObject<methodWithIntPtrPtrArg> methodWithIntPtrPtrArg_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
@@ -937,6 +1074,10 @@ public final class TestData_Internal {
 
         default void invoke(BufferPtr buf) {
             buf.setNativePointer(0, thread_callback_call(new VoidPointer(buf.getNativePointer(0), false)).getPointer());
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            buf.setNativePointer(0, thread_callback_call(manager.getPointing(VoidPointer.class, buf.getNativePointer(0))).getPointer());
         }
 
         public static CClosureObject<thread_callback> thread_callback_downcall(long fnPtr) {
@@ -964,6 +1105,10 @@ public final class TestData_Internal {
             buf.setNativePointer(0, methodWithCallbackTestStructReturn_call().getPointer());
         }
 
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            buf.setNativePointer(0, methodWithCallbackTestStructReturn_call().getPointer());
+        }
+
         public static CClosureObject<methodWithCallbackTestStructReturn> methodWithCallbackTestStructReturn_downcall(long fnPtr) {
             ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
@@ -987,6 +1132,10 @@ public final class TestData_Internal {
         }
 
         default void invoke(BufferPtr buf) {
+            buf.setFloat(0, methodWithCallbackFloatReturn_call());
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
             buf.setFloat(0, methodWithCallbackFloatReturn_call());
         }
 

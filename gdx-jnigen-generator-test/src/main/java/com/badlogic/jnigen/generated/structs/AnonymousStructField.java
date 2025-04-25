@@ -39,12 +39,8 @@ public final class AnonymousStructField extends Struct {
     }
 
     public inner inner() {
-        return __inner;
+        return new inner(getPointer(), false);
     }
-
-    private static final int __inner_offset = 0;
-
-    private final inner __inner = new inner(getPointer() + __inner_offset, false);
 
     public int externalValue() {
         return getBufPtr().getInt(8);

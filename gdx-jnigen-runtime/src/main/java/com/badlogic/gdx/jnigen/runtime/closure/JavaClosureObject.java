@@ -19,11 +19,14 @@ public class JavaClosureObject<T extends Closure> extends ClosureObject<T> {
     public void free() {
         if (freed)
             throw new IllegalArgumentException("Closure already freed");
-        if (closurePtr == 0)
-            throw new IllegalArgumentException("Closure is not java closure: " + getPointer());
         CHandler.deregisterFunctionPointer(getPointer());
         CHandler.freeClosure(closurePtr);
         freed = true;
+    }
+
+    @Override
+    public void setPoolManager(PointingPoolManager manager) {
+        decoder.setPoolManager(manager);
     }
 
     public long getClosurePtr() {

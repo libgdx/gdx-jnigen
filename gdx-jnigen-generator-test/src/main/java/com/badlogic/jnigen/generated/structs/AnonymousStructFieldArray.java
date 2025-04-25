@@ -39,12 +39,8 @@ public final class AnonymousStructFieldArray extends Struct {
     }
 
     public inner.innerPointer inner() {
-        return __inner;
+        return new inner.innerPointer(getPointer(), false, 2);
     }
-
-    private static final int __inner_offset = 0;
-
-    private final inner.innerPointer __inner = new inner.innerPointer(getPointer() + __inner_offset, false, 2);
 
     public int externalValue() {
         return getBufPtr().getInt(16);

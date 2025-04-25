@@ -51,12 +51,8 @@ public final class SpecialStruct extends Struct {
     }
 
     public SIntPointer arrayField() {
-        return __arrayField;
+        return new SIntPointer(getPointer() + (CHandler.IS_32_BIT ? 4 : 8), false, 5);
     }
-
-    private static final int __arrayField_offset = CHandler.IS_32_BIT ? 4 : 8;
-
-    private final SIntPointer __arrayField = new SIntPointer(getPointer() + __arrayField_offset, false, 5);
 
     public SIntPointer intPtrField() {
         return new SIntPointer(getBufPtr().getNativePointer(CHandler.IS_32_BIT ? 24 : 32), false);

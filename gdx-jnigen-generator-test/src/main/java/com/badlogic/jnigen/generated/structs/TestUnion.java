@@ -59,16 +59,12 @@ public final class TestUnion extends Union {
     }
 
     public SIntPointer fixedSizeInt() {
-        return __fixedSizeInt;
+        return new SIntPointer(getPointer(), false, 3);
     }
-
-    private final SIntPointer __fixedSizeInt = new SIntPointer(getPointer(), false, 3);
 
     public TestStruct structType() {
-        return __structType;
+        return new TestStruct(getPointer(), false);
     }
-
-    private final TestStruct __structType = new TestStruct(getPointer(), false);
 
     public static final class TestUnionPointer extends StackElementPointer<TestUnion> {
 

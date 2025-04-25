@@ -5,7 +5,7 @@ import com.badlogic.gdx.jnigen.runtime.CHandler;
 public class PointerPointer<T extends Pointing> extends VoidPointer {
 
     private static final int __pointer_size = CHandler.POINTER_SIZE;
-    private final PointerDereferenceSupplier<T> supplier;
+    private PointerDereferenceSupplier<T> supplier;
 
     public PointerPointer(long pointer, boolean freeOnGC, PointerDereferenceSupplier<T> supplier) {
         super(pointer, freeOnGC);
@@ -27,6 +27,10 @@ public class PointerPointer<T extends Pointing> extends VoidPointer {
 
     public PointerPointer(int size, boolean freeOnGC, PointerDereferenceSupplier<T> supplier) {
         super(size * __pointer_size, freeOnGC);
+        this.supplier = supplier;
+    }
+
+    public void setPointerSupplier(PointerDereferenceSupplier<T> supplier) {
         this.supplier = supplier;
     }
 
