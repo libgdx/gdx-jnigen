@@ -42,6 +42,10 @@ public final class AnonymousStructField extends Struct {
         return new inner(getPointer(), false);
     }
 
+    public void inner(inner toSetPtr) {
+        toSetPtr.setPointer(getPointer());
+    }
+
     public inner getInner() {
         return new inner(getBufPtr().duplicate(0, 8), true);
     }

@@ -88,6 +88,18 @@ public class StackElementType implements MappedType, WritableClass {
 
         reinterpretMethod.createBody().addStatement(new ReturnStmt(fromCExpression));
 
+        MethodDeclaration reinterpretSetMethod = toWriteToPublic.addMethod(fieldType.getName(), Keyword.PUBLIC)
+                .addParameter(fieldType.getDefinition().getMappedType().abstractType(), "toSetPtr");
+
+        if (field.getComment() != null)
+            reinterpretSetMethod.setJavadocComment(field.getComment());
+
+        MethodCallExpr setPtr = new MethodCallExpr("setPointer")
+                .setScope(new NameExpr("toSetPtr"))
+                .addArgument(pointer);
+
+        reinterpretSetMethod.createBody().addStatement(setPtr);
+
         MethodDeclaration cloneMethod = toWriteToPublic.addMethod(JavaUtils.getGetter(fieldType.getName()), Keyword.PUBLIC);
 
         if (field.getComment() != null)
@@ -110,6 +122,9 @@ public class StackElementType implements MappedType, WritableClass {
         MethodDeclaration copyMethod = toWriteToPublic.addMethod(JavaUtils.getGetter(fieldType.getName()), Keyword.PUBLIC)
                 .addParameter(fieldType.getDefinition().getMappedType().abstractType(), "toCopyTo");
 
+        if (field.getComment() != null)
+            copyMethod.setJavadocComment(field.getComment());
+
         MethodCallExpr copyExpr = new MethodCallExpr("copyFrom")
                 .setScope(new MethodCallExpr("getBufPtr").setScope(new NameExpr("toCopyTo")))
                 .addArgument("0")
@@ -121,6 +136,9 @@ public class StackElementType implements MappedType, WritableClass {
 
         MethodDeclaration setMethod = toWriteToPublic.addMethod(JavaUtils.getSetter(fieldType.getName()), Keyword.PUBLIC)
                 .addParameter(fieldType.getDefinition().getMappedType().abstractType(), "toCopyFrom");
+
+        if (field.getComment() != null)
+            setMethod.setJavadocComment(field.getComment());
 
         MethodCallExpr setExpr = new MethodCallExpr("copyFrom")
                 .setScope(new MethodCallExpr("getBufPtr"))

@@ -42,6 +42,10 @@ public final class AnonymousStructFieldArray extends Struct {
         return new inner.innerPointer(getPointer(), false, 2);
     }
 
+    public void inner(inner.innerPointer toSetPtr) {
+        toSetPtr.setPointer(getPointer());
+    }
+
     public inner.innerPointer getInner() {
         return new inner.innerPointer(getBufPtr().duplicate(0, 16), false, 2);
     }

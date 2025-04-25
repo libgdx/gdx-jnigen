@@ -62,6 +62,10 @@ public final class TestUnion extends Union {
         return new SIntPointer(getPointer(), false, 3);
     }
 
+    public void fixedSizeInt(SIntPointer toSetPtr) {
+        toSetPtr.setPointer(getPointer());
+    }
+
     public SIntPointer getFixedSizeInt() {
         return new SIntPointer(getBufPtr().duplicate(0, 12), false, 3);
     }
@@ -76,6 +80,10 @@ public final class TestUnion extends Union {
 
     public TestStruct structType() {
         return new TestStruct(getPointer(), false);
+    }
+
+    public void structType(TestStruct toSetPtr) {
+        toSetPtr.setPointer(getPointer());
     }
 
     public TestStruct getStructType() {

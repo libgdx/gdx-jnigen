@@ -128,6 +128,10 @@ public final class GlobalArg extends Union {
         return new TestStruct(getPointer(), false);
     }
 
+    public void structVal(TestStruct toSetPtr) {
+        toSetPtr.setPointer(getPointer());
+    }
+
     public TestStruct getStructVal() {
         return new TestStruct(getBufPtr().duplicate(0, 16), true);
     }
@@ -174,6 +178,10 @@ public final class GlobalArg extends Union {
 
     public allArgs allArgs() {
         return new allArgs(getPointer(), false);
+    }
+
+    public void allArgs(allArgs toSetPtr) {
+        toSetPtr.setPointer(getPointer());
     }
 
     public allArgs getAllArgs() {

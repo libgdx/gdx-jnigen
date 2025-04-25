@@ -54,6 +54,10 @@ public final class SpecialStruct extends Struct {
         return new SIntPointer(getPointer() + (CHandler.IS_32_BIT ? 4 : 8), false, 5);
     }
 
+    public void arrayField(SIntPointer toSetPtr) {
+        toSetPtr.setPointer(getPointer() + (CHandler.IS_32_BIT ? 4 : 8));
+    }
+
     public SIntPointer getArrayField() {
         return new SIntPointer(getBufPtr().duplicate(CHandler.IS_32_BIT ? 4 : 8, 20), false, 5);
     }
