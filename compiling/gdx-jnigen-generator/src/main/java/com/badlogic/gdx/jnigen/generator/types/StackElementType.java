@@ -66,6 +66,71 @@ public class StackElementType implements MappedType, WritableClass {
         return new ClassOrInterfaceDeclaration(modifiers, false, internalClassName());
     }
 
+    private void writeStackFields(StackElementField field, ClassOrInterfaceDeclaration toWriteToPublic) {
+        NamedType fieldType = field.getType();
+
+        MethodDeclaration reinterpretMethod = toWriteToPublic.addMethod(fieldType.getName(), Keyword.PUBLIC);
+        if (field.getComment() != null)
+            reinterpretMethod.setJavadocComment(field.getComment());
+        reinterpretMethod.setType(fieldType.getDefinition().getMappedType().abstractType());
+
+        Expression pointer = new MethodCallExpr("getPointer");
+        Expression fieldOffset = getFieldOffsetAsExpression(fields.indexOf(field));
+        if (isStruct() && !fieldOffset.toString().equals("0"))
+            pointer = new BinaryExpr(pointer, new EnclosedExpr(fieldOffset), Operator.PLUS);
+
+        Expression fromCExpression = fieldType.getDefinition().getMappedType()
+                .fromC(pointer, new BooleanLiteralExpr(false));
+
+        if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
+            fromCExpression.asObjectCreationExpr().addArgument(fieldType.getDefinition().getCount() + "");
+        }
+
+        reinterpretMethod.createBody().addStatement(new ReturnStmt(fromCExpression));
+
+        MethodDeclaration cloneMethod = toWriteToPublic.addMethod(JavaUtils.getGetter(fieldType.getName()), Keyword.PUBLIC);
+
+        if (field.getComment() != null)
+            cloneMethod.setJavadocComment(field.getComment());
+        cloneMethod.setType(fieldType.getDefinition().getMappedType().abstractType());
+
+        MethodCallExpr cloneExpr = new MethodCallExpr("duplicate")
+                .setScope(new MethodCallExpr("getBufPtr"))
+                .addArgument(fieldOffset)
+                .addArgument(getFieldSizeAsExpression(fields.indexOf(field)));
+
+        Expression fromCClonesExpression = fieldType.getDefinition().getMappedType().fromC(cloneExpr);
+
+        if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
+            fromCClonesExpression.asObjectCreationExpr().addArgument(fieldType.getDefinition().getCount() + "");
+        }
+
+        cloneMethod.createBody().addStatement(new ReturnStmt(fromCClonesExpression));
+
+        MethodDeclaration copyMethod = toWriteToPublic.addMethod(JavaUtils.getGetter(fieldType.getName()), Keyword.PUBLIC)
+                .addParameter(fieldType.getDefinition().getMappedType().abstractType(), "toCopyTo");
+
+        MethodCallExpr copyExpr = new MethodCallExpr("copyFrom")
+                .setScope(new MethodCallExpr("getBufPtr").setScope(new NameExpr("toCopyTo")))
+                .addArgument("0")
+                .addArgument(new MethodCallExpr("getBufPtr"))
+                .addArgument(getFieldOffsetAsExpression(fields.indexOf(field)))
+                .addArgument(getFieldSizeAsExpression(fields.indexOf(field)));
+        copyMethod.createBody().addStatement(copyExpr);
+
+
+        MethodDeclaration setMethod = toWriteToPublic.addMethod(JavaUtils.getSetter(fieldType.getName()), Keyword.PUBLIC)
+                .addParameter(fieldType.getDefinition().getMappedType().abstractType(), "toCopyFrom");
+
+        MethodCallExpr setExpr = new MethodCallExpr("copyFrom")
+                .setScope(new MethodCallExpr("getBufPtr"))
+                .addArgument(getFieldOffsetAsExpression(fields.indexOf(field)))
+                .addArgument(new MethodCallExpr("getBufPtr").setScope(new NameExpr("toCopyFrom")))
+                .addArgument("0")
+                .addArgument(getFieldSizeAsExpression(fields.indexOf(field)));
+        setMethod.createBody().addStatement(setExpr);
+    }
+
     @Override
     public void write(CompilationUnit cuPublic, ClassOrInterfaceDeclaration toWriteToPublic, CompilationUnit cuPrivate, ClassOrInterfaceDeclaration toWriteToPrivate) {
         String structPointerRef = javaTypeName + "." + pointerName;
@@ -114,27 +179,17 @@ public class StackElementType implements MappedType, WritableClass {
             StackElementField field = fields.get(i);
             NamedType fieldType = field.getType();
             fieldType.getDefinition().getMappedType().importType(cuPublic);
-            MethodDeclaration getMethod = toWriteToPublic.addMethod(fieldType.getName(), Keyword.PUBLIC);
-            if (field.getComment() != null) getMethod.setJavadocComment(field.getComment());
-            getMethod.setType(fieldType.getDefinition().getMappedType().abstractType());
-            BlockStmt getBody = new BlockStmt();
-            if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY || fieldType.getDefinition()
-                    .getTypeKind().isStackElement()) {
-                Expression pointer = new MethodCallExpr("getPointer");
-                if (isStruct() && !getFieldOffsetAsExpression(i).toString().equals("0"))
-                    pointer = new BinaryExpr(pointer, new EnclosedExpr(getFieldOffsetAsExpression(i)), Operator.PLUS);
 
-                Expression fromCExpression = fieldType.getDefinition().getMappedType()
-                        .fromC(pointer, new BooleanLiteralExpr(false));
-
-                if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
-                    fromCExpression.asObjectCreationExpr().addArgument(fieldType.getDefinition().getCount() + "");
-                }
-
-                getBody.addStatement(new ReturnStmt(fromCExpression));
-                getMethod.setBody(getBody);
+            if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY || fieldType.getDefinition().getTypeKind().isStackElement()) {
+                writeStackFields(field, toWriteToPublic);
                 continue;
             }
+
+            MethodDeclaration getMethod = toWriteToPublic.addMethod(fieldType.getName(), Keyword.PUBLIC);
+            if (field.getComment() != null)
+                getMethod.setJavadocComment(field.getComment());
+            getMethod.setType(fieldType.getDefinition().getMappedType().abstractType());
+            BlockStmt getBody = new BlockStmt();
 
             getBody.addStatement(new ReturnStmt(fieldType.getDefinition().getMappedType().fromC(fieldType.getDefinition().getMappedType().readFromBufferPtr(new MethodCallExpr("getBufPtr"), getFieldOffsetAsExpression(i)))));
             getMethod.setBody(getBody);
@@ -252,11 +307,7 @@ public class StackElementType implements MappedType, WritableClass {
         for (int i = 0; i < index; i++) {
             StackElementField field = fields.get(i);
             NamedType fieldType = field.getType();
-            if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
-                unwrappedStartIndex += fieldType.getDefinition().getCount();
-            } else {
-                unwrappedStartIndex++;
-            }
+            unwrappedStartIndex += fieldType.getDefinition().getCount();
         }
 
         return unwrappedStartIndex;
@@ -289,6 +340,20 @@ public class StackElementType implements MappedType, WritableClass {
         }
 
         return offset;
+    }
+
+    public int getFieldSize(int index, boolean is32Bit, boolean isWin) {
+        StackElementField field = fields.get(index);
+        NamedType fieldType = field.getType();
+        int baseSize = fieldType.getDefinition().getMappedType().getSize(is32Bit, isWin);
+        if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
+            baseSize = fieldType.getDefinition().getNestedDefinition().getMappedType().getSize(is32Bit, isWin);
+        }
+        return baseSize * fieldType.getDefinition().getCount();
+    }
+
+    public Expression getFieldSizeAsExpression(int index) {
+        return JavaUtils.getSizeAsExpression((is32Bit, isWin) -> getFieldSize(index, is32Bit, isWin));
     }
 
     public Expression getFieldOffsetAsExpression(int index) {

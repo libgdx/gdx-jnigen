@@ -128,6 +128,18 @@ public final class GlobalArg extends Union {
         return new TestStruct(getPointer(), false);
     }
 
+    public TestStruct getStructVal() {
+        return new TestStruct(getBufPtr().duplicate(0, 16), true);
+    }
+
+    public void getStructVal(TestStruct toCopyTo) {
+        toCopyTo.getBufPtr().copyFrom(0, getBufPtr(), 0, 16);
+    }
+
+    public void setStructVal(TestStruct toCopyFrom) {
+        getBufPtr().copyFrom(0, toCopyFrom.getBufPtr(), 0, 16);
+    }
+
     public TestStruct.TestStructPointer structPtr() {
         return new TestStruct.TestStructPointer(getBufPtr().getNativePointer(0), false);
     }
@@ -162,6 +174,18 @@ public final class GlobalArg extends Union {
 
     public allArgs allArgs() {
         return new allArgs(getPointer(), false);
+    }
+
+    public allArgs getAllArgs() {
+        return new allArgs(getBufPtr().duplicate(0, 32), true);
+    }
+
+    public void getAllArgs(allArgs toCopyTo) {
+        toCopyTo.getBufPtr().copyFrom(0, getBufPtr(), 0, 32);
+    }
+
+    public void setAllArgs(allArgs toCopyFrom) {
+        getBufPtr().copyFrom(0, toCopyFrom.getBufPtr(), 0, 32);
     }
 
     public static final class GlobalArgPointer extends StackElementPointer<GlobalArg> {

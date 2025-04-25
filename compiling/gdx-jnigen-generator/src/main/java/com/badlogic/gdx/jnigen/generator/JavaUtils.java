@@ -5,6 +5,16 @@ import com.github.javaparser.ast.expr.Expression;
 
 public class JavaUtils {
 
+    public static String getGetter(String name) {
+        String firstLetterUpperCase = name.substring(0, 1).toUpperCase() + name.substring(1);
+        return "get" + firstLetterUpperCase;
+    }
+
+    public static String getSetter(String name) {
+        String firstLetterUpperCase = name.substring(0, 1).toUpperCase() + name.substring(1);
+        return "set" + firstLetterUpperCase;
+    }
+
     public static String cNameToJavaTypeName(String name) {
         return name.replace("struct ", "")
                 .replace("union ", "")

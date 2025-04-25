@@ -42,6 +42,18 @@ public final class AnonymousStructField extends Struct {
         return new inner(getPointer(), false);
     }
 
+    public inner getInner() {
+        return new inner(getBufPtr().duplicate(0, 8), true);
+    }
+
+    public void getInner(inner toCopyTo) {
+        toCopyTo.getBufPtr().copyFrom(0, getBufPtr(), 0, 8);
+    }
+
+    public void setInner(inner toCopyFrom) {
+        getBufPtr().copyFrom(0, toCopyFrom.getBufPtr(), 0, 8);
+    }
+
     public int externalValue() {
         return getBufPtr().getInt(8);
     }

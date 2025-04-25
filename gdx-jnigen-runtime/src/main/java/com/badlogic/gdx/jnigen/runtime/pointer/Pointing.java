@@ -71,8 +71,10 @@ public class Pointing {
 
     /**
      * Exposes the underlying BufferPtr. Manually handling the BufferPtr is highly discouraged.
+     *
+     * Do not call this method, unless you explicitly know what you are doing.
      */
-    protected BufferPtr getBufPtr() {
+    public BufferPtr getBufPtr() {
         if (freed)
             throw new IllegalStateException("Pointer is freed: " + bufPtr.getPointer());
         if (isNull())
