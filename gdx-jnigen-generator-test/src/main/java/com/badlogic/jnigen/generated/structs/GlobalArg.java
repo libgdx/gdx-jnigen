@@ -28,6 +28,11 @@ public final class GlobalArg extends Union {
         super(pointer, freeOnGC);
     }
 
+    public GlobalArg(long pointer, boolean freeOnGC, Pointing parent) {
+        super(pointer, freeOnGC);
+        setParent(parent);
+    }
+
     public GlobalArg() {
         super(__size);
     }
@@ -41,7 +46,7 @@ public final class GlobalArg extends Union {
     }
 
     public GlobalArg.GlobalArgPointer asPointer() {
-        return new GlobalArg.GlobalArgPointer(getPointer(), false, this);
+        return new GlobalArg.GlobalArgPointer(getPointer(), false, 1, this);
     }
 
     public long longVal() {
@@ -129,7 +134,7 @@ public final class GlobalArg extends Union {
     }
 
     public void structVal(TestStruct toSetPtr) {
-        toSetPtr.setPointer(getPointer());
+        toSetPtr.setPointer(getPointer(), 16, this);
     }
 
     public TestStruct getStructVal() {
@@ -181,7 +186,7 @@ public final class GlobalArg extends Union {
     }
 
     public void allArgs(allArgs toSetPtr) {
-        toSetPtr.setPointer(getPointer());
+        toSetPtr.setPointer(getPointer(), 32, this);
     }
 
     public allArgs getAllArgs() {
@@ -208,6 +213,11 @@ public final class GlobalArg extends Union {
 
         public GlobalArgPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
+            setParent(parent);
+        }
+
+        public GlobalArgPointer(long pointer, boolean freeOnGC, int capacity, Pointing parent) {
+            super(pointer, freeOnGC, capacity * __size);
             setParent(parent);
         }
 
@@ -243,6 +253,11 @@ public final class GlobalArg extends Union {
             super(pointer, freeOnGC);
         }
 
+        public allArgs(long pointer, boolean freeOnGC, Pointing parent) {
+            super(pointer, freeOnGC);
+            setParent(parent);
+        }
+
         public allArgs() {
             super(__size);
         }
@@ -256,7 +271,7 @@ public final class GlobalArg extends Union {
         }
 
         public allArgs.allArgsPointer asPointer() {
-            return new allArgs.allArgsPointer(getPointer(), false, this);
+            return new allArgs.allArgsPointer(getPointer(), false, 1, this);
         }
 
         public long arg1() {
@@ -335,6 +350,11 @@ public final class GlobalArg extends Union {
 
             public allArgsPointer(long pointer, boolean freeOnGC, Pointing parent) {
                 super(pointer, freeOnGC);
+                setParent(parent);
+            }
+
+            public allArgsPointer(long pointer, boolean freeOnGC, int capacity, Pointing parent) {
+                super(pointer, freeOnGC, capacity * __size);
                 setParent(parent);
             }
 

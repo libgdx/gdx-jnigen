@@ -21,6 +21,11 @@ public final class AnonymousStructNoFieldConsecutive extends Struct {
         super(pointer, freeOnGC);
     }
 
+    public AnonymousStructNoFieldConsecutive(long pointer, boolean freeOnGC, Pointing parent) {
+        super(pointer, freeOnGC);
+        setParent(parent);
+    }
+
     public AnonymousStructNoFieldConsecutive() {
         super(__size);
     }
@@ -34,7 +39,7 @@ public final class AnonymousStructNoFieldConsecutive extends Struct {
     }
 
     public AnonymousStructNoFieldConsecutive.AnonymousStructNoFieldConsecutivePointer asPointer() {
-        return new AnonymousStructNoFieldConsecutive.AnonymousStructNoFieldConsecutivePointer(getPointer(), false, this);
+        return new AnonymousStructNoFieldConsecutive.AnonymousStructNoFieldConsecutivePointer(getPointer(), false, 1, this);
     }
 
     public int externalValue() {
@@ -89,6 +94,11 @@ public final class AnonymousStructNoFieldConsecutive extends Struct {
 
         public AnonymousStructNoFieldConsecutivePointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
+            setParent(parent);
+        }
+
+        public AnonymousStructNoFieldConsecutivePointer(long pointer, boolean freeOnGC, int capacity, Pointing parent) {
+            super(pointer, freeOnGC, capacity * __size);
             setParent(parent);
         }
 

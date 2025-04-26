@@ -21,6 +21,11 @@ public final class AnonymousStructNoFieldEnd extends Struct {
         super(pointer, freeOnGC);
     }
 
+    public AnonymousStructNoFieldEnd(long pointer, boolean freeOnGC, Pointing parent) {
+        super(pointer, freeOnGC);
+        setParent(parent);
+    }
+
     public AnonymousStructNoFieldEnd() {
         super(__size);
     }
@@ -34,7 +39,7 @@ public final class AnonymousStructNoFieldEnd extends Struct {
     }
 
     public AnonymousStructNoFieldEnd.AnonymousStructNoFieldEndPointer asPointer() {
-        return new AnonymousStructNoFieldEnd.AnonymousStructNoFieldEndPointer(getPointer(), false, this);
+        return new AnonymousStructNoFieldEnd.AnonymousStructNoFieldEndPointer(getPointer(), false, 1, this);
     }
 
     public int externalValue() {
@@ -79,6 +84,11 @@ public final class AnonymousStructNoFieldEnd extends Struct {
 
         public AnonymousStructNoFieldEndPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
+            setParent(parent);
+        }
+
+        public AnonymousStructNoFieldEndPointer(long pointer, boolean freeOnGC, int capacity, Pointing parent) {
+            super(pointer, freeOnGC, capacity * __size);
             setParent(parent);
         }
 

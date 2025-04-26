@@ -21,6 +21,11 @@ public final class AnonymousStructNoFieldNested extends Struct {
         super(pointer, freeOnGC);
     }
 
+    public AnonymousStructNoFieldNested(long pointer, boolean freeOnGC, Pointing parent) {
+        super(pointer, freeOnGC);
+        setParent(parent);
+    }
+
     public AnonymousStructNoFieldNested() {
         super(__size);
     }
@@ -34,7 +39,7 @@ public final class AnonymousStructNoFieldNested extends Struct {
     }
 
     public AnonymousStructNoFieldNested.AnonymousStructNoFieldNestedPointer asPointer() {
-        return new AnonymousStructNoFieldNested.AnonymousStructNoFieldNestedPointer(getPointer(), false, this);
+        return new AnonymousStructNoFieldNested.AnonymousStructNoFieldNestedPointer(getPointer(), false, 1, this);
     }
 
     public int intValue1() {
@@ -73,6 +78,11 @@ public final class AnonymousStructNoFieldNested extends Struct {
 
         public AnonymousStructNoFieldNestedPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
+            setParent(parent);
+        }
+
+        public AnonymousStructNoFieldNestedPointer(long pointer, boolean freeOnGC, int capacity, Pointing parent) {
+            super(pointer, freeOnGC, capacity * __size);
             setParent(parent);
         }
 

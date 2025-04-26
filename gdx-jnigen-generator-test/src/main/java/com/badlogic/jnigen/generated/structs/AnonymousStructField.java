@@ -22,6 +22,11 @@ public final class AnonymousStructField extends Struct {
         super(pointer, freeOnGC);
     }
 
+    public AnonymousStructField(long pointer, boolean freeOnGC, Pointing parent) {
+        super(pointer, freeOnGC);
+        setParent(parent);
+    }
+
     public AnonymousStructField() {
         super(__size);
     }
@@ -35,7 +40,7 @@ public final class AnonymousStructField extends Struct {
     }
 
     public AnonymousStructField.AnonymousStructFieldPointer asPointer() {
-        return new AnonymousStructField.AnonymousStructFieldPointer(getPointer(), false, this);
+        return new AnonymousStructField.AnonymousStructFieldPointer(getPointer(), false, 1, this);
     }
 
     public inner inner() {
@@ -43,7 +48,7 @@ public final class AnonymousStructField extends Struct {
     }
 
     public void inner(inner toSetPtr) {
-        toSetPtr.setPointer(getPointer());
+        toSetPtr.setPointer(getPointer(), 8, this);
     }
 
     public inner getInner() {
@@ -78,6 +83,11 @@ public final class AnonymousStructField extends Struct {
 
         public AnonymousStructFieldPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
+            setParent(parent);
+        }
+
+        public AnonymousStructFieldPointer(long pointer, boolean freeOnGC, int capacity, Pointing parent) {
+            super(pointer, freeOnGC, capacity * __size);
             setParent(parent);
         }
 
@@ -116,6 +126,11 @@ public final class AnonymousStructField extends Struct {
             super(pointer, freeOnGC);
         }
 
+        public inner(long pointer, boolean freeOnGC, Pointing parent) {
+            super(pointer, freeOnGC);
+            setParent(parent);
+        }
+
         public inner() {
             super(__size);
         }
@@ -129,7 +144,7 @@ public final class AnonymousStructField extends Struct {
         }
 
         public inner.innerPointer asPointer() {
-            return new inner.innerPointer(getPointer(), false, this);
+            return new inner.innerPointer(getPointer(), false, 1, this);
         }
 
         /**
@@ -166,6 +181,11 @@ public final class AnonymousStructField extends Struct {
 
             public innerPointer(long pointer, boolean freeOnGC, Pointing parent) {
                 super(pointer, freeOnGC);
+                setParent(parent);
+            }
+
+            public innerPointer(long pointer, boolean freeOnGC, int capacity, Pointing parent) {
+                super(pointer, freeOnGC, capacity * __size);
                 setParent(parent);
             }
 

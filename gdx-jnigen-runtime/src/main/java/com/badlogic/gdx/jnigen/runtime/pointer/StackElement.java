@@ -10,6 +10,16 @@ public abstract class StackElement extends Pointing {
         super(size, true);
     }
 
+    @Override
+    public void setPointer(long pointer) {
+        super.setPointer(pointer, (int) getSize());
+    }
+
+    @Override
+    public void setPointer(long pointer, Pointing parent) {
+        super.setPointer(pointer, (int) getSize(), parent);
+    }
+
     public abstract StackElementPointer<? extends StackElement> asPointer();
 
     // TODO: All these methods could be removed with the generator. Performance tests need to show, whether virtual dispatch has any significant penalty

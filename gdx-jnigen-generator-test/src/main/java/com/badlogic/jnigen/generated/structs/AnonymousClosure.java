@@ -26,6 +26,11 @@ public final class AnonymousClosure extends Struct {
         super(pointer, freeOnGC);
     }
 
+    public AnonymousClosure(long pointer, boolean freeOnGC, Pointing parent) {
+        super(pointer, freeOnGC);
+        setParent(parent);
+    }
+
     public AnonymousClosure() {
         super(__size);
     }
@@ -39,7 +44,7 @@ public final class AnonymousClosure extends Struct {
     }
 
     public AnonymousClosure.AnonymousClosurePointer asPointer() {
-        return new AnonymousClosure.AnonymousClosurePointer(getPointer(), false, this);
+        return new AnonymousClosure.AnonymousClosurePointer(getPointer(), false, 1, this);
     }
 
     /**
@@ -76,6 +81,11 @@ public final class AnonymousClosure extends Struct {
 
         public AnonymousClosurePointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
+            setParent(parent);
+        }
+
+        public AnonymousClosurePointer(long pointer, boolean freeOnGC, int capacity, Pointing parent) {
+            super(pointer, freeOnGC, capacity * __size);
             setParent(parent);
         }
 

@@ -96,7 +96,9 @@ public class StackElementType implements MappedType, WritableClass {
 
         MethodCallExpr setPtr = new MethodCallExpr("setPointer")
                 .setScope(new NameExpr("toSetPtr"))
-                .addArgument(pointer);
+                .addArgument(pointer)
+                .addArgument(getFieldSizeAsExpression(fields.indexOf(field)))
+                .addArgument(new ThisExpr());
 
         reinterpretSetMethod.createBody().addStatement(setPtr);
 
@@ -179,6 +181,12 @@ public class StackElementType implements MappedType, WritableClass {
         pointerTakingConstructor.addParameter(boolean.class, "freeOnGC");
         pointerTakingConstructor.getBody().addStatement("super(pointer, freeOnGC);");
 
+        ConstructorDeclaration pointerParentTakingConstructor = toWriteToPublic.addConstructor(Keyword.PUBLIC);
+        pointerParentTakingConstructor.addParameter(long.class, "pointer");
+        pointerParentTakingConstructor.addParameter(boolean.class, "freeOnGC");
+        pointerParentTakingConstructor.addParameter("Pointing", "parent");
+        pointerParentTakingConstructor.getBody().addStatement("super(pointer, freeOnGC);").addStatement("setParent(parent);");
+
         ConstructorDeclaration defaultConstructor = toWriteToPublic.addConstructor(Keyword.PUBLIC);
         defaultConstructor.getBody().addStatement("super(__size);");
 
@@ -190,7 +198,7 @@ public class StackElementType implements MappedType, WritableClass {
                 .addStatement("return __ffi_type;");
 
         toWriteToPublic.addMethod("asPointer", Keyword.PUBLIC).setType(structPointerRef).createBody()
-                .addStatement("return new " + structPointerRef + "(getPointer(), false, this);");
+                .addStatement("return new " + structPointerRef + "(getPointer(), false, 1, this);");
 
         // Fields
         for (int i = 0; i < fields.size(); i++) {
@@ -249,6 +257,14 @@ public class StackElementType implements MappedType, WritableClass {
         pointerAndParentTakingConstructor.addParameter(boolean.class, "freeOnGC");
         pointerAndParentTakingConstructor.addParameter("Pointing", "parent");
         pointerAndParentTakingConstructor.getBody().addStatement("super(pointer, freeOnGC);")
+                .addStatement("setParent(parent);");
+
+        ConstructorDeclaration pointerAndParentAndCapacityTakingConstructor = pointerClass.addConstructor(Keyword.PUBLIC);
+        pointerAndParentAndCapacityTakingConstructor.addParameter(long.class, "pointer");
+        pointerAndParentAndCapacityTakingConstructor.addParameter(boolean.class, "freeOnGC");
+        pointerAndParentAndCapacityTakingConstructor.addParameter(int.class, "capacity");
+        pointerAndParentAndCapacityTakingConstructor.addParameter("Pointing", "parent");
+        pointerAndParentAndCapacityTakingConstructor.getBody().addStatement("super(pointer, freeOnGC, capacity * __size);")
                 .addStatement("setParent(parent);");
 
         pointerClass.addConstructor(Keyword.PUBLIC).getBody().addStatement("this(1, true);");

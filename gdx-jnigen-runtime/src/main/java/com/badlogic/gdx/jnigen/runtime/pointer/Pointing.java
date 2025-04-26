@@ -89,6 +89,18 @@ public class Pointing {
             throw new IllegalStateException("Can't change address of GC registered pointer");
         BufferPtrManager.setBufferPtrPointer(bufPtr, pointer);
         this.freed = false;
+        this.parent = null;
+    }
+
+    /**
+     * This method swaps out the underlying pointer of this object. Use with caution.
+     */
+    public void setPointer(long pointer, Pointing parent) {
+        if (freeOnGC)
+            throw new IllegalStateException("Can't change address of GC registered pointer");
+        BufferPtrManager.setBufferPtrPointer(bufPtr, pointer);
+        this.freed = false;
+        this.parent = parent;
     }
 
     /**
@@ -99,6 +111,18 @@ public class Pointing {
             throw new IllegalStateException("Can't change address of GC registered pointer");
         BufferPtrManager.setBufferPtrPointer(bufPtr, pointer, capacity);
         this.freed = false;
+        this.parent = null;
+    }
+
+    /**
+     * This method swaps out the underlying pointer of this object. Use with caution.
+     */
+    public void setPointer(long pointer, int capacity, Pointing parent) {
+        if (freeOnGC)
+            throw new IllegalStateException("Can't change address of GC registered pointer");
+        BufferPtrManager.setBufferPtrPointer(bufPtr, pointer, capacity);
+        this.freed = false;
+        this.parent = parent;
     }
 
     public long getPointer() {

@@ -22,6 +22,11 @@ public final class AnonymousStructFieldArray extends Struct {
         super(pointer, freeOnGC);
     }
 
+    public AnonymousStructFieldArray(long pointer, boolean freeOnGC, Pointing parent) {
+        super(pointer, freeOnGC);
+        setParent(parent);
+    }
+
     public AnonymousStructFieldArray() {
         super(__size);
     }
@@ -35,7 +40,7 @@ public final class AnonymousStructFieldArray extends Struct {
     }
 
     public AnonymousStructFieldArray.AnonymousStructFieldArrayPointer asPointer() {
-        return new AnonymousStructFieldArray.AnonymousStructFieldArrayPointer(getPointer(), false, this);
+        return new AnonymousStructFieldArray.AnonymousStructFieldArrayPointer(getPointer(), false, 1, this);
     }
 
     public inner.innerPointer inner() {
@@ -43,7 +48,7 @@ public final class AnonymousStructFieldArray extends Struct {
     }
 
     public void inner(inner.innerPointer toSetPtr) {
-        toSetPtr.setPointer(getPointer());
+        toSetPtr.setPointer(getPointer(), 16, this);
     }
 
     public inner.innerPointer getInner() {
@@ -81,6 +86,11 @@ public final class AnonymousStructFieldArray extends Struct {
             setParent(parent);
         }
 
+        public AnonymousStructFieldArrayPointer(long pointer, boolean freeOnGC, int capacity, Pointing parent) {
+            super(pointer, freeOnGC, capacity * __size);
+            setParent(parent);
+        }
+
         public AnonymousStructFieldArrayPointer() {
             this(1, true);
         }
@@ -113,6 +123,11 @@ public final class AnonymousStructFieldArray extends Struct {
             super(pointer, freeOnGC);
         }
 
+        public inner(long pointer, boolean freeOnGC, Pointing parent) {
+            super(pointer, freeOnGC);
+            setParent(parent);
+        }
+
         public inner() {
             super(__size);
         }
@@ -126,7 +141,7 @@ public final class AnonymousStructFieldArray extends Struct {
         }
 
         public inner.innerPointer asPointer() {
-            return new inner.innerPointer(getPointer(), false, this);
+            return new inner.innerPointer(getPointer(), false, 1, this);
         }
 
         public int intValue() {
@@ -157,6 +172,11 @@ public final class AnonymousStructFieldArray extends Struct {
 
             public innerPointer(long pointer, boolean freeOnGC, Pointing parent) {
                 super(pointer, freeOnGC);
+                setParent(parent);
+            }
+
+            public innerPointer(long pointer, boolean freeOnGC, int capacity, Pointing parent) {
+                super(pointer, freeOnGC, capacity * __size);
                 setParent(parent);
             }
 

@@ -48,9 +48,18 @@ public abstract class StackElementPointer<T extends StackElement> extends VoidPo
         int offset = getSize() * index;
         assertBounds(offset);
         T stackElement = createStackElement(getPointer() + offset, false);
-        // TODO: 07.04.25 Maybe it's smarter to allow creating Pointing objects via BufferPtr
         stackElement.setParent(this);
         return stackElement;
+    }
+
+    public void asStackElement(T toSetPtr) {
+        asStackElement(0, toSetPtr);
+    }
+
+    public void asStackElement(int index, T toSetPtr) {
+        int offset = getSize() * index;
+        assertBounds(offset);
+        toSetPtr.setPointer(getPointer() + offset, getSize(), this);
     }
 
     public void set(T struct) {

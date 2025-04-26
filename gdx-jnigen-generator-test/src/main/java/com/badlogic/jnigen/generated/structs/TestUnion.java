@@ -26,6 +26,11 @@ public final class TestUnion extends Union {
         super(pointer, freeOnGC);
     }
 
+    public TestUnion(long pointer, boolean freeOnGC, Pointing parent) {
+        super(pointer, freeOnGC);
+        setParent(parent);
+    }
+
     public TestUnion() {
         super(__size);
     }
@@ -39,7 +44,7 @@ public final class TestUnion extends Union {
     }
 
     public TestUnion.TestUnionPointer asPointer() {
-        return new TestUnion.TestUnionPointer(getPointer(), false, this);
+        return new TestUnion.TestUnionPointer(getPointer(), false, 1, this);
     }
 
     public long uintType() {
@@ -63,7 +68,7 @@ public final class TestUnion extends Union {
     }
 
     public void fixedSizeInt(SIntPointer toSetPtr) {
-        toSetPtr.setPointer(getPointer());
+        toSetPtr.setPointer(getPointer(), 12, this);
     }
 
     public SIntPointer getFixedSizeInt() {
@@ -83,7 +88,7 @@ public final class TestUnion extends Union {
     }
 
     public void structType(TestStruct toSetPtr) {
-        toSetPtr.setPointer(getPointer());
+        toSetPtr.setPointer(getPointer(), 16, this);
     }
 
     public TestStruct getStructType() {
@@ -110,6 +115,11 @@ public final class TestUnion extends Union {
 
         public TestUnionPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
+            setParent(parent);
+        }
+
+        public TestUnionPointer(long pointer, boolean freeOnGC, int capacity, Pointing parent) {
+            super(pointer, freeOnGC, capacity * __size);
             setParent(parent);
         }
 

@@ -24,6 +24,11 @@ public final class TestStruct extends Struct {
         super(pointer, freeOnGC);
     }
 
+    public TestStruct(long pointer, boolean freeOnGC, Pointing parent) {
+        super(pointer, freeOnGC);
+        setParent(parent);
+    }
+
     public TestStruct() {
         super(__size);
     }
@@ -37,7 +42,7 @@ public final class TestStruct extends Struct {
     }
 
     public TestStruct.TestStructPointer asPointer() {
-        return new TestStruct.TestStructPointer(getPointer(), false, this);
+        return new TestStruct.TestStructPointer(getPointer(), false, 1, this);
     }
 
     /**
@@ -108,6 +113,11 @@ public final class TestStruct extends Struct {
 
         public TestStructPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
+            setParent(parent);
+        }
+
+        public TestStructPointer(long pointer, boolean freeOnGC, int capacity, Pointing parent) {
+            super(pointer, freeOnGC, capacity * __size);
             setParent(parent);
         }
 

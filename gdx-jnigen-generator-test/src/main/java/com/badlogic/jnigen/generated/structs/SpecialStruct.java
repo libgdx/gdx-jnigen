@@ -26,6 +26,11 @@ public final class SpecialStruct extends Struct {
         super(pointer, freeOnGC);
     }
 
+    public SpecialStruct(long pointer, boolean freeOnGC, Pointing parent) {
+        super(pointer, freeOnGC);
+        setParent(parent);
+    }
+
     public SpecialStruct() {
         super(__size);
     }
@@ -39,7 +44,7 @@ public final class SpecialStruct extends Struct {
     }
 
     public SpecialStruct.SpecialStructPointer asPointer() {
-        return new SpecialStruct.SpecialStructPointer(getPointer(), false, this);
+        return new SpecialStruct.SpecialStructPointer(getPointer(), false, 1, this);
     }
 
     public FloatPointer floatPtrField() {
@@ -55,7 +60,7 @@ public final class SpecialStruct extends Struct {
     }
 
     public void arrayField(SIntPointer toSetPtr) {
-        toSetPtr.setPointer(getPointer() + (CHandler.IS_32_BIT ? 4 : 8));
+        toSetPtr.setPointer(getPointer() + (CHandler.IS_32_BIT ? 4 : 8), 20, this);
     }
 
     public SIntPointer getArrayField() {
@@ -90,6 +95,11 @@ public final class SpecialStruct extends Struct {
 
         public SpecialStructPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
+            setParent(parent);
+        }
+
+        public SpecialStructPointer(long pointer, boolean freeOnGC, int capacity, Pointing parent) {
+            super(pointer, freeOnGC, capacity * __size);
             setParent(parent);
         }
 

@@ -21,6 +21,11 @@ public final class forwardDeclStruct extends Struct {
         super(pointer, freeOnGC);
     }
 
+    public forwardDeclStruct(long pointer, boolean freeOnGC, Pointing parent) {
+        super(pointer, freeOnGC);
+        setParent(parent);
+    }
+
     public forwardDeclStruct() {
         super(__size);
     }
@@ -34,7 +39,7 @@ public final class forwardDeclStruct extends Struct {
     }
 
     public forwardDeclStruct.forwardDeclStructPointer asPointer() {
-        return new forwardDeclStruct.forwardDeclStructPointer(getPointer(), false, this);
+        return new forwardDeclStruct.forwardDeclStructPointer(getPointer(), false, 1, this);
     }
 
     public static final class forwardDeclStructPointer extends StackElementPointer<forwardDeclStruct> {
@@ -49,6 +54,11 @@ public final class forwardDeclStruct extends Struct {
 
         public forwardDeclStructPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
+            setParent(parent);
+        }
+
+        public forwardDeclStructPointer(long pointer, boolean freeOnGC, int capacity, Pointing parent) {
+            super(pointer, freeOnGC, capacity * __size);
             setParent(parent);
         }
 
