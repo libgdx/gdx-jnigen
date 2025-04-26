@@ -84,8 +84,8 @@ public class ClosureType implements MappedType, WritableClass {
 
         VariableDeclarationExpr useEncoderDeclaration = new VariableDeclarationExpr(
                 new VariableDeclarator()
-                        .setType("ClosureEncoder")
-                        .setName("useEncoder")
+                        .setType("BufferPtr")
+                        .setName("bufPtr")
                         .setInitializer(new MethodCallExpr(
                                 new NameExpr("encoder"),
                                 "lockOrDuplicate"
@@ -95,7 +95,7 @@ public class ClosureType implements MappedType, WritableClass {
         NodeList<Statement> arguments = new NodeList<>();
         for (int i = 0; i < signature.getArguments().length; i++) {
             NamedType argument = signature.getArguments()[i];
-            Expression writeArgExpr = argument.getDefinition().getMappedType().writeToBufferPtr(new MethodCallExpr(new NameExpr("useEncoder"), "getBufPtr"), JavaUtils.getOffsetAsExpression(i, this::getParameterOffset), argument.getDefinition().getMappedType().toC(new NameExpr(argument.getName())));
+            Expression writeArgExpr = argument.getDefinition().getMappedType().writeToBufferPtr(new NameExpr("bufPtr"), JavaUtils.getOffsetAsExpression(i, this::getParameterOffset), argument.getDefinition().getMappedType().toC(new NameExpr(argument.getName())));
 
             arguments.add(new ExpressionStmt(writeArgExpr));
         }
@@ -112,7 +112,7 @@ public class ClosureType implements MappedType, WritableClass {
 
             arguments.add(new ExpressionStmt(varDecl));
 
-            Expression writeArgExpr = returnType.writeToBufferPtr(new MethodCallExpr(new NameExpr("useEncoder"), "getBufPtr"), JavaUtils.getOffsetAsExpression(signature.getArguments().length, this::getParameterOffset), returnType.toC(new NameExpr("_retPar")));
+            Expression writeArgExpr = returnType.writeToBufferPtr(new NameExpr("bufPtr"), JavaUtils.getOffsetAsExpression(signature.getArguments().length, this::getParameterOffset), returnType.toC(new NameExpr("_retPar")));
             arguments.add(new ExpressionStmt(writeArgExpr));
         }
 
@@ -123,16 +123,22 @@ public class ClosureType implements MappedType, WritableClass {
             lambdaBody.addStatement(statement);
         }
 
-        lambdaBody.addStatement(new MethodCallExpr( new NameExpr("useEncoder"), "invoke"));
+        lambdaBody.addStatement(new MethodCallExpr( new NameExpr("encoder"), "invoke", NodeList.nodeList(new NameExpr("bufPtr"))));
 
         if (signature.getReturnType().getTypeKind() != TypeKind.VOID) {
             MappedType retMappedType = signature.getReturnType().getMappedType();
-            if (signature.getReturnType().getTypeKind().isStackElement()) {
-                lambdaBody.addStatement(new ReturnStmt(new NameExpr("_retPar")));
-            } else {
-                Expression readRetExpr = retMappedType.fromC(retMappedType.readFromBufferPtr(new MethodCallExpr(new NameExpr("useEncoder"), "getBufPtr"), JavaUtils.getOffsetAsExpression(signature.getArguments().length, this::getParameterOffset)));
-                lambdaBody.addStatement(new ReturnStmt(readRetExpr));
+            if (!signature.getReturnType().getTypeKind().isStackElement()) {
+                Expression readRetExpr = retMappedType.fromC(retMappedType.readFromBufferPtr(new NameExpr("bufPtr"), JavaUtils.getOffsetAsExpression(signature.getArguments().length, this::getParameterOffset)));
+                VariableDeclarator declarator = new VariableDeclarator()
+                        .setType(retMappedType.abstractType())
+                        .setName("_retPar")
+                        .setInitializer(readRetExpr);
+                VariableDeclarationExpr varDecl = new VariableDeclarationExpr(declarator);
+                lambdaBody.addStatement(varDecl);
             }
+
+            lambdaBody.addStatement(new ExpressionStmt(new MethodCallExpr(new NameExpr("encoder"), "finish", NodeList.nodeList(new NameExpr("bufPtr")))));
+            lambdaBody.addStatement(new ReturnStmt(new NameExpr("_retPar")));
         }
 
         LambdaExpr lambda = new LambdaExpr()
