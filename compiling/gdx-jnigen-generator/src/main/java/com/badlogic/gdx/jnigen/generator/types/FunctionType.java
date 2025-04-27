@@ -2,6 +2,7 @@ package com.badlogic.gdx.jnigen.generator.types;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -35,7 +36,13 @@ public class FunctionType {
             callMethodCreate.setJavadocComment(comment);
         BlockStmt body = new BlockStmt();
 
-        MethodDeclaration nativeMethod = wrappingClass.addMethod(name + "_internal").setPublic(true).setStatic(true).setNative(true).setBody(null);
+        MethodDeclaration nativeMethod = new MethodDeclaration()
+                .setName(name + "_internal")
+                .setType(returnType.getMappedType().primitiveType())
+                .setPublic(true)
+                .setStatic(true)
+                .setNative(true)
+                .setBody(null);
         callMethodCreate.setType(returnType.getMappedType().abstractType());
         returnType.getMappedType().importType(cu);
         nativeMethod.setType(returnType.getMappedType().primitiveType());
@@ -65,27 +72,41 @@ public class FunctionType {
                 nativeBody.insert(0, "return (j" + returnType.getMappedType().primitiveType() + ")");
                 body.addStatement(new ReturnStmt(callExprCreate));
             } else {
-                if (returnType.getTypeKind().isStackElement()) {
+                if (returnType.getTypeKind() == TypeKind.POINTER || returnType.getTypeKind().isStackElement()) {
                     MethodDeclaration callMethodParameter = callMethodCreate.clone();
                     callMethodParameter.addParameter(returnType.getMappedType().abstractType(), "_retPar");
-                    MethodCallExpr callExprParameter = callExprCreate.clone();
-                    callExprParameter.addArgument(returnType.getMappedType().toC(new NameExpr("_retPar")));
-
-                    BlockStmt bodyParameter = body.clone();
-                    bodyParameter.addStatement(callExprParameter);
                     callMethodParameter.setType(void.class);
-                    callMethodParameter.setBody(bodyParameter);
+
+                    if (returnType.getTypeKind().isStackElement()) {
+                        MethodCallExpr callExprParameter = callExprCreate.clone();
+                        callExprParameter.addArgument(returnType.getMappedType().toC(new NameExpr("_retPar")));
+
+                        BlockStmt bodyParameter = body.clone();
+                        bodyParameter.addStatement(callExprParameter);
+                        callMethodParameter.setBody(bodyParameter);
+
+                        callExprCreate.addArgument("0");
+
+                        nativeMethod.addParameter(long.class, "_retPar");
+                        nativeBody.insert(0, "*_ret = ");
+                        nativeBody.insert(0, returnType.getTypeName() + "* _ret = (" + returnType.getTypeName() + "*) (_retPar == 0 ? malloc(sizeof(" + returnType.getTypeName() + ")) : (void*)_retPar);\n");
+                        nativeBody.append("\nreturn (jlong)_ret;");
+                    } else {
+                        PointerType pointerType = (PointerType) returnType.getMappedType();
+                        BlockStmt bodyPar = callMethodParameter.createBody();
+                        bodyPar.addStatement(new MethodCallExpr(new NameExpr("_retPar"), "setPointer", new NodeList<>(callExprCreate)));
+
+                        if (pointerType.isPointerPointer()) {
+                            bodyPar.addStatement(new MethodCallExpr(new NameExpr("_retPar"), "setPointerSupplier", new NodeList<>(pointerType.getPointerPointerSupplier())));
+                        }
+                    }
+
                     wrappingClass.addMember(callMethodParameter);
-
-                    callExprCreate.addArgument("0");
-
-                    nativeMethod.addParameter(long.class, "_retPar");
-                    nativeBody.insert(0, "*_ret = ");
-                    nativeBody.insert(0, returnType.getTypeName() + "* _ret = (" + returnType.getTypeName() + "*) (_retPar == 0 ? malloc(sizeof(" + returnType.getTypeName() + ")) : (void*)_retPar);\n");
-                    nativeBody.append("\nreturn (jlong)_ret;");
-                } else {
-                    nativeBody.insert(0, "return (j" + returnType.getMappedType().primitiveType() + ")");
                 }
+
+                if (!returnType.getTypeKind().isStackElement())
+                    nativeBody.insert(0, "return (j" + returnType.getMappedType().primitiveType() + ")");
+
                 body.addStatement(new ReturnStmt(returnType.getMappedType().fromC(callExprCreate)));
             }
         } else {
@@ -108,6 +129,7 @@ public class FunctionType {
         if (returnType.getTypeKind() != TypeKind.VOID)
             nativeBody.append("\nreturn 0;");
 
+        wrappingClass.getMembers().add(nativeMethod);
         patchNativeMethod.put(nativeMethod, nativeBody.toString());
     }
 }

@@ -139,7 +139,7 @@ public class PointerType implements MappedType {
         return long.class.getName();
     }
 
-    private Expression getPointerPointerSupplier()
+    public Expression getPointerPointerSupplier()
     {
         if (!isPointerPointer())
             throw new IllegalArgumentException("Can't get supplier for non PointerPointer type");
