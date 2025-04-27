@@ -4,6 +4,10 @@ public final class FloatPointer extends VoidPointer {
 
     private static final int __float_size = 4;
 
+    public FloatPointer(VoidPointer pointer) {
+        super(pointer);
+    }
+
     public FloatPointer(long pointer, boolean freeOnGC) {
         super(pointer, freeOnGC);
     }

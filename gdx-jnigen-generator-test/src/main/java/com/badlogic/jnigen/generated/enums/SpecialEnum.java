@@ -3,6 +3,7 @@ package com.badlogic.jnigen.generated.enums;
 import com.badlogic.gdx.jnigen.runtime.pointer.EnumPointer;
 import com.badlogic.gdx.jnigen.runtime.c.CEnum;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
+import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 
 public enum SpecialEnum implements CEnum {
 
@@ -36,6 +37,10 @@ public enum SpecialEnum implements CEnum {
     }
 
     public static final class SpecialEnumPointer extends EnumPointer<SpecialEnum> {
+
+        public SpecialEnumPointer(VoidPointer pointer) {
+            super(pointer);
+        }
 
         public SpecialEnumPointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);

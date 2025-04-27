@@ -12,6 +12,12 @@ public class Pointing {
     private Pointing parent;
     protected boolean freed = false;
 
+    public Pointing(Pointing pointing) {
+        this.bufPtr = AllocationManager.wrap(pointing.getPointer(), pointing.getCapacity());
+        this.freeOnGC = false;
+        this.parent = pointing;
+    }
+
     public Pointing(long pointer, boolean freeOnGC) {
         this.bufPtr = AllocationManager.wrap(pointer);
         this.freeOnGC = freeOnGC;
@@ -125,9 +131,23 @@ public class Pointing {
         this.parent = parent;
     }
 
+    public void setPointer(Pointing pointer) {
+        if (freeOnGC)
+            throw new IllegalStateException("Can't change address of GC registered pointer");
+        BufferPtrManager.setBufferPtrPointer(bufPtr, pointer.getPointer(), pointer.getCapacity());
+        this.freed = false;
+        this.parent = pointer;
+    }
+
     public long getPointer() {
         if (freed)
             throw new IllegalStateException("Pointer is freed: " + bufPtr.getPointer());
         return bufPtr.getPointer();
+    }
+
+    public int getCapacity() {
+        if (freed)
+            throw new IllegalStateException("Pointer is freed: " + bufPtr.getPointer());
+        return bufPtr.getCapacity();
     }
 }

@@ -6,6 +6,10 @@ public class UInt64Pointer extends VoidPointer {
 
     private static final int BYTE_SIZE = 8;
 
+    public UInt64Pointer(VoidPointer pointer) {
+        super(pointer);
+    }
+
     public UInt64Pointer(int count, boolean freeOnGC) {
         super(count * BYTE_SIZE, freeOnGC);
     }

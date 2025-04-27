@@ -4,6 +4,10 @@ public class VoidPointer extends Pointing {
 
     public static final VoidPointer NULL = new VoidPointer(0, false, 0);
 
+    public VoidPointer(VoidPointer pointer) {
+        super(pointer);
+    }
+
     public VoidPointer(long pointer, boolean freeOnGC) {
         super(pointer, freeOnGC);
     }

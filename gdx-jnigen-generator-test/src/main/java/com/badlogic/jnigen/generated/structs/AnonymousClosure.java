@@ -4,6 +4,7 @@ import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
+import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.runtime.closure.Closure;
@@ -47,6 +48,10 @@ public final class AnonymousClosure extends Struct {
         return new AnonymousClosure.AnonymousClosurePointer(getPointer(), false, 1, this);
     }
 
+    public void asPointer(AnonymousClosure.AnonymousClosurePointer ptr) {
+        ptr.setPointer(this);
+    }
+
     /**
      * Comment on internal callback
      */
@@ -70,6 +75,10 @@ public final class AnonymousClosure extends Struct {
     }
 
     public static final class AnonymousClosurePointer extends StackElementPointer<AnonymousClosure> {
+
+        public AnonymousClosurePointer(VoidPointer pointer) {
+            super(pointer);
+        }
 
         public AnonymousClosurePointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);

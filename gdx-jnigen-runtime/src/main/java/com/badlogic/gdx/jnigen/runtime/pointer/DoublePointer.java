@@ -4,6 +4,10 @@ public final class DoublePointer extends VoidPointer {
 
     private static final int __double_size = 8;
 
+    public DoublePointer(VoidPointer pointer) {
+        super(pointer);
+    }
+
     public DoublePointer(long pointer, boolean freeOnGC) {
         super(pointer, freeOnGC);
     }

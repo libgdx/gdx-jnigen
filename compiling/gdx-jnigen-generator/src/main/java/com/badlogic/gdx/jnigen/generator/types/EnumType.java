@@ -67,6 +67,7 @@ public class EnumType implements MappedType {
         cu.addImport(ClassNameConstants.ENUMPOINTER_CLASS);
         cu.addImport(ClassNameConstants.CENUM_CLASS);
         cu.addImport(ClassNameConstants.CHANDLER_CLASS);
+        cu.addImport(ClassNameConstants.VOIDPOINTER_CLASS);
         EnumDeclaration declaration = cu.addEnum(javaName);
         declaration.addImplementedType("CEnum");
 
@@ -127,6 +128,11 @@ public class EnumType implements MappedType {
 
         declaration.addMember(pointerClass);
         pointerClass.addExtendedType("EnumPointer<" + javaName + ">");
+
+        pointerClass.addConstructor(Keyword.PUBLIC)
+                .addParameter("VoidPointer", "pointer")
+                .getBody().addStatement("super(pointer);");
+
         ConstructorDeclaration pointerConstructor = pointerClass.addConstructor(Keyword.PUBLIC);
         pointerConstructor.addParameter(long.class, "pointer");
         pointerConstructor.addParameter(boolean.class, "freeOnGC");

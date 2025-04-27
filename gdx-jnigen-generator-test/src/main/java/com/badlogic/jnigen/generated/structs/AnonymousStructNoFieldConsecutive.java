@@ -4,6 +4,7 @@ import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
+import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.jnigen.generated.FFITypes;
 
 public final class AnonymousStructNoFieldConsecutive extends Struct {
@@ -40,6 +41,10 @@ public final class AnonymousStructNoFieldConsecutive extends Struct {
 
     public AnonymousStructNoFieldConsecutive.AnonymousStructNoFieldConsecutivePointer asPointer() {
         return new AnonymousStructNoFieldConsecutive.AnonymousStructNoFieldConsecutivePointer(getPointer(), false, 1, this);
+    }
+
+    public void asPointer(AnonymousStructNoFieldConsecutive.AnonymousStructNoFieldConsecutivePointer ptr) {
+        ptr.setPointer(this);
     }
 
     public int externalValue() {
@@ -83,6 +88,10 @@ public final class AnonymousStructNoFieldConsecutive extends Struct {
     }
 
     public static final class AnonymousStructNoFieldConsecutivePointer extends StackElementPointer<AnonymousStructNoFieldConsecutive> {
+
+        public AnonymousStructNoFieldConsecutivePointer(VoidPointer pointer) {
+            super(pointer);
+        }
 
         public AnonymousStructNoFieldConsecutivePointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);

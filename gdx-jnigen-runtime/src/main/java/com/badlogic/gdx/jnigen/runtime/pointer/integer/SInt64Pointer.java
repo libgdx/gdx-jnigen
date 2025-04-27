@@ -6,6 +6,10 @@ public class SInt64Pointer extends VoidPointer {
 
     private static final int BYTE_SIZE = 8;
 
+    public SInt64Pointer(VoidPointer pointer) {
+        super(pointer);
+    }
+
     public SInt64Pointer(int count, boolean freeOnGC) {
         super(count * BYTE_SIZE, freeOnGC);
     }

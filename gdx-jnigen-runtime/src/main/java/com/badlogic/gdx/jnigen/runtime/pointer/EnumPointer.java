@@ -4,6 +4,10 @@ import com.badlogic.gdx.jnigen.runtime.c.CEnum;
 
 public abstract class EnumPointer<T extends CEnum> extends VoidPointer {
 
+    public EnumPointer(VoidPointer pointer) {
+        super(pointer);
+    }
+
     protected EnumPointer(long pointer, boolean freeOnGC) {
         super(pointer, freeOnGC);
     }

@@ -3,6 +3,7 @@ package com.badlogic.jnigen.generated.enums;
 import com.badlogic.gdx.jnigen.runtime.pointer.EnumPointer;
 import com.badlogic.gdx.jnigen.runtime.c.CEnum;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
+import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 
 /**
  * This is a Test Enum
@@ -52,6 +53,10 @@ public enum TestEnum implements CEnum {
     }
 
     public static final class TestEnumPointer extends EnumPointer<TestEnum> {
+
+        public TestEnumPointer(VoidPointer pointer) {
+            super(pointer);
+        }
 
         public TestEnumPointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);

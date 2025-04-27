@@ -4,6 +4,7 @@ import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
+import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
@@ -47,6 +48,10 @@ public final class SpecialStruct extends Struct {
         return new SpecialStruct.SpecialStructPointer(getPointer(), false, 1, this);
     }
 
+    public void asPointer(SpecialStruct.SpecialStructPointer ptr) {
+        ptr.setPointer(this);
+    }
+
     public FloatPointer floatPtrField() {
         return new FloatPointer(getBufPtr().getNativePointer(0), false);
     }
@@ -84,6 +89,10 @@ public final class SpecialStruct extends Struct {
     }
 
     public static final class SpecialStructPointer extends StackElementPointer<SpecialStruct> {
+
+        public SpecialStructPointer(VoidPointer pointer) {
+            super(pointer);
+        }
 
         public SpecialStructPointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);

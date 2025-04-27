@@ -4,6 +4,10 @@ import com.badlogic.gdx.jnigen.runtime.CHandler;
 
 public abstract class StackElementPointer<T extends StackElement> extends VoidPointer {
 
+    public StackElementPointer(VoidPointer pointer) {
+        super(pointer);
+    }
+
     protected StackElementPointer(long pointer, boolean freeOnGC) {
         super(pointer, freeOnGC);
     }

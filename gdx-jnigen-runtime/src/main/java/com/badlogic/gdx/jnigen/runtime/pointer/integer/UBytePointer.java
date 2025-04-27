@@ -6,6 +6,10 @@ public class UBytePointer extends VoidPointer {
 
     private static final int BYTE_SIZE = 1;
 
+    public UBytePointer(VoidPointer pointer) {
+        super(pointer);
+    }
+
     public UBytePointer(int count, boolean freeOnGC) {
         super(count * BYTE_SIZE, freeOnGC);
     }

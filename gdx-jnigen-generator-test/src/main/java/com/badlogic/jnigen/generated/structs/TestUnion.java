@@ -4,6 +4,7 @@ import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.Union;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
+import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
 import com.badlogic.jnigen.generated.structs.TestStruct;
@@ -45,6 +46,10 @@ public final class TestUnion extends Union {
 
     public TestUnion.TestUnionPointer asPointer() {
         return new TestUnion.TestUnionPointer(getPointer(), false, 1, this);
+    }
+
+    public void asPointer(TestUnion.TestUnionPointer ptr) {
+        ptr.setPointer(this);
     }
 
     public long uintType() {
@@ -104,6 +109,10 @@ public final class TestUnion extends Union {
     }
 
     public static final class TestUnionPointer extends StackElementPointer<TestUnion> {
+
+        public TestUnionPointer(VoidPointer pointer) {
+            super(pointer);
+        }
 
         public TestUnionPointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);

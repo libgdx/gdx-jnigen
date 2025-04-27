@@ -9,6 +9,10 @@ public class BytePointer extends VoidPointer {
     private static final int BYTE_SIZE = 1;
     private static final boolean IS_CHAR_SIGNED = CHandler.IS_CHAR_SIGNED;
 
+    public BytePointer(VoidPointer pointer) {
+        super(pointer);
+    }
+
     public BytePointer(int count, boolean freeOnGC) {
         super(count * BYTE_SIZE, freeOnGC);
     }

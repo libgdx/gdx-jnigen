@@ -8,6 +8,10 @@ public class SLongPointer extends VoidPointer {
 
     private static final int BYTE_SIZE = CHandler.LONG_SIZE;
 
+    public SLongPointer(VoidPointer pointer) {
+        super(pointer);
+    }
+
     public SLongPointer(int count, boolean freeOnGC) {
         super(count * BYTE_SIZE, freeOnGC);
     }

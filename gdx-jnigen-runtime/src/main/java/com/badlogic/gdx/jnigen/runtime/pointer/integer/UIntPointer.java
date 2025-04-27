@@ -6,6 +6,10 @@ public class UIntPointer extends VoidPointer {
 
     private static final int BYTE_SIZE = 4;
 
+    public UIntPointer(VoidPointer pointer) {
+        super(pointer);
+    }
+
     public UIntPointer(int count, boolean freeOnGC) {
         super(count * BYTE_SIZE, freeOnGC);
     }

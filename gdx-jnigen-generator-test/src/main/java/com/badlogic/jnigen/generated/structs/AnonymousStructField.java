@@ -4,6 +4,7 @@ import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
+import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.jnigen.generated.structs.AnonymousStructField.inner;
 
@@ -43,6 +44,10 @@ public final class AnonymousStructField extends Struct {
         return new AnonymousStructField.AnonymousStructFieldPointer(getPointer(), false, 1, this);
     }
 
+    public void asPointer(AnonymousStructField.AnonymousStructFieldPointer ptr) {
+        ptr.setPointer(this);
+    }
+
     public inner inner() {
         return new inner(getPointer(), false);
     }
@@ -72,6 +77,10 @@ public final class AnonymousStructField extends Struct {
     }
 
     public static final class AnonymousStructFieldPointer extends StackElementPointer<AnonymousStructField> {
+
+        public AnonymousStructFieldPointer(VoidPointer pointer) {
+            super(pointer);
+        }
 
         public AnonymousStructFieldPointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);
@@ -147,6 +156,10 @@ public final class AnonymousStructField extends Struct {
             return new inner.innerPointer(getPointer(), false, 1, this);
         }
 
+        public void asPointer(inner.innerPointer ptr) {
+            ptr.setPointer(this);
+        }
+
         /**
          * Innerr struct field
          */
@@ -170,6 +183,10 @@ public final class AnonymousStructField extends Struct {
         }
 
         public static final class innerPointer extends StackElementPointer<inner> {
+
+            public innerPointer(VoidPointer pointer) {
+                super(pointer);
+            }
 
             public innerPointer(long pointer, boolean freeOnGC) {
                 super(pointer, freeOnGC);

@@ -6,6 +6,10 @@ public class SIntPointer extends VoidPointer {
 
     private static final int BYTE_SIZE = 4;
 
+    public SIntPointer(VoidPointer pointer) {
+        super(pointer);
+    }
+
     public SIntPointer(int count, boolean freeOnGC) {
         super(count * BYTE_SIZE, freeOnGC);
     }

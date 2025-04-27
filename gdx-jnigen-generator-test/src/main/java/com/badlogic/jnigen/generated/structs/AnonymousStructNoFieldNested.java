@@ -4,6 +4,7 @@ import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
+import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.jnigen.generated.FFITypes;
 
 public final class AnonymousStructNoFieldNested extends Struct {
@@ -42,6 +43,10 @@ public final class AnonymousStructNoFieldNested extends Struct {
         return new AnonymousStructNoFieldNested.AnonymousStructNoFieldNestedPointer(getPointer(), false, 1, this);
     }
 
+    public void asPointer(AnonymousStructNoFieldNested.AnonymousStructNoFieldNestedPointer ptr) {
+        ptr.setPointer(this);
+    }
+
     public int intValue1() {
         return getBufPtr().getInt(0);
     }
@@ -67,6 +72,10 @@ public final class AnonymousStructNoFieldNested extends Struct {
     }
 
     public static final class AnonymousStructNoFieldNestedPointer extends StackElementPointer<AnonymousStructNoFieldNested> {
+
+        public AnonymousStructNoFieldNestedPointer(VoidPointer pointer) {
+            super(pointer);
+        }
 
         public AnonymousStructNoFieldNestedPointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);

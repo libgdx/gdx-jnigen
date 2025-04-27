@@ -7,6 +7,11 @@ public class PointerPointer<T extends Pointing> extends VoidPointer {
     private static final int __pointer_size = CHandler.POINTER_SIZE;
     private PointerDereferenceSupplier<T> supplier;
 
+    public PointerPointer(VoidPointer pointer, PointerDereferenceSupplier<T> supplier) {
+        super(pointer);
+        this.supplier = supplier;
+    }
+
     public PointerPointer(long pointer, boolean freeOnGC, PointerDereferenceSupplier<T> supplier) {
         super(pointer, freeOnGC);
         this.supplier = supplier;

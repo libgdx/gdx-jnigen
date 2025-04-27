@@ -159,6 +159,7 @@ public class StackElementType implements MappedType, WritableClass {
         cuPublic.addImport(isStruct() ? ClassNameConstants.STRUCT_CLASS : ClassNameConstants.UNION_CLASS);
         cuPublic.addImport(ClassNameConstants.STACKELEMENTPOINTER_CLASS);
         cuPublic.addImport(ClassNameConstants.POINTING_CLASS);
+        cuPublic.addImport(ClassNameConstants.VOIDPOINTER_CLASS);
 
         if (comment != null) {
             toWriteToPublic.setJavadocComment(comment);
@@ -200,6 +201,10 @@ public class StackElementType implements MappedType, WritableClass {
         toWriteToPublic.addMethod("asPointer", Keyword.PUBLIC).setType(structPointerRef).createBody()
                 .addStatement("return new " + structPointerRef + "(getPointer(), false, 1, this);");
 
+        toWriteToPublic.addMethod("asPointer", Keyword.PUBLIC)
+                .addParameter(structPointerRef, "ptr").createBody()
+                .addStatement(new MethodCallExpr(new NameExpr("ptr"), "setPointer").addArgument("this"));
+
         // Fields
         for (int i = 0; i < fields.size(); i++) {
             StackElementField field = fields.get(i);
@@ -236,6 +241,11 @@ public class StackElementType implements MappedType, WritableClass {
 
         toWriteToPublic.addMember(pointerClass);
         pointerClass.addExtendedType("StackElementPointer<" + javaTypeName + ">");
+
+        pointerClass.addConstructor(Keyword.PUBLIC)
+                .addParameter("VoidPointer", "pointer")
+                .getBody().addStatement("super(pointer);");
+
         ConstructorDeclaration pointerConstructor = pointerClass.addConstructor(Keyword.PUBLIC);
         pointerConstructor.addParameter(new Parameter(PrimitiveType.longType(), "pointer"));
         pointerConstructor.addParameter(new Parameter(PrimitiveType.booleanType(), "freeOnGC"));

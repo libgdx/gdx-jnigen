@@ -1,9 +1,9 @@
 package com.badlogic.gdx.jnigen.runtime.closure;
 
 import com.badlogic.gdx.jnigen.runtime.CHandler;
-import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
+import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 
-public abstract class ClosureObject<T extends Closure> extends Pointing {
+public abstract class ClosureObject<T extends Closure> extends VoidPointer {
 
     private final T closure;
 

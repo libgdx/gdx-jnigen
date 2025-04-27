@@ -4,6 +4,7 @@ import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
+import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner;
 
@@ -43,6 +44,10 @@ public final class AnonymousStructFieldArray extends Struct {
         return new AnonymousStructFieldArray.AnonymousStructFieldArrayPointer(getPointer(), false, 1, this);
     }
 
+    public void asPointer(AnonymousStructFieldArray.AnonymousStructFieldArrayPointer ptr) {
+        ptr.setPointer(this);
+    }
+
     public inner.innerPointer inner() {
         return new inner.innerPointer(getPointer(), false, 2);
     }
@@ -72,6 +77,10 @@ public final class AnonymousStructFieldArray extends Struct {
     }
 
     public static final class AnonymousStructFieldArrayPointer extends StackElementPointer<AnonymousStructFieldArray> {
+
+        public AnonymousStructFieldArrayPointer(VoidPointer pointer) {
+            super(pointer);
+        }
 
         public AnonymousStructFieldArrayPointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);
@@ -144,6 +153,10 @@ public final class AnonymousStructFieldArray extends Struct {
             return new inner.innerPointer(getPointer(), false, 1, this);
         }
 
+        public void asPointer(inner.innerPointer ptr) {
+            ptr.setPointer(this);
+        }
+
         public int intValue() {
             return getBufPtr().getInt(0);
         }
@@ -161,6 +174,10 @@ public final class AnonymousStructFieldArray extends Struct {
         }
 
         public static final class innerPointer extends StackElementPointer<inner> {
+
+            public innerPointer(VoidPointer pointer) {
+                super(pointer);
+            }
 
             public innerPointer(long pointer, boolean freeOnGC) {
                 super(pointer, freeOnGC);
