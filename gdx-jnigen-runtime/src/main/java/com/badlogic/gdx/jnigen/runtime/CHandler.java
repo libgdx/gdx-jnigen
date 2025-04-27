@@ -33,6 +33,8 @@ public class CHandler {
         }
         POINTER_SIZE = is32Bit() ? 4 : 8;
         IS_32_BIT = is32Bit();
+        IS_64_BIT = !is32Bit();
+        IS_COMPILED_UNIX = !isCompiledWin();
         IS_COMPILED_WIN = isCompiledWin();
         IS_COMPILED_ANDROID_X86 = isCompiledAndroidX86();
         IS_CHAR_SIGNED = isCharSigned();
@@ -46,6 +48,8 @@ public class CHandler {
 
     public static final int POINTER_SIZE;
     public static final boolean IS_32_BIT;
+    public static final boolean IS_64_BIT;
+    public static final boolean IS_COMPILED_UNIX;
     public static final boolean IS_COMPILED_WIN;
     public static final boolean IS_COMPILED_ANDROID_X86;
     public static final boolean IS_CHAR_SIGNED;

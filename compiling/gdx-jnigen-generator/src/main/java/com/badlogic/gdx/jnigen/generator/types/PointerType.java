@@ -2,6 +2,7 @@ package com.badlogic.gdx.jnigen.generator.types;
 
 import com.badlogic.gdx.jnigen.generator.ClassNameConstants;
 import com.badlogic.gdx.jnigen.generator.Manager;
+import com.badlogic.gdx.jnigen.generator.PossibleTarget;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.*;
@@ -214,7 +215,7 @@ public class PointerType implements MappedType {
     }
 
     @Override
-    public int getSize(boolean is32Bit, boolean isWin) {
-        return is32Bit ? 4 : 8;
+    public int getSize(PossibleTarget target) {
+        return target.is32Bit() ? 4 : 8;
     }
 }

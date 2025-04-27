@@ -1,5 +1,6 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
+import com.badlogic.gdx.jnigen.generator.PossibleTarget;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.expr.Expression;
 
@@ -47,11 +48,11 @@ public interface MappedType {
 
     Expression writeToBufferPtr(Expression bufferPtr, Expression offset, Expression valueToWrite);
     Expression readFromBufferPtr(Expression bufferPtr, Expression offset);
-    int getSize(boolean is32Bit, boolean isWin);
-    default int getAlignment(boolean is32Bit, boolean isWin) {
-        return getSize(is32Bit, isWin);
+    int getSize(PossibleTarget target);
+    default int getAlignment(PossibleTarget target) {
+        return getSize(target);
     }
-    default int getSizeFromC(boolean is32Bit, boolean isWin) {
-        return getSize(is32Bit, isWin);
+    default int getSizeFromC(PossibleTarget target) {
+        return getSize(target);
     }
 }

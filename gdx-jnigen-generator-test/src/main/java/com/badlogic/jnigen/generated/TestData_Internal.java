@@ -86,11 +86,11 @@ public final class TestData_Internal {
             }
 
             default void invoke(BufferPtr buf) {
-                buf.setInt(0, someClosure_call(new SIntPointer(buf.getNativePointer(0), false), buf.getDouble(CHandler.IS_32_BIT ? 4 : 8)));
+                buf.setInt(0, someClosure_call(new SIntPointer(buf.getNativePointer(0), false), buf.getDouble(CHandler.IS_64_BIT ? 8 : 4)));
             }
 
             default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
-                buf.setInt(0, someClosure_call(manager.getPointing(SIntPointer.class, buf.getNativePointer(0)), buf.getDouble(CHandler.IS_32_BIT ? 4 : 8)));
+                buf.setInt(0, someClosure_call(manager.getPointing(SIntPointer.class, buf.getNativePointer(0)), buf.getDouble(CHandler.IS_64_BIT ? 8 : 4)));
             }
 
             public static CClosureObject<someClosure> someClosure_downcall(long fnPtr) {
@@ -98,9 +98,9 @@ public final class TestData_Internal {
                 return new CClosureObject<>((t, p) -> {
                     BufferPtr bufPtr = encoder.lockOrDuplicate();
                     bufPtr.setNativePointer(0, t.getPointer());
-                    bufPtr.setDouble(CHandler.IS_32_BIT ? 4 : 8, p);
+                    bufPtr.setDouble(CHandler.IS_64_BIT ? 8 : 4, p);
                     encoder.invoke(bufPtr);
-                    int _retPar = bufPtr.getInt(CHandler.IS_32_BIT ? 12 : 16);
+                    int _retPar = bufPtr.getInt(CHandler.IS_64_BIT ? 16 : 12);
                     encoder.finish(bufPtr);
                     return _retPar;
                 }, fnPtr, encoder);
@@ -561,7 +561,7 @@ public final class TestData_Internal {
                 BufferPtr bufPtr = encoder.lockOrDuplicate();
                 bufPtr.setNativePointer(0, arg0.getPointer());
                 encoder.invoke(bufPtr);
-                int _retPar = bufPtr.getInt(CHandler.IS_32_BIT ? 4 : 8);
+                int _retPar = bufPtr.getInt(CHandler.IS_64_BIT ? 8 : 4);
                 encoder.finish(bufPtr);
                 return _retPar;
             }, fnPtr, encoder);
@@ -1118,7 +1118,7 @@ public final class TestData_Internal {
                 BufferPtr bufPtr = encoder.lockOrDuplicate();
                 bufPtr.setNativePointer(0, arg0.getPointer());
                 encoder.invoke(bufPtr);
-                VoidPointer _retPar = new VoidPointer(bufPtr.getNativePointer(CHandler.IS_32_BIT ? 4 : 8), false);
+                VoidPointer _retPar = new VoidPointer(bufPtr.getNativePointer(CHandler.IS_64_BIT ? 8 : 4), false);
                 encoder.finish(bufPtr);
                 return _retPar;
             }, fnPtr, encoder);

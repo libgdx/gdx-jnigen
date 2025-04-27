@@ -93,9 +93,6 @@ jnigen {
     addWindows(x64, x86)
     //add(Windows, x64, ARM)
     addAndroid() {
-        // TODO: TEMP fix for compiling for x86, fix later
-        cFlags += ["-malign-double"]
-        cppFlags += ["-malign-double"]
         androidApplicationMk += ["APP_STL := c++_shared"]
         linkerFlags += ["-stdlib=libc++"]
     }

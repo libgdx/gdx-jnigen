@@ -11,9 +11,12 @@ public class FFITypes {
 		#include <test_data.h>
 */
     /*JNI
-		#if defined(_WIN32)
-		#if ARCH_BITS == 32
-		static_assert(sizeof(void*) == 4, "Expected size of void* on 32bit is 4");
+		#if !((defined(_WIN32) && ARCH_BITS == 32) || (defined(_WIN32) && ARCH_BITS == 64) || (!defined(_WIN32) && ARCH_BITS == 32 && !(defined(__i386__) && defined(__ANDROID__))) || (!defined(_WIN32) && ARCH_BITS == 64) || (defined(__i386__) && defined(__ANDROID__)))
+			#error Unsupported OS/Platform
+		#endif
+		
+
+		#if defined(_WIN32) && ARCH_BITS == 32
 		static_assert(sizeof(bool) == 1, "Type bool has unexpected size.");
 		static_assert(alignof(bool) == 1, "Type bool has unexpected alignment.");
 		static_assert(sizeof(uint64_t) == 8, "Type uint64_t has unexpected size.");
@@ -113,8 +116,10 @@ public class FFITypes {
 		static_assert(offsetof(SpecialStruct, floatPtrField) == 0, "Type SpecialStruct has unexpected offset.");
 		static_assert(offsetof(SpecialStruct, arrayField) == 4, "Type SpecialStruct has unexpected offset.");
 		static_assert(offsetof(SpecialStruct, intPtrField) == 24, "Type SpecialStruct has unexpected offset.");
-		#elif ARCH_BITS == 64
-		static_assert(sizeof(void*) == 8, "Expected size of void* on 64bit is 8");
+		#endif // defined(_WIN32) && ARCH_BITS == 32
+		
+
+		#if defined(_WIN32) && ARCH_BITS == 64
 		static_assert(sizeof(bool) == 1, "Type bool has unexpected size.");
 		static_assert(alignof(bool) == 1, "Type bool has unexpected alignment.");
 		static_assert(sizeof(uint64_t) == 8, "Type uint64_t has unexpected size.");
@@ -214,12 +219,10 @@ public class FFITypes {
 		static_assert(offsetof(SpecialStruct, floatPtrField) == 0, "Type SpecialStruct has unexpected offset.");
 		static_assert(offsetof(SpecialStruct, arrayField) == 8, "Type SpecialStruct has unexpected offset.");
 		static_assert(offsetof(SpecialStruct, intPtrField) == 32, "Type SpecialStruct has unexpected offset.");
-		#else
-		#error Unsupported OS
-		#endif
-		#else
-		#if ARCH_BITS == 32
-		static_assert(sizeof(void*) == 4, "Expected size of void* on 32bit is 4");
+		#endif // defined(_WIN32) && ARCH_BITS == 64
+		
+
+		#if !defined(_WIN32) && ARCH_BITS == 32 && !(defined(__i386__) && defined(__ANDROID__))
 		static_assert(sizeof(bool) == 1, "Type bool has unexpected size.");
 		static_assert(alignof(bool) == 1, "Type bool has unexpected alignment.");
 		static_assert(sizeof(uint64_t) == 8, "Type uint64_t has unexpected size.");
@@ -319,8 +322,10 @@ public class FFITypes {
 		static_assert(offsetof(SpecialStruct, floatPtrField) == 0, "Type SpecialStruct has unexpected offset.");
 		static_assert(offsetof(SpecialStruct, arrayField) == 4, "Type SpecialStruct has unexpected offset.");
 		static_assert(offsetof(SpecialStruct, intPtrField) == 24, "Type SpecialStruct has unexpected offset.");
-		#elif ARCH_BITS == 64
-		static_assert(sizeof(void*) == 8, "Expected size of void* on 64bit is 8");
+		#endif // !defined(_WIN32) && ARCH_BITS == 32 && !(defined(__i386__) && defined(__ANDROID__))
+		
+
+		#if !defined(_WIN32) && ARCH_BITS == 64
 		static_assert(sizeof(bool) == 1, "Type bool has unexpected size.");
 		static_assert(alignof(bool) == 1, "Type bool has unexpected alignment.");
 		static_assert(sizeof(uint64_t) == 8, "Type uint64_t has unexpected size.");
@@ -420,10 +425,112 @@ public class FFITypes {
 		static_assert(offsetof(SpecialStruct, floatPtrField) == 0, "Type SpecialStruct has unexpected offset.");
 		static_assert(offsetof(SpecialStruct, arrayField) == 8, "Type SpecialStruct has unexpected offset.");
 		static_assert(offsetof(SpecialStruct, intPtrField) == 32, "Type SpecialStruct has unexpected offset.");
-		#else
-		#error Unsupported OS
-		#endif
-		#endif
+		#endif // !defined(_WIN32) && ARCH_BITS == 64
+		
+
+		#if defined(__i386__) && defined(__ANDROID__)
+		static_assert(sizeof(bool) == 1, "Type bool has unexpected size.");
+		static_assert(alignof(bool) == 1, "Type bool has unexpected alignment.");
+		static_assert(sizeof(uint64_t) == 8, "Type uint64_t has unexpected size.");
+		static_assert(alignof(uint64_t) == 4, "Type uint64_t has unexpected alignment.");
+		static_assert(sizeof(double) == 8, "Type double has unexpected size.");
+		static_assert(alignof(double) == 4, "Type double has unexpected alignment.");
+		static_assert(sizeof(uint32_t) == 4, "Type uint32_t has unexpected size.");
+		static_assert(alignof(uint32_t) == 4, "Type uint32_t has unexpected alignment.");
+		static_assert(sizeof(unsigned char) == 1, "Type unsigned char has unexpected size.");
+		static_assert(alignof(unsigned char) == 1, "Type unsigned char has unexpected alignment.");
+		static_assert(sizeof(signed char) == 1, "Type signed char has unexpected size.");
+		static_assert(alignof(signed char) == 1, "Type signed char has unexpected alignment.");
+		static_assert(sizeof(float) == 4, "Type float has unexpected size.");
+		static_assert(alignof(float) == 4, "Type float has unexpected alignment.");
+		static_assert(sizeof(int) == 4, "Type int has unexpected size.");
+		static_assert(alignof(int) == 4, "Type int has unexpected alignment.");
+		static_assert(sizeof(long) == 4, "Type long has unexpected size.");
+		static_assert(alignof(long) == 4, "Type long has unexpected alignment.");
+		static_assert(sizeof(uint16_t) == 2, "Type uint16_t has unexpected size.");
+		static_assert(alignof(uint16_t) == 2, "Type uint16_t has unexpected alignment.");
+		static_assert(sizeof(unsigned int) == 4, "Type unsigned int has unexpected size.");
+		static_assert(alignof(unsigned int) == 4, "Type unsigned int has unexpected alignment.");
+		static_assert(sizeof(const char) == 1, "Type const char has unexpected size.");
+		static_assert(alignof(const char) == 1, "Type const char has unexpected alignment.");
+		static_assert(sizeof(char) == 1, "Type char has unexpected size.");
+		static_assert(alignof(char) == 1, "Type char has unexpected alignment.");
+		static_assert(sizeof(short) == 2, "Type short has unexpected size.");
+		static_assert(alignof(short) == 2, "Type short has unexpected alignment.");
+		static_assert(sizeof(uint8_t) == 1, "Type uint8_t has unexpected size.");
+		static_assert(alignof(uint8_t) == 1, "Type uint8_t has unexpected alignment.");
+		static_assert(sizeof(GlobalArg) == 32, "Type GlobalArg has unexpected size.");
+		static_assert(alignof(GlobalArg) == 4, "Type GlobalArg has unexpected alignment.");
+		static_assert(offsetof(GlobalArg, longVal) == 0, "Type GlobalArg has unexpected offset.");
+		static_assert(offsetof(GlobalArg, intVal) == 0, "Type GlobalArg has unexpected offset.");
+		static_assert(offsetof(GlobalArg, shortVal) == 0, "Type GlobalArg has unexpected offset.");
+		static_assert(offsetof(GlobalArg, byteVal) == 0, "Type GlobalArg has unexpected offset.");
+		static_assert(offsetof(GlobalArg, charVal) == 0, "Type GlobalArg has unexpected offset.");
+		static_assert(offsetof(GlobalArg, boolVal) == 0, "Type GlobalArg has unexpected offset.");
+		static_assert(offsetof(GlobalArg, floatVal) == 0, "Type GlobalArg has unexpected offset.");
+		static_assert(offsetof(GlobalArg, doubleVal) == 0, "Type GlobalArg has unexpected offset.");
+		static_assert(offsetof(GlobalArg, intPtr) == 0, "Type GlobalArg has unexpected offset.");
+		static_assert(offsetof(GlobalArg, intPtrPtr) == 0, "Type GlobalArg has unexpected offset.");
+		static_assert(offsetof(GlobalArg, structVal) == 0, "Type GlobalArg has unexpected offset.");
+		static_assert(offsetof(GlobalArg, structPtr) == 0, "Type GlobalArg has unexpected offset.");
+		static_assert(offsetof(GlobalArg, enumVal) == 0, "Type GlobalArg has unexpected offset.");
+		static_assert(offsetof(GlobalArg, enumPtr) == 0, "Type GlobalArg has unexpected offset.");
+		static_assert(offsetof(GlobalArg, unionPtr) == 0, "Type GlobalArg has unexpected offset.");
+		static_assert(offsetof(GlobalArg, allArgs) == 0, "Type GlobalArg has unexpected offset.");
+		static_assert(sizeof(AnonymousStructField) == 12, "Type AnonymousStructField has unexpected size.");
+		static_assert(alignof(AnonymousStructField) == 4, "Type AnonymousStructField has unexpected alignment.");
+		static_assert(offsetof(AnonymousStructField, inner) == 0, "Type AnonymousStructField has unexpected offset.");
+		static_assert(offsetof(AnonymousStructField, externalValue) == 8, "Type AnonymousStructField has unexpected offset.");
+		static_assert(sizeof(TestStruct) == 16, "Type TestStruct has unexpected size.");
+		static_assert(alignof(TestStruct) == 4, "Type TestStruct has unexpected alignment.");
+		static_assert(offsetof(TestStruct, field1) == 0, "Type TestStruct has unexpected offset.");
+		static_assert(offsetof(TestStruct, field2) == 8, "Type TestStruct has unexpected offset.");
+		static_assert(offsetof(TestStruct, field3) == 12, "Type TestStruct has unexpected offset.");
+		static_assert(offsetof(TestStruct, field4) == 14, "Type TestStruct has unexpected offset.");
+		static_assert(sizeof(AnonymousClosure) == 8, "Type AnonymousClosure has unexpected size.");
+		static_assert(alignof(AnonymousClosure) == 4, "Type AnonymousClosure has unexpected alignment.");
+		static_assert(offsetof(AnonymousClosure, someClosure) == 0, "Type AnonymousClosure has unexpected offset.");
+		static_assert(offsetof(AnonymousClosure, anotherClosure) == 4, "Type AnonymousClosure has unexpected offset.");
+		static_assert(sizeof(AnonymousStructNoFieldEnd) == 12, "Type AnonymousStructNoFieldEnd has unexpected size.");
+		static_assert(alignof(AnonymousStructNoFieldEnd) == 4, "Type AnonymousStructNoFieldEnd has unexpected alignment.");
+		static_assert(offsetof(AnonymousStructNoFieldEnd, externalValue) == 0, "Type AnonymousStructNoFieldEnd has unexpected offset.");
+		static_assert(offsetof(AnonymousStructNoFieldEnd, intValue) == 4, "Type AnonymousStructNoFieldEnd has unexpected offset.");
+		static_assert(offsetof(AnonymousStructNoFieldEnd, floatValue) == 8, "Type AnonymousStructNoFieldEnd has unexpected offset.");
+		static_assert(sizeof(AnonymousStructNoField) == 12, "Type AnonymousStructNoField has unexpected size.");
+		static_assert(alignof(AnonymousStructNoField) == 4, "Type AnonymousStructNoField has unexpected alignment.");
+		static_assert(offsetof(AnonymousStructNoField, intValue) == 0, "Type AnonymousStructNoField has unexpected offset.");
+		static_assert(offsetof(AnonymousStructNoField, floatValue) == 4, "Type AnonymousStructNoField has unexpected offset.");
+		static_assert(offsetof(AnonymousStructNoField, externalValue) == 8, "Type AnonymousStructNoField has unexpected offset.");
+		static_assert(sizeof(AnonymousStructNoFieldNested) == 12, "Type AnonymousStructNoFieldNested has unexpected size.");
+		static_assert(alignof(AnonymousStructNoFieldNested) == 4, "Type AnonymousStructNoFieldNested has unexpected alignment.");
+		static_assert(offsetof(AnonymousStructNoFieldNested, intValue1) == 0, "Type AnonymousStructNoFieldNested has unexpected offset.");
+		static_assert(offsetof(AnonymousStructNoFieldNested, floatValue2) == 4, "Type AnonymousStructNoFieldNested has unexpected offset.");
+		static_assert(offsetof(AnonymousStructNoFieldNested, externalValue) == 8, "Type AnonymousStructNoFieldNested has unexpected offset.");
+		static_assert(sizeof(AnonymousStructFieldArray) == 20, "Type AnonymousStructFieldArray has unexpected size.");
+		static_assert(alignof(AnonymousStructFieldArray) == 4, "Type AnonymousStructFieldArray has unexpected alignment.");
+		static_assert(offsetof(AnonymousStructFieldArray, inner) == 0, "Type AnonymousStructFieldArray has unexpected offset.");
+		static_assert(offsetof(AnonymousStructFieldArray, externalValue) == 16, "Type AnonymousStructFieldArray has unexpected offset.");
+		static_assert(sizeof(AnonymousStructNoFieldConsecutive) == 20, "Type AnonymousStructNoFieldConsecutive has unexpected size.");
+		static_assert(alignof(AnonymousStructNoFieldConsecutive) == 4, "Type AnonymousStructNoFieldConsecutive has unexpected alignment.");
+		static_assert(offsetof(AnonymousStructNoFieldConsecutive, externalValue) == 0, "Type AnonymousStructNoFieldConsecutive has unexpected offset.");
+		static_assert(offsetof(AnonymousStructNoFieldConsecutive, intValue1) == 4, "Type AnonymousStructNoFieldConsecutive has unexpected offset.");
+		static_assert(offsetof(AnonymousStructNoFieldConsecutive, floatValue1) == 8, "Type AnonymousStructNoFieldConsecutive has unexpected offset.");
+		static_assert(offsetof(AnonymousStructNoFieldConsecutive, intValue2) == 12, "Type AnonymousStructNoFieldConsecutive has unexpected offset.");
+		static_assert(offsetof(AnonymousStructNoFieldConsecutive, floatValue2) == 16, "Type AnonymousStructNoFieldConsecutive has unexpected offset.");
+		static_assert(sizeof(TestUnion) == 16, "Type TestUnion has unexpected size.");
+		static_assert(alignof(TestUnion) == 4, "Type TestUnion has unexpected alignment.");
+		static_assert(offsetof(TestUnion, uintType) == 0, "Type TestUnion has unexpected offset.");
+		static_assert(offsetof(TestUnion, doubleType) == 0, "Type TestUnion has unexpected offset.");
+		static_assert(offsetof(TestUnion, fixedSizeInt) == 0, "Type TestUnion has unexpected offset.");
+		static_assert(offsetof(TestUnion, structType) == 0, "Type TestUnion has unexpected offset.");
+		static_assert(sizeof(SpecialStruct) == 28, "Type SpecialStruct has unexpected size.");
+		static_assert(alignof(SpecialStruct) == 4, "Type SpecialStruct has unexpected alignment.");
+		static_assert(offsetof(SpecialStruct, floatPtrField) == 0, "Type SpecialStruct has unexpected offset.");
+		static_assert(offsetof(SpecialStruct, arrayField) == 4, "Type SpecialStruct has unexpected offset.");
+		static_assert(offsetof(SpecialStruct, intPtrField) == 24, "Type SpecialStruct has unexpected offset.");
+		#endif // defined(__i386__) && defined(__ANDROID__)
+		
+
 		static_assert(IS_UNSIGNED_TYPE(bool), "Type bool is expected unsigned.");
 		static_assert(IS_UNSIGNED_TYPE(uint64_t), "Type uint64_t is expected unsigned.");
 		static_assert(IS_SIGNED_TYPE(double), "Type double is expected signed.");

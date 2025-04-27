@@ -239,40 +239,22 @@ public class Manager {
         toAddTo.addOrphanComment(new BlockComment(result.toString()));
     }
 
-    private void createStaticAsserts(List<String> assertBuilder, boolean windows) {
-        assertBuilder.add("#if ARCH_BITS == 32");
-        assertBuilder.add("static_assert(sizeof(void*) == 4, \"Expected size of void* on 32bit is 4\");");
+    private void createStaticAsserts(List<String> assertBuilder, PossibleTarget target) {
+        assertBuilder.add("#if " + target.condition());
         knownCTypes.forEach((name, typeKind) -> {
-            assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getMappedType().getSize(true, windows) + ", \"Type " + name + " has unexpected size.\");");
-            assertBuilder.add("static_assert(alignof(" + name + ") == " + typeKind.getMappedType().getAlignment(true, windows) + ", \"Type " + name + " has unexpected alignment.\");");
+            assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getMappedType().getSize(target) + ", \"Type " + name + " has unexpected size.\");");
+            assertBuilder.add("static_assert(alignof(" + name + ") == " + typeKind.getMappedType().getAlignment(target) + ", \"Type " + name + " has unexpected alignment.\");");
         });
         stackElements.forEach((name, stackElementType) -> {
             if (stackElementType.getFields().isEmpty()) // TODO: 04.04.2025 Add proper forwardDecl detection
                 return;
-            assertBuilder.add("static_assert(sizeof(" + name + ") == " + stackElementType.getSize(true, windows) + ", \"Type " + name + " has unexpected size.\");");
-            assertBuilder.add("static_assert(alignof(" + name + ") == " + stackElementType.getAlignment(true, windows) + ", \"Type " + name + " has unexpected alignment.\");");
+            assertBuilder.add("static_assert(sizeof(" + name + ") == " + stackElementType.getSize(target) + ", \"Type " + name + " has unexpected size.\");");
+            assertBuilder.add("static_assert(alignof(" + name + ") == " + stackElementType.getAlignment(target) + ", \"Type " + name + " has unexpected alignment.\");");
             for (int i = 0; i < stackElementType.getFields().size(); i++) {
-                assertBuilder.add("static_assert(offsetof(" + name + ", " + stackElementType.getFields().get(i).getName() + ") == " + stackElementType.getFieldOffset(i, true, windows) + ", \"Type " + name + " has unexpected offset.\");");
+                assertBuilder.add("static_assert(offsetof(" + name + ", " + stackElementType.getFields().get(i).getName() + ") == " + stackElementType.getFieldOffset(i, target) + ", \"Type " + name + " has unexpected offset.\");");
             }
         });
-        assertBuilder.add("#elif ARCH_BITS == 64");
-        assertBuilder.add("static_assert(sizeof(void*) == 8, \"Expected size of void* on 64bit is 8\");");
-        knownCTypes.forEach((name, typeKind) -> {
-            assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getMappedType().getSize(false, windows) + ", \"Type " + name + " has unexpected size.\");");
-            assertBuilder.add("static_assert(alignof(" + name + ") == " + typeKind.getMappedType().getAlignment(false, windows) + ", \"Type " + name + " has unexpected alignment.\");");
-        });
-        stackElements.forEach((name, stackElementType) -> {
-            if (stackElementType.getFields().isEmpty()) // TODO: 04.04.2025 Add proper forwardDecl detection
-                return;
-            assertBuilder.add("static_assert(sizeof(" + name + ") == " + stackElementType.getSize(false, windows) + ", \"Type " + name + " has unexpected size.\");");
-            assertBuilder.add("static_assert(alignof(" + name + ") == " + stackElementType.getAlignment(false, windows) + ", \"Type " + name + " has unexpected alignment.\");");
-            for (int i = 0; i < stackElementType.getFields().size(); i++) {
-                assertBuilder.add("static_assert(offsetof(" + name + ", " + stackElementType.getFields().get(i).getName() + ") == " + stackElementType.getFieldOffset(i, false, windows) + ", \"Type " + name + " has unexpected offset.\");");
-            }
-        });
-        assertBuilder.add("#else");
-        assertBuilder.add("#error Unsupported OS");
-        assertBuilder.add("#endif");
+        assertBuilder.add("#endif // " + target.condition());
     }
 
     public void emit(String basePath) {
@@ -340,11 +322,16 @@ public class Manager {
             addJNIComment(ffiTypeClass, "#include <jnigen.h>", "#include <" + parsedCHeader + ">");
 
             List<String> assertBuilder = new ArrayList<>();
-            assertBuilder.add("#if defined(_WIN32)");
-            createStaticAsserts(assertBuilder, true);
-            assertBuilder.add("#else");
-            createStaticAsserts(assertBuilder, false);
+
+            assertBuilder.add("#if " + PossibleTarget.unsupportedPlatformCondition());
+            assertBuilder.add("\t#error Unsupported OS/Platform");
             assertBuilder.add("#endif");
+            assertBuilder.add("\n");
+
+            for (PossibleTarget target : PossibleTarget.values()) {
+                createStaticAsserts(assertBuilder, target);
+                assertBuilder.add("\n");
+            }
 
             knownCTypes.forEach((name, typeKind) -> {
                 if (typeKind.getTypeKind() == TypeKind.NATIVE_BYTE)
