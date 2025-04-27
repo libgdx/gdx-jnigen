@@ -1,5 +1,9 @@
 package com.badlogic.gdx.jnigen.runtime.pointer;
 
+/**
+ * A base pointer class, where all pointer types extend from, that can be represented as "void*" in C.<br>
+ * No data can/should be accessed directly. Rather construct the appropriate pointer type with {@link VoidPointer#VoidPointer(VoidPointer)}
+ */
 public class VoidPointer extends Pointing {
 
     public static final VoidPointer NULL = new VoidPointer(0, false, 0);

@@ -2,6 +2,9 @@ package com.badlogic.gdx.jnigen.runtime.pointer;
 
 import com.badlogic.gdx.jnigen.runtime.util.SynchronizedPool;
 
+/**
+ * A syncronized pool to pool Pointing objects for Closures
+ */
 public class PointingPool<T extends Pointing> extends SynchronizedPool<T> {
 
     private final PointerDereferenceSupplier<T> supplier;

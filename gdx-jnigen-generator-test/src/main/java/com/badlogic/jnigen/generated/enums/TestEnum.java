@@ -81,9 +81,5 @@ public enum TestEnum implements CEnum {
         public void setEnumValue(TestEnum value, int index) {
             getBufPtr().setUInt(index * __size, value.getIndex());
         }
-
-        public int getSize() {
-            return __size;
-        }
     }
 }

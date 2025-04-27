@@ -1,7 +1,5 @@
-package com.badlogic.gdx.jnigen.runtime.ffi;
+package com.badlogic.gdx.jnigen.runtime.closure;
 
-import com.badlogic.gdx.jnigen.runtime.closure.Closure;
-import com.badlogic.gdx.jnigen.runtime.closure.PointingPoolManager;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
 
 public final class ClosureDecoder<T extends Closure> {

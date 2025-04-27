@@ -2,6 +2,10 @@ package com.badlogic.gdx.jnigen.runtime.pointer.integer;
 
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 
+/**
+ * This class represents an 'unsigned short` on C side.
+ * On java side this is a `char`
+ */
 public class UShortPointer extends VoidPointer {
 
     private static final int BYTE_SIZE = 2;

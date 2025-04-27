@@ -13,8 +13,8 @@ avoids "java.library.path" troubles.
 
 See the libGDX Wiki for usage: https://libgdx.com/wiki/utils/jnigen
 
-> [!CAUTION]
-> The jnigen-runtime and jnigen-generator API is considered incubating and may change at any point.
+> [!NOTE]
+> For documentation of jnigen-runtime and jnigen-generator API please refer to `RUNTIME.MD`.
 
 > [!NOTE]
 > For migrating from jnigen 2.x see the `MIGRATION.MD`

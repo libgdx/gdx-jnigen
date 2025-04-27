@@ -2,6 +2,9 @@ package com.badlogic.gdx.jnigen.runtime.pointer.integer;
 
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 
+/**
+ * This represents an `long long` or `uint64_t` pointer.
+ */
 public class SInt64Pointer extends VoidPointer {
 
     private static final int BYTE_SIZE = 8;

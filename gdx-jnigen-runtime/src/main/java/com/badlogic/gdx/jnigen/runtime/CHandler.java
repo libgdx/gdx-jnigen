@@ -5,7 +5,7 @@ import com.badlogic.gdx.jnigen.runtime.c.CXXException;
 import com.badlogic.gdx.jnigen.runtime.closure.Closure;
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.runtime.closure.JavaClosureObject;
-import com.badlogic.gdx.jnigen.runtime.ffi.ClosureDecoder;
+import com.badlogic.gdx.jnigen.runtime.closure.ClosureDecoder;
 import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
 import com.badlogic.gdx.jnigen.runtime.mem.AllocationManager;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;

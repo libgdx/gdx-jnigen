@@ -2,6 +2,9 @@ package com.badlogic.gdx.jnigen.runtime.pointer.integer;
 
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 
+/**
+ * This represents an `signed char` pointer.
+ */
 public class SBytePointer extends VoidPointer {
     private static final int BYTE_SIZE = 1;
 

@@ -1,7 +1,5 @@
 package com.badlogic.gdx.jnigen.runtime.closure;
 
-import com.badlogic.gdx.jnigen.runtime.ffi.ClosureEncoder;
-
 public class CClosureObject<T extends Closure> extends ClosureObject<T> {
 
     private final ClosureEncoder encoder;

@@ -172,9 +172,6 @@ public class EnumType implements MappedType {
                 .addParameter(int.class, "index")
                 .createBody()
                 .addStatement(writeExpr);
-
-        pointerClass.addMethod("getSize", Keyword.PUBLIC).setType(int.class)
-                .createBody().addStatement("return __size;");
     }
 
     public PrimitiveType getBackingPrimitiveType() {

@@ -6,7 +6,7 @@ public final class ClassNameConstants {
     public static final String CLOSURE_CLASS = "com.badlogic.gdx.jnigen.runtime.closure.Closure";
     public static final String CLOSUREOBJECT_CLASS = "com.badlogic.gdx.jnigen.runtime.closure.ClosureObject";
     public static final String CCLOSUREOBJECT_CLASS = "com.badlogic.gdx.jnigen.runtime.closure.CClosureObject";
-    public static final String CLOSUREENCODER_CLASS = "com.badlogic.gdx.jnigen.runtime.ffi.ClosureEncoder";
+    public static final String CLOSUREENCODER_CLASS = "com.badlogic.gdx.jnigen.runtime.closure.ClosureEncoder";
     public static final String POINTINGPOOLMANAGER_CLASS = "com.badlogic.gdx.jnigen.runtime.closure.PointingPoolManager";
 
     public static final String STRUCT_CLASS = "com.badlogic.gdx.jnigen.runtime.pointer.Struct";

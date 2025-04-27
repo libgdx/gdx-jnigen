@@ -2,6 +2,9 @@ package com.badlogic.gdx.jnigen.runtime.pointer.integer;
 
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 
+/**
+ * This represents an `short` pointer.
+ */
 public class SShortPointer extends VoidPointer {
 
     private static final int BYTE_SIZE = 2;

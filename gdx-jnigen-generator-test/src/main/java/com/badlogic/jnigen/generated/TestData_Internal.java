@@ -5,7 +5,7 @@ import com.badlogic.gdx.jnigen.runtime.closure.Closure;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
 import com.badlogic.gdx.jnigen.runtime.closure.PointingPoolManager;
 import com.badlogic.jnigen.generated.structs.AnonymousClosure.someClosure;
-import com.badlogic.gdx.jnigen.runtime.ffi.ClosureEncoder;
+import com.badlogic.gdx.jnigen.runtime.closure.ClosureEncoder;
 import com.badlogic.gdx.jnigen.runtime.closure.CClosureObject;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
 import com.badlogic.jnigen.generated.structs.AnonymousClosure.anotherClosure;

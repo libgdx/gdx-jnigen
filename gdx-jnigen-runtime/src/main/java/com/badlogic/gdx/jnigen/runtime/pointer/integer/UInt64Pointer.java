@@ -2,6 +2,10 @@ package com.badlogic.gdx.jnigen.runtime.pointer.integer;
 
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 
+/**
+ * This represents an `unsigned long long` pointer, or `uint64_t`.
+ * Java cannot represent unsigned longs natively, the closest is a signed long.
+ */
 public class UInt64Pointer extends VoidPointer {
 
     private static final int BYTE_SIZE = 8;

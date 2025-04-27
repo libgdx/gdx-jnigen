@@ -2,6 +2,11 @@ package com.badlogic.gdx.jnigen.runtime.pointer.integer;
 
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 
+/**
+ * This represents an `unsigned char` pointer.
+ * Java cannot represent unsigned char (1 byte) natively, the closest is an unsigned java char.
+ * Caution is needed
+ */
 public class UBytePointer extends VoidPointer {
 
     private static final int BYTE_SIZE = 1;

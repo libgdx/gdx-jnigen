@@ -4,6 +4,11 @@ import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.gdx.jnigen.runtime.util.Utils;
 
+/**
+ * This class represents a `char` pointer.
+ * The C standard doesn't specify, if a `char` is signed or not.
+ * Caution is needed.
+ */
 public class BytePointer extends VoidPointer {
 
     private static final int BYTE_SIZE = 1;

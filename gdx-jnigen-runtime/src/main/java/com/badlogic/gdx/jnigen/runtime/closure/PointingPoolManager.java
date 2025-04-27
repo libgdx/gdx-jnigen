@@ -4,6 +4,16 @@ import com.badlogic.gdx.jnigen.runtime.pointer.*;
 
 import java.util.HashMap;
 
+/**
+ * A Manager that can be used for pooling Pointing objects, specifically for use with Closures. This Pool is also fixed-size.
+ * This class is not thread safe. Two closures using the same Manager should
+ * 1. not be called on different threads
+ * 2. Not be called nested
+ *
+ * Furthermore, no object should escape the closure context. Every object will get invalid after the closure finished.
+ *
+ * To use this class, you need to register PointingPools for the relevant classes.
+ */
 public class PointingPoolManager {
 
     private final HashMap<Class<?>, PointingPool<?>> pools = new HashMap<>();

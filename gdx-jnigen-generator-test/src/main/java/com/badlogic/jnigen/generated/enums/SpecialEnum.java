@@ -65,9 +65,5 @@ public enum SpecialEnum implements CEnum {
         public void setEnumValue(SpecialEnum value, int index) {
             getBufPtr().setNativeLong(index * __size, value.getIndex());
         }
-
-        public int getSize() {
-            return __size;
-        }
     }
 }

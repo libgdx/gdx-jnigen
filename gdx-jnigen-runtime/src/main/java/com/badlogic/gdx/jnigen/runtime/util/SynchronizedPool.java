@@ -3,6 +3,9 @@ package com.badlogic.gdx.jnigen.runtime.util;
 import java.util.Collection;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * A fixed size Object pool that is thread safe.
+ */
 public abstract class SynchronizedPool<T> {
 
     private final ReentrantLock lock = new ReentrantLock();

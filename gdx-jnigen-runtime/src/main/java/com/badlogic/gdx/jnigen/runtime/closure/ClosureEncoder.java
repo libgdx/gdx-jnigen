@@ -1,4 +1,4 @@
-package com.badlogic.gdx.jnigen.runtime.ffi;
+package com.badlogic.gdx.jnigen.runtime.closure;
 
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.c.CTypeInfo;

@@ -30,5 +30,4 @@ public abstract class EnumPointer<T extends CEnum> extends VoidPointer {
 
     public abstract T getEnumValue(int index);
     public abstract void setEnumValue(T value, int index);
-    public abstract int getSize();
 }

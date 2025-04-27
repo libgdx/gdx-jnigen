@@ -4,6 +4,10 @@ import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.gdx.jnigen.runtime.util.Utils;
 
+/**
+ * This represents a `long` pointer.
+ * On 32bit platforms and windows, is a long only 32bit's. Caution is needed.
+ */
 public class SLongPointer extends VoidPointer {
 
     private static final int BYTE_SIZE = CHandler.LONG_SIZE;

@@ -2,6 +2,11 @@ package com.badlogic.gdx.jnigen.runtime.pointer.integer;
 
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 
+/**
+ * This represents an `unsigned int` pointer.
+ * Java cannot represent unsigned int natively, the closest is a signed long.
+ * Caution is needed to not overshoot the 32bit
+ */
 public class UIntPointer extends VoidPointer {
 
     private static final int BYTE_SIZE = 4;
