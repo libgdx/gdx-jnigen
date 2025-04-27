@@ -67,11 +67,11 @@ public final class AnonymousClosure extends Struct {
     }
 
     public ClosureObject<anotherClosure> anotherClosure() {
-        return CHandler.getClosureObject(getBufPtr().getNativePointer(CHandler.IS_32_BIT ? 4 : 8), anotherClosure_Internal::anotherClosure_downcall);
+        return CHandler.getClosureObject(getBufPtr().getNativePointer(CHandler.IS_64_BIT ? 8 : 4), anotherClosure_Internal::anotherClosure_downcall);
     }
 
     public void anotherClosure(ClosureObject<anotherClosure> anotherClosure) {
-        getBufPtr().setNativePointer(CHandler.IS_32_BIT ? 4 : 8, anotherClosure.getPointer());
+        getBufPtr().setNativePointer(CHandler.IS_64_BIT ? 8 : 4, anotherClosure.getPointer());
     }
 
     public static final class AnonymousClosurePointer extends StackElementPointer<AnonymousClosure> {

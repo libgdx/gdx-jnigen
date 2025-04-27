@@ -61,31 +61,31 @@ public final class SpecialStruct extends Struct {
     }
 
     public SIntPointer arrayField() {
-        return new SIntPointer(getPointer() + (CHandler.IS_32_BIT ? 4 : 8), false, 5);
+        return new SIntPointer(getPointer() + (CHandler.IS_64_BIT ? 8 : 4), false, 5);
     }
 
     public void arrayField(SIntPointer toSetPtr) {
-        toSetPtr.setPointer(getPointer() + (CHandler.IS_32_BIT ? 4 : 8), 20, this);
+        toSetPtr.setPointer(getPointer() + (CHandler.IS_64_BIT ? 8 : 4), 20, this);
     }
 
     public SIntPointer getArrayField() {
-        return new SIntPointer(getBufPtr().duplicate(CHandler.IS_32_BIT ? 4 : 8, 20), false, 5);
+        return new SIntPointer(getBufPtr().duplicate(CHandler.IS_64_BIT ? 8 : 4, 20), false, 5);
     }
 
     public void getArrayField(SIntPointer toCopyTo) {
-        toCopyTo.getBufPtr().copyFrom(0, getBufPtr(), CHandler.IS_32_BIT ? 4 : 8, 20);
+        toCopyTo.getBufPtr().copyFrom(0, getBufPtr(), CHandler.IS_64_BIT ? 8 : 4, 20);
     }
 
     public void setArrayField(SIntPointer toCopyFrom) {
-        getBufPtr().copyFrom(CHandler.IS_32_BIT ? 4 : 8, toCopyFrom.getBufPtr(), 0, 20);
+        getBufPtr().copyFrom(CHandler.IS_64_BIT ? 8 : 4, toCopyFrom.getBufPtr(), 0, 20);
     }
 
     public SIntPointer intPtrField() {
-        return new SIntPointer(getBufPtr().getNativePointer(CHandler.IS_32_BIT ? 24 : 32), false);
+        return new SIntPointer(getBufPtr().getNativePointer(CHandler.IS_64_BIT ? 32 : 24), false);
     }
 
     public void intPtrField(SIntPointer intPtrField) {
-        getBufPtr().setNativePointer(CHandler.IS_32_BIT ? 24 : 32, intPtrField.getPointer());
+        getBufPtr().setNativePointer(CHandler.IS_64_BIT ? 32 : 24, intPtrField.getPointer());
     }
 
     public static final class SpecialStructPointer extends StackElementPointer<SpecialStruct> {

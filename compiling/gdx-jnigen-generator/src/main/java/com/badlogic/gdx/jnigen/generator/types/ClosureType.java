@@ -3,6 +3,7 @@ package com.badlogic.gdx.jnigen.generator.types;
 import com.badlogic.gdx.jnigen.generator.ClassNameConstants;
 import com.badlogic.gdx.jnigen.generator.JavaUtils;
 import com.badlogic.gdx.jnigen.generator.Manager;
+import com.badlogic.gdx.jnigen.generator.PossibleTarget;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.NodeList;
@@ -259,13 +260,13 @@ public class ClosureType implements MappedType, WritableClass {
         writeHelper(cuPrivate, toWriteToPrivate);
     }
 
-    private int getParameterOffset(int index, boolean is32Bit, boolean isWin) {
+    private int getParameterOffset(int index, PossibleTarget target) {
         if (index < 0 || index > signature.getArguments().length)
             throw new IllegalArgumentException("Index out of bounds: " + index);
 
         int offset = 0;
         for (int i = 0; i < index; i++) {
-            offset += signature.getArguments()[i].getDefinition().getMappedType().getSizeFromC(is32Bit, isWin);
+            offset += signature.getArguments()[i].getDefinition().getMappedType().getSizeFromC(target);
         }
 
         return offset;
@@ -364,7 +365,7 @@ public class ClosureType implements MappedType, WritableClass {
     }
 
     @Override
-    public int getSize(boolean is32Bit, boolean isWin) {
-        return is32Bit ? 4 : 8;
+    public int getSize(PossibleTarget target) {
+        return target.is32Bit() ? 4 : 8;
     }
 }

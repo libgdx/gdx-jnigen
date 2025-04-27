@@ -3,6 +3,7 @@ package com.badlogic.gdx.jnigen.generator.types;
 import com.badlogic.gdx.jnigen.generator.ClassNameConstants;
 import com.badlogic.gdx.jnigen.generator.JavaUtils;
 import com.badlogic.gdx.jnigen.generator.Manager;
+import com.badlogic.gdx.jnigen.generator.PossibleTarget;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Modifier.Keyword;
@@ -357,7 +358,7 @@ public class StackElementType implements MappedType, WritableClass {
         return unwrappedStartIndex;
     }
 
-    public int getFieldOffset(int index, boolean is32Bit, boolean isWin) {
+    public int getFieldOffset(int index, PossibleTarget target) {
         if (!isStruct())
             return 0;
 
@@ -371,14 +372,14 @@ public class StackElementType implements MappedType, WritableClass {
 
         for (int i = 0; i <= unwrappedStartIndex; i++) {
             NamedType fieldType = unwrappedFields.get(i);
-            int fieldAlignment = fieldType.getDefinition().getMappedType().getAlignment(is32Bit, isWin);
+            int fieldAlignment = fieldType.getDefinition().getMappedType().getAlignment(target);
 
             if (offset % fieldAlignment != 0) {
                 offset += fieldAlignment - (offset % fieldAlignment);
             }
 
             if (i != unwrappedStartIndex) {
-                int fieldSize = fieldType.getDefinition().getMappedType().getSize(is32Bit, isWin);
+                int fieldSize = fieldType.getDefinition().getMappedType().getSize(target);
                 offset += fieldSize;
             }
         }
@@ -386,18 +387,18 @@ public class StackElementType implements MappedType, WritableClass {
         return offset;
     }
 
-    public int getFieldSize(int index, boolean is32Bit, boolean isWin) {
+    public int getFieldSize(int index, PossibleTarget target) {
         StackElementField field = fields.get(index);
         NamedType fieldType = field.getType();
-        int baseSize = fieldType.getDefinition().getMappedType().getSize(is32Bit, isWin);
+        int baseSize = fieldType.getDefinition().getMappedType().getSize(target);
         if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY) {
-            baseSize = fieldType.getDefinition().getNestedDefinition().getMappedType().getSize(is32Bit, isWin);
+            baseSize = fieldType.getDefinition().getNestedDefinition().getMappedType().getSize(target);
         }
         return baseSize * fieldType.getDefinition().getCount();
     }
 
     public Expression getFieldSizeAsExpression(int index) {
-        return JavaUtils.getSizeAsExpression((is32Bit, isWin) -> getFieldSize(index, is32Bit, isWin));
+        return JavaUtils.getSizeAsExpression((target) -> getFieldSize(index, target));
     }
 
     public Expression getFieldOffsetAsExpression(int index) {
@@ -493,14 +494,14 @@ public class StackElementType implements MappedType, WritableClass {
     }
 
     @Override
-    public int getSize(boolean is32Bit, boolean isWin) {
+    public int getSize(PossibleTarget target) {
         int structSize = 0;
-        int structAlignment = getAlignment(is32Bit, isWin);
+        int structAlignment = getAlignment(target);
 
         if (!isStruct()) {
             int maxSize = 0;
             for (NamedType fieldType : getUnwrappedFields()) {
-                int fieldSize = fieldType.getDefinition().getMappedType().getSize(is32Bit, isWin);
+                int fieldSize = fieldType.getDefinition().getMappedType().getSize(target);
 
                 if (fieldSize > maxSize) {
                     maxSize = fieldSize;
@@ -510,8 +511,8 @@ public class StackElementType implements MappedType, WritableClass {
         }
 
         for (NamedType fieldType : getUnwrappedFields()) {
-            int fieldAlignment = fieldType.getDefinition().getMappedType().getAlignment(is32Bit, isWin);
-            int fieldSize = fieldType.getDefinition().getMappedType().getSize(is32Bit, isWin);
+            int fieldAlignment = fieldType.getDefinition().getMappedType().getAlignment(target);
+            int fieldSize = fieldType.getDefinition().getMappedType().getSize(target);
 
             if (structSize % fieldAlignment != 0) {
                 structSize += fieldAlignment - (structSize % fieldAlignment);
@@ -528,11 +529,11 @@ public class StackElementType implements MappedType, WritableClass {
     }
 
     @Override
-    public int getAlignment(boolean is32Bit, boolean isWin) {
+    public int getAlignment(PossibleTarget target) {
         int maxAlignment = 1;
 
         for (NamedType fieldType : getUnwrappedFields()) {
-            int fieldAlignment = fieldType.getDefinition().getMappedType().getAlignment(is32Bit, isWin);
+            int fieldAlignment = fieldType.getDefinition().getMappedType().getAlignment(target);
 
             if (fieldAlignment > maxAlignment) {
                 maxAlignment = fieldAlignment;
@@ -543,7 +544,7 @@ public class StackElementType implements MappedType, WritableClass {
     }
 
     @Override
-    public int getSizeFromC(boolean is32Bit, boolean isWin) {
-        return is32Bit ? 4 : 8;
+    public int getSizeFromC(PossibleTarget target) {
+        return target.is32Bit() ? 4 : 8;
     }
 }

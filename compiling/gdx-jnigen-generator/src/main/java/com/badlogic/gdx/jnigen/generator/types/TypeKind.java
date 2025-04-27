@@ -1,5 +1,6 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
+import com.badlogic.gdx.jnigen.generator.PossibleTarget;
 import org.bytedeco.llvm.clang.CXCursor;
 import org.bytedeco.llvm.clang.CXType;
 
@@ -99,7 +100,7 @@ public enum TypeKind {
         return this == LONG || this == PROMOTED_LONG;
     }
 
-    public int getSize(boolean is32Bit, boolean isWin) {
+    public int getSize(PossibleTarget target) {
         switch (this) {
         case BOOLEAN:
         case NATIVE_BYTE:
@@ -115,7 +116,7 @@ public enum TypeKind {
             return 4;
         case LONG:
         case PROMOTED_LONG:
-            return is32Bit || isWin ? 4 : 8;
+            return target.is32Bit() || target.isWin() ? 4 : 8;
         case LONG_LONG:
         case PROMOTED_LONG_LONG:
         case DOUBLE:
@@ -125,7 +126,7 @@ public enum TypeKind {
         }
     }
 
-    public int getAlignment(boolean is32Bit, boolean isWin, boolean isAndroidX86) {
+    public int getAlignment(PossibleTarget target) {
         switch (this) {
         case BOOLEAN:
         case NATIVE_BYTE:
@@ -141,11 +142,11 @@ public enum TypeKind {
             return 4;
         case LONG:
         case PROMOTED_LONG:
-            return is32Bit || isWin ? 4 : 8;
+            return target.is32Bit() || target.isWin() ? 4 : 8;
         case LONG_LONG:
         case PROMOTED_LONG_LONG:
         case DOUBLE:
-            return isAndroidX86 ? 4 : 8;
+            return target.isAndroidX86() ? 4 : 8;
         default:
             throw new IllegalArgumentException("Type " + this + " is not a primitive type");
         }

@@ -1,6 +1,7 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
 import com.badlogic.gdx.jnigen.generator.Manager;
+import com.badlogic.gdx.jnigen.generator.PossibleTarget;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -186,12 +187,12 @@ public class PrimitiveType implements MappedType {
     }
 
     @Override
-    public int getSize(boolean is32Bit, boolean isWin) {
-        return definition.getTypeKind().getSize(is32Bit, isWin);
+    public int getSize(PossibleTarget target) {
+        return definition.getTypeKind().getSize(target);
     }
 
     @Override
-    public int getAlignment(boolean is32Bit, boolean isWin) {
-        return definition.getTypeKind().getAlignment(is32Bit, isWin, false);
+    public int getAlignment(PossibleTarget target) {
+        return definition.getTypeKind().getAlignment(target);
     }
 }

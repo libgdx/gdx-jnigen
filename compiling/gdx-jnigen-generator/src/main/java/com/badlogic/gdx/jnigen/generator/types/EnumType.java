@@ -3,6 +3,7 @@ package com.badlogic.gdx.jnigen.generator.types;
 import com.badlogic.gdx.jnigen.generator.ClassNameConstants;
 import com.badlogic.gdx.jnigen.generator.JavaUtils;
 import com.badlogic.gdx.jnigen.generator.Manager;
+import com.badlogic.gdx.jnigen.generator.PossibleTarget;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -13,7 +14,6 @@ import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.EnumConstantDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
@@ -239,7 +239,7 @@ public class EnumType implements MappedType {
     }
 
     @Override
-    public int getSize(boolean is32Bit, boolean isWin) {
-        return definition.getNestedDefinition().getMappedType().getSize(is32Bit, isWin);
+    public int getSize(PossibleTarget target) {
+        return definition.getNestedDefinition().getMappedType().getSize(target);
     }
 }

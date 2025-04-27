@@ -2,6 +2,7 @@ package com.badlogic.gdx.jnigen.generator.types;
 
 import com.badlogic.gdx.jnigen.generator.ClassNameConstants;
 import com.badlogic.gdx.jnigen.generator.Manager;
+import com.badlogic.gdx.jnigen.generator.PossibleTarget;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -137,7 +138,7 @@ public class GlobalType implements MappedType {
     }
 
     @Override
-    public int getSize(boolean is32Bit, boolean isWin) {
+    public int getSize(PossibleTarget target) {
         throw new IllegalArgumentException("Should not reach");
     }
 }
