@@ -56,16 +56,9 @@ public class CHandler {
     public static final boolean IS_CHAR_SIGNED;
     public static final int LONG_SIZE;
 
-    private static native boolean is32Bit();
-    private static native boolean isCompiledWin();
-    private static native boolean isCompiledAndroidX86();
-    private static native boolean isCharSigned();
-
     private static final HashMap<CTypeInfo[], Long> classCifMap = new HashMap<>();
 
     private static final HashMap<Long, ClosureObject<?>> fnPtrClosureMap = new HashMap<>();
-
-    private static native boolean init(Method dispatchCallbackReflectedMethod, Method getExceptionStringReflectedMethod);
 
     public static String getExceptionString(Throwable e) {
         StringWriter sw = new StringWriter();
@@ -84,27 +77,11 @@ public class CHandler {
         }catch (CXXException ignored) {}
     }
 
-    private static native void testIllegalArgumentExceptionThrowable(Class<?> illegalArgumentException);
-
-    private static native void testCXXExceptionThrowable(Class<?> cxxException);
-
-    /**
-     * If java code throws an exception into native, this will disable setting a descriptor for the wrapping CXX exception
-     * This can hold a performance boost, if a lot of CXX exceptions are created
-     */
-    public static native void setDisableCXXExceptionMessage(boolean disable);
-
-    public static native boolean reExportSymbolsGlobally(String libPath);
-
     public static <T extends Closure> void dispatchCallback(ClosureDecoder<T> toCallOn, long parameter) {
         BufferPtr ptr = AllocationManager.wrap(parameter);
         toCallOn.invoke(ptr);
         BufferPtrManager.insertPool(ptr);
     }
-
-    public static native void dispatchCCall(long fnPtr, long cif, long parameter);
-
-    public static native long convertNativeTypeToFFIType(long nativeType);
 
     public static CTypeInfo constructCTypeFromNativeType(long nativeType) {
         if (nativeType == 0)
@@ -112,8 +89,6 @@ public class CHandler {
         long ffiType = convertNativeTypeToFFIType(nativeType);
         return new CTypeInfo(ffiType, CHandler.getSizeFromFFIType(ffiType));
     }
-
-    private static native long nativeCreateCif(long returnType, long parameters, int size);
 
     private static long generateFFICifForSignature(CTypeInfo[] signature) {
         int parameterCount = signature.length - 1;
@@ -151,8 +126,6 @@ public class CHandler {
         return closureObject;
     }
 
-    public static native long createClosureForObject(long cifArg, ClosureDecoder<?> object, long closureRet);
-
     public static <T extends Closure> ClosureObject<T> getClosureObject(long fnPtr, DowncallCClosureObjectSupplier<T> closureFallback) {
         synchronized (fnPtrClosureMap) {
             @SuppressWarnings("unchecked")
@@ -167,10 +140,6 @@ public class CHandler {
         }
     }
 
-    public static native ByteBuffer wrapPointer(long pointer, int size);
-
-    public static native int getSizeFromFFIType(long type);
-
     public static void deregisterFunctionPointer(long fnPtr) {
         synchronized (fnPtrClosureMap) {
             fnPtrClosureMap.remove(fnPtr);
@@ -183,6 +152,34 @@ public class CHandler {
         }
     }
 
+    private static native boolean is32Bit();
+    private static native boolean isCompiledWin();
+    private static native boolean isCompiledAndroidX86();
+    private static native boolean isCharSigned();
+
+    private static native boolean init(Method dispatchCallbackReflectedMethod, Method getExceptionStringReflectedMethod);
+    private static native void testIllegalArgumentExceptionThrowable(Class<?> illegalArgumentException);
+    private static native void testCXXExceptionThrowable(Class<?> cxxException);
+
+    /**
+     * If java code throws an exception into native, this will disable setting a descriptor for the wrapping CXX exception
+     * This can hold a performance boost, if a lot of CXX exceptions are created
+     */
+    public static native void setDisableCXXExceptionMessage(boolean disable);
+
+    public static native boolean reExportSymbolsGlobally(String libPath);
+
+    public static native void dispatchCCall(long fnPtr, long cif, long parameter);
+
+    public static native long convertNativeTypeToFFIType(long nativeType);
+
+    private static native long nativeCreateCif(long returnType, long parameters, int size);
+
+    public static native long createClosureForObject(long cifArg, ClosureDecoder<?> object, long closureRet);
+
+    public static native ByteBuffer wrapPointer(long pointer, int size);
+
+    public static native int getSizeFromFFIType(long type);
 
     public static native void freeClosure(long closurePtr);
 
