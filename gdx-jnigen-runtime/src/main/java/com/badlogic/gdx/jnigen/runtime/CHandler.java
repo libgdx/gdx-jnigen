@@ -10,13 +10,14 @@ import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
 import com.badlogic.gdx.jnigen.runtime.mem.AllocationManager;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrManager;
+import com.badlogic.gdx.jnigen.runtime.pointer.PointerPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.gdx.jnigen.runtime.util.DowncallCClosureObjectSupplier;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.HashMap;
 
 public class CHandler {
@@ -112,19 +113,16 @@ public class CHandler {
         return new CTypeInfo(ffiType, CHandler.getSizeFromFFIType(ffiType));
     }
 
-    private static native long nativeCreateCif(long returnType, ByteBuffer parameters, int size); 
+    private static native long nativeCreateCif(long returnType, long parameters, int size);
 
     private static long generateFFICifForSignature(CTypeInfo[] signature) {
-
         int parameterCount = signature.length - 1;
-        // Yes, I'm extremely lazy and don't want to deal with JNI array handling
-        ByteBuffer mappedParameter = ByteBuffer.allocateDirect(parameterCount * 8);
-        mappedParameter.order(ByteOrder.nativeOrder());
-        for (int i = 1; i < signature.length; i++) {
-            mappedParameter.putLong((i - 1) * 8, signature[i].getFfiType());
-        }
+        PointerPointer<VoidPointer> mappedParameters = new PointerPointer<>(parameterCount, VoidPointer::new);
 
-        return nativeCreateCif(signature[0].getFfiType(), mappedParameter, parameterCount);
+        for (int i = 1; i < signature.length; i++)
+            mappedParameters.setValue(new VoidPointer(signature[i].getFfiType(), false), i - 1);
+
+        return nativeCreateCif(signature[0].getFfiType(), mappedParameters.getPointer(), parameterCount);
     }
 
     public static long getFFICifForSignature(CTypeInfo[] signature) {
@@ -140,12 +138,11 @@ public class CHandler {
 
     public static <T extends Closure> ClosureObject<T> createClosureForObject(T object) {
         long cif = getFFICifForSignature(object.functionSignature());
-        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(8);
-        byteBuffer.order(ByteOrder.nativeOrder());
+        PointerPointer<VoidPointer> ret = new PointerPointer<>(VoidPointer::new);
 
         ClosureDecoder<T> closureDecoder = new ClosureDecoder<>(object);
-        long fnPtr = createClosureForObject(cif, closureDecoder, byteBuffer);
-        long closurePtr = byteBuffer.getLong();
+        long fnPtr = createClosureForObject(cif, closureDecoder, ret.getPointer());
+        long closurePtr = ret.getValue().getPointer();
 
         ClosureObject<T> closureObject = new JavaClosureObject<>(object, fnPtr, closurePtr, closureDecoder);
         synchronized (fnPtrClosureMap) {
@@ -154,7 +151,7 @@ public class CHandler {
         return closureObject;
     }
 
-    public static native <T extends Closure> long createClosureForObject(long cifArg, ClosureDecoder<T> object, ByteBuffer closureRet);
+    public static native long createClosureForObject(long cifArg, ClosureDecoder<?> object, long closureRet);
 
     public static <T extends Closure> ClosureObject<T> getClosureObject(long fnPtr, DowncallCClosureObjectSupplier<T> closureFallback) {
         synchronized (fnPtrClosureMap) {

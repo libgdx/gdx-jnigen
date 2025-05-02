@@ -29,7 +29,7 @@ public class BufferPtrManager {
     private static final long ADDRESS_MASK = ~PAGE_OFFSET_MASK;
 
     private static final ByteBuffer[][][] BUFFER_CACHE = new ByteBuffer[L1_SIZE][][];
-    private static final ByteBuffer NULL_BUFFER = CHandler.wrapPointer(0, Integer.MAX_VALUE);
+    private static final ByteBuffer NULL_BUFFER = CHandler.wrapPointer(0, Integer.MAX_VALUE).order(ByteOrder.nativeOrder());
 
     private static final boolean NO_POOLING = System.getProperty("com.badlogic.jnigen.allocator.no_pooling", "false").equals("true");
     private static final int POOL_SIZE = Integer.parseInt(System.getProperty("com.badlogic.jnigen.allocator.pool_size", "256"));

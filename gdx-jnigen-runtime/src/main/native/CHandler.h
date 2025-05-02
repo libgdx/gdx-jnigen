@@ -82,18 +82,18 @@ JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_reExpor
 /*
  * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
  * Method:    nativeCreateCif
- * Signature: (JLjava/nio/ByteBuffer;I)J
+ * Signature: (JJI)J
  */
 JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_nativeCreateCif
-  (JNIEnv *, jclass, jlong, jobject, jint);
+  (JNIEnv *, jclass, jlong, jlong, jint);
 
 /*
  * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
  * Method:    createClosureForObject
- * Signature: (JLcom/badlogic/gdx/jnigen/ffi/ClosureInfo;Ljava/nio/ByteBuffer;)J
+ * Signature: (JLcom/badlogic/gdx/jnigen/ffi/ClosureInfo;J)J
  */
 JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_createClosureForObject
-  (JNIEnv *, jclass, jlong, jobject, jobject);
+  (JNIEnv *, jclass, jlong, jobject, jlong);
 
 /*
  * Class:     com_badlogic_gdx_jnigen_runtime_CHandler

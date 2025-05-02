@@ -278,20 +278,16 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_convertNat
     return (jlong) ffiType;
 }
 
-JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_nativeCreateCif(JNIEnv* env, jclass clazz, jlong returnType, jobject obj_parameters, jint size) {
-	char* parameters = (char*)(obj_parameters?env->GetDirectBufferAddress(obj_parameters):0);
-
+JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_nativeCreateCif(JNIEnv* env, jclass clazz, jlong returnType, jlong parameters, jint size) {
     ffi_type** parameterFFITypes = (ffi_type**)malloc(sizeof(ffi_type*) * size);
-    memcpy(parameterFFITypes, parameters, sizeof(ffi_type*) * size);
+    memcpy(parameterFFITypes, (void**)parameters, sizeof(ffi_type*) * size);
 
     ffi_cif* cif = (ffi_cif*)malloc(sizeof(ffi_cif));
     ffi_prep_cif(cif, FFI_DEFAULT_ABI, size, reinterpret_cast<ffi_type*>(returnType), parameterFFITypes);
     return reinterpret_cast<jlong>(cif);
 }
 
-JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_createClosureForObject(JNIEnv* env, jclass clazz, jlong cifArg, jobject object, jobject obj_closureRet) {
-	char* closureRet = (char*)(obj_closureRet?env->GetDirectBufferAddress(obj_closureRet):0);
-
+JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_createClosureForObject(JNIEnv* env, jclass clazz, jlong cifArg, jobject object, jlong closureRet) {
     ffi_cif* cif = (ffi_cif*)cifArg;
     size_t argsSize = 0;
     for (size_t i = 0; i < cif->nargs; i++) {
