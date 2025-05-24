@@ -58,17 +58,16 @@ public class ClosureType implements MappedType, WritableClass {
                 .setInterface(true)
                 .addExtendedType("Closure")
                 .setModifier(Keyword.PUBLIC, true)
-                .setName(internalClassName());
+                .setName(getInternalName());
     }
 
     public void writeHelper(CompilationUnit cu, ClassOrInterfaceDeclaration closureHelperClass) {
-        cu.addImport(classFile() + "." + signature.getName());
         cu.addImport(ClassNameConstants.CLOSUREENCODER_CLASS);
         cu.addImport(ClassNameConstants.CCLOSUREOBJECT_CLASS);
 
         MethodDeclaration downcallMethod = closureHelperClass.addMethod(getName() + "_downcall", Keyword.PUBLIC, Keyword.STATIC);
         downcallMethod.addParameter(long.class, "fnPtr");
-        downcallMethod.setType("CClosureObject<" + getName() + ">");
+        downcallMethod.setType("CClosureObject<" + parent.abstractType() + "." + getName() + ">");
 
         BlockStmt stmt = downcallMethod.createBody();
 
@@ -173,12 +172,13 @@ public class ClosureType implements MappedType, WritableClass {
 
         importType(cuPublic);
         cuPublic.addImport(ClassNameConstants.CLOSURE_CLASS);
-        cuPublic.addImport(internalClass());
+        cuPublic.addImport(parent.internalClass());
 
         cuPrivate.addImport(ClassNameConstants.CTYPEINFO_CLASS);
         cuPrivate.addImport(ClassNameConstants.CLOSURE_CLASS);
         cuPrivate.addImport(ClassNameConstants.BUFFER_PTR);
         cuPrivate.addImport(ClassNameConstants.POINTINGPOOLMANAGER_CLASS);
+        parent.importType(cuPrivate);
 
         NodeList<Expression> arrayInitializerExpr = new NodeList<>();
         ArrayCreationExpr arrayCreationExpr = new ArrayCreationExpr();
@@ -194,6 +194,7 @@ public class ClosureType implements MappedType, WritableClass {
         callMethod.setBody(null);
         for (NamedType namedType : arguments) {
             namedType.getDefinition().getMappedType().importType(cuPublic);
+            namedType.getDefinition().getMappedType().importType(cuPrivate);
             callMethod.addAndGetParameter(namedType.getDefinition().getMappedType().abstractType(), namedType.getName());
             MethodCallExpr getTypeID = new MethodCallExpr("getCTypeInfo");
             getTypeID.setScope(new NameExpr("FFITypes"));
@@ -201,6 +202,7 @@ public class ClosureType implements MappedType, WritableClass {
             arrayInitializerExpr.add(getTypeID);
         }
         returnType.getMappedType().importType(cuPublic);
+        returnType.getMappedType().importType(cuPrivate);
         callMethod.setType(returnType.getMappedType().abstractType());
 
         toWriteToPrivate.addMember(new MethodDeclaration(callMethod.getModifiers(), callMethod.getNameAsString(), callMethod.getType(), callMethod.getParameters()).setBody(null));
@@ -272,21 +274,12 @@ public class ClosureType implements MappedType, WritableClass {
         return offset;
     }
 
-    private static Expression getMethodCallExpr(Expression expression, TypeDefinition type) {
-        String methodName = "asLong";
-        if (type.getTypeKind() == TypeKind.FLOAT)
-            methodName = "asFloat";
-        else if (type.getTypeKind() == TypeKind.DOUBLE)
-            methodName = "asDouble";
-        else if (type.getTypeKind() == TypeKind.BOOLEAN)
-            methodName = "asBoolean";
-        MethodCallExpr methodCallExpr = new MethodCallExpr(methodName);
-        methodCallExpr.setScope(expression);
-        return type.getMappedType().fromC(methodCallExpr);
-    }
-
     public String getName() {
         return signature.getName();
+    }
+
+    public String getInternalName() {
+        return getName() + "_Internal";
     }
 
     public FunctionSignature getSignature() {
@@ -295,7 +288,7 @@ public class ClosureType implements MappedType, WritableClass {
 
     @Override
     public String abstractType() {
-        return "ClosureObject<" + signature.getName() + ">";
+        return "ClosureObject<" + parent.abstractType() + "." + signature.getName() + ">";
     }
 
     @Override
@@ -307,10 +300,8 @@ public class ClosureType implements MappedType, WritableClass {
     public void importType(CompilationUnit cu) {
         cu.addImport(ClassNameConstants.CLOSUREOBJECT_CLASS);
         cu.addImport(ClassNameConstants.CHANDLER_CLASS);
-        if (cu.getClassByName(parent.abstractType()).isPresent())
-            return;
-        cu.addImport(classFile() + "." + signature.getName());
-        cu.addImport(internalClass());
+        parent.importType(cu);
+        cu.addImport(parent.internalClass());
     }
 
     @Override
@@ -346,7 +337,7 @@ public class ClosureType implements MappedType, WritableClass {
 
     @Override
     public String internalClassName() {
-        return getName() + "_Internal";
+        return parent.internalClassName() + "." + getInternalName();
     }
 
     @Override

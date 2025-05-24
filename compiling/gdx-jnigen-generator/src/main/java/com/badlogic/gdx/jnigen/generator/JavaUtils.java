@@ -35,6 +35,9 @@ public class JavaUtils {
         while ((index = cName.indexOf('_')) != -1) {
             cName = cName.substring(0, index) + capitalize(cName.substring(index + 1));
         }
+        while ((index = cName.indexOf('-')) != -1) {
+            cName = cName.substring(0, index) + capitalize(cName.substring(index + 1));
+        }
         return cName;
     }
 
