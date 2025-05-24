@@ -17,7 +17,7 @@ ext {
 
     getSnapshotRepositoryUrl = {
         return project.hasProperty('SNAPSHOT_REPOSITORY_URL') ? SNAPSHOT_REPOSITORY_URL
-                : "https://oss.sonatype.org/content/repositories/snapshots/"
+                : "https://central.sonatype.com/repository/maven-snapshots/"
     }
 
     getRepositoryUsername = {
