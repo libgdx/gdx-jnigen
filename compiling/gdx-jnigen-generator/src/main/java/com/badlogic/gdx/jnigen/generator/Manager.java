@@ -246,7 +246,7 @@ public class Manager {
             assertBuilder.add("static_assert(alignof(" + name + ") == " + typeKind.getMappedType().getAlignment(target) + ", \"Type " + name + " has unexpected alignment.\");");
         });
         stackElements.forEach((name, stackElementType) -> {
-            if (stackElementType.getFields().isEmpty()) // TODO: 04.04.2025 Add proper forwardDecl detection
+            if (stackElementType.isIncomplete())
                 return;
             assertBuilder.add("static_assert(sizeof(" + name + ") == " + stackElementType.getSize(target) + ", \"Type " + name + " has unexpected size.\");");
             assertBuilder.add("static_assert(alignof(" + name + ") == " + stackElementType.getAlignment(target) + ", \"Type " + name + " has unexpected alignment.\");");

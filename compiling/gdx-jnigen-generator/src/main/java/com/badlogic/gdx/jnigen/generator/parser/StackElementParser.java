@@ -91,12 +91,8 @@ public class StackElementParser {
                     }
 
                     TypeDefinition fieldDefinition = Generator.registerCXType(type, cursorSpelling, stackElementType);
-                    if (fieldDefinition.getTypeKind() == TypeKind.VOID) {
-                        TypeDefinition newDefinition = TypeDefinition.get(TypeKind.POINTER, fieldDefinition.getTypeName());
-                        newDefinition.setNestedDefinition(fieldDefinition);
-                        newDefinition.setOverrideMappedType(new PointerType(fieldDefinition));
-                        fieldDefinition = newDefinition;
-                    }
+                    if (fieldDefinition.getTypeKind() == TypeKind.VOID)
+                        stackElementType.markIncomplete();
 
                     if (fieldDefinition.getTypeKind() == TypeKind.CLOSURE) {
                         Generator.patchClosureTypeWithCursor(fieldDefinition, current);

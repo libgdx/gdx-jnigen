@@ -32,12 +32,25 @@ public class StackElementType implements MappedType, WritableClass {
     private final String pointerName;
     private final String javaTypeName;
     private String comment;
+    private boolean incomplete = false;
 
     public StackElementType(TypeDefinition definition, String javaTypeName, MappedType parent) {
         this.definition = definition;
         this.javaTypeName = javaTypeName;
         this.parent = parent;
         pointerName = javaTypeName + "Pointer";
+    }
+
+    public void markIncomplete() {
+        incomplete = true;
+    }
+
+    public boolean isIncomplete() {
+        return incomplete || fields.isEmpty() || fields.stream()
+                .map(stackElementField -> stackElementField.getType().getDefinition().getMappedType())
+                .filter(mappedType -> mappedType instanceof StackElementType)
+                .map(mappedType -> (StackElementType) mappedType)
+                .anyMatch(StackElementType::isIncomplete);
     }
 
     public void addField(StackElementField type) {
@@ -208,6 +221,8 @@ public class StackElementType implements MappedType, WritableClass {
 
         // Fields
         for (int i = 0; i < fields.size(); i++) {
+            if (isIncomplete())
+                break;
             StackElementField field = fields.get(i);
             NamedType fieldType = field.getType();
             fieldType.getDefinition().getMappedType().importType(cuPublic);
@@ -500,8 +515,8 @@ public class StackElementType implements MappedType, WritableClass {
 
         if (!isStruct()) {
             int maxSize = 0;
-            for (NamedType fieldType : getUnwrappedFields()) {
-                int fieldSize = fieldType.getDefinition().getMappedType().getSize(target);
+            for (StackElementField fieldType : fields) {
+                int fieldSize = getFieldSize(fields.indexOf(fieldType), target);
 
                 if (fieldSize > maxSize) {
                     maxSize = fieldSize;
