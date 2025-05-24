@@ -146,7 +146,7 @@ public class Generator {
             // For the moment, treat system header structs as unknown
             // Figure out later, whether this might be problematic
             if (clang_Location_isInSystemHeader(clang_getCursorLocation(clang_getTypeDeclaration(type))) != 0) {
-                TypeDefinition definition = TypeDefinition.get(TypeKind.VOID, "void");
+                TypeDefinition definition = TypeDefinition.get(TypeKind.VOID, name);
                 definition.setOverrideMappedType(new PrimitiveType(definition));
                 return definition;
             }

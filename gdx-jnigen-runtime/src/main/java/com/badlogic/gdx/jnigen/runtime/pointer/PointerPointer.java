@@ -23,7 +23,7 @@ public class PointerPointer<T extends Pointing> extends VoidPointer {
         this.supplier = supplier;
     }
 
-    public PointerPointer(long pointer, boolean freeOnGC, int capacity, PointerDereferenceSupplier<T> supplier) {
+    public PointerPointer(long pointer, boolean freeOnGC, PointerDereferenceSupplier<T> supplier, int capacity) {
         super(pointer, freeOnGC, capacity * __pointer_size);
         this.supplier = supplier;
     }
