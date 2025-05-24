@@ -29,6 +29,10 @@ public class ULongPointer extends VoidPointer {
         super(count * BYTE_SIZE);
     }
 
+    public ULongPointer(long pointer, boolean freeOnGC) {
+        super(pointer, freeOnGC);
+    }
+
     public ULongPointer(long pointer, boolean freeOnGC, int capacity) {
         super(pointer, freeOnGC, capacity * BYTE_SIZE);
     }
