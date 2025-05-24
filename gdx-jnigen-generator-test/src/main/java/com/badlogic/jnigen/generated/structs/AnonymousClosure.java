@@ -7,10 +7,10 @@ import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
+import com.badlogic.jnigen.generated.structs.AnonymousClosure;
+import com.badlogic.jnigen.generated.TestData_Internal.AnonymousClosure_Internal;
 import com.badlogic.gdx.jnigen.runtime.closure.Closure;
-import com.badlogic.jnigen.generated.TestData_Internal.AnonymousClosure_Internal.someClosure_Internal;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
-import com.badlogic.jnigen.generated.TestData_Internal.AnonymousClosure_Internal.anotherClosure_Internal;
 
 public final class AnonymousClosure extends Struct {
 
@@ -55,22 +55,22 @@ public final class AnonymousClosure extends Struct {
     /**
      * Comment on internal callback
      */
-    public ClosureObject<someClosure> someClosure() {
-        return CHandler.getClosureObject(getBufPtr().getNativePointer(0), someClosure_Internal::someClosure_downcall);
+    public ClosureObject<AnonymousClosure.someClosure> someClosure() {
+        return CHandler.getClosureObject(getBufPtr().getNativePointer(0), AnonymousClosure_Internal.someClosure_Internal::someClosure_downcall);
     }
 
     /**
      * Comment on internal callback
      */
-    public void someClosure(ClosureObject<someClosure> someClosure) {
+    public void someClosure(ClosureObject<AnonymousClosure.someClosure> someClosure) {
         getBufPtr().setNativePointer(0, someClosure.getPointer());
     }
 
-    public ClosureObject<anotherClosure> anotherClosure() {
-        return CHandler.getClosureObject(getBufPtr().getNativePointer(CHandler.IS_64_BIT ? 8 : 4), anotherClosure_Internal::anotherClosure_downcall);
+    public ClosureObject<AnonymousClosure.anotherClosure> anotherClosure() {
+        return CHandler.getClosureObject(getBufPtr().getNativePointer(CHandler.IS_64_BIT ? 8 : 4), AnonymousClosure_Internal.anotherClosure_Internal::anotherClosure_downcall);
     }
 
-    public void anotherClosure(ClosureObject<anotherClosure> anotherClosure) {
+    public void anotherClosure(ClosureObject<AnonymousClosure.anotherClosure> anotherClosure) {
         getBufPtr().setNativePointer(CHandler.IS_64_BIT ? 8 : 4, anotherClosure.getPointer());
     }
 
@@ -115,7 +115,7 @@ public final class AnonymousClosure extends Struct {
         }
     }
 
-    public interface someClosure extends Closure, someClosure_Internal {
+    public interface someClosure extends Closure, AnonymousClosure_Internal.someClosure_Internal {
 
         /**
          * Comment on internal callback
@@ -123,7 +123,7 @@ public final class AnonymousClosure extends Struct {
         int someClosure_call(SIntPointer t, double p);
     }
 
-    public interface anotherClosure extends Closure, anotherClosure_Internal {
+    public interface anotherClosure extends Closure, AnonymousClosure_Internal.anotherClosure_Internal {
 
         float anotherClosure_call(int t, double p);
     }

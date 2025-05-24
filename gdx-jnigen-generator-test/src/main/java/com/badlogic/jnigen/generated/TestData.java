@@ -22,44 +22,11 @@ import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer;
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
+import com.badlogic.jnigen.generated.TestData;
+import com.badlogic.jnigen.generated.TestData_Internal;
 import com.badlogic.jnigen.generated.structs.SpecialStruct;
 import com.badlogic.jnigen.generated.structs.TestUnion;
 import com.badlogic.gdx.jnigen.runtime.closure.Closure;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackBooleanArg_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestEnumPointerArg_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackDoubleReturn_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithThrowingCallback_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackIntArg_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestStructPointerReturn_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackShortReturn_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestEnumPointerReturn_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestStructArg_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackIntPointerReturn_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackLongArg_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackFloatArg_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackDoubleArg_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackIntPointerArg_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestEnumArg_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackCallThrowingCallback_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestStructPointerArg_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestUnionPointerReturn_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackByteReturn_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackCharReturn_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestEnumReturn_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackAllArgs_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallback_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithIntPtrPtrRet_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestUnionPointerArg_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackShortArg_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackByteArg_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackBooleanReturn_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackIntReturn_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackLongReturn_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackCharArg_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithIntPtrPtrArg_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.thread_callback_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackTestStructReturn_Internal;
-import com.badlogic.jnigen.generated.TestData_Internal.methodWithCallbackFloatReturn_Internal;
 
 public final class TestData {
 
@@ -253,7 +220,7 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static void call_methodWithCallback(ClosureObject<methodWithCallback> fnPtr) {
+    public static void call_methodWithCallback(ClosureObject<TestData.methodWithCallback> fnPtr) {
         call_methodWithCallback_internal(fnPtr.getPointer());
     }
 
@@ -263,7 +230,7 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static void call_methodWithCallbackLongArg(ClosureObject<methodWithCallbackLongArg> fnPtr) {
+    public static void call_methodWithCallbackLongArg(ClosureObject<TestData.methodWithCallbackLongArg> fnPtr) {
         call_methodWithCallbackLongArg_internal(fnPtr.getPointer());
     }
 
@@ -273,7 +240,7 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static void call_methodWithCallbackIntArg(ClosureObject<methodWithCallbackIntArg> fnPtr) {
+    public static void call_methodWithCallbackIntArg(ClosureObject<TestData.methodWithCallbackIntArg> fnPtr) {
         call_methodWithCallbackIntArg_internal(fnPtr.getPointer());
     }
 
@@ -283,7 +250,7 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static void call_methodWithCallbackShortArg(ClosureObject<methodWithCallbackShortArg> fnPtr) {
+    public static void call_methodWithCallbackShortArg(ClosureObject<TestData.methodWithCallbackShortArg> fnPtr) {
         call_methodWithCallbackShortArg_internal(fnPtr.getPointer());
     }
 
@@ -293,7 +260,7 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static void call_methodWithCallbackByteArg(ClosureObject<methodWithCallbackByteArg> fnPtr) {
+    public static void call_methodWithCallbackByteArg(ClosureObject<TestData.methodWithCallbackByteArg> fnPtr) {
         call_methodWithCallbackByteArg_internal(fnPtr.getPointer());
     }
 
@@ -303,7 +270,7 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static void call_methodWithCallbackCharArg(ClosureObject<methodWithCallbackCharArg> fnPtr) {
+    public static void call_methodWithCallbackCharArg(ClosureObject<TestData.methodWithCallbackCharArg> fnPtr) {
         call_methodWithCallbackCharArg_internal(fnPtr.getPointer());
     }
 
@@ -313,7 +280,7 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static void call_methodWithCallbackBooleanArg(ClosureObject<methodWithCallbackBooleanArg> fnPtr) {
+    public static void call_methodWithCallbackBooleanArg(ClosureObject<TestData.methodWithCallbackBooleanArg> fnPtr) {
         call_methodWithCallbackBooleanArg_internal(fnPtr.getPointer());
     }
 
@@ -323,7 +290,7 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static void call_methodWithCallbackFloatArg(ClosureObject<methodWithCallbackFloatArg> fnPtr) {
+    public static void call_methodWithCallbackFloatArg(ClosureObject<TestData.methodWithCallbackFloatArg> fnPtr) {
         call_methodWithCallbackFloatArg_internal(fnPtr.getPointer());
     }
 
@@ -333,7 +300,7 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static void call_methodWithCallbackDoubleArg(ClosureObject<methodWithCallbackDoubleArg> fnPtr) {
+    public static void call_methodWithCallbackDoubleArg(ClosureObject<TestData.methodWithCallbackDoubleArg> fnPtr) {
         call_methodWithCallbackDoubleArg_internal(fnPtr.getPointer());
     }
 
@@ -343,7 +310,7 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static void call_methodWithCallbackAllArgs(ClosureObject<methodWithCallbackAllArgs> fnPtr) {
+    public static void call_methodWithCallbackAllArgs(ClosureObject<TestData.methodWithCallbackAllArgs> fnPtr) {
         call_methodWithCallbackAllArgs_internal(fnPtr.getPointer());
     }
 
@@ -353,7 +320,7 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static long call_methodWithCallbackLongReturn(ClosureObject<methodWithCallbackLongReturn> fnPtr) {
+    public static long call_methodWithCallbackLongReturn(ClosureObject<TestData.methodWithCallbackLongReturn> fnPtr) {
         return call_methodWithCallbackLongReturn_internal(fnPtr.getPointer());
     }
 
@@ -364,7 +331,7 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static int call_methodWithCallbackIntReturn(ClosureObject<methodWithCallbackIntReturn> fnPtr) {
+    public static int call_methodWithCallbackIntReturn(ClosureObject<TestData.methodWithCallbackIntReturn> fnPtr) {
         return call_methodWithCallbackIntReturn_internal(fnPtr.getPointer());
     }
 
@@ -375,7 +342,7 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static short call_methodWithCallbackShortReturn(ClosureObject<methodWithCallbackShortReturn> fnPtr) {
+    public static short call_methodWithCallbackShortReturn(ClosureObject<TestData.methodWithCallbackShortReturn> fnPtr) {
         return call_methodWithCallbackShortReturn_internal(fnPtr.getPointer());
     }
 
@@ -386,7 +353,7 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static char call_methodWithCallbackCharReturn(ClosureObject<methodWithCallbackCharReturn> fnPtr) {
+    public static char call_methodWithCallbackCharReturn(ClosureObject<TestData.methodWithCallbackCharReturn> fnPtr) {
         return call_methodWithCallbackCharReturn_internal(fnPtr.getPointer());
     }
 
@@ -397,7 +364,7 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static byte call_methodWithCallbackByteReturn(ClosureObject<methodWithCallbackByteReturn> fnPtr) {
+    public static byte call_methodWithCallbackByteReturn(ClosureObject<TestData.methodWithCallbackByteReturn> fnPtr) {
         return call_methodWithCallbackByteReturn_internal(fnPtr.getPointer());
     }
 
@@ -408,7 +375,7 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static boolean call_methodWithCallbackBooleanReturn(ClosureObject<methodWithCallbackBooleanReturn> fnPtr) {
+    public static boolean call_methodWithCallbackBooleanReturn(ClosureObject<TestData.methodWithCallbackBooleanReturn> fnPtr) {
         return call_methodWithCallbackBooleanReturn_internal(fnPtr.getPointer());
     }
 
@@ -419,7 +386,7 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static float call_methodWithCallbackFloatReturn(ClosureObject<methodWithCallbackFloatReturn> fnPtr) {
+    public static float call_methodWithCallbackFloatReturn(ClosureObject<TestData.methodWithCallbackFloatReturn> fnPtr) {
         return call_methodWithCallbackFloatReturn_internal(fnPtr.getPointer());
     }
 
@@ -430,7 +397,7 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static double call_methodWithCallbackDoubleReturn(ClosureObject<methodWithCallbackDoubleReturn> fnPtr) {
+    public static double call_methodWithCallbackDoubleReturn(ClosureObject<TestData.methodWithCallbackDoubleReturn> fnPtr) {
         return call_methodWithCallbackDoubleReturn_internal(fnPtr.getPointer());
     }
 
@@ -441,7 +408,7 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static void call_methodWithThrowingCallback(ClosureObject<methodWithThrowingCallback> fnPtr) {
+    public static void call_methodWithThrowingCallback(ClosureObject<TestData.methodWithThrowingCallback> fnPtr) {
         call_methodWithThrowingCallback_internal(fnPtr.getPointer());
     }
 
@@ -451,7 +418,7 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static void call_methodWithIntPtrPtrArg(ClosureObject<methodWithIntPtrPtrArg> fnPtr) {
+    public static void call_methodWithIntPtrPtrArg(ClosureObject<TestData.methodWithIntPtrPtrArg> fnPtr) {
         call_methodWithIntPtrPtrArg_internal(fnPtr.getPointer());
     }
 
@@ -461,11 +428,11 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static PointerPointer<SIntPointer> call_methodWithIntPtrPtrRet(ClosureObject<methodWithIntPtrPtrRet> fnPtr) {
+    public static PointerPointer<SIntPointer> call_methodWithIntPtrPtrRet(ClosureObject<TestData.methodWithIntPtrPtrRet> fnPtr) {
         return new PointerPointer<>(call_methodWithIntPtrPtrRet_internal(fnPtr.getPointer()), false, SIntPointer::new);
     }
 
-    public static void call_methodWithIntPtrPtrRet(ClosureObject<methodWithIntPtrPtrRet> fnPtr, PointerPointer<SIntPointer> _retPar) {
+    public static void call_methodWithIntPtrPtrRet(ClosureObject<TestData.methodWithIntPtrPtrRet> fnPtr, PointerPointer<SIntPointer> _retPar) {
         _retPar.setPointer(call_methodWithIntPtrPtrRet_internal(fnPtr.getPointer()));
         _retPar.setPointerSupplier(SIntPointer::new);
     }
@@ -531,11 +498,11 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static TestStruct call_methodWithCallbackTestStructReturn(ClosureObject<methodWithCallbackTestStructReturn> fnPtr) {
+    public static TestStruct call_methodWithCallbackTestStructReturn(ClosureObject<TestData.methodWithCallbackTestStructReturn> fnPtr) {
         return new TestStruct(call_methodWithCallbackTestStructReturn_internal(fnPtr.getPointer(), 0), true);
     }
 
-    public static void call_methodWithCallbackTestStructReturn(ClosureObject<methodWithCallbackTestStructReturn> fnPtr, TestStruct _retPar) {
+    public static void call_methodWithCallbackTestStructReturn(ClosureObject<TestData.methodWithCallbackTestStructReturn> fnPtr, TestStruct _retPar) {
         call_methodWithCallbackTestStructReturn_internal(fnPtr.getPointer(), _retPar.getPointer());
     }
 
@@ -548,11 +515,11 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static TestStruct.TestStructPointer call_methodWithCallbackTestStructPointerReturn(ClosureObject<methodWithCallbackTestStructPointerReturn> fnPtr) {
+    public static TestStruct.TestStructPointer call_methodWithCallbackTestStructPointerReturn(ClosureObject<TestData.methodWithCallbackTestStructPointerReturn> fnPtr) {
         return new TestStruct.TestStructPointer(call_methodWithCallbackTestStructPointerReturn_internal(fnPtr.getPointer()), false);
     }
 
-    public static void call_methodWithCallbackTestStructPointerReturn(ClosureObject<methodWithCallbackTestStructPointerReturn> fnPtr, TestStruct.TestStructPointer _retPar) {
+    public static void call_methodWithCallbackTestStructPointerReturn(ClosureObject<TestData.methodWithCallbackTestStructPointerReturn> fnPtr, TestStruct.TestStructPointer _retPar) {
         _retPar.setPointer(call_methodWithCallbackTestStructPointerReturn_internal(fnPtr.getPointer()));
     }
 
@@ -563,7 +530,7 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static void call_methodWithCallbackTestStructArg(ClosureObject<methodWithCallbackTestStructArg> fnPtr) {
+    public static void call_methodWithCallbackTestStructArg(ClosureObject<TestData.methodWithCallbackTestStructArg> fnPtr) {
         call_methodWithCallbackTestStructArg_internal(fnPtr.getPointer());
     }
 
@@ -573,7 +540,7 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static void call_methodWithCallbackTestStructPointerArg(ClosureObject<methodWithCallbackTestStructPointerArg> fnPtr) {
+    public static void call_methodWithCallbackTestStructPointerArg(ClosureObject<TestData.methodWithCallbackTestStructPointerArg> fnPtr) {
         call_methodWithCallbackTestStructPointerArg_internal(fnPtr.getPointer());
     }
 
@@ -657,7 +624,7 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static TestEnum call_methodWithCallbackTestEnumReturn(ClosureObject<methodWithCallbackTestEnumReturn> fnPtr) {
+    public static TestEnum call_methodWithCallbackTestEnumReturn(ClosureObject<TestData.methodWithCallbackTestEnumReturn> fnPtr) {
         return TestEnum.getByIndex((int) call_methodWithCallbackTestEnumReturn_internal(fnPtr.getPointer()));
     }
 
@@ -668,7 +635,7 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static void call_methodWithCallbackTestEnumArg(ClosureObject<methodWithCallbackTestEnumArg> fnPtr) {
+    public static void call_methodWithCallbackTestEnumArg(ClosureObject<TestData.methodWithCallbackTestEnumArg> fnPtr) {
         call_methodWithCallbackTestEnumArg_internal(fnPtr.getPointer());
     }
 
@@ -678,11 +645,11 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static TestEnum.TestEnumPointer call_methodWithCallbackTestEnumPointerReturn(ClosureObject<methodWithCallbackTestEnumPointerReturn> fnPtr) {
+    public static TestEnum.TestEnumPointer call_methodWithCallbackTestEnumPointerReturn(ClosureObject<TestData.methodWithCallbackTestEnumPointerReturn> fnPtr) {
         return new TestEnum.TestEnumPointer(call_methodWithCallbackTestEnumPointerReturn_internal(fnPtr.getPointer()), false);
     }
 
-    public static void call_methodWithCallbackTestEnumPointerReturn(ClosureObject<methodWithCallbackTestEnumPointerReturn> fnPtr, TestEnum.TestEnumPointer _retPar) {
+    public static void call_methodWithCallbackTestEnumPointerReturn(ClosureObject<TestData.methodWithCallbackTestEnumPointerReturn> fnPtr, TestEnum.TestEnumPointer _retPar) {
         _retPar.setPointer(call_methodWithCallbackTestEnumPointerReturn_internal(fnPtr.getPointer()));
     }
 
@@ -693,7 +660,7 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static void call_methodWithCallbackTestEnumPointerArg(ClosureObject<methodWithCallbackTestEnumPointerArg> fnPtr) {
+    public static void call_methodWithCallbackTestEnumPointerArg(ClosureObject<TestData.methodWithCallbackTestEnumPointerArg> fnPtr) {
         call_methodWithCallbackTestEnumPointerArg_internal(fnPtr.getPointer());
     }
 
@@ -730,11 +697,11 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static SIntPointer call_methodWithCallbackIntPointerReturn(ClosureObject<methodWithCallbackIntPointerReturn> fnPtr, int val) {
+    public static SIntPointer call_methodWithCallbackIntPointerReturn(ClosureObject<TestData.methodWithCallbackIntPointerReturn> fnPtr, int val) {
         return new SIntPointer(call_methodWithCallbackIntPointerReturn_internal(fnPtr.getPointer(), val), false);
     }
 
-    public static void call_methodWithCallbackIntPointerReturn(ClosureObject<methodWithCallbackIntPointerReturn> fnPtr, int val, SIntPointer _retPar) {
+    public static void call_methodWithCallbackIntPointerReturn(ClosureObject<TestData.methodWithCallbackIntPointerReturn> fnPtr, int val, SIntPointer _retPar) {
         _retPar.setPointer(call_methodWithCallbackIntPointerReturn_internal(fnPtr.getPointer(), val));
     }
 
@@ -746,7 +713,7 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static int call_methodWithCallbackIntPointerArg(ClosureObject<methodWithCallbackIntPointerArg> fnPtr) {
+    public static int call_methodWithCallbackIntPointerArg(ClosureObject<TestData.methodWithCallbackIntPointerArg> fnPtr) {
         return call_methodWithCallbackIntPointerArg_internal(fnPtr.getPointer());
     }
 
@@ -965,11 +932,11 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static TestUnion.TestUnionPointer call_methodWithCallbackTestUnionPointerReturn(ClosureObject<methodWithCallbackTestUnionPointerReturn> fnPtr) {
+    public static TestUnion.TestUnionPointer call_methodWithCallbackTestUnionPointerReturn(ClosureObject<TestData.methodWithCallbackTestUnionPointerReturn> fnPtr) {
         return new TestUnion.TestUnionPointer(call_methodWithCallbackTestUnionPointerReturn_internal(fnPtr.getPointer()), false);
     }
 
-    public static void call_methodWithCallbackTestUnionPointerReturn(ClosureObject<methodWithCallbackTestUnionPointerReturn> fnPtr, TestUnion.TestUnionPointer _retPar) {
+    public static void call_methodWithCallbackTestUnionPointerReturn(ClosureObject<TestData.methodWithCallbackTestUnionPointerReturn> fnPtr, TestUnion.TestUnionPointer _retPar) {
         _retPar.setPointer(call_methodWithCallbackTestUnionPointerReturn_internal(fnPtr.getPointer()));
     }
 
@@ -980,7 +947,7 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static void call_methodWithCallbackTestUnionPointerArg(ClosureObject<methodWithCallbackTestUnionPointerArg> fnPtr) {
+    public static void call_methodWithCallbackTestUnionPointerArg(ClosureObject<TestData.methodWithCallbackTestUnionPointerArg> fnPtr) {
         call_methodWithCallbackTestUnionPointerArg_internal(fnPtr.getPointer());
     }
 
@@ -1021,11 +988,11 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static BytePointer returnThrownCauseMessage(ClosureObject<methodWithThrowingCallback> fnPtr) {
+    public static BytePointer returnThrownCauseMessage(ClosureObject<TestData.methodWithThrowingCallback> fnPtr) {
         return new BytePointer(returnThrownCauseMessage_internal(fnPtr.getPointer()), false);
     }
 
-    public static void returnThrownCauseMessage(ClosureObject<methodWithThrowingCallback> fnPtr, BytePointer _retPar) {
+    public static void returnThrownCauseMessage(ClosureObject<TestData.methodWithThrowingCallback> fnPtr, BytePointer _retPar) {
         _retPar.setPointer(returnThrownCauseMessage_internal(fnPtr.getPointer()));
     }
 
@@ -1062,7 +1029,7 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static void call_callback_in_thread(ClosureObject<thread_callback> thread_callback) {
+    public static void call_callback_in_thread(ClosureObject<TestData.thread_callback> thread_callback) {
         call_callback_in_thread_internal(thread_callback.getPointer());
     }
 
@@ -1072,8 +1039,8 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static ClosureObject<methodWithCallback> getVoidCallback() {
-        return CHandler.getClosureObject(getVoidCallback_internal(), methodWithCallback_Internal::methodWithCallback_downcall);
+    public static ClosureObject<TestData.methodWithCallback> getVoidCallback() {
+        return CHandler.getClosureObject(getVoidCallback_internal(), TestData_Internal.methodWithCallback_Internal::methodWithCallback_downcall);
     }
 
     public static native long getVoidCallback_internal();/*
@@ -1083,8 +1050,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackLongArg> getLongArgCallback() {
-        return CHandler.getClosureObject(getLongArgCallback_internal(), methodWithCallbackLongArg_Internal::methodWithCallbackLongArg_downcall);
+    public static ClosureObject<TestData.methodWithCallbackLongArg> getLongArgCallback() {
+        return CHandler.getClosureObject(getLongArgCallback_internal(), TestData_Internal.methodWithCallbackLongArg_Internal::methodWithCallbackLongArg_downcall);
     }
 
     public static native long getLongArgCallback_internal();/*
@@ -1094,8 +1061,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackIntArg> getIntArgCallback() {
-        return CHandler.getClosureObject(getIntArgCallback_internal(), methodWithCallbackIntArg_Internal::methodWithCallbackIntArg_downcall);
+    public static ClosureObject<TestData.methodWithCallbackIntArg> getIntArgCallback() {
+        return CHandler.getClosureObject(getIntArgCallback_internal(), TestData_Internal.methodWithCallbackIntArg_Internal::methodWithCallbackIntArg_downcall);
     }
 
     public static native long getIntArgCallback_internal();/*
@@ -1105,8 +1072,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackShortArg> getShortArgCallback() {
-        return CHandler.getClosureObject(getShortArgCallback_internal(), methodWithCallbackShortArg_Internal::methodWithCallbackShortArg_downcall);
+    public static ClosureObject<TestData.methodWithCallbackShortArg> getShortArgCallback() {
+        return CHandler.getClosureObject(getShortArgCallback_internal(), TestData_Internal.methodWithCallbackShortArg_Internal::methodWithCallbackShortArg_downcall);
     }
 
     public static native long getShortArgCallback_internal();/*
@@ -1116,8 +1083,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackByteArg> getByteArgCallback() {
-        return CHandler.getClosureObject(getByteArgCallback_internal(), methodWithCallbackByteArg_Internal::methodWithCallbackByteArg_downcall);
+    public static ClosureObject<TestData.methodWithCallbackByteArg> getByteArgCallback() {
+        return CHandler.getClosureObject(getByteArgCallback_internal(), TestData_Internal.methodWithCallbackByteArg_Internal::methodWithCallbackByteArg_downcall);
     }
 
     public static native long getByteArgCallback_internal();/*
@@ -1127,8 +1094,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackCharArg> getCharArgCallback() {
-        return CHandler.getClosureObject(getCharArgCallback_internal(), methodWithCallbackCharArg_Internal::methodWithCallbackCharArg_downcall);
+    public static ClosureObject<TestData.methodWithCallbackCharArg> getCharArgCallback() {
+        return CHandler.getClosureObject(getCharArgCallback_internal(), TestData_Internal.methodWithCallbackCharArg_Internal::methodWithCallbackCharArg_downcall);
     }
 
     public static native long getCharArgCallback_internal();/*
@@ -1138,8 +1105,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackBooleanArg> getBooleanArgCallback() {
-        return CHandler.getClosureObject(getBooleanArgCallback_internal(), methodWithCallbackBooleanArg_Internal::methodWithCallbackBooleanArg_downcall);
+    public static ClosureObject<TestData.methodWithCallbackBooleanArg> getBooleanArgCallback() {
+        return CHandler.getClosureObject(getBooleanArgCallback_internal(), TestData_Internal.methodWithCallbackBooleanArg_Internal::methodWithCallbackBooleanArg_downcall);
     }
 
     public static native long getBooleanArgCallback_internal();/*
@@ -1149,8 +1116,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackFloatArg> getFloatArgCallback() {
-        return CHandler.getClosureObject(getFloatArgCallback_internal(), methodWithCallbackFloatArg_Internal::methodWithCallbackFloatArg_downcall);
+    public static ClosureObject<TestData.methodWithCallbackFloatArg> getFloatArgCallback() {
+        return CHandler.getClosureObject(getFloatArgCallback_internal(), TestData_Internal.methodWithCallbackFloatArg_Internal::methodWithCallbackFloatArg_downcall);
     }
 
     public static native long getFloatArgCallback_internal();/*
@@ -1160,8 +1127,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackDoubleArg> getDoubleArgCallback() {
-        return CHandler.getClosureObject(getDoubleArgCallback_internal(), methodWithCallbackDoubleArg_Internal::methodWithCallbackDoubleArg_downcall);
+    public static ClosureObject<TestData.methodWithCallbackDoubleArg> getDoubleArgCallback() {
+        return CHandler.getClosureObject(getDoubleArgCallback_internal(), TestData_Internal.methodWithCallbackDoubleArg_Internal::methodWithCallbackDoubleArg_downcall);
     }
 
     public static native long getDoubleArgCallback_internal();/*
@@ -1171,8 +1138,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackAllArgs> getAllArgsCallback() {
-        return CHandler.getClosureObject(getAllArgsCallback_internal(), methodWithCallbackAllArgs_Internal::methodWithCallbackAllArgs_downcall);
+    public static ClosureObject<TestData.methodWithCallbackAllArgs> getAllArgsCallback() {
+        return CHandler.getClosureObject(getAllArgsCallback_internal(), TestData_Internal.methodWithCallbackAllArgs_Internal::methodWithCallbackAllArgs_downcall);
     }
 
     public static native long getAllArgsCallback_internal();/*
@@ -1182,8 +1149,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackLongReturn> getLongReturnCallback() {
-        return CHandler.getClosureObject(getLongReturnCallback_internal(), methodWithCallbackLongReturn_Internal::methodWithCallbackLongReturn_downcall);
+    public static ClosureObject<TestData.methodWithCallbackLongReturn> getLongReturnCallback() {
+        return CHandler.getClosureObject(getLongReturnCallback_internal(), TestData_Internal.methodWithCallbackLongReturn_Internal::methodWithCallbackLongReturn_downcall);
     }
 
     public static native long getLongReturnCallback_internal();/*
@@ -1193,8 +1160,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackIntReturn> getIntReturnCallback() {
-        return CHandler.getClosureObject(getIntReturnCallback_internal(), methodWithCallbackIntReturn_Internal::methodWithCallbackIntReturn_downcall);
+    public static ClosureObject<TestData.methodWithCallbackIntReturn> getIntReturnCallback() {
+        return CHandler.getClosureObject(getIntReturnCallback_internal(), TestData_Internal.methodWithCallbackIntReturn_Internal::methodWithCallbackIntReturn_downcall);
     }
 
     public static native long getIntReturnCallback_internal();/*
@@ -1204,8 +1171,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackShortReturn> getShortReturnCallback() {
-        return CHandler.getClosureObject(getShortReturnCallback_internal(), methodWithCallbackShortReturn_Internal::methodWithCallbackShortReturn_downcall);
+    public static ClosureObject<TestData.methodWithCallbackShortReturn> getShortReturnCallback() {
+        return CHandler.getClosureObject(getShortReturnCallback_internal(), TestData_Internal.methodWithCallbackShortReturn_Internal::methodWithCallbackShortReturn_downcall);
     }
 
     public static native long getShortReturnCallback_internal();/*
@@ -1215,8 +1182,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackCharReturn> getCharReturnCallback() {
-        return CHandler.getClosureObject(getCharReturnCallback_internal(), methodWithCallbackCharReturn_Internal::methodWithCallbackCharReturn_downcall);
+    public static ClosureObject<TestData.methodWithCallbackCharReturn> getCharReturnCallback() {
+        return CHandler.getClosureObject(getCharReturnCallback_internal(), TestData_Internal.methodWithCallbackCharReturn_Internal::methodWithCallbackCharReturn_downcall);
     }
 
     public static native long getCharReturnCallback_internal();/*
@@ -1226,8 +1193,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackByteReturn> getByteReturnCallback() {
-        return CHandler.getClosureObject(getByteReturnCallback_internal(), methodWithCallbackByteReturn_Internal::methodWithCallbackByteReturn_downcall);
+    public static ClosureObject<TestData.methodWithCallbackByteReturn> getByteReturnCallback() {
+        return CHandler.getClosureObject(getByteReturnCallback_internal(), TestData_Internal.methodWithCallbackByteReturn_Internal::methodWithCallbackByteReturn_downcall);
     }
 
     public static native long getByteReturnCallback_internal();/*
@@ -1237,8 +1204,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackBooleanReturn> getBooleanReturnCallback() {
-        return CHandler.getClosureObject(getBooleanReturnCallback_internal(), methodWithCallbackBooleanReturn_Internal::methodWithCallbackBooleanReturn_downcall);
+    public static ClosureObject<TestData.methodWithCallbackBooleanReturn> getBooleanReturnCallback() {
+        return CHandler.getClosureObject(getBooleanReturnCallback_internal(), TestData_Internal.methodWithCallbackBooleanReturn_Internal::methodWithCallbackBooleanReturn_downcall);
     }
 
     public static native long getBooleanReturnCallback_internal();/*
@@ -1248,8 +1215,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackFloatReturn> getFloatReturnCallback() {
-        return CHandler.getClosureObject(getFloatReturnCallback_internal(), methodWithCallbackFloatReturn_Internal::methodWithCallbackFloatReturn_downcall);
+    public static ClosureObject<TestData.methodWithCallbackFloatReturn> getFloatReturnCallback() {
+        return CHandler.getClosureObject(getFloatReturnCallback_internal(), TestData_Internal.methodWithCallbackFloatReturn_Internal::methodWithCallbackFloatReturn_downcall);
     }
 
     public static native long getFloatReturnCallback_internal();/*
@@ -1259,8 +1226,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackDoubleReturn> getDoubleReturnCallback() {
-        return CHandler.getClosureObject(getDoubleReturnCallback_internal(), methodWithCallbackDoubleReturn_Internal::methodWithCallbackDoubleReturn_downcall);
+    public static ClosureObject<TestData.methodWithCallbackDoubleReturn> getDoubleReturnCallback() {
+        return CHandler.getClosureObject(getDoubleReturnCallback_internal(), TestData_Internal.methodWithCallbackDoubleReturn_Internal::methodWithCallbackDoubleReturn_downcall);
     }
 
     public static native long getDoubleReturnCallback_internal();/*
@@ -1270,8 +1237,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithIntPtrPtrArg> getIntPtrPtrArgCallback() {
-        return CHandler.getClosureObject(getIntPtrPtrArgCallback_internal(), methodWithIntPtrPtrArg_Internal::methodWithIntPtrPtrArg_downcall);
+    public static ClosureObject<TestData.methodWithIntPtrPtrArg> getIntPtrPtrArgCallback() {
+        return CHandler.getClosureObject(getIntPtrPtrArgCallback_internal(), TestData_Internal.methodWithIntPtrPtrArg_Internal::methodWithIntPtrPtrArg_downcall);
     }
 
     public static native long getIntPtrPtrArgCallback_internal();/*
@@ -1281,8 +1248,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithIntPtrPtrRet> getIntPtrPtrRetCallback() {
-        return CHandler.getClosureObject(getIntPtrPtrRetCallback_internal(), methodWithIntPtrPtrRet_Internal::methodWithIntPtrPtrRet_downcall);
+    public static ClosureObject<TestData.methodWithIntPtrPtrRet> getIntPtrPtrRetCallback() {
+        return CHandler.getClosureObject(getIntPtrPtrRetCallback_internal(), TestData_Internal.methodWithIntPtrPtrRet_Internal::methodWithIntPtrPtrRet_downcall);
     }
 
     public static native long getIntPtrPtrRetCallback_internal();/*
@@ -1292,8 +1259,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackTestStructReturn> getTestStructReturnCallback() {
-        return CHandler.getClosureObject(getTestStructReturnCallback_internal(), methodWithCallbackTestStructReturn_Internal::methodWithCallbackTestStructReturn_downcall);
+    public static ClosureObject<TestData.methodWithCallbackTestStructReturn> getTestStructReturnCallback() {
+        return CHandler.getClosureObject(getTestStructReturnCallback_internal(), TestData_Internal.methodWithCallbackTestStructReturn_Internal::methodWithCallbackTestStructReturn_downcall);
     }
 
     public static native long getTestStructReturnCallback_internal();/*
@@ -1303,8 +1270,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackTestStructPointerReturn> getTestStructPointerReturnCallback() {
-        return CHandler.getClosureObject(getTestStructPointerReturnCallback_internal(), methodWithCallbackTestStructPointerReturn_Internal::methodWithCallbackTestStructPointerReturn_downcall);
+    public static ClosureObject<TestData.methodWithCallbackTestStructPointerReturn> getTestStructPointerReturnCallback() {
+        return CHandler.getClosureObject(getTestStructPointerReturnCallback_internal(), TestData_Internal.methodWithCallbackTestStructPointerReturn_Internal::methodWithCallbackTestStructPointerReturn_downcall);
     }
 
     public static native long getTestStructPointerReturnCallback_internal();/*
@@ -1314,8 +1281,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackTestStructArg> getTestStructArgCallback() {
-        return CHandler.getClosureObject(getTestStructArgCallback_internal(), methodWithCallbackTestStructArg_Internal::methodWithCallbackTestStructArg_downcall);
+    public static ClosureObject<TestData.methodWithCallbackTestStructArg> getTestStructArgCallback() {
+        return CHandler.getClosureObject(getTestStructArgCallback_internal(), TestData_Internal.methodWithCallbackTestStructArg_Internal::methodWithCallbackTestStructArg_downcall);
     }
 
     public static native long getTestStructArgCallback_internal();/*
@@ -1325,8 +1292,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackTestStructPointerArg> getTestStructPointerArgCallback() {
-        return CHandler.getClosureObject(getTestStructPointerArgCallback_internal(), methodWithCallbackTestStructPointerArg_Internal::methodWithCallbackTestStructPointerArg_downcall);
+    public static ClosureObject<TestData.methodWithCallbackTestStructPointerArg> getTestStructPointerArgCallback() {
+        return CHandler.getClosureObject(getTestStructPointerArgCallback_internal(), TestData_Internal.methodWithCallbackTestStructPointerArg_Internal::methodWithCallbackTestStructPointerArg_downcall);
     }
 
     public static native long getTestStructPointerArgCallback_internal();/*
@@ -1336,8 +1303,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackTestEnumReturn> getTestEnumReturnCallback() {
-        return CHandler.getClosureObject(getTestEnumReturnCallback_internal(), methodWithCallbackTestEnumReturn_Internal::methodWithCallbackTestEnumReturn_downcall);
+    public static ClosureObject<TestData.methodWithCallbackTestEnumReturn> getTestEnumReturnCallback() {
+        return CHandler.getClosureObject(getTestEnumReturnCallback_internal(), TestData_Internal.methodWithCallbackTestEnumReturn_Internal::methodWithCallbackTestEnumReturn_downcall);
     }
 
     public static native long getTestEnumReturnCallback_internal();/*
@@ -1347,8 +1314,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackTestEnumArg> getTestEnumArgCallback() {
-        return CHandler.getClosureObject(getTestEnumArgCallback_internal(), methodWithCallbackTestEnumArg_Internal::methodWithCallbackTestEnumArg_downcall);
+    public static ClosureObject<TestData.methodWithCallbackTestEnumArg> getTestEnumArgCallback() {
+        return CHandler.getClosureObject(getTestEnumArgCallback_internal(), TestData_Internal.methodWithCallbackTestEnumArg_Internal::methodWithCallbackTestEnumArg_downcall);
     }
 
     public static native long getTestEnumArgCallback_internal();/*
@@ -1358,8 +1325,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackTestEnumPointerReturn> getTestEnumPointerReturnCallback() {
-        return CHandler.getClosureObject(getTestEnumPointerReturnCallback_internal(), methodWithCallbackTestEnumPointerReturn_Internal::methodWithCallbackTestEnumPointerReturn_downcall);
+    public static ClosureObject<TestData.methodWithCallbackTestEnumPointerReturn> getTestEnumPointerReturnCallback() {
+        return CHandler.getClosureObject(getTestEnumPointerReturnCallback_internal(), TestData_Internal.methodWithCallbackTestEnumPointerReturn_Internal::methodWithCallbackTestEnumPointerReturn_downcall);
     }
 
     public static native long getTestEnumPointerReturnCallback_internal();/*
@@ -1369,8 +1336,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackTestEnumPointerArg> getTestEnumPointerArgCallback() {
-        return CHandler.getClosureObject(getTestEnumPointerArgCallback_internal(), methodWithCallbackTestEnumPointerArg_Internal::methodWithCallbackTestEnumPointerArg_downcall);
+    public static ClosureObject<TestData.methodWithCallbackTestEnumPointerArg> getTestEnumPointerArgCallback() {
+        return CHandler.getClosureObject(getTestEnumPointerArgCallback_internal(), TestData_Internal.methodWithCallbackTestEnumPointerArg_Internal::methodWithCallbackTestEnumPointerArg_downcall);
     }
 
     public static native long getTestEnumPointerArgCallback_internal();/*
@@ -1380,8 +1347,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackIntPointerReturn> getIntPointerReturnCallback() {
-        return CHandler.getClosureObject(getIntPointerReturnCallback_internal(), methodWithCallbackIntPointerReturn_Internal::methodWithCallbackIntPointerReturn_downcall);
+    public static ClosureObject<TestData.methodWithCallbackIntPointerReturn> getIntPointerReturnCallback() {
+        return CHandler.getClosureObject(getIntPointerReturnCallback_internal(), TestData_Internal.methodWithCallbackIntPointerReturn_Internal::methodWithCallbackIntPointerReturn_downcall);
     }
 
     public static native long getIntPointerReturnCallback_internal();/*
@@ -1391,8 +1358,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackIntPointerArg> getIntPointerArgCallback() {
-        return CHandler.getClosureObject(getIntPointerArgCallback_internal(), methodWithCallbackIntPointerArg_Internal::methodWithCallbackIntPointerArg_downcall);
+    public static ClosureObject<TestData.methodWithCallbackIntPointerArg> getIntPointerArgCallback() {
+        return CHandler.getClosureObject(getIntPointerArgCallback_internal(), TestData_Internal.methodWithCallbackIntPointerArg_Internal::methodWithCallbackIntPointerArg_downcall);
     }
 
     public static native long getIntPointerArgCallback_internal();/*
@@ -1402,8 +1369,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackTestUnionPointerReturn> getTestUnionPointerReturnCallback() {
-        return CHandler.getClosureObject(getTestUnionPointerReturnCallback_internal(), methodWithCallbackTestUnionPointerReturn_Internal::methodWithCallbackTestUnionPointerReturn_downcall);
+    public static ClosureObject<TestData.methodWithCallbackTestUnionPointerReturn> getTestUnionPointerReturnCallback() {
+        return CHandler.getClosureObject(getTestUnionPointerReturnCallback_internal(), TestData_Internal.methodWithCallbackTestUnionPointerReturn_Internal::methodWithCallbackTestUnionPointerReturn_downcall);
     }
 
     public static native long getTestUnionPointerReturnCallback_internal();/*
@@ -1413,8 +1380,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackTestUnionPointerArg> getTestUnionPointerArgCallback() {
-        return CHandler.getClosureObject(getTestUnionPointerArgCallback_internal(), methodWithCallbackTestUnionPointerArg_Internal::methodWithCallbackTestUnionPointerArg_downcall);
+    public static ClosureObject<TestData.methodWithCallbackTestUnionPointerArg> getTestUnionPointerArgCallback() {
+        return CHandler.getClosureObject(getTestUnionPointerArgCallback_internal(), TestData_Internal.methodWithCallbackTestUnionPointerArg_Internal::methodWithCallbackTestUnionPointerArg_downcall);
     }
 
     public static native long getTestUnionPointerArgCallback_internal();/*
@@ -1424,8 +1391,8 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static ClosureObject<methodWithCallbackCallThrowingCallback> getCallThrowingCallbackCallback() {
-        return CHandler.getClosureObject(getCallThrowingCallbackCallback_internal(), methodWithCallbackCallThrowingCallback_Internal::methodWithCallbackCallThrowingCallback_downcall);
+    public static ClosureObject<TestData.methodWithCallbackCallThrowingCallback> getCallThrowingCallbackCallback() {
+        return CHandler.getClosureObject(getCallThrowingCallbackCallback_internal(), TestData_Internal.methodWithCallbackCallThrowingCallback_Internal::methodWithCallbackCallThrowingCallback_downcall);
     }
 
     public static native long getCallThrowingCallbackCallback_internal();/*
@@ -1435,117 +1402,117 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public interface methodWithCallbackBooleanArg extends Closure, methodWithCallbackBooleanArg_Internal {
+    public interface methodWithCallbackBooleanArg extends Closure, TestData_Internal.methodWithCallbackBooleanArg_Internal {
 
         void methodWithCallbackBooleanArg_call(boolean arg0);
     }
 
-    public interface methodWithCallbackTestEnumPointerArg extends Closure, methodWithCallbackTestEnumPointerArg_Internal {
+    public interface methodWithCallbackTestEnumPointerArg extends Closure, TestData_Internal.methodWithCallbackTestEnumPointerArg_Internal {
 
         void methodWithCallbackTestEnumPointerArg_call(TestEnum.TestEnumPointer arg0);
     }
 
-    public interface methodWithCallbackDoubleReturn extends Closure, methodWithCallbackDoubleReturn_Internal {
+    public interface methodWithCallbackDoubleReturn extends Closure, TestData_Internal.methodWithCallbackDoubleReturn_Internal {
 
         double methodWithCallbackDoubleReturn_call();
     }
 
-    public interface methodWithThrowingCallback extends Closure, methodWithThrowingCallback_Internal {
+    public interface methodWithThrowingCallback extends Closure, TestData_Internal.methodWithThrowingCallback_Internal {
 
         void methodWithThrowingCallback_call();
     }
 
-    public interface methodWithCallbackIntArg extends Closure, methodWithCallbackIntArg_Internal {
+    public interface methodWithCallbackIntArg extends Closure, TestData_Internal.methodWithCallbackIntArg_Internal {
 
         void methodWithCallbackIntArg_call(int arg0);
     }
 
-    public interface methodWithCallbackTestStructPointerReturn extends Closure, methodWithCallbackTestStructPointerReturn_Internal {
+    public interface methodWithCallbackTestStructPointerReturn extends Closure, TestData_Internal.methodWithCallbackTestStructPointerReturn_Internal {
 
         TestStruct.TestStructPointer methodWithCallbackTestStructPointerReturn_call();
     }
 
-    public interface methodWithCallbackShortReturn extends Closure, methodWithCallbackShortReturn_Internal {
+    public interface methodWithCallbackShortReturn extends Closure, TestData_Internal.methodWithCallbackShortReturn_Internal {
 
         short methodWithCallbackShortReturn_call();
     }
 
-    public interface methodWithCallbackTestEnumPointerReturn extends Closure, methodWithCallbackTestEnumPointerReturn_Internal {
+    public interface methodWithCallbackTestEnumPointerReturn extends Closure, TestData_Internal.methodWithCallbackTestEnumPointerReturn_Internal {
 
         TestEnum.TestEnumPointer methodWithCallbackTestEnumPointerReturn_call();
     }
 
-    public interface methodWithCallbackTestStructArg extends Closure, methodWithCallbackTestStructArg_Internal {
+    public interface methodWithCallbackTestStructArg extends Closure, TestData_Internal.methodWithCallbackTestStructArg_Internal {
 
         void methodWithCallbackTestStructArg_call(TestStruct arg0);
     }
 
-    public interface methodWithCallbackIntPointerReturn extends Closure, methodWithCallbackIntPointerReturn_Internal {
+    public interface methodWithCallbackIntPointerReturn extends Closure, TestData_Internal.methodWithCallbackIntPointerReturn_Internal {
 
         SIntPointer methodWithCallbackIntPointerReturn_call();
     }
 
-    public interface methodWithCallbackLongArg extends Closure, methodWithCallbackLongArg_Internal {
+    public interface methodWithCallbackLongArg extends Closure, TestData_Internal.methodWithCallbackLongArg_Internal {
 
         void methodWithCallbackLongArg_call(long test);
     }
 
-    public interface methodWithCallbackFloatArg extends Closure, methodWithCallbackFloatArg_Internal {
+    public interface methodWithCallbackFloatArg extends Closure, TestData_Internal.methodWithCallbackFloatArg_Internal {
 
         void methodWithCallbackFloatArg_call(float arg0);
     }
 
-    public interface methodWithCallbackDoubleArg extends Closure, methodWithCallbackDoubleArg_Internal {
+    public interface methodWithCallbackDoubleArg extends Closure, TestData_Internal.methodWithCallbackDoubleArg_Internal {
 
         void methodWithCallbackDoubleArg_call(double arg0);
     }
 
-    public interface methodWithCallbackIntPointerArg extends Closure, methodWithCallbackIntPointerArg_Internal {
+    public interface methodWithCallbackIntPointerArg extends Closure, TestData_Internal.methodWithCallbackIntPointerArg_Internal {
 
         int methodWithCallbackIntPointerArg_call(SIntPointer arg0);
     }
 
-    public interface methodWithCallbackTestEnumArg extends Closure, methodWithCallbackTestEnumArg_Internal {
+    public interface methodWithCallbackTestEnumArg extends Closure, TestData_Internal.methodWithCallbackTestEnumArg_Internal {
 
         void methodWithCallbackTestEnumArg_call(TestEnum arg0);
     }
 
-    public interface methodWithCallbackCallThrowingCallback extends Closure, methodWithCallbackCallThrowingCallback_Internal {
+    public interface methodWithCallbackCallThrowingCallback extends Closure, TestData_Internal.methodWithCallbackCallThrowingCallback_Internal {
 
-        void methodWithCallbackCallThrowingCallback_call(ClosureObject<methodWithThrowingCallback> arg0);
+        void methodWithCallbackCallThrowingCallback_call(ClosureObject<TestData.methodWithThrowingCallback> arg0);
     }
 
-    public interface methodWithCallbackTestStructPointerArg extends Closure, methodWithCallbackTestStructPointerArg_Internal {
+    public interface methodWithCallbackTestStructPointerArg extends Closure, TestData_Internal.methodWithCallbackTestStructPointerArg_Internal {
 
         void methodWithCallbackTestStructPointerArg_call(TestStruct.TestStructPointer arg0);
     }
 
-    public interface methodWithCallbackTestUnionPointerReturn extends Closure, methodWithCallbackTestUnionPointerReturn_Internal {
+    public interface methodWithCallbackTestUnionPointerReturn extends Closure, TestData_Internal.methodWithCallbackTestUnionPointerReturn_Internal {
 
         TestUnion.TestUnionPointer methodWithCallbackTestUnionPointerReturn_call();
     }
 
-    public interface methodWithCallbackByteReturn extends Closure, methodWithCallbackByteReturn_Internal {
+    public interface methodWithCallbackByteReturn extends Closure, TestData_Internal.methodWithCallbackByteReturn_Internal {
 
         byte methodWithCallbackByteReturn_call();
     }
 
-    public interface methodWithCallbackCharReturn extends Closure, methodWithCallbackCharReturn_Internal {
+    public interface methodWithCallbackCharReturn extends Closure, TestData_Internal.methodWithCallbackCharReturn_Internal {
 
         char methodWithCallbackCharReturn_call();
     }
 
-    public interface methodWithCallbackTestEnumReturn extends Closure, methodWithCallbackTestEnumReturn_Internal {
+    public interface methodWithCallbackTestEnumReturn extends Closure, TestData_Internal.methodWithCallbackTestEnumReturn_Internal {
 
         TestEnum methodWithCallbackTestEnumReturn_call();
     }
 
-    public interface methodWithCallbackAllArgs extends Closure, methodWithCallbackAllArgs_Internal {
+    public interface methodWithCallbackAllArgs extends Closure, TestData_Internal.methodWithCallbackAllArgs_Internal {
 
         void methodWithCallbackAllArgs_call(long arg0, int arg1, short arg2, byte arg3, char arg4, boolean arg5, float arg6, double arg7);
     }
 
-    public interface methodWithCallback extends Closure, methodWithCallback_Internal {
+    public interface methodWithCallback extends Closure, TestData_Internal.methodWithCallback_Internal {
 
         /**
          * Comment on callback
@@ -1553,62 +1520,62 @@ static jclass cxxExceptionClass = NULL;
         void methodWithCallback_call();
     }
 
-    public interface methodWithIntPtrPtrRet extends Closure, methodWithIntPtrPtrRet_Internal {
+    public interface methodWithIntPtrPtrRet extends Closure, TestData_Internal.methodWithIntPtrPtrRet_Internal {
 
         PointerPointer<SIntPointer> methodWithIntPtrPtrRet_call();
     }
 
-    public interface methodWithCallbackTestUnionPointerArg extends Closure, methodWithCallbackTestUnionPointerArg_Internal {
+    public interface methodWithCallbackTestUnionPointerArg extends Closure, TestData_Internal.methodWithCallbackTestUnionPointerArg_Internal {
 
         void methodWithCallbackTestUnionPointerArg_call(TestUnion.TestUnionPointer arg0);
     }
 
-    public interface methodWithCallbackShortArg extends Closure, methodWithCallbackShortArg_Internal {
+    public interface methodWithCallbackShortArg extends Closure, TestData_Internal.methodWithCallbackShortArg_Internal {
 
         void methodWithCallbackShortArg_call(short arg0);
     }
 
-    public interface methodWithCallbackByteArg extends Closure, methodWithCallbackByteArg_Internal {
+    public interface methodWithCallbackByteArg extends Closure, TestData_Internal.methodWithCallbackByteArg_Internal {
 
         void methodWithCallbackByteArg_call(byte arg0);
     }
 
-    public interface methodWithCallbackBooleanReturn extends Closure, methodWithCallbackBooleanReturn_Internal {
+    public interface methodWithCallbackBooleanReturn extends Closure, TestData_Internal.methodWithCallbackBooleanReturn_Internal {
 
         boolean methodWithCallbackBooleanReturn_call();
     }
 
-    public interface methodWithCallbackIntReturn extends Closure, methodWithCallbackIntReturn_Internal {
+    public interface methodWithCallbackIntReturn extends Closure, TestData_Internal.methodWithCallbackIntReturn_Internal {
 
         int methodWithCallbackIntReturn_call();
     }
 
-    public interface methodWithCallbackLongReturn extends Closure, methodWithCallbackLongReturn_Internal {
+    public interface methodWithCallbackLongReturn extends Closure, TestData_Internal.methodWithCallbackLongReturn_Internal {
 
         long methodWithCallbackLongReturn_call();
     }
 
-    public interface methodWithCallbackCharArg extends Closure, methodWithCallbackCharArg_Internal {
+    public interface methodWithCallbackCharArg extends Closure, TestData_Internal.methodWithCallbackCharArg_Internal {
 
         void methodWithCallbackCharArg_call(char arg0);
     }
 
-    public interface methodWithIntPtrPtrArg extends Closure, methodWithIntPtrPtrArg_Internal {
+    public interface methodWithIntPtrPtrArg extends Closure, TestData_Internal.methodWithIntPtrPtrArg_Internal {
 
         void methodWithIntPtrPtrArg_call(PointerPointer<SIntPointer> arg0);
     }
 
-    public interface thread_callback extends Closure, thread_callback_Internal {
+    public interface thread_callback extends Closure, TestData_Internal.thread_callback_Internal {
 
         VoidPointer thread_callback_call(VoidPointer arg0);
     }
 
-    public interface methodWithCallbackTestStructReturn extends Closure, methodWithCallbackTestStructReturn_Internal {
+    public interface methodWithCallbackTestStructReturn extends Closure, TestData_Internal.methodWithCallbackTestStructReturn_Internal {
 
         TestStruct methodWithCallbackTestStructReturn_call();
     }
 
-    public interface methodWithCallbackFloatReturn extends Closure, methodWithCallbackFloatReturn_Internal {
+    public interface methodWithCallbackFloatReturn extends Closure, TestData_Internal.methodWithCallbackFloatReturn_Internal {
 
         float methodWithCallbackFloatReturn_call();
     }
