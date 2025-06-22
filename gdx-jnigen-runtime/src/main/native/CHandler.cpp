@@ -199,8 +199,8 @@ JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_testIllegal
 }
 
 JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_testCXXExceptionThrowable(JNIEnv* env, jclass clazz, jclass cxxException) {
-    env->ThrowNew(cxxException, "Test");
     cxxExceptionClass = (jclass)env->NewGlobalRef(cxxException);
+    env->ThrowNew(cxxException, "Test");
 }
 
 JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_setDisableCXXExceptionMessage(JNIEnv* env, jclass clazz, jboolean disable) {
