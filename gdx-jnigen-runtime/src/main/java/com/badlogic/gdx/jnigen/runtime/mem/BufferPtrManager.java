@@ -29,7 +29,9 @@ public class BufferPtrManager {
     private static final long ADDRESS_MASK = ~PAGE_OFFSET_MASK;
 
     private static final ByteBuffer[][][] BUFFER_CACHE = new ByteBuffer[L1_SIZE][][];
-    private static final ByteBuffer NULL_BUFFER = CHandler.wrapPointer(0, Integer.MAX_VALUE).order(ByteOrder.nativeOrder());
+    private static final ByteBuffer NULL_BUFFER = CHandler.wrapPointer(0, 0).order(ByteOrder.nativeOrder());
+    // Android is dumb and doesn't allow the NULL Buffer to have any capacity...
+    private static final ByteBuffer NULL_RANGE_BUFFER = CHandler.wrapPointer(1, Integer.MAX_VALUE).order(ByteOrder.nativeOrder());
 
     private static final boolean NO_POOLING = System.getProperty("com.badlogic.jnigen.allocator.no_pooling", "false").equals("true");
     private static final int POOL_SIZE = Integer.parseInt(System.getProperty("com.badlogic.jnigen.allocator.pool_size", "256"));
@@ -38,7 +40,7 @@ public class BufferPtrManager {
 
     private static ByteBuffer getBuffer(long basePtr) {
         if (basePtr == 0)
-            return NULL_BUFFER;
+            return NULL_RANGE_BUFFER;
 
         // Address format: [L1 (12 bits) | L2 (11 bits) | L3 (11 bits) | offset (30 bits)]
         int l1_index = (int)(basePtr >> (PAGE_OFFSET_BITS + L3_BITS + L2_BITS)) & L1_MASK;
@@ -93,6 +95,12 @@ public class BufferPtrManager {
     }
 
     public static void setBufferPtrPointer(BufferPtr bufferPtr, long newPointer, int capacity) {
+        if (newPointer == 0) {
+            bufferPtr.reset(NULL_BUFFER, 0, 0, 0);
+            return;
+        }
+        if (capacity > PAGE_SIZE)
+            throw new IllegalArgumentException("capacity > PAGE_SIZE (" + capacity + " > " + PAGE_SIZE + ")");
         int offset = (int)(newPointer & PAGE_OFFSET_MASK);
         long basePtr = newPointer & ADDRESS_MASK;
 
