@@ -152,28 +152,6 @@ task build_ios {
     dependsOn createBuildTask("iphonesimulator", "x86_64", "-arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk", ["--host=x86_64-apple-ios-simulator"])
 }
 
-
-task extractAndroidCXXLibs() {
-    doLast {
-        if (!new File(System.getenv("NDK_HOME") + "/toolchains/llvm/prebuilt/").exists())
-            throw new IllegalArgumentException("NDK_HOME ${System.getenv("NDK_HOME")} does not point to a valid NDK")
-        def osPath = new File(System.getenv("NDK_HOME") + "/toolchains/llvm/prebuilt/").listFiles()[0].getName()
-        def basePath = System.getenv("NDK_HOME") + "/toolchains/llvm/prebuilt/${osPath}/sysroot/usr/lib/"
-
-        ["x86": "i686-linux-android", "x86_64": "x86_64-linux-android", "armeabi-v7a": "arm-linux-androideabi",
-         "arm64-v8a": "aarch64-linux-android"]
-        .forEach { arch, path ->
-            def sourcePath = "$basePath/$path/libc++_shared.so"
-            if (!new File(sourcePath).exists())
-                throw new IllegalArgumentException("Path ${sourcePath} does not exist")
-            copy {
-                from sourcePath
-                into file("libs/$arch/")
-            }
-        }
-    }
-}
-
 jnigen {
     sharedLibName = "jnigen-runtime"
 
@@ -216,13 +194,6 @@ jnigen {
         ]
     }
     addIOS()
-}
-
-jnigenBuildAllAndroid.dependsOn(extractAndroidCXXLibs)
-tasks.forEach {
-    if (it.name.startsWith("jnigenBuildAndroid")) {
-        it.dependsOn(extractAndroidCXXLibs)
-    }
 }
 
 
