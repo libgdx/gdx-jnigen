@@ -248,6 +248,22 @@ public class StackElementType implements MappedType, WritableClass {
 
             setBody.addStatement(fieldType.getDefinition().getMappedType().writeToBufferPtr(new MethodCallExpr("getBufPtr"), getFieldOffsetAsExpression(i), fieldType.getDefinition().getMappedType().toC(new NameExpr(fieldType.getName()))));
             setMethod.setBody(setBody);
+
+            if (fieldType.getDefinition().getTypeKind() == TypeKind.POINTER) {
+                MethodDeclaration getAllocFreeMethod = toWriteToPublic.addMethod(JavaUtils.getGetter(fieldType.getName()), Keyword.PUBLIC)
+                        .addParameter(fieldType.getDefinition().getMappedType().abstractType(), "toSetPtr");
+                if (field.getComment() != null)
+                    getAllocFreeMethod.setJavadocComment(field.getComment());
+                BlockStmt getAllocFreeBody = new BlockStmt();
+
+                Expression fromBufferPointer = fieldType.getDefinition().getMappedType().readFromBufferPtr(new MethodCallExpr("getBufPtr"), getFieldOffsetAsExpression(i));
+                MethodCallExpr setPtr = new MethodCallExpr("setPointer")
+                        .setScope(new NameExpr("toSetPtr"))
+                        .addArgument(fromBufferPointer);
+
+                getAllocFreeBody.addStatement(setPtr);
+                getAllocFreeMethod.setBody(getAllocFreeBody);
+            }
         }
 
         // Pointer
