@@ -60,6 +60,10 @@ public final class SpecialStruct extends Struct {
         getBufPtr().setNativePointer(0, floatPtrField.getPointer());
     }
 
+    public void getFloatPtrField(FloatPointer toSetPtr) {
+        toSetPtr.setPointer(getBufPtr().getNativePointer(0));
+    }
+
     public SIntPointer arrayField() {
         return new SIntPointer(getPointer() + (CHandler.IS_64_BIT ? 8 : 4), false, 5);
     }
@@ -86,6 +90,10 @@ public final class SpecialStruct extends Struct {
 
     public void intPtrField(SIntPointer intPtrField) {
         getBufPtr().setNativePointer(CHandler.IS_64_BIT ? 32 : 24, intPtrField.getPointer());
+    }
+
+    public void getIntPtrField(SIntPointer toSetPtr) {
+        toSetPtr.setPointer(getBufPtr().getNativePointer(CHandler.IS_64_BIT ? 32 : 24));
     }
 
     public static final class SpecialStructPointer extends StackElementPointer<SpecialStruct> {

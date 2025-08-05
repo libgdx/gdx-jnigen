@@ -126,12 +126,20 @@ public final class GlobalArg extends Union {
         getBufPtr().setNativePointer(0, intPtr.getPointer());
     }
 
+    public void getIntPtr(SIntPointer toSetPtr) {
+        toSetPtr.setPointer(getBufPtr().getNativePointer(0));
+    }
+
     public PointerPointer<SIntPointer> intPtrPtr() {
         return new PointerPointer<>(getBufPtr().getNativePointer(0), false, SIntPointer::new);
     }
 
     public void intPtrPtr(PointerPointer<SIntPointer> intPtrPtr) {
         getBufPtr().setNativePointer(0, intPtrPtr.getPointer());
+    }
+
+    public void getIntPtrPtr(PointerPointer<SIntPointer> toSetPtr) {
+        toSetPtr.setPointer(getBufPtr().getNativePointer(0));
     }
 
     public TestStruct structVal() {
@@ -162,6 +170,10 @@ public final class GlobalArg extends Union {
         getBufPtr().setNativePointer(0, structPtr.getPointer());
     }
 
+    public void getStructPtr(TestStruct.TestStructPointer toSetPtr) {
+        toSetPtr.setPointer(getBufPtr().getNativePointer(0));
+    }
+
     public TestEnum enumVal() {
         return TestEnum.getByIndex((int) getBufPtr().getUInt(0));
     }
@@ -178,12 +190,20 @@ public final class GlobalArg extends Union {
         getBufPtr().setNativePointer(0, enumPtr.getPointer());
     }
 
+    public void getEnumPtr(TestEnum.TestEnumPointer toSetPtr) {
+        toSetPtr.setPointer(getBufPtr().getNativePointer(0));
+    }
+
     public TestUnion.TestUnionPointer unionPtr() {
         return new TestUnion.TestUnionPointer(getBufPtr().getNativePointer(0), false);
     }
 
     public void unionPtr(TestUnion.TestUnionPointer unionPtr) {
         getBufPtr().setNativePointer(0, unionPtr.getPointer());
+    }
+
+    public void getUnionPtr(TestUnion.TestUnionPointer toSetPtr) {
+        toSetPtr.setPointer(getBufPtr().getNativePointer(0));
     }
 
     public allArgs allArgs() {
