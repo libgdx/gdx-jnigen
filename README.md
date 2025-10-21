@@ -64,6 +64,11 @@ jnigen {
 
     // Configure robovm.xml for IOS builds, most simple libraries will not need to do this
     robovm {
+        // Define ios framework bundle identifier
+        // xcframeworkBundleIdentifier = "com.badlogic.gdx.JniGen
+        // Deinfe minimum supported iOS version
+        // minIOSVersion = "11.0"
+
         // Use preexisting robovm.xml, cannot be combined with other options.
         //manualFile file("robovm.xml")
         
@@ -108,13 +113,7 @@ jnigen {
     addAndroid(AndroidABI.ABI_ARM64_V8A)
     
     //Auto add all possible iOS targets, including sim 
-    addIOS() {
-        // Define ios framework bundle identifier
-        // xcframeworkBundleIdentifier = "com.badlogic.gdx.JniGen
-        // Deinfe minimum supported iOS version
-        // minIOSVersion = "11.0"
-    }
- 
+    addIOS() 
     
     //Add specific ios device target
     addIOS(x64, ARM, DEVICE)
