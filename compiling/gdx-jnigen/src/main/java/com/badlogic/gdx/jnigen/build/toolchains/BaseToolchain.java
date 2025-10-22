@@ -16,6 +16,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -215,7 +216,7 @@ public abstract class BaseToolchain {
         List<File> matchedFiles = new ArrayList<>();
 
 
-        Files.walkFileTree(rootDir, new FileVisitor<Path>() {
+        Files.walkFileTree(rootDir, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, new FileVisitor<Path>() {
             @Override
             public FileVisitResult preVisitDirectory (Path dir, BasicFileAttributes attrs) {
                 if (dir == rootDir) {
