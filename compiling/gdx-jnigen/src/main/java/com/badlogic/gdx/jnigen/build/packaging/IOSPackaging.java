@@ -25,6 +25,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
+import java.util.stream.Stream;
 
 public class IOSPackaging extends PlatformPackager {
 
@@ -32,123 +33,113 @@ public class IOSPackaging extends PlatformPackager {
 
     @Override
     protected void packagePlatformImpl () {
+        File buildDir = buildConfig.buildDir.file();
+        buildDir.mkdirs();
 
         File outputJar = new File(buildConfig.libsDir.file().getAbsoluteFile(), buildConfig.targetJarBaseName + "-natives-ios.jar");
 
         //single input file for the framework we built with jnigen
         FileDescriptor frameworkFolder = buildConfig.libsDir.child(buildConfig.sharedLibName + ".xcframework");
 
-        generateRobovmXML();
+        File robovmXml = new File(buildDir, "robovm.xml");
+        generateRobovmXML(robovmXml);
 
-        bundleBuiltFrameworkIntoJar(outputJar, frameworkFolder);
-
-		//Bundle any extra frameworks also. Fail oon not found
-        RobovmBuildConfig robovmBuildConfig = buildConfig.robovmBuildConfig;
-        if (!robovmBuildConfig.getExtraXCFrameworks().isEmpty()) {
-            for (String extraXCFramework : robovmBuildConfig.getExtraXCFrameworks()) {
-                bundleExtraFrameworkIntoJar(outputJar, extraXCFramework);
-            }
-        }
-
-        logger.info("Packed ios platform to {}", outputJar);
-    }
-
-    private void bundleBuiltFrameworkIntoJar (File outputJar, FileDescriptor frameworkFolder) {
         try {
             try (FileOutputStream fileOutputStream = new FileOutputStream(outputJar)) {
-                JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream);
+                try (JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream)) {
+                    bundleRobovmXML(jarOutputStream, robovmXml);
+                    bundleBuiltFrameworkIntoJar(jarOutputStream, frameworkFolder);
 
-                //add the framework
-                if (frameworkFolder.file().exists()) {
-                    Path sourcePath = frameworkFolder.file().toPath();
-                    Files.walk(sourcePath).forEach(path -> {
-                        try {
-                            String entryName = sourcePath.relativize(path).toString().replace("\\", "/");
-                            JarEntry entry = new JarEntry("META-INF/robovm/ios/libs/" + buildConfig.sharedLibName + ".xcframework/" + entryName + (Files.isDirectory(path) ? "/" : ""));
-                            jarOutputStream.putNextEntry(entry);
-
-                            // Only copy file contents for regular files
-                            if (Files.isRegularFile(path)) {
-                                Files.copy(path, jarOutputStream);
-                            }
-
-                            jarOutputStream.closeEntry();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                    //Bundle any extra frameworks also. Fail oon not found
+                    RobovmBuildConfig robovmBuildConfig = buildConfig.robovmBuildConfig;
+                    if (!robovmBuildConfig.getExtraXCFrameworks().isEmpty()) {
+                        for (String extraXCFramework : robovmBuildConfig.getExtraXCFrameworks()) {
+                            bundleExtraFrameworkIntoJar(jarOutputStream, extraXCFramework);
                         }
-                    });
-                } else {
-                    if (buildConfig.errorOnPackageMissingNative) {
-                        throw new RuntimeException("Framework folder does not exist: " + frameworkFolder);
-                    } else {
-                        logger.error("Framework folder does not exist: {}", frameworkFolder);
                     }
                 }
-
-                //Add the robovm.xml
-                File robovmXMl = new File(buildConfig.buildDir.file(), "robovm.xml");
-                JarEntry robovmEntry = new JarEntry("META-INF/robovm/ios/robovm.xml");
-
-                jarOutputStream.putNextEntry(robovmEntry);
-                Files.copy(robovmXMl.toPath(), jarOutputStream);
-                jarOutputStream.closeEntry();
-
-                jarOutputStream.close();
             }
         } catch (IOException e) {
             logger.error("Exception when packing", e);
             throw new RuntimeException(e);
         }
 
+        logger.info("Packed ios platform to {}", outputJar);
     }
 
-    private void bundleExtraFrameworkIntoJar (File outputJar, String extraXCFrameworkPath) {
-        try {
-			FileDescriptor frameworkFolder = buildConfig.libsDir.parent().child(extraXCFrameworkPath);
+    private void bundleRobovmXML(JarOutputStream jarOutputStream, File robovmXml) throws IOException {
+        JarEntry robovmEntry = new JarEntry("META-INF/robovm/ios/robovm.xml");
 
-			try (FileOutputStream fileOutputStream = new FileOutputStream(outputJar)) {
-                JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream);
+        jarOutputStream.putNextEntry(robovmEntry);
+        Files.copy(robovmXml.toPath(), jarOutputStream);
+        jarOutputStream.closeEntry();
+    }
 
-                //add the framework
-                if (frameworkFolder.file().exists()) {
-                    Path sourcePath = frameworkFolder.file().toPath();
-                    Files.walk(sourcePath).forEach(path -> {
-                        try {
+    private void bundleBuiltFrameworkIntoJar (JarOutputStream jarOutputStream, FileDescriptor frameworkFolder) throws IOException {
+        //add the framework
+        if (frameworkFolder.file().exists()) {
+            Path sourcePath = frameworkFolder.file().toPath();
+            try (Stream<Path> stream = Files.walk(sourcePath)) {
+                stream.forEach(path -> {
+                    try {
+                        String entryName = sourcePath.relativize(path).toString().replace("\\", "/");
+                        JarEntry entry = new JarEntry("META-INF/robovm/ios/libs/" + buildConfig.sharedLibName + ".xcframework/" + entryName + (Files.isDirectory(path) ? "/" : ""));
+                        jarOutputStream.putNextEntry(entry);
 
-							String xcFrameworkName = extraXCFrameworkPath.substring(extraXCFrameworkPath.lastIndexOf('/') + 1);
-							xcFrameworkName = xcFrameworkName.substring(0, xcFrameworkName.lastIndexOf('.'));
-							String frameworkPath = extraXCFrameworkPath.substring(0, extraXCFrameworkPath.lastIndexOf('/'));
-
-                            String entryName = sourcePath.relativize(path).toString().replace("\\", "/");
-                            JarEntry entry = new JarEntry("META-INF/robovm/ios/libs/" + frameworkPath + "/" + xcFrameworkName + ".xcframework/" + entryName + (Files.isDirectory(path) ? "/" : ""));
-                            jarOutputStream.putNextEntry(entry);
-
-                            // Only copy file contents for regular files
-                            if (Files.isRegularFile(path)) {
-                                Files.copy(path, jarOutputStream);
-                            }
-
-                            jarOutputStream.closeEntry();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        // Only copy file contents for regular files
+                        if (Files.isRegularFile(path)) {
+                            Files.copy(path, jarOutputStream);
                         }
-                    });
-                } else {
-					throw new RuntimeException("Extra Framework folder does not exist: " + frameworkFolder);
-				}
 
-				jarOutputStream.close();
-
+                        jarOutputStream.closeEntry();
+                    } catch (IOException e) {
+                        logger.error("Exception when bundling build xcframework into jar", e);
+                        throw new RuntimeException(e);
+                    }
+                });
             }
-        } catch (IOException e) {
-            logger.error("Exception when packing extra frameworks", e);
-            throw new RuntimeException(e);
+        } else {
+            if (buildConfig.errorOnPackageMissingNative) {
+                throw new RuntimeException("Framework folder does not exist: " + frameworkFolder);
+            } else {
+                logger.error("Framework folder does not exist: {}", frameworkFolder);
+            }
         }
     }
 
-    private void generateRobovmXML () {
-        File buildDir = buildConfig.buildDir.file();
-        File robovmXml = new File(buildDir, "robovm.xml");
+    private void bundleExtraFrameworkIntoJar (JarOutputStream jarOutputStream, String extraXCFrameworkPath) throws IOException {
+        FileDescriptor frameworkFolder = buildConfig.libsDir.parent().child(extraXCFrameworkPath);
+        //add the framework
+        if (frameworkFolder.file().exists()) {
+            Path sourcePath = frameworkFolder.file().toPath();
+            try (Stream<Path> stream = Files.walk(sourcePath)) {
+                stream.forEach(path -> {
+                    try {
+                        String xcFrameworkName = extraXCFrameworkPath.substring(extraXCFrameworkPath.lastIndexOf('/') + 1);
+                        xcFrameworkName = xcFrameworkName.substring(0, xcFrameworkName.lastIndexOf('.'));
+
+                        String entryName = sourcePath.relativize(path).toString().replace("\\", "/");
+                        JarEntry entry = new JarEntry("META-INF/robovm/ios/libs/" + xcFrameworkName + ".xcframework/" + entryName + (Files.isDirectory(path) ? "/" : ""));
+                        jarOutputStream.putNextEntry(entry);
+
+                        // Only copy file contents for regular files
+                        if (Files.isRegularFile(path)) {
+                            Files.copy(path, jarOutputStream);
+                        }
+
+                        jarOutputStream.closeEntry();
+                    } catch (IOException e) {
+                        logger.error("Exception when bundling extra xcframework into jar", e);
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
+        } else {
+            throw new RuntimeException("Extra Framework folder does not exist: " + frameworkFolder);
+        }
+    }
+
+    private void generateRobovmXML (File robovmXml) {
         robovmXml.getParentFile().mkdirs();
 
         RobovmBuildConfig robovmBuildConfig = buildConfig.robovmBuildConfig;
@@ -182,13 +173,11 @@ public class IOSPackaging extends PlatformPackager {
             Element config = doc.createElement("config");
             doc.appendChild(config);
 
-            HashSet<String> addedPaths = new HashSet<>();
             Element frameworkPaths = doc.createElement("frameworkPaths");
             config.appendChild(frameworkPaths);
 
             Element xcFrameworkPath = doc.createElement("path");
             xcFrameworkPath.setTextContent("libs");
-            addedPaths.add("libs");
 
             frameworkPaths.appendChild(xcFrameworkPath);
 
@@ -218,13 +207,6 @@ public class IOSPackaging extends PlatformPackager {
                 for (String path : robovmBuildConfig.getExtraXCFrameworks()) {
                     String xcFrameworkName = path.substring(path.lastIndexOf('/') + 1);
                     xcFrameworkName = xcFrameworkName.substring(0, xcFrameworkName.lastIndexOf('.'));
-                    String frameworkPath = path.substring(0, path.lastIndexOf('/'));
-                    if (!addedPaths.contains(frameworkPath)) {
-                        addedPaths.add(frameworkPath);
-                        Element pathEl = doc.createElement("path");
-                        pathEl.setTextContent(frameworkPath);
-                        frameworkPaths.appendChild(pathEl);
-                    }
                     Element frameworkEl = doc.createElement("framework");
                     frameworkEl.setTextContent(xcFrameworkName);
                     frameworks.appendChild(frameworkEl);
