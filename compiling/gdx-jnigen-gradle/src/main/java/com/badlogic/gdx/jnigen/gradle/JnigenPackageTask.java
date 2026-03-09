@@ -85,6 +85,9 @@ public class JnigenPackageTask extends DefaultTask {
                     case IOS:
                         outputs.add(ext.sharedLibName + "-natives-" + "ios" + ".jar");
                         break;
+                    case Web:
+                        outputs.add(ext.sharedLibName + "-natives-" + "web" + ".jar");
+                        break;
                 }
             }
         }
