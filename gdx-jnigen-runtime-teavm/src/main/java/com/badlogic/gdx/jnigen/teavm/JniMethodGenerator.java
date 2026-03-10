@@ -88,7 +88,7 @@ public class JniMethodGenerator implements Generator {
             // Convert TeaVM string object to native JS string via $rt_ustr()
             writer.append("var ").append(ptrVar).append(" = 0;").softNewLine();
             writer.append("if (").append(paramName).append(" !== null) {").indent().softNewLine();
-            writer.append("var ").append(jsStrVar).append(" = $rt_ustr(").append(paramName).append(");").softNewLine();
+            writer.append("var ").append(jsStrVar).append(" = ").appendFunction("$rt_ustr").append("(").append(paramName).append(");").softNewLine();
             writer.append("var _len" + idx + " = Module.lengthBytesUTF8(").append(jsStrVar).append(") + 1;").softNewLine();
             writer.append(ptrVar).append(" = Module._malloc(_len" + idx + ");").softNewLine();
             writer.append("Module.stringToUTF8(").append(jsStrVar).append(", ").append(ptrVar).append(", _len" + idx + ");").softNewLine();
