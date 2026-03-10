@@ -5,9 +5,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
 
 /**
  * Packages Emscripten .js and .wasm files into a natives-web.jar
@@ -35,8 +39,27 @@ public class WebPackaging extends PlatformPackager {
 
         File outputJar = new File(buildConfig.libsDir.file().getAbsoluteFile(), buildConfig.targetJarBaseName + "-natives-web.jar");
 
-        try {
-            Util.JarFiles(outputJar, targetBinaries, buildConfig.errorOnPackageMissingNative);
+        try (FileOutputStream fos = new FileOutputStream(outputJar);
+             JarOutputStream jarOutputStream = new JarOutputStream(fos)) {
+
+            for (File file : targetBinaries) {
+                if (!file.exists()) {
+                    if (buildConfig.errorOnPackageMissingNative) {
+                        throw new IOException("File not found when packaging: " + file);
+                    } else {
+                        logger.warn("File not found when packaging: {}", file);
+                        continue;
+                    }
+                }
+                jarOutputStream.putNextEntry(new JarEntry(file.getName()));
+                Files.copy(file.toPath(), jarOutputStream);
+                jarOutputStream.closeEntry();
+            }
+
+            // Add empty marker file so TeaVM plugin can discover this jar
+            jarOutputStream.putNextEntry(new JarEntry("META-INF/gdx-teavm.properties"));
+            jarOutputStream.closeEntry();
+
         } catch (IOException e) {
             logger.error("Exception when packing.", e);
             throw new RuntimeException(e);
