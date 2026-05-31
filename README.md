@@ -66,7 +66,7 @@ jnigen {
     robovm {
         // Define ios framework bundle identifier
         // xcframeworkBundleIdentifier = "com.badlogic.gdx.JniGen
-        // Deinfe minimum supported iOS version
+        // Define minimum supported iOS version
         // minIOSVersion = "11.0"
 
         // Use preexisting robovm.xml, cannot be combined with other options.
