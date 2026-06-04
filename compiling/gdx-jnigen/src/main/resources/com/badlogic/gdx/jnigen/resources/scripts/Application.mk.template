@@ -1,2 +1,3 @@
 APP_ABI := %androidABIs%
 APP_PLATFORM := android-9
+APP_STRIP_MODE := none
