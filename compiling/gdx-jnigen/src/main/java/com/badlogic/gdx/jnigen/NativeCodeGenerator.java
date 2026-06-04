@@ -566,8 +566,14 @@ public class NativeCodeGenerator {
 		for (Argument arg : javaMethod.getArguments()) {
 			if (arg.getType().isString()) {
 				String type = "char*";
+				// On Emscripten, the jstring parameter is already a char* (WASM pointer),
+				// so we cast it directly instead of calling env->GetStringUTFChars().
+				buffer.append("#if defined(__EMSCRIPTEN__)\n");
+				buffer.append("\t" + type + " " + arg.getName() + " = (" + type + ")" + JNI_ARG_PREFIX + arg.getName() + ";\n");
+				buffer.append("#else\n");
 				buffer.append("\t" + type + " " + arg.getName() + " = (" + type + ")env->GetStringUTFChars(" + JNI_ARG_PREFIX
 					+ arg.getName() + ", 0);\n");
+				buffer.append("#endif\n");
 				additionalArgs.append(", ");
 				additionalArgs.append(type);
 				additionalArgs.append(" ");
@@ -582,8 +588,14 @@ public class NativeCodeGenerator {
 		for (Argument arg : javaMethod.getArguments()) {
 			if (arg.getType().isPrimitiveArray()) {
 				String type = arg.getType().getArrayCType();
+				// On Emscripten, the array parameter is already a WASM pointer,
+				// so we cast it directly instead of calling env->GetPrimitiveArrayCritical().
+				buffer.append("#if defined(__EMSCRIPTEN__)\n");
+				buffer.append("\t" + type + " " + arg.getName() + " = (" + type + ")" + JNI_ARG_PREFIX + arg.getName() + ";\n");
+				buffer.append("#else\n");
 				buffer.append("\t" + type + " " + arg.getName() + " = (" + type + ")env->GetPrimitiveArrayCritical(" + JNI_ARG_PREFIX
 					+ arg.getName() + ", 0);\n");
+				buffer.append("#endif\n");
 				additionalArgs.append(", ");
 				additionalArgs.append(type);
 				additionalArgs.append(" ");
@@ -598,18 +610,22 @@ public class NativeCodeGenerator {
 	}
 
 	private void emitJniCleanupCode (StringBuffer buffer, JavaMethod javaMethod, CMethod cMethod) {
-		// emit cleanup code for arrays, must come first
+		// emit cleanup code for arrays, must come first (skip on Emscripten — no JNI env)
 		for (Argument arg : javaMethod.getArguments()) {
 			if (arg.getType().isPrimitiveArray()) {
+				buffer.append("#if !defined(__EMSCRIPTEN__)\n");
 				buffer.append("\tenv->ReleasePrimitiveArrayCritical(" + JNI_ARG_PREFIX + arg.getName() + ", " + arg.getName()
 					+ ", 0);\n");
+				buffer.append("#endif\n");
 			}
 		}
 
-		// emit cleanup code for strings
+		// emit cleanup code for strings (skip on Emscripten — no JNI env)
 		for (Argument arg : javaMethod.getArguments()) {
 			if (arg.getType().isString()) {
+				buffer.append("#if !defined(__EMSCRIPTEN__)\n");
 				buffer.append("\tenv->ReleaseStringUTFChars(" + JNI_ARG_PREFIX + arg.getName() + ", " + arg.getName() + ");\n");
+				buffer.append("#endif\n");
 			}
 		}
 

@@ -89,6 +89,8 @@ public class SharedLibraryLoader {
 	public void load (String libraryName) {
 		// in case of iOS, it's unnecessary to dlopen
 		if (HostDetection.os == Os.IOS) return;
+		// in case of Emscripten/Web, native loading is handled by the WASM module
+		if (HostDetection.os == Os.Emscripten) return;
 
 		synchronized (SharedLibraryLoader.class) {
 			if (isLoaded(libraryName)) return;

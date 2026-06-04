@@ -76,6 +76,8 @@ public class JnigenPlugin implements Plugin<Project> {
 
                                         safeAddMavenPublication("jnigenPackageAllIOS", project, mavenPublication, "natives-ios");
 
+                                        safeAddMavenPublication("jnigenPackageAllWeb", project, mavenPublication, "natives-web");
+
                                     }
                                 });
 

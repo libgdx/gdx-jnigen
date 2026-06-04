@@ -66,6 +66,9 @@ public class JnigenGenerateBindingsTask extends DefaultTask {
         args.add(generator.getBasePackage());
         args.add(generator.getFileToParse());
         args.addAll(Arrays.asList(options));
+        if (generator.isWebEnabled()) {
+            args.add("--web");
+        }
 
         getProject().javaexec(spec -> {
             spec.environment("LIBCLANG_DISABLE_CRASH_RECOVERY", "1");

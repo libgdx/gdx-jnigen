@@ -1,8 +1,12 @@
 includeBuild("compiling")
 include ':gdx-jnigen-loader'
 include ':gdx-jnigen-runtime'
+include ':gdx-jnigen-runtime-gwt'
+include ':gdx-jnigen-runtime-teavm'
 include ':gdx-jnigen-generator-test'
 
 project(":gdx-jnigen-loader").name = "jnigen-loader"
 project(":gdx-jnigen-runtime").name = "jnigen-runtime"
+project(":gdx-jnigen-runtime-gwt").name = "jnigen-runtime-gwt"
+project(":gdx-jnigen-runtime-teavm").name = "jnigen-runtime-teavm"
 project(":gdx-jnigen-generator-test").name = "jnigen-generator-test"
