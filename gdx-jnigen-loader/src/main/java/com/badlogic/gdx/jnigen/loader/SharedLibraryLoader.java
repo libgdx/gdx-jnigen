@@ -42,6 +42,14 @@ public class SharedLibraryLoader {
 	static private final HashSet<String> loadedLibraries = new HashSet<>();
 	static private final Random random = new Random();
 
+	static private SharedLibraryLoadStrategy loadStrategy = new DefaultSharedLibraryLoadStrategy();
+
+	/** Sets the strategy used to load native libraries, replacing the {@link DefaultSharedLibraryLoadStrategy}. This is process
+	 * global; install a custom strategy before the first library is loaded. */
+	static public synchronized void setLoadStrategy (SharedLibraryLoadStrategy strategy) {
+		loadStrategy = strategy;
+	}
+
 	private String nativesJar;
 
 	public SharedLibraryLoader () {
@@ -77,7 +85,7 @@ public class SharedLibraryLoader {
 
 	/** Maps a platform independent library name to a platform dependent name. */
 	public String mapLibraryName (String libraryName) {
-		if (HostDetection.os == Os.Android)
+		if (HostDetection.os == Os.Android || HostDetection.os == Os.IOS)
 			return libraryName;
 		return HostDetection.os.getLibPrefix() + libraryName + HostDetection.architecture.toSuffix() + HostDetection.bitness.toSuffix() + "." + HostDetection.os.getLibExtension();
 	}
@@ -85,17 +93,11 @@ public class SharedLibraryLoader {
 	/** Loads a shared library for the platform the application is running on.
 	 * @param libraryName The platform independent library name. If not contain a prefix (eg lib) or suffix (eg .dll). */
 	public void load (String libraryName) {
-		// in case of iOS, it's unnecessary to dlopen
-		if (HostDetection.os == Os.IOS) return;
-
 		synchronized (SharedLibraryLoader.class) {
 			if (isLoaded(libraryName)) return;
 			String platformName = mapLibraryName(libraryName);
 			try {
-				if (HostDetection.os == Os.Android)
-					System.loadLibrary(platformName);
-				else
-					loadFile(platformName);
+				loadStrategy.load(this, libraryName, platformName);
 				setLoaded(libraryName);
 			} catch (Throwable ex) {
 				throw new SharedLibraryLoadRuntimeException("Couldn't load shared library '" + platformName + "' for target: "
@@ -103,6 +105,11 @@ public class SharedLibraryLoader {
 						ex);
 			}
 		}
+	}
+
+	/** Loads a system library by its platform dependent name via {@link System#loadLibrary(String)}. */
+	public void loadSystemLibrary (String platformName) {
+		System.loadLibrary(platformName);
 	}
 
 	private InputStream readFile (String path) {
@@ -128,7 +135,7 @@ public class SharedLibraryLoader {
 	 * @param sourcePath The file to extract from the classpath or JAR.
 	 * @param dirName The name of the subdirectory where the file will be extracted. If null, the file's CRC will be used.
 	 * @return The extracted file. */
-	public File extractFile (String sourcePath, String dirName) throws IOException {
+	public File extractFile (String sourcePath, String dirName) {
 		try {
 			String sourceCrc = crc(readFile(sourcePath));
 			if (dirName == null) dirName = sourceCrc;
@@ -152,7 +159,7 @@ public class SharedLibraryLoader {
 	 * extraction fails and the file exists at java.library.path, that file is returned.
 	 * @param sourcePath The file to extract from the classpath or JAR.
 	 * @param dir The location where the extracted file will be written. */
-	public void extractFileTo (String sourcePath, File dir) throws IOException {
+	public void extractFileTo (String sourcePath, File dir) {
 		extractFile(sourcePath, crc(readFile(sourcePath)), new File(dir, new File(sourcePath).getName()));
 	}
 
@@ -219,7 +226,7 @@ public class SharedLibraryLoader {
 		return file.canExecute();
 	}
 
-	private File extractFile (String sourcePath, String sourceCrc, File extractedFile) throws IOException {
+	private File extractFile (String sourcePath, String sourceCrc, File extractedFile) {
 		String extractedCrc = null;
 		if (extractedFile.exists()) {
 			try {
@@ -254,55 +261,9 @@ public class SharedLibraryLoader {
 		return extractedFile;
 	}
 
-	/** Extracts the source file and calls System.load. Attemps to extract and load from multiple locations. Throws runtime
-	 * exception if all fail. */
-	private void loadFile (String sourcePath) {
-		String sourceCrc = crc(readFile(sourcePath));
-
-		String fileName = new File(sourcePath).getName();
-
-		// Temp directory with username in path.
-		File file = new File(System.getProperty("java.io.tmpdir") + "/libgdx" + System.getProperty("user.name") + "/" + sourceCrc,
-			fileName);
-		Throwable ex = loadFile(sourcePath, sourceCrc, file);
-		if (ex == null) return;
-
-		// System provided temp directory.
-		try {
-			file = File.createTempFile(sourceCrc, null);
-			if (file.delete() && loadFile(sourcePath, sourceCrc, file) == null) return;
-		} catch (Throwable ignored) {
-		}
-
-		// User home.
-		file = new File(System.getProperty("user.home") + "/.libgdx/" + sourceCrc, fileName);
-		if (loadFile(sourcePath, sourceCrc, file) == null) return;
-
-		// Relative directory.
-		file = new File(".temp/" + sourceCrc, fileName);
-		if (loadFile(sourcePath, sourceCrc, file) == null) return;
-
-		// Fallback to java.library.path location, eg for applets.
-		file = new File(System.getProperty("java.library.path"), sourcePath);
-		if (file.exists()) {
-			loadFromAbsolutePath(file.getAbsolutePath());
-			return;
-		}
-
-		throw new SharedLibraryLoadRuntimeException(ex);
-	}
-
-	/** @return null if the file was extracted and loaded. */
-	private Throwable loadFile (String sourcePath, String sourceCrc, File extractedFile) {
-		try {
-			loadFromAbsolutePath(extractFile(sourcePath, sourceCrc, extractedFile).getAbsolutePath());
-			return null;
-		} catch (Throwable ex) {
-			return ex;
-		}
-	}
-
-	private void loadFromAbsolutePath(String path) {
+	/** Loads a native library from an absolute file path via {@link System#load(String)}. Lets a strategy load a library that is
+	 * already on disk. */
+	public void loadFromAbsolutePath(String path) {
 		System.load(path);
 	}
 
