@@ -52,20 +52,19 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static GlobalArg getGlobalArgState() {
-        return new GlobalArg(getGlobalArgState_internal(0), true);
+        GlobalArg _retPar = new GlobalArg();
+        getGlobalArgState_internal(_retPar.getPointer());
+        return _retPar;
     }
 
     public static void getGlobalArgState(GlobalArg _retPar) {
         getGlobalArgState_internal(_retPar.getPointer());
     }
 
-    public static native long getGlobalArgState_internal(long _retPar);/*
+    public static native void getGlobalArgState_internal(long _retPar);/*
     	HANDLE_JAVA_EXCEPTION_START()
-    	GlobalArg* _ret = (GlobalArg*) (_retPar == 0 ? malloc(sizeof(GlobalArg)) : (void*)_retPar);
-    	*_ret = getGlobalArgState();
-    	return (jlong)_ret;
+    	*((GlobalArg*)_retPar) = getGlobalArgState();
     	HANDLE_JAVA_EXCEPTION_END()
-    	return 0;
     */
 
     /**
@@ -460,20 +459,19 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static TestStruct returnTestStruct() {
-        return new TestStruct(returnTestStruct_internal(0), true);
+        TestStruct _retPar = new TestStruct();
+        returnTestStruct_internal(_retPar.getPointer());
+        return _retPar;
     }
 
     public static void returnTestStruct(TestStruct _retPar) {
         returnTestStruct_internal(_retPar.getPointer());
     }
 
-    public static native long returnTestStruct_internal(long _retPar);/*
+    public static native void returnTestStruct_internal(long _retPar);/*
     	HANDLE_JAVA_EXCEPTION_START()
-    	TestStruct* _ret = (TestStruct*) (_retPar == 0 ? malloc(sizeof(TestStruct)) : (void*)_retPar);
-    	*_ret = returnTestStruct();
-    	return (jlong)_ret;
+    	*((TestStruct*)_retPar) = returnTestStruct();
     	HANDLE_JAVA_EXCEPTION_END()
-    	return 0;
     */
 
     public static long passByValue(TestStruct testStruct) {
@@ -499,20 +497,19 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static TestStruct call_methodWithCallbackTestStructReturn(ClosureObject<TestData.methodWithCallbackTestStructReturn> fnPtr) {
-        return new TestStruct(call_methodWithCallbackTestStructReturn_internal(fnPtr.getPointer(), 0), true);
+        TestStruct _retPar = new TestStruct();
+        call_methodWithCallbackTestStructReturn_internal(fnPtr.getPointer(), _retPar.getPointer());
+        return _retPar;
     }
 
     public static void call_methodWithCallbackTestStructReturn(ClosureObject<TestData.methodWithCallbackTestStructReturn> fnPtr, TestStruct _retPar) {
         call_methodWithCallbackTestStructReturn_internal(fnPtr.getPointer(), _retPar.getPointer());
     }
 
-    public static native long call_methodWithCallbackTestStructReturn_internal(long fnPtr, long _retPar);/*
+    public static native void call_methodWithCallbackTestStructReturn_internal(long fnPtr, long _retPar);/*
     	HANDLE_JAVA_EXCEPTION_START()
-    	TestStruct* _ret = (TestStruct*) (_retPar == 0 ? malloc(sizeof(TestStruct)) : (void*)_retPar);
-    	*_ret = call_methodWithCallbackTestStructReturn((methodWithCallbackTestStructReturn)fnPtr);
-    	return (jlong)_ret;
+    	*((TestStruct*)_retPar) = call_methodWithCallbackTestStructReturn((methodWithCallbackTestStructReturn)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
-    	return 0;
     */
 
     public static TestStruct.TestStructPointer call_methodWithCallbackTestStructPointerReturn(ClosureObject<TestData.methodWithCallbackTestStructPointerReturn> fnPtr) {
@@ -807,20 +804,19 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static TestUnion returnTestUnion() {
-        return new TestUnion(returnTestUnion_internal(0), true);
+        TestUnion _retPar = new TestUnion();
+        returnTestUnion_internal(_retPar.getPointer());
+        return _retPar;
     }
 
     public static void returnTestUnion(TestUnion _retPar) {
         returnTestUnion_internal(_retPar.getPointer());
     }
 
-    public static native long returnTestUnion_internal(long _retPar);/*
+    public static native void returnTestUnion_internal(long _retPar);/*
     	HANDLE_JAVA_EXCEPTION_START()
-    	TestUnion* _ret = (TestUnion*) (_retPar == 0 ? malloc(sizeof(TestUnion)) : (void*)_retPar);
-    	*_ret = returnTestUnion();
-    	return (jlong)_ret;
+    	*((TestUnion*)_retPar) = returnTestUnion();
     	HANDLE_JAVA_EXCEPTION_END()
-    	return 0;
     */
 
     public static long getUnionUintTypeByValue(TestUnion testUnion) {
@@ -906,20 +902,19 @@ static jclass cxxExceptionClass = NULL;
     */
 
     public static TestStruct getUnionStructTypeByValue(TestUnion testUnion) {
-        return new TestStruct(getUnionStructTypeByValue_internal(testUnion.getPointer(), 0), true);
+        TestStruct _retPar = new TestStruct();
+        getUnionStructTypeByValue_internal(testUnion.getPointer(), _retPar.getPointer());
+        return _retPar;
     }
 
     public static void getUnionStructTypeByValue(TestUnion testUnion, TestStruct _retPar) {
         getUnionStructTypeByValue_internal(testUnion.getPointer(), _retPar.getPointer());
     }
 
-    public static native long getUnionStructTypeByValue_internal(long testUnion, long _retPar);/*
+    public static native void getUnionStructTypeByValue_internal(long testUnion, long _retPar);/*
     	HANDLE_JAVA_EXCEPTION_START()
-    	TestStruct* _ret = (TestStruct*) (_retPar == 0 ? malloc(sizeof(TestStruct)) : (void*)_retPar);
-    	*_ret = getUnionStructTypeByValue(*(TestUnion*)testUnion);
-    	return (jlong)_ret;
+    	*((TestStruct*)_retPar) = getUnionStructTypeByValue(*(TestUnion*)testUnion);
     	HANDLE_JAVA_EXCEPTION_END()
-    	return 0;
     */
 
     public static void setUnionStructTypeByPointer(TestUnion.TestUnionPointer testUnion, TestStruct value) {

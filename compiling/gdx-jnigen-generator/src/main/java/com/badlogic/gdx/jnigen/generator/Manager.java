@@ -361,6 +361,17 @@ public class Manager {
 
             MethodDeclaration getFFITypeMethod = ffiTypeClass.addMethod("getNativeType", Keyword.PRIVATE, Keyword.NATIVE, Keyword.STATIC);
             getFFITypeMethod.setBody(null).setType(long.class).addParameter(int.class, "id");
+
+            MethodDeclaration freeNativeTypeMethod = ffiTypeClass.addMethod("freeNativeType", Keyword.PRIVATE, Keyword.NATIVE, Keyword.STATIC);
+            freeNativeTypeMethod.setBody(null).setType(void.class).addParameter(long.class, "nativeType");
+
+            BlockStmt registerCTypeInfoBody = ffiTypeClass.addMethod("registerCTypeInfo", Keyword.PRIVATE, Keyword.STATIC)
+                    .addParameter(int.class, "id")
+                    .createBody();
+            registerCTypeInfoBody.addStatement("long nativeType = getNativeType(id);");
+            registerCTypeInfoBody.addStatement("ffiIdMap.put(id, CHandler.constructCTypeFromNativeType(nativeType));");
+            registerCTypeInfoBody.addStatement("freeNativeType(nativeType);");
+
             StringBuilder ffiTypeNativeBody = new StringBuilder("JNI\n");
             ffiTypeNativeBody.append("static native_type* ").append(nativeGetFFIMethodName).append("(int id) {\n");
             ffiTypeNativeBody.append("native_type* nativeType = (native_type*)malloc(sizeof(native_type));\n");
@@ -371,16 +382,16 @@ public class Manager {
             ffiTypeNativeBody.append("\tcase ").append(VOID_FFI_ID).append(":\n")
                     .append("\t\t").append("nativeType->type = VOID_TYPE;").append("\n")
                     .append("\t\treturn nativeType;\n");
-            staticInit.addStatement("ffiIdMap.put(" + VOID_FFI_ID + ", CHandler.constructCTypeFromNativeType(getNativeType(" + VOID_FFI_ID + ")));");
+            staticInit.addStatement("registerCTypeInfo(" + VOID_FFI_ID + ");");
             ffiTypeNativeBody.append("\tcase ").append(POINTER_FFI_ID).append(":\n")
                     .append("\t\t").append("nativeType->type = POINTER_TYPE;").append("\n")
                     .append("\t\treturn nativeType;\n");
-            staticInit.addStatement("ffiIdMap.put(" + POINTER_FFI_ID + ", CHandler.constructCTypeFromNativeType(getNativeType(" + POINTER_FFI_ID + ")));");
+            staticInit.addStatement("registerCTypeInfo(" + POINTER_FFI_ID + ");");
 
             List<String> cTypes = knownCTypes.keySet().stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
             for (int i = 0; i < cTypes.size(); i++) {
                 String cType = cTypes.get(i);
-                staticInit.addStatement("ffiIdMap.put(" + i + ", CHandler.constructCTypeFromNativeType(getNativeType(" + i + ")));");
+                staticInit.addStatement("registerCTypeInfo(" + i + ");");
                 ffiTypeNativeBody.append("\tcase ").append(i).append(":\n");
                 ffiTypeNativeBody.append("\t\tGET_NATIVE_TYPE(").append(cType).append(", nativeType);\n");
                 ffiTypeNativeBody.append("\t\treturn nativeType;\n");
@@ -388,11 +399,11 @@ public class Manager {
             for (int i = 0; i < orderedStackElements.size(); i++) {
                 int id = i + knownCTypes.size();
                 StackElementType stackElementType = orderedStackElements.get(i);
-                staticInit.addStatement("ffiIdMap.put(" + id + ", CHandler.constructCTypeFromNativeType(getNativeType(" + id + ")));");
+                staticInit.addStatement("registerCTypeInfo(" + id + ");");
                 ffiTypeNativeBody.append("\tcase ").append(id).append(":\n");
                 ffiTypeNativeBody.append(stackElementType.getFFITypeBody(nativeGetFFIMethodName));
             }
-            ffiTypeNativeBody.append("\tdefault:\n\t\treturn NULL;\n");
+            ffiTypeNativeBody.append("\tdefault:\n\t\tfree(nativeType);\n\t\treturn NULL;\n");
             ffiTypeNativeBody.append("\t}\n}\n");
             getFFITypeNativeMethod.setContent(ffiTypeNativeBody.toString());
 
@@ -400,6 +411,7 @@ public class Manager {
 
             String ffiTypeString = ffiTypeCU.toString();
             ffiTypeString = patchMethodNative(getFFITypeMethod, jniMethodBody, ffiTypeString);
+            ffiTypeString = patchMethodNative(freeNativeTypeMethod, "free_native_type((native_type*)nativeType);\n", ffiTypeString);
 
             Files.write(Paths.get(basePath + basePackage.replace(".", "/") + "/FFITypes.java"),
                     ffiTypeString.getBytes(StandardCharsets.UTF_8));

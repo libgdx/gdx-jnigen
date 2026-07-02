@@ -261,20 +261,9 @@ ffi_type* getFFITypeForNativeType(native_type* nativeType) {
     return NULL;
 }
 
-void freeNativeTypeRecursive(native_type* nativeType) {
-    if (nativeType->type == UNION_TYPE || nativeType->type == STRUCT_TYPE) {
-        for (int i = 0; i < nativeType->field_count; i++) {
-            freeNativeTypeRecursive(nativeType->fields[i]);
-        }
-    }
-
-    free(nativeType);
-}
-
 JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_convertNativeTypeToFFIType(JNIEnv* env, jclass clazz, jlong natTypeJ) {
     native_type* nativeType = (native_type*) natTypeJ;
     ffi_type* ffiType = getFFITypeForNativeType(nativeType);
-    freeNativeTypeRecursive(nativeType);
     return (jlong) ffiType;
 }
 

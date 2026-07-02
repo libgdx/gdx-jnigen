@@ -85,12 +85,15 @@ public class FunctionType {
                         bodyParameter.addStatement(callExprParameter);
                         callMethodParameter.setBody(bodyParameter);
 
-                        callExprCreate.addArgument("0");
+                        // Allocate the returned struct java side, so native code never mallocs memory that another
+                        // library would free (separate CRT heaps on Windows /MT or with statically linked libc)
+                        body.addStatement(returnType.getMappedType().abstractType() + " _retPar = new " + returnType.getMappedType().instantiationType() + "();");
+                        body.addStatement(callExprParameter.clone());
+                        body.addStatement(new ReturnStmt(new NameExpr("_retPar")));
 
+                        nativeMethod.setType(void.class);
                         nativeMethod.addParameter(long.class, "_retPar");
-                        nativeBody.insert(0, "*_ret = ");
-                        nativeBody.insert(0, returnType.getTypeName() + "* _ret = (" + returnType.getTypeName() + "*) (_retPar == 0 ? malloc(sizeof(" + returnType.getTypeName() + ")) : (void*)_retPar);\n");
-                        nativeBody.append("\nreturn (jlong)_ret;");
+                        nativeBody.insert(0, "*((" + returnType.getTypeName() + "*)_retPar) = ");
                     } else {
                         PointerType pointerType = (PointerType) returnType.getMappedType();
                         BlockStmt bodyPar = callMethodParameter.createBody();
@@ -104,10 +107,10 @@ public class FunctionType {
                     wrappingClass.addMember(callMethodParameter);
                 }
 
-                if (!returnType.getTypeKind().isStackElement())
+                if (!returnType.getTypeKind().isStackElement()) {
                     nativeBody.insert(0, "return (j" + returnType.getMappedType().primitiveType() + ")");
-
-                body.addStatement(new ReturnStmt(returnType.getMappedType().fromC(callExprCreate)));
+                    body.addStatement(new ReturnStmt(returnType.getMappedType().fromC(callExprCreate)));
+                }
             }
         } else {
             body.addStatement(callExprCreate);
@@ -118,7 +121,7 @@ public class FunctionType {
             NamedType namedType = arguments[i];
             TypeKind typeKind = namedType.getDefinition().getTypeKind();
             if (typeKind.isPrimitive() && typeKind != TypeKind.FLOAT && typeKind != TypeKind.DOUBLE) {
-                String ret = returnType.getTypeKind() == TypeKind.VOID ? "return" : "return 0";
+                String ret = nativeMethod.getType().isVoidType() ? "return" : "return 0";
                 nativeBody.insert(0, "CHECK_AND_THROW_C_TYPE(env, " + namedType.getDefinition().getTypeName() + ", "
                         + namedType.getName() + ", " + i + ", " + ret + ");\n");
             }
@@ -126,7 +129,7 @@ public class FunctionType {
 
         nativeBody.insert(0, "HANDLE_JAVA_EXCEPTION_START()\n");
         nativeBody.append("\nHANDLE_JAVA_EXCEPTION_END()");
-        if (returnType.getTypeKind() != TypeKind.VOID)
+        if (!nativeMethod.getType().isVoidType())
             nativeBody.append("\nreturn 0;");
 
         wrappingClass.getMembers().add(nativeMethod);

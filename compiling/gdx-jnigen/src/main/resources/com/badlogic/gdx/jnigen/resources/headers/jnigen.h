@@ -85,6 +85,17 @@ static inline void set_native_type(native_type* nat_type, native_type_id id, siz
     nat_type->sign = sign;
 }
 
+static inline void free_native_type(native_type* nat_type) {
+    if (nat_type == NULL)
+        return;
+    if (nat_type->type == STRUCT_TYPE || nat_type->type == UNION_TYPE) {
+        for (int i = 0; i < nat_type->field_count; i++)
+            free_native_type(nat_type->fields[i]);
+        free(nat_type->fields);
+    }
+    free(nat_type);
+}
+
 #define IS_SIGNED_TYPE(type)   (((type)-1) < 0)
 #define IS_UNSIGNED_TYPE(type) ((type)-1 > 0)
 

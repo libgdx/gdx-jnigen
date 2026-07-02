@@ -751,6 +751,7 @@ switch(id) {
 		nativeType->fields[1] = getNativeType(4);
 		return nativeType;
 	default:
+		free(nativeType);
 		return NULL;
 	}
 }
@@ -759,38 +760,48 @@ switch(id) {
     	return reinterpret_cast<jlong>(getNativeType(id));
     */
 
+    private native static void freeNativeType(long nativeType);/*
+    	free_native_type((native_type*)nativeType);
+    */
+
+    private static void registerCTypeInfo(int id) {
+        long nativeType = getNativeType(id);
+        ffiIdMap.put(id, CHandler.constructCTypeFromNativeType(nativeType));
+        freeNativeType(nativeType);
+    }
+
     static {
-        ffiIdMap.put(-2, CHandler.constructCTypeFromNativeType(getNativeType(-2)));
-        ffiIdMap.put(-1, CHandler.constructCTypeFromNativeType(getNativeType(-1)));
-        ffiIdMap.put(0, CHandler.constructCTypeFromNativeType(getNativeType(0)));
-        ffiIdMap.put(1, CHandler.constructCTypeFromNativeType(getNativeType(1)));
-        ffiIdMap.put(2, CHandler.constructCTypeFromNativeType(getNativeType(2)));
-        ffiIdMap.put(3, CHandler.constructCTypeFromNativeType(getNativeType(3)));
-        ffiIdMap.put(4, CHandler.constructCTypeFromNativeType(getNativeType(4)));
-        ffiIdMap.put(5, CHandler.constructCTypeFromNativeType(getNativeType(5)));
-        ffiIdMap.put(6, CHandler.constructCTypeFromNativeType(getNativeType(6)));
-        ffiIdMap.put(7, CHandler.constructCTypeFromNativeType(getNativeType(7)));
-        ffiIdMap.put(8, CHandler.constructCTypeFromNativeType(getNativeType(8)));
-        ffiIdMap.put(9, CHandler.constructCTypeFromNativeType(getNativeType(9)));
-        ffiIdMap.put(10, CHandler.constructCTypeFromNativeType(getNativeType(10)));
-        ffiIdMap.put(11, CHandler.constructCTypeFromNativeType(getNativeType(11)));
-        ffiIdMap.put(12, CHandler.constructCTypeFromNativeType(getNativeType(12)));
-        ffiIdMap.put(13, CHandler.constructCTypeFromNativeType(getNativeType(13)));
-        ffiIdMap.put(14, CHandler.constructCTypeFromNativeType(getNativeType(14)));
-        ffiIdMap.put(15, CHandler.constructCTypeFromNativeType(getNativeType(15)));
-        ffiIdMap.put(16, CHandler.constructCTypeFromNativeType(getNativeType(16)));
-        ffiIdMap.put(17, CHandler.constructCTypeFromNativeType(getNativeType(17)));
-        ffiIdMap.put(18, CHandler.constructCTypeFromNativeType(getNativeType(18)));
-        ffiIdMap.put(19, CHandler.constructCTypeFromNativeType(getNativeType(19)));
-        ffiIdMap.put(20, CHandler.constructCTypeFromNativeType(getNativeType(20)));
-        ffiIdMap.put(21, CHandler.constructCTypeFromNativeType(getNativeType(21)));
-        ffiIdMap.put(22, CHandler.constructCTypeFromNativeType(getNativeType(22)));
-        ffiIdMap.put(23, CHandler.constructCTypeFromNativeType(getNativeType(23)));
-        ffiIdMap.put(24, CHandler.constructCTypeFromNativeType(getNativeType(24)));
-        ffiIdMap.put(25, CHandler.constructCTypeFromNativeType(getNativeType(25)));
-        ffiIdMap.put(26, CHandler.constructCTypeFromNativeType(getNativeType(26)));
-        ffiIdMap.put(27, CHandler.constructCTypeFromNativeType(getNativeType(27)));
-        ffiIdMap.put(28, CHandler.constructCTypeFromNativeType(getNativeType(28)));
-        ffiIdMap.put(29, CHandler.constructCTypeFromNativeType(getNativeType(29)));
+        registerCTypeInfo(-2);
+        registerCTypeInfo(-1);
+        registerCTypeInfo(0);
+        registerCTypeInfo(1);
+        registerCTypeInfo(2);
+        registerCTypeInfo(3);
+        registerCTypeInfo(4);
+        registerCTypeInfo(5);
+        registerCTypeInfo(6);
+        registerCTypeInfo(7);
+        registerCTypeInfo(8);
+        registerCTypeInfo(9);
+        registerCTypeInfo(10);
+        registerCTypeInfo(11);
+        registerCTypeInfo(12);
+        registerCTypeInfo(13);
+        registerCTypeInfo(14);
+        registerCTypeInfo(15);
+        registerCTypeInfo(16);
+        registerCTypeInfo(17);
+        registerCTypeInfo(18);
+        registerCTypeInfo(19);
+        registerCTypeInfo(20);
+        registerCTypeInfo(21);
+        registerCTypeInfo(22);
+        registerCTypeInfo(23);
+        registerCTypeInfo(24);
+        registerCTypeInfo(25);
+        registerCTypeInfo(26);
+        registerCTypeInfo(27);
+        registerCTypeInfo(28);
+        registerCTypeInfo(29);
     }
 }
