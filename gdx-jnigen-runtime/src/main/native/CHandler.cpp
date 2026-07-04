@@ -101,13 +101,22 @@ void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
     jthrowable exc = env->ExceptionOccurred();
     if(exc != NULL) {
         env->ExceptionClear();
-        if (ignoreCXXExceptionMessage)
-            throw JavaExceptionMarker(gJVM, exc, "Java-Side exception");
-        jstring message = (jstring)env->CallStaticObjectMethod(globalClass, getExceptionStringMethod, exc);
-        const char* cStringMessage = env->GetStringUTFChars(message, NULL);
-        std::string cxxMessage(cStringMessage);
-        env->ReleaseStringUTFChars(message, cStringMessage);
-        throw JavaExceptionMarker(gJVM, exc, cxxMessage);
+        std::string cxxMessage("Java-Side exception");
+        if (!ignoreCXXExceptionMessage) {
+            jstring message = (jstring)env->CallStaticObjectMethod(globalClass, getExceptionStringMethod, exc);
+            if (env->ExceptionCheck())
+                env->ExceptionClear();
+            if (message != NULL) {
+                const char* cStringMessage = env->GetStringUTFChars(message, NULL);
+                cxxMessage.assign(cStringMessage);
+                env->ReleaseStringUTFChars(message, cStringMessage);
+                env->DeleteLocalRef(message);
+            }
+        }
+        // Local refs on threads attached by tls_attach_jni_env live until thread death, so they must be freed here
+        JavaExceptionMarker marker(gJVM, exc, cxxMessage);
+        env->DeleteLocalRef(exc);
+        throw marker;
     }
 
     if(rtype->type == FFI_TYPE_STRUCT) {

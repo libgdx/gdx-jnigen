@@ -53,6 +53,16 @@ class JavaExceptionMarker : public std::runtime_error {
             DETACH_ENV()
         }
 
+        // The exception object owns its global ref, so every copy needs its own - otherwise DeleteGlobalRef runs twice
+        JavaExceptionMarker(const JavaExceptionMarker& other) : std::runtime_error(other) {
+            gJVM = other.gJVM;
+            ATTACH_ENV()
+            javaExc = (jthrowable)env->NewGlobalRef(other.javaExc);
+            DETACH_ENV()
+        }
+
+        JavaExceptionMarker& operator=(const JavaExceptionMarker& other) = delete;
+
         ~JavaExceptionMarker() throw() {
             ATTACH_ENV() // TODO: Figure out, whether this is an issue during full-crash
             env->DeleteGlobalRef(javaExc);
