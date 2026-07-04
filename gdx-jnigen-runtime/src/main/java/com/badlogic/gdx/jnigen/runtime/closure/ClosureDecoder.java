@@ -6,6 +6,7 @@ public final class ClosureDecoder<T extends Closure> {
 
     private final T toCallOn;
     private PointingPoolManager poolManager;
+    private final ThreadLocal<PointingPoolManager> localManager = new ThreadLocal<>();
 
     public ClosureDecoder(T toCallOn) {
         this.toCallOn = toCallOn;
@@ -16,12 +17,18 @@ public final class ClosureDecoder<T extends Closure> {
     }
 
     public void invoke(BufferPtr buf) {
-        if (poolManager == null) {
+        PointingPoolManager template = poolManager;
+        if (template == null) {
             toCallOn.invoke(buf);
             return;
         }
 
-        toCallOn.invokePooled(buf, poolManager);
-        poolManager.flush();
+        PointingPoolManager mgr = localManager.get();
+        if (mgr == null) {
+            mgr = template.newThreadLocalClone();
+            localManager.set(mgr);
+        }
+        toCallOn.invokePooled(buf, mgr);
+        mgr.flush();
     }
 }

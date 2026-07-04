@@ -1034,6 +1034,18 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
+    public static void call_callback_in_n_threads(ClosureObject<TestData.thread_callback> thread_callback, int threadCount, int iterations) {
+        call_callback_in_n_threads_internal(thread_callback.getPointer(), threadCount, iterations);
+    }
+
+    public static native void call_callback_in_n_threads_internal(long thread_callback, int threadCount, int iterations);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	CHECK_AND_THROW_C_TYPE(env, int, iterations, 2, return);
+    	CHECK_AND_THROW_C_TYPE(env, int, threadCount, 1, return);
+    	call_callback_in_n_threads((void *(*)(void *))thread_callback, (int)threadCount, (int)iterations);
+    	HANDLE_JAVA_EXCEPTION_END()
+    */
+
     public static ClosureObject<TestData.methodWithCallback> getVoidCallback() {
         return CHandler.getClosureObject(getVoidCallback_internal(), TestData_Internal.methodWithCallback_Internal::methodWithCallback_downcall);
     }

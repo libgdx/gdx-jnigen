@@ -6,22 +6,50 @@ import java.util.HashMap;
 
 /**
  * A Manager that can be used for pooling Pointing objects, specifically for use with Closures. This Pool is also fixed-size.
- * This class is not thread safe. Two closures using the same Manager should
- * 1. not be called on different threads
- * 2. Not be called nested
  *
- * Furthermore, no object should escape the closure context. Every object will get invalid after the closure finished.
+ * <p>When attached to a {@link JavaClosureObject} via {@link ClosureObject#setPoolManager(PointingPoolManager)},
+ * the decoder derives one lightweight clone of this manager per invoking thread. The clones share this manager's
+ * underlying {@link PointingPool}s (which are already thread-safe), but each clone owns its own per-invocation frame.
+ * This keeps the {@link #poll(Class)} hot path on plain field access and makes concurrent callbacks from different
+ * C threads safe without requiring callers to coordinate.
  *
- * To use this class, you need to register PointingPools for the relevant classes.
+ * <p>Usage contract:
+ * <ul>
+ *     <li>All {@link #addPool(PointingPool)} / {@link #addPool(PointerDereferenceSupplier, int)} calls must complete
+ *         before the manager is handed to a closure via {@link ClosureObject#setPoolManager(PointingPoolManager)}.
+ *         Do not mutate the pool configuration after a callback has fired — the shared {@code pools} map is not
+ *         guarded by a lock.</li>
+ *     <li>{@link ClosureObject#setPoolManager(PointingPoolManager)} should be called at most once per closure.
+ *         Re-setting does not invalidate clones already materialised on other threads.</li>
+ *     <li>Nested invocations on the same thread are not supported: the inner call's {@link #flush()} wipes the
+ *         outer call's frame.</li>
+ *     <li>Every thread that ever invokes a pooled closure retains one {@code Pointing[size]} array for the life
+ *         of that thread's {@code ThreadLocalMap} entry.</li>
+ * </ul>
+ *
+ * <p>To use this class, register {@link PointingPool}s for the relevant classes before attaching.
  */
 public class PointingPoolManager {
 
-    private final HashMap<Class<?>, PointingPool<?>> pools = new HashMap<>();
+    private final HashMap<Class<?>, PointingPool<?>> pools;
+    private final int frameSize;
     private final Pointing[] frame;
     private int count;
 
     public PointingPoolManager (int size) {
+        this.pools = new HashMap<>();
+        this.frameSize = size;
         this.frame = new Pointing[size];
+    }
+
+    private PointingPoolManager (int size, HashMap<Class<?>, PointingPool<?>> pools) {
+        this.pools = pools;
+        this.frameSize = size;
+        this.frame = new Pointing[size];
+    }
+
+    public PointingPoolManager newThreadLocalClone () {
+        return new PointingPoolManager(frameSize, pools);
     }
 
     @SuppressWarnings("unchecked")

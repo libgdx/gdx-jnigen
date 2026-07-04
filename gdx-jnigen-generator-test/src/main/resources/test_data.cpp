@@ -440,6 +440,32 @@ void call_callback_in_thread(void* (*thread_callback)(void*)) {
     WaitForSingleObject(thread, INFINITE);
     CloseHandle(thread);
 }
+
+struct n_thread_ctx {
+    void* (*cb)(void*);
+    int iterations;
+};
+
+DWORD WINAPI thread_loop_wrapper(LPVOID param) {
+    n_thread_ctx* ctx = reinterpret_cast<n_thread_ctx*>(param);
+    for (int i = 0; i < ctx->iterations; i++) {
+        ctx->cb(nullptr);
+    }
+    return 0;
+}
+
+void call_callback_in_n_threads(void* (*thread_callback)(void*), int threadCount, int iterations) {
+    n_thread_ctx ctx = {thread_callback, iterations};
+    HANDLE* threads = (HANDLE*)malloc(sizeof(HANDLE) * threadCount);
+    for (int i = 0; i < threadCount; i++) {
+        threads[i] = CreateThread(NULL, 0, thread_loop_wrapper, &ctx, 0, NULL);
+    }
+    WaitForMultipleObjects(threadCount, threads, TRUE, INFINITE);
+    for (int i = 0; i < threadCount; i++) {
+        CloseHandle(threads[i]);
+    }
+    free(threads);
+}
 #else
 #include <pthread.h>
 
@@ -447,6 +473,31 @@ void call_callback_in_thread(void* (*thread_callback)(void*)) {
     pthread_t thread;
     pthread_create(&thread, NULL, thread_callback, NULL);
     pthread_join(thread, NULL);
+}
+
+struct n_thread_ctx {
+    void* (*cb)(void*);
+    int iterations;
+};
+
+static void* thread_loop_wrapper(void* param) {
+    n_thread_ctx* ctx = reinterpret_cast<n_thread_ctx*>(param);
+    for (int i = 0; i < ctx->iterations; i++) {
+        ctx->cb(nullptr);
+    }
+    return nullptr;
+}
+
+void call_callback_in_n_threads(void* (*thread_callback)(void*), int threadCount, int iterations) {
+    n_thread_ctx ctx = {thread_callback, iterations};
+    pthread_t* threads = (pthread_t*)malloc(sizeof(pthread_t) * threadCount);
+    for (int i = 0; i < threadCount; i++) {
+        pthread_create(&threads[i], NULL, thread_loop_wrapper, &ctx);
+    }
+    for (int i = 0; i < threadCount; i++) {
+        pthread_join(threads[i], NULL);
+    }
+    free(threads);
 }
 #endif
 

@@ -328,6 +328,7 @@ char* returnString(void);
 bool validateString(char* str);
 
 void call_callback_in_thread(void* (*thread_callback)(void*));
+void call_callback_in_n_threads(void* (*thread_callback)(void*), int threadCount, int iterations);
 
 methodWithCallback getVoidCallback(void);
 methodWithCallbackLongArg getLongArgCallback(void);
