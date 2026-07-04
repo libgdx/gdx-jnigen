@@ -120,7 +120,7 @@ task build_windows {
     group("libffi")
     dependsOn createBuildTask("windows", "x86", "", ["--host=i686-w64-mingw32"])
     dependsOn createBuildTask("windows", "x86_64", "", ["--host=x86_64-w64-mingw32"])
-    dependsOn createBuildTask("windows", "arm64", "", ["--host=aarch64-w64-mingw32"])
+    //dependsOn createBuildTask("windows", "arm64", "", ["--host=aarch64-w64-mingw32"])
 }
 
 task build_android {
@@ -148,8 +148,8 @@ task build_android {
 task build_ios {
     group("libffi")
     dependsOn createBuildTask("iphoneos", "arm64", "-arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/", ["--host=arm64-apple-ios"])
-    dependsOn createBuildTask("iphonesimulator", "arm64", "-arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/", ["--host=arm64-apple-ios-simulator"])
-    dependsOn createBuildTask("iphonesimulator", "x86_64", "-arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk", ["--host=x86_64-apple-ios-simulator"])
+    dependsOn createBuildTask("iphonesimulator", "arm64", "-arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/", ["--host=arm64-apple-iossimulator"])
+    dependsOn createBuildTask("iphonesimulator", "x86_64", "-arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk", ["--host=x86_64-apple-iossimulator"])
 }
 
 jnigen {
