@@ -120,6 +120,14 @@ void call_methodWithCallbackTestStructArg(methodWithCallbackTestStructArg fnPtr)
    fnPtr(arg);
 }
 
+void call_methodWithCallbackTimespecPointerArg(methodWithCallbackTimespecPointerArg fnPtr) {
+    // Synchronous upcall: the stack local stays valid for the duration of the callback.
+    struct timespec ts;
+    ts.tv_sec = 42;
+    ts.tv_nsec = 7;
+    fnPtr(&ts);
+}
+
 void call_methodWithCallbackTestStructPointerArg(methodWithCallbackTestStructPointerArg fnPtr) {
     TestStruct str = {
         .field1 = 1,
@@ -426,6 +434,59 @@ void ensureParsed(SpecialEnum, AnonymousStructNoField, AnonymousStructField, Ano
 void weirdPointer(FILE *_file) {}
 void constArrayParameter(const TestStruct structs[]) {}
 
+// forwardDeclStruct is only forward-declared in test_data.h; its real definition lives here, so the
+// generator treats it as an unsized/opaque type (pointer-only) while the native glue uses the layout.
+struct forwardDeclStruct {
+    int value;
+};
+
+struct forwardDeclStruct* createForwardDeclStruct(int value) {
+    struct forwardDeclStruct* handle = (struct forwardDeclStruct*)malloc(sizeof(struct forwardDeclStruct));
+    handle->value = value;
+    return handle;
+}
+
+int readForwardDeclStructValue(struct forwardDeclStruct* handle) {
+    return handle->value;
+}
+
+void freeForwardDeclStruct(struct forwardDeclStruct* handle) {
+    free(handle);
+}
+
+struct timespec* fillTimespec(struct timespec* out) {
+    out->tv_sec = 42;
+    out->tv_nsec = 7;
+    return out;
+}
+
+long tsSeconds(struct timespec* t) {
+    return (long)t->tv_sec;
+}
+
+size_t timeHolderSize(void) {
+    return sizeof(TimeHolder);
+}
+
+void fillTimeHolder(TimeHolder* holder, int marker) {
+    holder->ts.tv_sec = 1;
+    holder->ts.tv_nsec = 2;
+    holder->marker = marker;
+}
+
+int readTimeHolderMarker(TimeHolder* holder) {
+    return holder->marker;
+}
+
+void invokePublicCallback(public_callback cb, int value) {
+    if (cb)
+        cb(value);
+}
+
+public_color nextColor(public_color c) {
+    return (public_color)(((int)c % 3) + 1);
+}
+
 #ifdef _WIN32
 #include <windows.h>
 
@@ -504,6 +565,11 @@ void call_callback_in_n_threads(void* (*thread_callback)(void*), int threadCount
 static void voidCallback(void) {
     g_lastArg.longVal = 1;
 }
+
+// No shared state — used by perf benchmarks that want to isolate the JNI/runtime cost
+// from cache-line contention on g_lastArg.
+static void noopVoidCallback(void) { }
+static void noopIntArgCallback(int) { }
 
 static void longArgCallback(uint64_t arg) {
     g_lastArg.longVal = arg;
@@ -792,4 +858,12 @@ methodWithCallbackTestUnionPointerArg getTestUnionPointerArgCallback(void) {
 
 methodWithCallbackCallThrowingCallback getCallThrowingCallbackCallback(void) {
     return testCallThrowingCallback;
+}
+
+methodWithCallback getNoopVoidCallback(void) {
+    return noopVoidCallback;
+}
+
+methodWithCallbackIntArg getNoopIntArgCallback(void) {
+    return noopIntArgCallback;
 }

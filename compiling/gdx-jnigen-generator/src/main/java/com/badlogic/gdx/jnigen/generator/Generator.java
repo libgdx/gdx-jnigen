@@ -64,6 +64,33 @@ public class Generator {
             CXType typeDef = clang_getTypedefDeclUnderlyingType(clang_getTypeDeclaration(type));
             Manager.getInstance().registerTypeDef(clang_getTypedefName(type).getString(), clang_getTypeSpelling(typeDef).getString());
 
+            // Stop resolving aliases once they reach a system-header declaration: the underlying name
+            // (struct __sFILE / __sighandler_t / enum __color) is a platform-specific implementation
+            // detail, whereas the typedef (FILE / sig_t / color) is the stable, portable public name.
+            // Bind the alias itself, dispatched by the underlying kind - structs/unions become opaque,
+            // while enums still bind their constants and closures still bind their signature; only the
+            // name changes.
+            CXCursor underlyingDecl = clang_getTypeDeclaration(typeDef);
+            if (clang_Location_isInSystemHeader(clang_getCursorLocation(underlyingDecl)) != 0) {
+                TypeKind underlyingKind = TypeKind.getTypeKind(typeDef);
+                if (underlyingKind.isStackElement()) {
+                    if (Manager.getInstance().hasCTypeMapping(name))
+                        return Manager.getInstance().resolveCTypeMapping(name);
+                    return registerStackElementType(type, underlyingKind, name, alternativeName, null, true);
+                }
+                if (underlyingKind == TypeKind.ENUM) {
+                    if (Manager.getInstance().hasCTypeMapping(name))
+                        return Manager.getInstance().resolveCTypeMapping(name);
+                    return registerEnumType(typeDef, name, name, true);
+                }
+                if (isFunctionPointer(typeDef)) {
+                    if (Manager.getInstance().hasCTypeMapping(name))
+                        return Manager.getInstance().resolveCTypeMapping(name);
+                    return registerClosureType(clang_getPointeeType(clang_getCanonicalType(type)), name, name, null, underlyingDecl);
+                }
+                // else: plain pointer / primitive underlying -> fall through to the normal recursion
+            }
+
             // A typedef unsets a parent, because an anonymous declaration can't be typedefed I think
             TypeDefinition lower = registerCXType(typeDef, clang_getTypedefName(type).getString(), null);
             if (lower.getTypeKind() == TypeKind.CLOSURE) {
@@ -78,30 +105,7 @@ public class Generator {
         if (typeKind == TypeKind.CLOSURE) {
             if (alternativeName == null)
                 throw new IllegalArgumentException();
-
-            if (Manager.getInstance().hasCTypeMapping(alternativeName))
-                return Manager.getInstance().resolveCTypeMapping(alternativeName);
-
-            MappedType parentMappedType = parent == null ? Manager.getInstance().getGlobalType() : parent;
-            // TODO: 20.03.24 I have yet to find a way to reliably parse closure type arg names
-            FunctionSignature functionSignature = parseFunctionSignature(alternativeName, type, null);
-
-            // TODO: 19.03.24 Solve better, something like "lockMapping" idk
-            if (Manager.getInstance().hasCTypeMapping(alternativeName)) // function -> closure -> struct -> same closure
-                return Manager.getInstance().resolveCTypeMapping(alternativeName);
-
-            DirectStubFunctionType directStub = new DirectStubFunctionType(functionSignature, parentMappedType, Manager.getInstance().getGlobalType());
-            ClosureType closureType = new ClosureType(functionSignature, parentMappedType, directStub);
-            Manager.getInstance().getGlobalType().addFunction(directStub);
-            TypeDefinition typeDefinition = TypeDefinition.get(TypeKind.CLOSURE, name);
-            typeDefinition.setOverrideMappedType(closureType);
-            typeDefinition.setAnonymous(parent != null);
-            if (!typeDefinition.isAnonymous()) {
-                Manager.getInstance().addClosure(closureType);
-                Manager.getInstance().registerCTypeMapping(alternativeName, typeDefinition);
-            }
-
-            return typeDefinition;
+            return registerClosureType(type, name, alternativeName, parent, null);
         }
 
         if (Manager.getInstance().hasCTypeMapping(name))
@@ -145,32 +149,82 @@ public class Generator {
         }
 
         if (typeKind.isStackElement()) {
-            // For the moment, treat system header structs as unknown
-            // Figure out later, whether this might be problematic
-            if (clang_Location_isInSystemHeader(clang_getCursorLocation(clang_getTypeDeclaration(type))) != 0) {
-                TypeDefinition definition = TypeDefinition.get(TypeKind.VOID, name);
-                definition.setOverrideMappedType(new PrimitiveType(definition));
-                return definition;
-            }
-
-            TypeDefinition typeDefinition = TypeDefinition.get(typeKind, name);
-            typeDefinition.setAnonymous(clang_Cursor_isAnonymous(clang.clang_getTypeDeclaration(type)) != 0);
-            Manager.getInstance().registerCTypeMapping(name, typeDefinition);
-            StackElementParser parser = new StackElementParser(typeDefinition, type, alternativeName, parent);
-
-            typeDefinition.setOverrideMappedType(parser.getStackElementType());
-            parser.parseMappedType();
-            return typeDefinition;
+            boolean isSystemHeaderType = clang_Location_isInSystemHeader(clang_getCursorLocation(clang_getTypeDeclaration(type))) != 0;
+            return registerStackElementType(type, typeKind, name, alternativeName, parent, isSystemHeaderType);
         } else if (typeKind == TypeKind.ENUM) {
-            TypeDefinition typeDefinition = TypeDefinition.get(TypeKind.ENUM, name);
-            Manager.getInstance().registerCTypeMapping(name, typeDefinition);
-
-            typeDefinition.setNestedDefinition(registerCXType(clang_getEnumDeclIntegerType(clang_getTypeDeclaration(type)), null, null));
-            typeDefinition.setOverrideMappedType(new EnumParser(typeDefinition, type, alternativeName).register());
-            return typeDefinition;
+            return registerEnumType(type, name, alternativeName, false);
         }
 
         throw new IllegalArgumentException("Should not reach");
+    }
+
+    private static TypeDefinition registerStackElementType(CXType type, TypeKind typeKind, String name, String alternativeName, MappedType parent, boolean isSystemHeader) {
+        TypeDefinition typeDefinition = TypeDefinition.get(typeKind, name);
+        typeDefinition.setAnonymous(clang_Cursor_isAnonymous(clang.clang_getTypeDeclaration(type)) != 0);
+        Manager.getInstance().registerCTypeMapping(name, typeDefinition);
+        StackElementParser parser = new StackElementParser(typeDefinition, type, alternativeName, parent);
+        StackElementType stackElementType = parser.getStackElementType();
+        typeDefinition.setOverrideMappedType(stackElementType);
+
+        if (isSystemHeader) {
+            // System-header structs are not bound field-by-field. If the type is incomplete even here
+            // (a system opaque handle like DIR), it has no size, so only a pointer is possible.
+            // Otherwise it has a real size and is emitted as a sized opaque blob (allocatable, usable
+            // behind a typed pointer, but without field accessors).
+            if (clang_Type_getSizeOf(type) == CXTypeLayoutError_Incomplete)
+                stackElementType.markOpaque();
+            else
+                stackElementType.markSystemHeader();
+        } else {
+            parser.parseMappedType();
+        }
+        return typeDefinition;
+    }
+
+    private static TypeDefinition registerEnumType(CXType enumType, String name, String alternativeName, boolean forceAlternativeName) {
+        TypeDefinition typeDefinition = TypeDefinition.get(TypeKind.ENUM, name);
+        Manager.getInstance().registerCTypeMapping(name, typeDefinition);
+        typeDefinition.setNestedDefinition(registerCXType(clang_getEnumDeclIntegerType(clang_getTypeDeclaration(enumType)), null, null));
+        typeDefinition.setOverrideMappedType(new EnumParser(typeDefinition, enumType, alternativeName, forceAlternativeName).register());
+        return typeDefinition;
+    }
+
+    private static TypeDefinition registerClosureType(CXType functionProto, String name, String alternativeName, MappedType parent, CXCursor argNameCursor) {
+        if (Manager.getInstance().hasCTypeMapping(alternativeName))
+            return Manager.getInstance().resolveCTypeMapping(alternativeName);
+
+        MappedType parentMappedType = parent == null ? Manager.getInstance().getGlobalType() : parent;
+        // TODO: 20.03.24 I have yet to find a way to reliably parse closure type arg names
+        FunctionSignature functionSignature = parseFunctionSignature(alternativeName, functionProto, null);
+
+        // TODO: 19.03.24 Solve better, something like "lockMapping" idk
+        if (Manager.getInstance().hasCTypeMapping(alternativeName)) // function -> closure -> struct -> same closure
+            return Manager.getInstance().resolveCTypeMapping(alternativeName);
+
+        DirectStubFunctionType directStub = new DirectStubFunctionType(functionSignature, parentMappedType, Manager.getInstance().getGlobalType());
+        ClosureType closureType = new ClosureType(functionSignature, parentMappedType, directStub);
+        Manager.getInstance().getGlobalType().addFunction(directStub);
+        TypeDefinition typeDefinition = TypeDefinition.get(TypeKind.CLOSURE, name);
+        typeDefinition.setOverrideMappedType(closureType);
+        typeDefinition.setAnonymous(parent != null);
+        if (!typeDefinition.isAnonymous()) {
+            Manager.getInstance().addClosure(closureType);
+            Manager.getInstance().registerCTypeMapping(alternativeName, typeDefinition);
+        }
+        // When binding through a typedef, the type system drops argument names; recover them from the
+        // provided declaration cursor (the inner function-pointer typedef).
+        if (argNameCursor != null && !typeDefinition.isAnonymous())
+            patchClosureTypeWithCursor(typeDefinition, argNameCursor);
+
+        return typeDefinition;
+    }
+
+    private static boolean isFunctionPointer(CXType type) {
+        CXType canonical = clang_getCanonicalType(type);
+        if (canonical.kind() != CXType_Pointer)
+            return false;
+        int pointeeKind = clang_getPointeeType(canonical).kind();
+        return pointeeKind == CXType_FunctionProto || pointeeKind == CXType_FunctionNoProto;
     }
 
     public static void patchClosureTypeWithCursor(TypeDefinition definition, CXCursor cursor) {

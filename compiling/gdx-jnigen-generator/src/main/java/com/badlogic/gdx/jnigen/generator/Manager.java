@@ -399,6 +399,8 @@ public class Manager {
             for (int i = 0; i < orderedStackElements.size(); i++) {
                 int id = i + knownCTypes.size();
                 StackElementType stackElementType = orderedStackElements.get(i);
+                if (stackElementType.isOpaque())
+                    continue;
                 staticInit.addStatement("registerCTypeInfo(" + id + ");");
                 ffiTypeNativeBody.append("\tcase ").append(id).append(":\n");
                 ffiTypeNativeBody.append(stackElementType.getFFITypeBody(nativeGetFFIMethodName));

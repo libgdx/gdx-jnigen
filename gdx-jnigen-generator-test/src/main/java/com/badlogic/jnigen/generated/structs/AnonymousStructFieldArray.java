@@ -15,7 +15,7 @@ public final class AnonymousStructFieldArray extends Struct {
     private final static long __ffi_type;
 
     static {
-        __ffi_type = FFITypes.getCTypeInfo(17).getFfiType();
+        __ffi_type = FFITypes.getCTypeInfo(18).getFfiType();
         __size = CHandler.getSizeFromFFIType(__ffi_type);
     }
 
@@ -124,7 +124,7 @@ public final class AnonymousStructFieldArray extends Struct {
         private final static long __ffi_type;
 
         static {
-            __ffi_type = FFITypes.getCTypeInfo(29).getFfiType();
+            __ffi_type = FFITypes.getCTypeInfo(32).getFfiType();
             __size = CHandler.getSizeFromFFIType(__ffi_type);
         }
 

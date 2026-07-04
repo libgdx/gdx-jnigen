@@ -34,7 +34,7 @@ public interface MappedType {
 
     int typeID();
 
-    default boolean isLibFFIConvertible() {
+    default boolean isByValueClosureSafe() {
         return true;
     }
 

@@ -16,6 +16,7 @@ import com.badlogic.jnigen.generated.TestData_Internal;
 import com.badlogic.jnigen.generated.structs.TestUnion;
 import com.badlogic.gdx.jnigen.runtime.pointer.PointerPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
+import com.badlogic.jnigen.generated.structs.timespec;
 
 public final class TestData_Internal {
 
@@ -108,7 +109,16 @@ public final class TestData_Internal {
     public final static class AnonymousStructNoFieldConsecutive_Internal {
     }
 
+    public final static class TimeHolder_Internal {
+    }
+
+    public final static class timespec_Internal {
+    }
+
     public final static class TestUnion_Internal {
+    }
+
+    public final static class FILE_Internal {
     }
 
     public final static class SpecialStruct_Internal {
@@ -316,7 +326,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackTestStructArg_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(24) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(26) };
 
         void methodWithCallbackTestStructArg_call(TestStruct arg0);
 
@@ -366,7 +376,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackLongArg_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(11) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(12) };
 
         void methodWithCallbackLongArg_call(long test);
 
@@ -464,9 +474,34 @@ public final class TestData_Internal {
         }
     }
 
+    public interface public_callback_Internal extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(5) };
+
+        void public_callback_call(int value);
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(BufferPtr buf) {
+            public_callback_call(buf.getInt(0));
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            public_callback_call(buf.getInt(0));
+        }
+
+        public static CClosureObject<TestData.public_callback> public_callback_downcall(long fnPtr) {
+            return new CClosureObject<>((value) -> {
+                TestData.public_callback_direct(fnPtr, value);
+            }, fnPtr);
+        }
+    }
+
     public interface methodWithCallbackTestEnumArg_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(14) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(15) };
 
         void methodWithCallbackTestEnumArg_call(TestEnum arg0);
 
@@ -591,7 +626,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackCharReturn_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(9) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(10) };
 
         char methodWithCallbackCharReturn_call();
 
@@ -616,7 +651,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackTestEnumReturn_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(14) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(15) };
 
         TestEnum methodWithCallbackTestEnumReturn_call();
 
@@ -641,7 +676,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackAllArgs_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(11), FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(7), FFITypes.getCTypeInfo(1), FFITypes.getCTypeInfo(9), FFITypes.getCTypeInfo(0), FFITypes.getCTypeInfo(4), FFITypes.getCTypeInfo(3) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(12), FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(7), FFITypes.getCTypeInfo(1), FFITypes.getCTypeInfo(10), FFITypes.getCTypeInfo(0), FFITypes.getCTypeInfo(4), FFITypes.getCTypeInfo(3) };
 
         void methodWithCallbackAllArgs_call(long arg0, int arg1, short arg2, byte arg3, char arg4, boolean arg5, float arg6, double arg7);
 
@@ -841,7 +876,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackLongReturn_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(11) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(12) };
 
         long methodWithCallbackLongReturn_call();
 
@@ -866,7 +901,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackCharArg_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(9) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(10) };
 
         void methodWithCallbackCharArg_call(char arg0);
 
@@ -941,7 +976,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackTestStructReturn_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(24) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(26) };
 
         TestStruct methodWithCallbackTestStructReturn_call();
 
@@ -987,6 +1022,31 @@ public final class TestData_Internal {
         public static CClosureObject<TestData.methodWithCallbackFloatReturn> methodWithCallbackFloatReturn_downcall(long fnPtr) {
             return new CClosureObject<>(() -> {
                 return TestData.methodWithCallbackFloatReturn_direct(fnPtr);
+            }, fnPtr);
+        }
+    }
+
+    public interface methodWithCallbackTimespecPointerArg_Internal extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(-1) };
+
+        void methodWithCallbackTimespecPointerArg_call(timespec.timespecPointer arg0);
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(BufferPtr buf) {
+            methodWithCallbackTimespecPointerArg_call(new timespec.timespecPointer(buf.getNativePointer(0), false));
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            methodWithCallbackTimespecPointerArg_call(manager.getPointing(timespec.timespecPointer.class, buf.getNativePointer(0)));
+        }
+
+        public static CClosureObject<TestData.methodWithCallbackTimespecPointerArg> methodWithCallbackTimespecPointerArg_downcall(long fnPtr) {
+            return new CClosureObject<>((arg0) -> {
+                TestData.methodWithCallbackTimespecPointerArg_direct(fnPtr, arg0.getPointer());
             }, fnPtr);
         }
     }

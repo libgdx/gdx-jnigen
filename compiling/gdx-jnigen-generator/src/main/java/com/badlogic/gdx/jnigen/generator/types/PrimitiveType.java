@@ -188,11 +188,32 @@ public class PrimitiveType implements MappedType {
 
     @Override
     public int getSize(PossibleTarget target) {
+        if (isPointerWidth())
+            return target.is32Bit() ? 4 : 8;
         return definition.getTypeKind().getSize(target);
     }
 
     @Override
     public int getAlignment(PossibleTarget target) {
+        if (isPointerWidth())
+            return target.is32Bit() ? 4 : 8;
         return definition.getTypeKind().getAlignment(target);
+    }
+
+
+    private boolean isPointerWidth() {
+        String name = definition.getTypeName();
+        if (name.startsWith("const "))
+            name = name.substring("const ".length());
+        switch (name) {
+        case "size_t":
+        case "ssize_t":
+        case "ptrdiff_t":
+        case "intptr_t":
+        case "uintptr_t":
+            return true;
+        default:
+            return false;
+        }
     }
 }

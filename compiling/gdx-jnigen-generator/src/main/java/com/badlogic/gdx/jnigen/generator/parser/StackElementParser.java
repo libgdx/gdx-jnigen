@@ -49,6 +49,10 @@ public class StackElementParser {
 
     public void parseMappedType() {
         CXCursor cursor = clang_getTypeDeclaration(toParse);
+        // A forward-declared struct has no definition in the parsed header: it is unsized/opaque, so
+        // only a pointer to it can be emitted (it can neither be allocated nor dereferenced).
+        if (clang_Type_getSizeOf(toParse) == CXTypeLayoutError_Incomplete)
+            stackElementType.markOpaque();
         CommentParser commentParser = new CommentParser(cursor);
         if (commentParser.isPresent()) {
             stackElementType.setComment(commentParser.parse());

@@ -29,6 +29,8 @@ public class FFITypes {
 		static_assert(alignof(unsigned char) == 1, "Type unsigned char has unexpected alignment.");
 		static_assert(sizeof(signed char) == 1, "Type signed char has unexpected size.");
 		static_assert(alignof(signed char) == 1, "Type signed char has unexpected alignment.");
+		static_assert(sizeof(size_t) == 4, "Type size_t has unexpected size.");
+		static_assert(alignof(size_t) == 4, "Type size_t has unexpected alignment.");
 		static_assert(sizeof(float) == 4, "Type float has unexpected size.");
 		static_assert(alignof(float) == 4, "Type float has unexpected alignment.");
 		static_assert(sizeof(int) == 4, "Type int has unexpected size.");
@@ -132,6 +134,8 @@ public class FFITypes {
 		static_assert(alignof(unsigned char) == 1, "Type unsigned char has unexpected alignment.");
 		static_assert(sizeof(signed char) == 1, "Type signed char has unexpected size.");
 		static_assert(alignof(signed char) == 1, "Type signed char has unexpected alignment.");
+		static_assert(sizeof(size_t) == 8, "Type size_t has unexpected size.");
+		static_assert(alignof(size_t) == 8, "Type size_t has unexpected alignment.");
 		static_assert(sizeof(float) == 4, "Type float has unexpected size.");
 		static_assert(alignof(float) == 4, "Type float has unexpected alignment.");
 		static_assert(sizeof(int) == 4, "Type int has unexpected size.");
@@ -235,6 +239,8 @@ public class FFITypes {
 		static_assert(alignof(unsigned char) == 1, "Type unsigned char has unexpected alignment.");
 		static_assert(sizeof(signed char) == 1, "Type signed char has unexpected size.");
 		static_assert(alignof(signed char) == 1, "Type signed char has unexpected alignment.");
+		static_assert(sizeof(size_t) == 4, "Type size_t has unexpected size.");
+		static_assert(alignof(size_t) == 4, "Type size_t has unexpected alignment.");
 		static_assert(sizeof(float) == 4, "Type float has unexpected size.");
 		static_assert(alignof(float) == 4, "Type float has unexpected alignment.");
 		static_assert(sizeof(int) == 4, "Type int has unexpected size.");
@@ -338,6 +344,8 @@ public class FFITypes {
 		static_assert(alignof(unsigned char) == 1, "Type unsigned char has unexpected alignment.");
 		static_assert(sizeof(signed char) == 1, "Type signed char has unexpected size.");
 		static_assert(alignof(signed char) == 1, "Type signed char has unexpected alignment.");
+		static_assert(sizeof(size_t) == 8, "Type size_t has unexpected size.");
+		static_assert(alignof(size_t) == 8, "Type size_t has unexpected alignment.");
 		static_assert(sizeof(float) == 4, "Type float has unexpected size.");
 		static_assert(alignof(float) == 4, "Type float has unexpected alignment.");
 		static_assert(sizeof(int) == 4, "Type int has unexpected size.");
@@ -441,6 +449,8 @@ public class FFITypes {
 		static_assert(alignof(unsigned char) == 1, "Type unsigned char has unexpected alignment.");
 		static_assert(sizeof(signed char) == 1, "Type signed char has unexpected size.");
 		static_assert(alignof(signed char) == 1, "Type signed char has unexpected alignment.");
+		static_assert(sizeof(size_t) == 4, "Type size_t has unexpected size.");
+		static_assert(alignof(size_t) == 4, "Type size_t has unexpected alignment.");
 		static_assert(sizeof(float) == 4, "Type float has unexpected size.");
 		static_assert(alignof(float) == 4, "Type float has unexpected alignment.");
 		static_assert(sizeof(int) == 4, "Type int has unexpected size.");
@@ -537,6 +547,7 @@ public class FFITypes {
 		static_assert(IS_UNSIGNED_TYPE(uint32_t), "Type uint32_t is expected unsigned.");
 		static_assert(IS_UNSIGNED_TYPE(unsigned char), "Type unsigned char is expected unsigned.");
 		static_assert(IS_SIGNED_TYPE(signed char), "Type signed char is expected signed.");
+		static_assert(IS_UNSIGNED_TYPE(size_t), "Type size_t is expected unsigned.");
 		static_assert(IS_SIGNED_TYPE(float), "Type float is expected signed.");
 		static_assert(IS_SIGNED_TYPE(int), "Type int is expected signed.");
 		static_assert(IS_SIGNED_TYPE(long), "Type long is expected signed.");
@@ -592,46 +603,49 @@ switch(id) {
 		GET_NATIVE_TYPE(signed char, nativeType);
 		return nativeType;
 	case 9:
-		GET_NATIVE_TYPE(uint16_t, nativeType);
+		GET_NATIVE_TYPE(size_t, nativeType);
 		return nativeType;
 	case 10:
-		GET_NATIVE_TYPE(uint32_t, nativeType);
+		GET_NATIVE_TYPE(uint16_t, nativeType);
 		return nativeType;
 	case 11:
-		GET_NATIVE_TYPE(uint64_t, nativeType);
+		GET_NATIVE_TYPE(uint32_t, nativeType);
 		return nativeType;
 	case 12:
-		GET_NATIVE_TYPE(uint8_t, nativeType);
+		GET_NATIVE_TYPE(uint64_t, nativeType);
 		return nativeType;
 	case 13:
-		GET_NATIVE_TYPE(unsigned char, nativeType);
+		GET_NATIVE_TYPE(uint8_t, nativeType);
 		return nativeType;
 	case 14:
-		GET_NATIVE_TYPE(unsigned int, nativeType);
+		GET_NATIVE_TYPE(unsigned char, nativeType);
 		return nativeType;
 	case 15:
+		GET_NATIVE_TYPE(unsigned int, nativeType);
+		return nativeType;
+	case 16:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 2;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
 		nativeType->fields[0] = getNativeType(-1);
 		nativeType->fields[1] = getNativeType(-1);
 		return nativeType;
-	case 16:
+	case 17:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 2;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
-		nativeType->fields[0] = getNativeType(28);
+		nativeType->fields[0] = getNativeType(31);
 		nativeType->fields[1] = getNativeType(5);
 		return nativeType;
-	case 17:
+	case 18:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 3;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 3);
-		nativeType->fields[0] = getNativeType(29);
-		nativeType->fields[1] = getNativeType(29);
+		nativeType->fields[0] = getNativeType(32);
+		nativeType->fields[1] = getNativeType(32);
 		nativeType->fields[2] = getNativeType(5);
 		return nativeType;
-	case 18:
+	case 19:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 3;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 3);
@@ -639,7 +653,7 @@ switch(id) {
 		nativeType->fields[1] = getNativeType(4);
 		nativeType->fields[2] = getNativeType(5);
 		return nativeType;
-	case 19:
+	case 20:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 5;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 5);
@@ -649,7 +663,7 @@ switch(id) {
 		nativeType->fields[3] = getNativeType(5);
 		nativeType->fields[4] = getNativeType(4);
 		return nativeType;
-	case 20:
+	case 21:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 3;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 3);
@@ -657,7 +671,7 @@ switch(id) {
 		nativeType->fields[1] = getNativeType(5);
 		nativeType->fields[2] = getNativeType(4);
 		return nativeType;
-	case 21:
+	case 22:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 3;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 3);
@@ -665,28 +679,42 @@ switch(id) {
 		nativeType->fields[1] = getNativeType(4);
 		nativeType->fields[2] = getNativeType(5);
 		return nativeType;
-	case 22:
+	case 23:
+		{
+			size_t __blockAlign = alignof(FILE);
+			if (__blockAlign > 8) __blockAlign = 8;
+			int __blockCount = (int)(sizeof(FILE) / __blockAlign);
+			nativeType->type = STRUCT_TYPE;
+			nativeType->field_count = __blockCount;
+			nativeType->fields = (native_type**)malloc(sizeof(native_type*) * __blockCount);
+			for (int __blockIndex = 0; __blockIndex < __blockCount; __blockIndex++) {
+				nativeType->fields[__blockIndex] = (native_type*)malloc(sizeof(native_type));
+				set_native_type(nativeType->fields[__blockIndex], INT_TYPE, __blockAlign, false);
+			}
+			return nativeType;
+		}
+	case 24:
 		nativeType->type = UNION_TYPE;
 		nativeType->field_count = 16;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 16);
-		nativeType->fields[0] = getNativeType(11);
+		nativeType->fields[0] = getNativeType(12);
 		nativeType->fields[1] = getNativeType(5);
 		nativeType->fields[2] = getNativeType(7);
 		nativeType->fields[3] = getNativeType(1);
-		nativeType->fields[4] = getNativeType(9);
+		nativeType->fields[4] = getNativeType(10);
 		nativeType->fields[5] = getNativeType(0);
 		nativeType->fields[6] = getNativeType(4);
 		nativeType->fields[7] = getNativeType(3);
 		nativeType->fields[8] = getNativeType(-1);
 		nativeType->fields[9] = getNativeType(-1);
-		nativeType->fields[10] = getNativeType(24);
+		nativeType->fields[10] = getNativeType(26);
 		nativeType->fields[11] = getNativeType(-1);
-		nativeType->fields[12] = getNativeType(14);
+		nativeType->fields[12] = getNativeType(15);
 		nativeType->fields[13] = getNativeType(-1);
 		nativeType->fields[14] = getNativeType(-1);
-		nativeType->fields[15] = getNativeType(26);
+		nativeType->fields[15] = getNativeType(29);
 		return nativeType;
-	case 23:
+	case 25:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 7;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 7);
@@ -698,58 +726,74 @@ switch(id) {
 		nativeType->fields[5] = getNativeType(5);
 		nativeType->fields[6] = getNativeType(-1);
 		return nativeType;
-	case 24:
+	case 26:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 4;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 4);
-		nativeType->fields[0] = getNativeType(11);
-		nativeType->fields[1] = getNativeType(10);
-		nativeType->fields[2] = getNativeType(9);
-		nativeType->fields[3] = getNativeType(12);
+		nativeType->fields[0] = getNativeType(12);
+		nativeType->fields[1] = getNativeType(11);
+		nativeType->fields[2] = getNativeType(10);
+		nativeType->fields[3] = getNativeType(13);
 		return nativeType;
-	case 25:
+	case 27:
 		nativeType->type = UNION_TYPE;
 		nativeType->field_count = 6;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 6);
-		nativeType->fields[0] = getNativeType(11);
+		nativeType->fields[0] = getNativeType(12);
 		nativeType->fields[1] = getNativeType(3);
 		nativeType->fields[2] = getNativeType(5);
 		nativeType->fields[3] = getNativeType(5);
 		nativeType->fields[4] = getNativeType(5);
-		nativeType->fields[5] = getNativeType(24);
-		return nativeType;
-	case 26:
-		nativeType->type = STRUCT_TYPE;
-		nativeType->field_count = 8;
-		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 8);
-		nativeType->fields[0] = getNativeType(11);
-		nativeType->fields[1] = getNativeType(5);
-		nativeType->fields[2] = getNativeType(7);
-		nativeType->fields[3] = getNativeType(1);
-		nativeType->fields[4] = getNativeType(9);
-		nativeType->fields[5] = getNativeType(0);
-		nativeType->fields[6] = getNativeType(4);
-		nativeType->fields[7] = getNativeType(3);
-		return nativeType;
-	case 27:
-		nativeType->type = STRUCT_TYPE;
-		nativeType->field_count = 0;
-		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 0);
+		nativeType->fields[5] = getNativeType(26);
 		return nativeType;
 	case 28:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 2;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
-		nativeType->fields[0] = getNativeType(5);
-		nativeType->fields[1] = getNativeType(4);
+		nativeType->fields[0] = getNativeType(33);
+		nativeType->fields[1] = getNativeType(5);
 		return nativeType;
 	case 29:
+		nativeType->type = STRUCT_TYPE;
+		nativeType->field_count = 8;
+		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 8);
+		nativeType->fields[0] = getNativeType(12);
+		nativeType->fields[1] = getNativeType(5);
+		nativeType->fields[2] = getNativeType(7);
+		nativeType->fields[3] = getNativeType(1);
+		nativeType->fields[4] = getNativeType(10);
+		nativeType->fields[5] = getNativeType(0);
+		nativeType->fields[6] = getNativeType(4);
+		nativeType->fields[7] = getNativeType(3);
+		return nativeType;
+	case 31:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->field_count = 2;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
 		nativeType->fields[0] = getNativeType(5);
 		nativeType->fields[1] = getNativeType(4);
 		return nativeType;
+	case 32:
+		nativeType->type = STRUCT_TYPE;
+		nativeType->field_count = 2;
+		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
+		nativeType->fields[0] = getNativeType(5);
+		nativeType->fields[1] = getNativeType(4);
+		return nativeType;
+	case 33:
+		{
+			size_t __blockAlign = alignof(struct timespec);
+			if (__blockAlign > 8) __blockAlign = 8;
+			int __blockCount = (int)(sizeof(struct timespec) / __blockAlign);
+			nativeType->type = STRUCT_TYPE;
+			nativeType->field_count = __blockCount;
+			nativeType->fields = (native_type**)malloc(sizeof(native_type*) * __blockCount);
+			for (int __blockIndex = 0; __blockIndex < __blockCount; __blockIndex++) {
+				nativeType->fields[__blockIndex] = (native_type*)malloc(sizeof(native_type));
+				set_native_type(nativeType->fields[__blockIndex], INT_TYPE, __blockAlign, false);
+			}
+			return nativeType;
+		}
 	default:
 		free(nativeType);
 		return NULL;
@@ -803,5 +847,8 @@ switch(id) {
         registerCTypeInfo(27);
         registerCTypeInfo(28);
         registerCTypeInfo(29);
+        registerCTypeInfo(31);
+        registerCTypeInfo(32);
+        registerCTypeInfo(33);
     }
 }

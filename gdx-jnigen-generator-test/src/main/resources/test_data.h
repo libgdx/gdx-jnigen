@@ -4,6 +4,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
+#include <test_system_types.h>
 
 #define RANDOM_MACRO 5
 #ifdef __cplusplus
@@ -174,12 +176,39 @@ GlobalArg getGlobalArgState(void);
 
 struct forwardDeclStruct;
 
+// Opaque handle round-trip: forwardDeclStruct is only forward-declared here; its definition lives in
+// test_data.cpp, so the generator sees an unsized/opaque type usable solely behind a pointer.
+struct forwardDeclStruct* createForwardDeclStruct(int value);
+int readForwardDeclStructValue(struct forwardDeclStruct* handle);
+void freeForwardDeclStruct(struct forwardDeclStruct* handle);
+
 /// This method does great stuff, trust me
 void commentedMethod(void);
 void randomFunc(char, unsigned char, signed char, char*, unsigned char*, signed char*);
 
 void ensureParsed(SpecialEnum, AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested, struct forwardDeclStruct*);
 void weirdPointer(FILE *_file);
+
+// System-header struct as a typed pointer (sized-opaque): struct timespec has a real size but its
+// fields are not bound.
+struct timespec* fillTimespec(struct timespec* out);
+long tsSeconds(struct timespec* t);
+
+// System-header struct embedded by value: TimeHolder must be allocated at the correct total size even
+// though the timespec field is inaccessible from Java.
+typedef struct TimeHolder {
+    struct timespec ts;
+    int marker;
+} TimeHolder;
+size_t timeHolderSize(void);
+void fillTimeHolder(TimeHolder* holder, int marker);
+int readTimeHolderMarker(TimeHolder* holder);
+
+// Alias-stopping through system-header typedefs (see sysheaders/test_system_types.h): the generated
+// bindings must be named after the public aliases (public_callback / public_color), not the internal
+// __-prefixed names they nest through.
+void invokePublicCallback(public_callback cb, int value);
+public_color nextColor(public_color c);
 void constArrayParameter(const TestStruct structs[]);
 void** voidPointerPointer(void** test);
 TestEnum** enumPointerPointer(TestEnum** test);
@@ -228,6 +257,10 @@ typedef int (*methodWithCallbackIntPointerArg)(int*);
 typedef TestUnion* (*methodWithCallbackTestUnionPointerReturn)(void);
 typedef void (*methodWithCallbackTestUnionPointerArg)(TestUnion*);
 typedef void (*methodWithCallbackCallThrowingCallback)(methodWithThrowingCallback);
+// System-header struct crossing a closure BY POINTER is allowed: only the pointer value crosses, so
+// jnigen never hands libFFI a fabricated ABI classification for the opaque struct. The by-value form
+// is refused at generation time (ClosureType#rejectSystemHeaderByValue).
+typedef void (*methodWithCallbackTimespecPointerArg)(struct timespec*);
 
 // Function declarations
 void call_methodWithCallback(methodWithCallback fnPtr);
@@ -251,6 +284,7 @@ double call_methodWithCallbackDoubleReturn(methodWithCallbackDoubleReturn fnPtr)
 void call_methodWithThrowingCallback(methodWithThrowingCallback fnPtr);
 void call_methodWithIntPtrPtrArg(methodWithIntPtrPtrArg fnPtr);
 int** call_methodWithIntPtrPtrRet(methodWithIntPtrPtrRet fnPtr);
+void call_methodWithCallbackTimespecPointerArg(methodWithCallbackTimespecPointerArg fnPtr);
 
 // TestStruct stuff
 TestStruct* returnTestStructPointer(void);
@@ -363,6 +397,9 @@ methodWithCallbackIntPointerArg getIntPointerArgCallback(void);
 methodWithCallbackTestUnionPointerReturn getTestUnionPointerReturnCallback(void);
 methodWithCallbackTestUnionPointerArg getTestUnionPointerArgCallback(void);
 methodWithCallbackCallThrowingCallback getCallThrowingCallbackCallback(void);
+
+methodWithCallback getNoopVoidCallback(void);
+methodWithCallbackIntArg getNoopIntArgCallback(void);
 
 #ifdef __cplusplus
 }

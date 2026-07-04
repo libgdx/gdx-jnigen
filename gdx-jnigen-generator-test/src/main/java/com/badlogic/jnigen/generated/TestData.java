@@ -2,6 +2,7 @@ package com.badlogic.jnigen.generated;
 
 import com.badlogic.gdx.jnigen.runtime.c.CXXException;
 import com.badlogic.jnigen.generated.structs.GlobalArg;
+import com.badlogic.jnigen.generated.structs.forwardDeclStruct;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.BytePointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.UBytePointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.SBytePointer;
@@ -13,17 +14,20 @@ import com.badlogic.jnigen.generated.structs.AnonymousClosure;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoFieldEnd;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoFieldConsecutive;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoFieldNested;
-import com.badlogic.jnigen.generated.structs.forwardDeclStruct;
-import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
-import com.badlogic.jnigen.generated.structs.TestStruct;
-import com.badlogic.gdx.jnigen.runtime.pointer.PointerPointer;
-import com.badlogic.jnigen.generated.enums.TestEnum;
-import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
-import com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer;
+import com.badlogic.jnigen.generated.structs.FILE;
+import com.badlogic.jnigen.generated.structs.timespec;
+import com.badlogic.jnigen.generated.structs.TimeHolder;
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.runtime.CHandler;
 import com.badlogic.jnigen.generated.TestData;
 import com.badlogic.jnigen.generated.TestData_Internal;
+import com.badlogic.jnigen.generated.enums.public_color;
+import com.badlogic.jnigen.generated.structs.TestStruct;
+import com.badlogic.gdx.jnigen.runtime.pointer.PointerPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
+import com.badlogic.jnigen.generated.enums.TestEnum;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.FloatPointer;
 import com.badlogic.jnigen.generated.structs.SpecialStruct;
 import com.badlogic.jnigen.generated.structs.TestUnion;
 import com.badlogic.gdx.jnigen.runtime.closure.Closure;
@@ -64,6 +68,43 @@ static jclass cxxExceptionClass = NULL;
     public static native void getGlobalArgState_internal(long _retPar);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	*(GlobalArg*)_retPar = getGlobalArgState();
+    	HANDLE_JAVA_EXCEPTION_END()
+    */
+
+    public static forwardDeclStruct.forwardDeclStructPointer createForwardDeclStruct(int value) {
+        return new forwardDeclStruct.forwardDeclStructPointer(createForwardDeclStruct_internal(value), false);
+    }
+
+    public static void createForwardDeclStruct(int value, forwardDeclStruct.forwardDeclStructPointer _retPar) {
+        _retPar.setPointer(createForwardDeclStruct_internal(value));
+    }
+
+    public static native long createForwardDeclStruct_internal(int value);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	CHECK_AND_THROW_C_TYPE(env, int, value, 0, return 0);
+    	return (jlong)createForwardDeclStruct((int)value);
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static int readForwardDeclStructValue(forwardDeclStruct.forwardDeclStructPointer handle) {
+        return readForwardDeclStructValue_internal(handle.getPointer());
+    }
+
+    public static native int readForwardDeclStructValue_internal(long handle);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jint)readForwardDeclStructValue((struct forwardDeclStruct *)handle);
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static void freeForwardDeclStruct(forwardDeclStruct.forwardDeclStructPointer handle) {
+        freeForwardDeclStruct_internal(handle.getPointer());
+    }
+
+    public static native void freeForwardDeclStruct_internal(long handle);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	freeForwardDeclStruct((struct forwardDeclStruct *)handle);
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
@@ -118,7 +159,7 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
-    public static void weirdPointer(VoidPointer _file) {
+    public static void weirdPointer(FILE.FILEPointer _file) {
         weirdPointer_internal(_file.getPointer());
     }
 
@@ -126,6 +167,94 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_START()
     	weirdPointer((FILE *)_file);
     	HANDLE_JAVA_EXCEPTION_END()
+    */
+
+    public static timespec.timespecPointer fillTimespec(timespec.timespecPointer out) {
+        return new timespec.timespecPointer(fillTimespec_internal(out.getPointer()), false);
+    }
+
+    public static void fillTimespec(timespec.timespecPointer out, timespec.timespecPointer _retPar) {
+        _retPar.setPointer(fillTimespec_internal(out.getPointer()));
+    }
+
+    public static native long fillTimespec_internal(long out);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)fillTimespec((struct timespec *)out);
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static long tsSeconds(timespec.timespecPointer t) {
+        return tsSeconds_internal(t.getPointer());
+    }
+
+    public static native long tsSeconds_internal(long t);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)tsSeconds((struct timespec *)t);
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static long timeHolderSize() {
+        return timeHolderSize_internal();
+    }
+
+    public static native long timeHolderSize_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)timeHolderSize();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static void fillTimeHolder(TimeHolder.TimeHolderPointer holder, int marker) {
+        fillTimeHolder_internal(holder.getPointer(), marker);
+    }
+
+    public static native void fillTimeHolder_internal(long holder, int marker);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	CHECK_AND_THROW_C_TYPE(env, int, marker, 1, return);
+    	fillTimeHolder((TimeHolder *)holder, (int)marker);
+    	HANDLE_JAVA_EXCEPTION_END()
+    */
+
+    public static int readTimeHolderMarker(TimeHolder.TimeHolderPointer holder) {
+        return readTimeHolderMarker_internal(holder.getPointer());
+    }
+
+    public static native int readTimeHolderMarker_internal(long holder);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jint)readTimeHolderMarker((TimeHolder *)holder);
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static native void public_callback_direct(long fnPtr, int value);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	CHECK_AND_THROW_C_TYPE(env, int, value, 0, return);
+    	((void(*)(int))fnPtr)((int)value);
+    	HANDLE_JAVA_EXCEPTION_END()
+    */
+
+    public static void invokePublicCallback(ClosureObject<TestData.public_callback> cb, int value) {
+        invokePublicCallback_internal(cb.getPointer(), value);
+    }
+
+    public static native void invokePublicCallback_internal(long cb, int value);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	CHECK_AND_THROW_C_TYPE(env, int, value, 1, return);
+    	invokePublicCallback((public_callback)cb, (int)value);
+    	HANDLE_JAVA_EXCEPTION_END()
+    */
+
+    public static public_color nextColor(public_color c) {
+        return public_color.getByIndex((int) nextColor_internal(c.getIndex()));
+    }
+
+    public static native int nextColor_internal(int c);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jint)nextColor((public_color)c);
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
     */
 
     public static void constArrayParameter(TestStruct.TestStructPointer structs) {
@@ -603,6 +732,22 @@ static jclass cxxExceptionClass = NULL;
     	return (jlong)call_methodWithIntPtrPtrRet((methodWithIntPtrPtrRet)fnPtr);
     	HANDLE_JAVA_EXCEPTION_END()
     	return 0;
+    */
+
+    public static native void methodWithCallbackTimespecPointerArg_direct(long fnPtr, long arg0);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	((void(*)(struct timespec *))fnPtr)((struct timespec *)arg0);
+    	HANDLE_JAVA_EXCEPTION_END()
+    */
+
+    public static void call_methodWithCallbackTimespecPointerArg(ClosureObject<TestData.methodWithCallbackTimespecPointerArg> fnPtr) {
+        call_methodWithCallbackTimespecPointerArg_internal(fnPtr.getPointer());
+    }
+
+    public static native void call_methodWithCallbackTimespecPointerArg_internal(long fnPtr);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	call_methodWithCallbackTimespecPointerArg((methodWithCallbackTimespecPointerArg)fnPtr);
+    	HANDLE_JAVA_EXCEPTION_END()
     */
 
     public static TestStruct.TestStructPointer returnTestStructPointer() {
@@ -1662,6 +1807,28 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
+    public static ClosureObject<TestData.methodWithCallback> getNoopVoidCallback() {
+        return CHandler.getClosureObject(getNoopVoidCallback_internal(), TestData_Internal.methodWithCallback_Internal::methodWithCallback_downcall);
+    }
+
+    public static native long getNoopVoidCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getNoopVoidCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static ClosureObject<TestData.methodWithCallbackIntArg> getNoopIntArgCallback() {
+        return CHandler.getClosureObject(getNoopIntArgCallback_internal(), TestData_Internal.methodWithCallbackIntArg_Internal::methodWithCallbackIntArg_downcall);
+    }
+
+    public static native long getNoopIntArgCallback_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getNoopIntArgCallback();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
     public interface methodWithCallbackBooleanArg extends Closure, TestData_Internal.methodWithCallbackBooleanArg_Internal {
 
         void methodWithCallbackBooleanArg_call(boolean arg0);
@@ -1730,6 +1897,11 @@ static jclass cxxExceptionClass = NULL;
     public interface methodWithCallbackIntPointerArg extends Closure, TestData_Internal.methodWithCallbackIntPointerArg_Internal {
 
         int methodWithCallbackIntPointerArg_call(SIntPointer arg0);
+    }
+
+    public interface public_callback extends Closure, TestData_Internal.public_callback_Internal {
+
+        void public_callback_call(int value);
     }
 
     public interface methodWithCallbackTestEnumArg extends Closure, TestData_Internal.methodWithCallbackTestEnumArg_Internal {
@@ -1838,5 +2010,10 @@ static jclass cxxExceptionClass = NULL;
     public interface methodWithCallbackFloatReturn extends Closure, TestData_Internal.methodWithCallbackFloatReturn_Internal {
 
         float methodWithCallbackFloatReturn_call();
+    }
+
+    public interface methodWithCallbackTimespecPointerArg extends Closure, TestData_Internal.methodWithCallbackTimespecPointerArg_Internal {
+
+        void methodWithCallbackTimespecPointerArg_call(timespec.timespecPointer arg0);
     }
 }

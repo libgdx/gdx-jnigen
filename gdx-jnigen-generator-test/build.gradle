@@ -52,7 +52,7 @@ jnigen {
         cFlags += ["-std=c11", "-fexceptions"]
         cppFlags += ["-std=c++11", "-fexceptions"]
 
-        headerDirs += ["src/main/resources/"]
+        headerDirs += ["src/main/resources/", "src/main/resources/sysheaders/"]
         cppIncludes += ["src/main/resources/*.cpp"]
     }
 
@@ -60,7 +60,7 @@ jnigen {
         outputPath = file("src/main/java")
         basePackage = "com.badlogic.jnigen.generated"
         fileToParse = "test_data.h"
-        options = ["-I" + file("src/main/resources/").absolutePath]
+        options = ["-I" + file("src/main/resources/").absolutePath, "-isystem", file("src/main/resources/sysheaders/").absolutePath]
     }
 
     signing {

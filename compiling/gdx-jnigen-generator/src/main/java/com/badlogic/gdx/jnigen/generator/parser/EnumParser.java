@@ -18,16 +18,21 @@ public class EnumParser {
     private final TypeDefinition definition;
     private final CXType toParse;
     private final String alternativeName;
+    private final boolean forceAlternativeName;
 
-    public EnumParser(TypeDefinition definition, CXType toParse, String alternativeName) {
+    public EnumParser(TypeDefinition definition, CXType toParse, String alternativeName, boolean forceAlternativeName) {
         this.toParse = toParse;
         this.alternativeName = alternativeName;
         this.definition = definition;
+        this.forceAlternativeName = forceAlternativeName;
     }
 
     public MappedType register() {
         String name = clang_getTypeSpelling(toParse).getString();
-        String javaName = clang_Cursor_isAnonymous(clang_getTypeDeclaration(toParse)) == 0 ? JavaUtils.cNameToJavaTypeName(name) : alternativeName;
+        // A named enum normally takes its tag name. When forced (a named enum reached through a
+        // system-header typedef), prefer the outer alias so the stable public name is emitted.
+        String javaName = (!forceAlternativeName && clang_Cursor_isAnonymous(clang_getTypeDeclaration(toParse)) == 0)
+                ? JavaUtils.cNameToJavaTypeName(name) : alternativeName;
 
         CXCursor cursor = clang_getTypeDeclaration(toParse);
 

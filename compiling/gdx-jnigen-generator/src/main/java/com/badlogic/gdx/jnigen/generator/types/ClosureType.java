@@ -25,7 +25,6 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.UnknownType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ClosureType implements MappedType, WritableClass {
@@ -43,6 +42,16 @@ public class ClosureType implements MappedType, WritableClass {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    private static void rejectUnsafeByValue(TypeDefinition type, String closureName) {
+        MappedType mapped = type.getMappedType();
+        if (!mapped.isByValueClosureSafe()) {
+            throw new IllegalArgumentException("'" + type.getTypeName() + "' cannot be passed by value through"
+                    + " closure '" + closureName + "': it is, or transitively contains, a union or a system-header"
+                    + " struct whose ABI register classification libFFI cannot reproduce on the closure upcall path."
+                    + " Pass it by pointer instead.");
+        }
     }
 
     @Override
@@ -127,8 +136,10 @@ public class ClosureType implements MappedType, WritableClass {
         String name = signature.getName();
         TypeDefinition returnType = signature.getReturnType();
         NamedType[] arguments = signature.getArguments();
-        if (!returnType.getMappedType().isLibFFIConvertible() || !Arrays.stream(arguments).map(namedType -> namedType.getDefinition().getMappedType()).allMatch(MappedType::isLibFFIConvertible)) {
-            throw new IllegalArgumentException("Unions are not allowed to be passed via stack from/to a closure, failing closure: " + name);
+
+        rejectUnsafeByValue(returnType, name);
+        for (NamedType argument : arguments) {
+            rejectUnsafeByValue(argument.getDefinition(), name);
         }
 
         importType(cuPublic);
