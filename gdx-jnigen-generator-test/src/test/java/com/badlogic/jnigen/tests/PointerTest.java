@@ -7,6 +7,7 @@ import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.BytePointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.SBytePointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.integer.UBytePointer;
 import com.badlogic.jnigen.generated.TestData;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerArg;
 import com.badlogic.jnigen.generated.TestData.methodWithCallbackIntPointerReturn;
@@ -16,6 +17,7 @@ import com.badlogic.jnigen.generated.structs.TestStruct;
 import com.badlogic.jnigen.generated.structs.TestStruct.TestStructPointer;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.badlogic.jnigen.generated.TestData.call_methodWithCallbackIntPointerArg;
@@ -159,5 +161,50 @@ public class PointerTest extends BaseTest {
         assertFalse(TestData.validateString(ret));
 
         ret.free();
+    }
+
+    @Test
+    public void fromStringSizesBufferWithUtf8() {
+        String s = "\u0633\u0644\u0627\u0645";
+        BytePointer pointer = BytePointer.fromString(s, true);
+        assertEquals(s.getBytes(StandardCharsets.UTF_8).length + 1, pointer.getCapacity());
+        assertEquals(s, pointer.getString());
+    }
+
+    @Test
+    public void fromStringWithCharset() {
+        String s = "h\u00e9llo"; // 5 chars: 6 UTF-8 bytes, 5 ISO-8859-1 bytes
+
+        BytePointer bytePointer = BytePointer.fromString(s, StandardCharsets.ISO_8859_1, true);
+        assertEquals(6, bytePointer.getCapacity());
+        assertEquals(s, bytePointer.getBufPtr().getString(StandardCharsets.ISO_8859_1));
+
+        SBytePointer sBytePointer = SBytePointer.fromString(s, StandardCharsets.ISO_8859_1, true);
+        assertEquals(6, sBytePointer.getCapacity());
+        assertEquals(s, sBytePointer.getBufPtr().getString(StandardCharsets.ISO_8859_1));
+
+        UBytePointer uBytePointer = UBytePointer.fromString(s, StandardCharsets.ISO_8859_1, true);
+        assertEquals(6, uBytePointer.getCapacity());
+        assertEquals(s, uBytePointer.getBufPtr().getString(StandardCharsets.ISO_8859_1));
+    }
+
+    @Test
+    public void setAndGetStringWithCharset() {
+        String s = "h\u00e9llo"; // 5 ISO-8859-1 bytes, 6 UTF-8 bytes
+
+        BytePointer bytePointer = new BytePointer(6, true);
+        bytePointer.setString(s, StandardCharsets.ISO_8859_1);
+        assertEquals(s, bytePointer.getString(StandardCharsets.ISO_8859_1));
+        assertThrows(IndexOutOfBoundsException.class, () -> bytePointer.setString(s, StandardCharsets.UTF_8));
+
+        SBytePointer sBytePointer = new SBytePointer(6, true);
+        sBytePointer.setString(s, StandardCharsets.ISO_8859_1);
+        assertEquals(s, sBytePointer.getString(StandardCharsets.ISO_8859_1));
+        assertThrows(IndexOutOfBoundsException.class, () -> sBytePointer.setString(s, StandardCharsets.UTF_8));
+
+        UBytePointer uBytePointer = new UBytePointer(6, true);
+        uBytePointer.setString(s, StandardCharsets.ISO_8859_1);
+        assertEquals(s, uBytePointer.getString(StandardCharsets.ISO_8859_1));
+        assertThrows(IndexOutOfBoundsException.class, () -> uBytePointer.setString(s, StandardCharsets.UTF_8));
     }
 }

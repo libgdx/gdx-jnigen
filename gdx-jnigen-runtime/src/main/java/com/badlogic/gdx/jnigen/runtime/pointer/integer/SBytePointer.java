@@ -1,6 +1,10 @@
 package com.badlogic.gdx.jnigen.runtime.pointer.integer;
 
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * This represents an `signed char` pointer.
@@ -65,8 +69,15 @@ public class SBytePointer extends VoidPointer {
     }
 
     public static SBytePointer fromString(String string, boolean freeOnGC) {
-        SBytePointer pointer = new SBytePointer(string.getBytes().length + 1, freeOnGC);
-        pointer.setString(string);
+        return fromString(string, StandardCharsets.UTF_8, freeOnGC);
+    }
+
+    public static SBytePointer fromString(String string, Charset charset, boolean freeOnGC) {
+        byte[] bytes = string.getBytes(charset);
+        SBytePointer pointer = new SBytePointer(bytes.length + 1, freeOnGC);
+        BufferPtr bufPtr = pointer.getBufPtr();
+        bufPtr.setBytes(bytes);
+        bufPtr.setByte(bytes.length, (byte)0);
         return pointer;
     }
 
@@ -74,7 +85,15 @@ public class SBytePointer extends VoidPointer {
         getBufPtr().setString(string);
     }
 
+    public void setString(String string, Charset charset) {
+        getBufPtr().setString(string, charset);
+    }
+
     public String getString() {
         return getBufPtr().getString();
+    }
+
+    public String getString(Charset charset) {
+        return getBufPtr().getString(charset);
     }
 }

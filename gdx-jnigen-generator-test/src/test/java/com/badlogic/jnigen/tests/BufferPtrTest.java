@@ -56,4 +56,53 @@ public class BufferPtrTest extends BaseTest {
         BufferPtrManager.insertPool(ptr);
         assertThrows(IllegalStateException.class, ptr::getPointer);
     }
+
+    @Test
+    public void testSetBytesWritesNoTerminator() {
+        long addr = CHandler.calloc(1, 4);
+        BufferPtr ptr = BufferPtrManager.get(addr, 4);
+        for (int i = 0; i < 4; i++)
+            ptr.setByte(i, (byte)0x7F);
+        ptr.setBytes(new byte[]{1, 2});
+        assertEquals((byte)1, ptr.getByte(0));
+        assertEquals((byte)2, ptr.getByte(1));
+        assertEquals((byte)0x7F, ptr.getByte(2));
+        assertEquals((byte)0x7F, ptr.getByte(3));
+        CHandler.free(addr);
+    }
+
+    @Test
+    public void testSetBytesAtIndex() {
+        long addr = CHandler.calloc(1, 4);
+        BufferPtr ptr = BufferPtrManager.get(addr, 4);
+        ptr.setBytes(2, new byte[]{5, 6});
+        assertEquals((byte)0, ptr.getByte(0));
+        assertEquals((byte)0, ptr.getByte(1));
+        assertEquals((byte)5, ptr.getByte(2));
+        assertEquals((byte)6, ptr.getByte(3));
+        CHandler.free(addr);
+    }
+
+    @Test
+    public void testSetBytesOutOfBounds() {
+        long addr = CHandler.calloc(1, 2);
+        BufferPtr ptr = BufferPtrManager.get(addr, 2);
+        assertThrows(IndexOutOfBoundsException.class, () -> ptr.setBytes(new byte[3]));
+        assertThrows(IndexOutOfBoundsException.class, () -> ptr.setBytes(1, new byte[2]));
+        CHandler.free(addr);
+    }
+
+    @Test
+    public void testSetStringWritesTerminator() {
+        long addr = CHandler.calloc(1, 4);
+        BufferPtr ptr = BufferPtrManager.get(addr, 4);
+        for (int i = 0; i < 4; i++)
+            ptr.setByte(i, (byte)0x7F);
+        ptr.setString("ab");
+        assertEquals((byte)'a', ptr.getByte(0));
+        assertEquals((byte)'b', ptr.getByte(1));
+        assertEquals((byte)0, ptr.getByte(2));
+        assertEquals((byte)0x7F, ptr.getByte(3));
+        CHandler.free(addr);
+    }
 }

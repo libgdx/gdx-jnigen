@@ -409,10 +409,19 @@ public final class BufferPtr {
     {
         byte[] bytes = string.getBytes(charset);
         assertBounds(bytes.length + 1);
-        for (int i = 0; i < bytes.length; i++) {
-            buffer.put(offset + i, bytes[i]);
-        }
+        setBytes(0, bytes);
         buffer.put(offset + bytes.length, (byte) 0);
+    }
+
+    public void setBytes(byte[] bytes) {
+        setBytes(0, bytes);
+    }
+
+    public void setBytes(int index, byte[] bytes) {
+        assertBounds(index + bytes.length);
+        for (int i = 0; i < bytes.length; i++) {
+            buffer.put(offset + index + i, bytes[i]);
+        }
     }
 
     public void copyFrom(BufferPtr src, int size) {
