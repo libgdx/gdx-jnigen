@@ -19,11 +19,11 @@ dependencies {
     testImplementation project(path: ":jnigen-runtime", configuration: "archives")
     jmhImplementation project(path: ":jnigen-runtime", configuration: "archives")
 
-    testImplementation fileTree(dir: file("build/jnigen/libs"), include: '*natives-desktop.jar')
+    testImplementation fileTree(dir: file("build/jnigen/libs"), include: '*natives-desktop.jar', builtBy: ["jnigenPackageAllDesktop"])
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 
-    jmhImplementation fileTree(dir: file("build/jnigen/libs"), include: '*natives-desktop.jar')
+    jmhImplementation fileTree(dir: file("build/jnigen/libs"), include: '*natives-desktop.jar', builtBy: ["jnigenPackageAllDesktop"])
 
     jmh 'org.openjdk.jmh:jmh-core:1.37'
     jmh 'org.openjdk.jmh:jmh-generator-annprocess:1.37'
@@ -34,7 +34,6 @@ dependencies {
 test {
     if (!project.hasProperty("SKIP_NATIVE_BUILD"))
         dependsOn "jnigenSequence"
-    dependsOn "jnigenPackageAllDesktop"
     useJUnitPlatform()
     outputs.upToDateWhen {false}
 }
