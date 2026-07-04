@@ -390,9 +390,13 @@ public final class BufferPtr {
 
     public String getString(Charset charset)
     {
+        assertBounds(0);
+        int limit = hasCapacity() ? capacity : buffer.capacity() - offset;
         int length = 0;
-        while (buffer.get(offset + length) != 0)
+        while (length < limit && buffer.get(offset + length) != 0)
             length++;
+        if (length == limit)
+            throw new IndexOutOfBoundsException("No NUL terminator within bounds. Size: " + limit);
         byte[] bytes = new byte[length];
         for (int i = 0; i < length; i++) {
             bytes[i] = buffer.get(offset + i);

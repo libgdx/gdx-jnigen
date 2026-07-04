@@ -93,6 +93,38 @@ public class BufferPtrTest extends BaseTest {
     }
 
     @Test
+    public void testGetStringUnterminatedThrows() {
+        long addr = CHandler.calloc(1, 16);
+        BufferPtr wide = BufferPtrManager.get(addr, 16);
+        for (int i = 0; i < 8; i++)
+            wide.setByte(i, (byte)'A'); // NUL only at index 8, past the bounded view
+        BufferPtr bounded = BufferPtrManager.get(addr, 4);
+        assertThrows(IndexOutOfBoundsException.class, bounded::getString);
+        CHandler.free(addr);
+    }
+
+    @Test
+    public void testGetStringTerminatorAtLastByte() {
+        long addr = CHandler.calloc(1, 4);
+        BufferPtr ptr = BufferPtrManager.get(addr, 4);
+        ptr.setString("abc"); // 3 bytes + NUL fills the buffer exactly
+        assertEquals("abc", ptr.getString());
+        CHandler.free(addr);
+    }
+
+    @Test
+    public void testGetStringUseAfterFree() {
+        BufferPtr ptr = BufferPtrManager.get(10, 16);
+        BufferPtrManager.insertPool(ptr);
+        assertThrows(IllegalStateException.class, ptr::getString);
+    }
+
+    @Test
+    public void testGetStringNullPointer() {
+        assertThrows(NullPointerException.class, BufferPtrManager.get(0)::getString);
+    }
+
+    @Test
     public void testSetStringWritesTerminator() {
         long addr = CHandler.calloc(1, 4);
         BufferPtr ptr = BufferPtrManager.get(addr, 4);
