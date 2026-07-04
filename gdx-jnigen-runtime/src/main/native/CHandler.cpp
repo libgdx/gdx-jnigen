@@ -126,43 +126,6 @@ void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
     }
 }
 
-JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_dispatchCCall(JNIEnv* env, jclass clazz, jlong fnPtr_j, jlong cif_j, jlong arg_buf) {
-    HANDLE_JAVA_EXCEPTION_START()
-
-    void** arguments = (void**)arg_buf;
-    void* fnPtr = (void*) fnPtr_j;
-    ffi_cif* cif = (ffi_cif*) cif_j;
-
-    void** decodedArguments = (void**)alloca(cif->nargs * (sizeof(void*)));
-    int offset = 0;
-    for (int i = 0; i < cif->nargs; ++i) {
-        ffi_type* arg = cif->arg_types[i];
-        if (arg->type == FFI_TYPE_STRUCT) {
-            decodedArguments[i] = arguments[i];
-        } else {
-            decodedArguments[i] = alloca(arg->size);
-            memcpy(decodedArguments[i], (char*)arguments + offset, arg->size);
-        }
-
-        offset += arg->size;
-    }
-
-    void* result = (void*)alloca(cif->rtype->size);
-    ffi_call(cif, (void (*)())fnPtr, result, decodedArguments);
-
-    ffi_type* rtype = cif->rtype;
-
-    if (rtype->type == FFI_TYPE_VOID)
-        return;
-    if(rtype->type == FFI_TYPE_STRUCT) {
-        memcpy(*(void**)(arguments + offset), result, rtype->size);
-    } else {
-        memcpy(arguments + offset, result, rtype->size);
-    }
-
-    HANDLE_JAVA_EXCEPTION_END()
-}
-
 JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_is32Bit(JNIEnv* env, jclass clazz) {
     return ARCH_BITS == 32;
 }

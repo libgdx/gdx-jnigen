@@ -12,20 +12,26 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 
 import java.util.HashMap;
 
-public class FunctionType {
+public class FunctionType extends NativeFunction {
 
-    private final FunctionSignature signature;
     private final String comment;
 
     public FunctionType(FunctionSignature signature, String comment) {
-        this.signature = signature;
+        super(signature);
         this.comment = comment;
     }
 
-    public FunctionSignature getSignature() {
-        return signature;
+    @Override
+    public String getNativeName() {
+        return signature.getName() + "_internal";
     }
 
+    @Override
+    public String getCallee() {
+        return signature.getName();
+    }
+
+    @Override
     public void write(CompilationUnit cu, ClassOrInterfaceDeclaration wrappingClass, HashMap<MethodDeclaration, String> patchNativeMethod) {
         String name = signature.getName();
         TypeDefinition returnType = signature.getReturnType();
@@ -36,40 +42,20 @@ public class FunctionType {
             callMethodCreate.setJavadocComment(comment);
         BlockStmt body = new BlockStmt();
 
-        MethodDeclaration nativeMethod = new MethodDeclaration()
-                .setName(name + "_internal")
-                .setType(returnType.getMappedType().primitiveType())
-                .setPublic(true)
-                .setStatic(true)
-                .setNative(true)
-                .setBody(null);
         callMethodCreate.setType(returnType.getMappedType().abstractType());
         returnType.getMappedType().importType(cu);
-        nativeMethod.setType(returnType.getMappedType().primitiveType());
 
-        MethodCallExpr callExprCreate = new MethodCallExpr(nativeMethod.getNameAsString());
+        MethodCallExpr callExprCreate = new MethodCallExpr(getNativeName());
 
-        StringBuilder nativeBody = new StringBuilder();
-        nativeBody.append(name).append("(");
         for (NamedType namedType : arguments) {
             namedType.getDefinition().getMappedType().importType(cu);
             callMethodCreate.addParameter(namedType.getDefinition().getMappedType().abstractType(), namedType.getName());
-            if (namedType.getDefinition().getTypeKind().isStackElement()) {
-                nativeBody.append("*(").append(namedType.getDefinition().getTypeName()).append("*)").append(namedType.getName()).append(", ");
-            } else {
-                nativeBody.append("(").append(namedType.getDefinition().getTypeName()).append(")").append(namedType.getName()).append(", ");
-            }
-            nativeMethod.addParameter(namedType.getDefinition().getMappedType().primitiveType(), namedType.getName());
 
             callExprCreate.addArgument(namedType.getDefinition().getMappedType().toC(new NameExpr(namedType.getName())));
         }
-        if (arguments.length != 0)
-            nativeBody.delete(nativeBody.length() - 2, nativeBody.length());
-        nativeBody.append(");");
 
         if (returnType.getTypeKind() != TypeKind.VOID) {
             if (returnType.getTypeKind().isPrimitive()) {
-                nativeBody.insert(0, "return (j" + returnType.getMappedType().primitiveType() + ")");
                 body.addStatement(new ReturnStmt(callExprCreate));
             } else {
                 if (returnType.getTypeKind() == TypeKind.POINTER || returnType.getTypeKind().isStackElement()) {
@@ -90,10 +76,6 @@ public class FunctionType {
                         body.addStatement(returnType.getMappedType().abstractType() + " _retPar = new " + returnType.getMappedType().instantiationType() + "();");
                         body.addStatement(callExprParameter.clone());
                         body.addStatement(new ReturnStmt(new NameExpr("_retPar")));
-
-                        nativeMethod.setType(void.class);
-                        nativeMethod.addParameter(long.class, "_retPar");
-                        nativeBody.insert(0, "*((" + returnType.getTypeName() + "*)_retPar) = ");
                     } else {
                         PointerType pointerType = (PointerType) returnType.getMappedType();
                         BlockStmt bodyPar = callMethodParameter.createBody();
@@ -108,7 +90,6 @@ public class FunctionType {
                 }
 
                 if (!returnType.getTypeKind().isStackElement()) {
-                    nativeBody.insert(0, "return (j" + returnType.getMappedType().primitiveType() + ")");
                     body.addStatement(new ReturnStmt(returnType.getMappedType().fromC(callExprCreate)));
                 }
             }
@@ -117,22 +98,6 @@ public class FunctionType {
         }
         callMethodCreate.setBody(body);
 
-        for (int i = 0; i < arguments.length; i++) {
-            NamedType namedType = arguments[i];
-            TypeKind typeKind = namedType.getDefinition().getTypeKind();
-            if (typeKind.isPrimitive() && typeKind != TypeKind.FLOAT && typeKind != TypeKind.DOUBLE) {
-                String ret = nativeMethod.getType().isVoidType() ? "return" : "return 0";
-                nativeBody.insert(0, "CHECK_AND_THROW_C_TYPE(env, " + namedType.getDefinition().getTypeName() + ", "
-                        + namedType.getName() + ", " + i + ", " + ret + ");\n");
-            }
-        }
-
-        nativeBody.insert(0, "HANDLE_JAVA_EXCEPTION_START()\n");
-        nativeBody.append("\nHANDLE_JAVA_EXCEPTION_END()");
-        if (!nativeMethod.getType().isVoidType())
-            nativeBody.append("\nreturn 0;");
-
-        wrappingClass.getMembers().add(nativeMethod);
-        patchNativeMethod.put(nativeMethod, nativeBody.toString());
+        emitNativeStub(wrappingClass, patchNativeMethod);
     }
 }

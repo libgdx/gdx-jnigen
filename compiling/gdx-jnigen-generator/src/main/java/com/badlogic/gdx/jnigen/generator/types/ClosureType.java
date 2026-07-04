@@ -22,20 +22,23 @@ import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.UnknownType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class ClosureType implements MappedType, WritableClass {
 
     private final FunctionSignature signature;
     private final MappedType parent;
+    private final DirectStubFunctionType directStub;
     private String comment;
 
-    public ClosureType(FunctionSignature signature, MappedType parent) {
+    public ClosureType(FunctionSignature signature, MappedType parent, DirectStubFunctionType directStub) {
         this.signature = signature;
         this.parent = parent;
+        this.directStub = directStub;
     }
 
     public void setComment(String comment) {
@@ -61,104 +64,62 @@ public class ClosureType implements MappedType, WritableClass {
                 .setName(getInternalName());
     }
 
-    public void writeHelper(CompilationUnit cu, ClassOrInterfaceDeclaration closureHelperClass) {
-        cu.addImport(ClassNameConstants.CLOSUREENCODER_CLASS);
-        cu.addImport(ClassNameConstants.CCLOSUREOBJECT_CLASS);
+    public void writeHelper(CompilationUnit cuPrivate, ClassOrInterfaceDeclaration closureHelperClass) {
+        cuPrivate.addImport(ClassNameConstants.CCLOSUREOBJECT_CLASS);
 
-        MethodDeclaration downcallMethod = closureHelperClass.addMethod(getName() + "_downcall", Keyword.PUBLIC, Keyword.STATIC);
+        TypeDefinition returnType = signature.getReturnType();
+        NamedType[] arguments = signature.getArguments();
+        boolean isStackReturn = returnType.getTypeKind().isStackElement();
+
+        MethodDeclaration downcallMethod = closureHelperClass.addMethod(getName() + "_downcall",
+                Keyword.PUBLIC, Keyword.STATIC);
         downcallMethod.addParameter(long.class, "fnPtr");
         downcallMethod.setType("CClosureObject<" + parent.abstractType() + "." + getName() + ">");
+        BlockStmt methodBody = downcallMethod.createBody();
 
-        BlockStmt stmt = downcallMethod.createBody();
-
-        VariableDeclarationExpr encoderDeclaration = new VariableDeclarationExpr(
-                new VariableDeclarator()
-                        .setType("ClosureEncoder")
-                        .setName("encoder")
-                        .setInitializer(new ObjectCreationExpr()
-                                .setType("ClosureEncoder")
-                                .addArgument(new NameExpr("fnPtr"))
-                                .addArgument(new NameExpr("__ffi_cache"))
-                        )
-        );
-
-        VariableDeclarationExpr useEncoderDeclaration = new VariableDeclarationExpr(
-                new VariableDeclarator()
-                        .setType("BufferPtr")
-                        .setName("bufPtr")
-                        .setInitializer(new MethodCallExpr(
-                                new NameExpr("encoder"),
-                                "lockOrDuplicate"
-                        ))
-        );
-
-        NodeList<Statement> arguments = new NodeList<>();
-        for (int i = 0; i < signature.getArguments().length; i++) {
-            NamedType argument = signature.getArguments()[i];
-            Expression writeArgExpr = argument.getDefinition().getMappedType().writeToBufferPtr(new NameExpr("bufPtr"), JavaUtils.getOffsetAsExpression(i, this::getParameterOffset), argument.getDefinition().getMappedType().toC(new NameExpr(argument.getName())));
-
-            arguments.add(new ExpressionStmt(writeArgExpr));
+        LambdaExpr lambda = new LambdaExpr();
+        lambda.setEnclosingParameters(true);
+        for (NamedType arg : arguments) {
+            arg.getDefinition().getMappedType().importType(cuPrivate);
+            lambda.addAndGetParameter(new UnknownType(), arg.getName());
         }
 
-        if (signature.getReturnType().getTypeKind().isStackElement()) {
-            MappedType returnType = signature.getReturnType().getMappedType();
-            VariableDeclarator declarator = new VariableDeclarator();
-            declarator.setType(returnType.abstractType());
-            declarator.setName("_retPar");
-            declarator.setInitializer(new ObjectCreationExpr().setType(returnType.abstractType()));
+        BlockStmt lambdaBody = new BlockStmt();
 
-            VariableDeclarationExpr varDecl = new VariableDeclarationExpr();
-            varDecl.addVariable(declarator);
-
-            arguments.add(new ExpressionStmt(varDecl));
-
-            Expression writeArgExpr = returnType.writeToBufferPtr(new NameExpr("bufPtr"), JavaUtils.getOffsetAsExpression(signature.getArguments().length, this::getParameterOffset), returnType.toC(new NameExpr("_retPar")));
-            arguments.add(new ExpressionStmt(writeArgExpr));
+        List<Expression> callArgs = new ArrayList<>();
+        callArgs.add(new NameExpr("fnPtr"));
+        for (NamedType arg : arguments) {
+            callArgs.add(arg.getDefinition().getMappedType().toC(new NameExpr(arg.getName())));
         }
 
-        BlockStmt lambdaBody = new BlockStmt()
-                .addStatement(new ExpressionStmt(useEncoderDeclaration));
-
-        for (Statement statement : arguments) {
-            lambdaBody.addStatement(statement);
-        }
-
-        lambdaBody.addStatement(new MethodCallExpr( new NameExpr("encoder"), "invoke", NodeList.nodeList(new NameExpr("bufPtr"))));
-
-        if (signature.getReturnType().getTypeKind() != TypeKind.VOID) {
-            MappedType retMappedType = signature.getReturnType().getMappedType();
-            if (!signature.getReturnType().getTypeKind().isStackElement()) {
-                Expression readRetExpr = retMappedType.fromC(retMappedType.readFromBufferPtr(new NameExpr("bufPtr"), JavaUtils.getOffsetAsExpression(signature.getArguments().length, this::getParameterOffset)));
-                VariableDeclarator declarator = new VariableDeclarator()
-                        .setType(retMappedType.abstractType())
-                        .setName("_retPar")
-                        .setInitializer(readRetExpr);
-                VariableDeclarationExpr varDecl = new VariableDeclarationExpr(declarator);
-                lambdaBody.addStatement(varDecl);
-            }
-
-            lambdaBody.addStatement(new ExpressionStmt(new MethodCallExpr(new NameExpr("encoder"), "finish", NodeList.nodeList(new NameExpr("bufPtr")))));
+        if (isStackReturn) {
+            MappedType retMapped = returnType.getMappedType();
+            retMapped.importType(cuPrivate);
+            VariableDeclarator decl = new VariableDeclarator()
+                    .setType(retMapped.abstractType())
+                    .setName("_retPar")
+                    .setInitializer(new ObjectCreationExpr().setType(retMapped.abstractType()));
+            lambdaBody.addStatement(new ExpressionStmt(new VariableDeclarationExpr(decl)));
+            callArgs.add(new MethodCallExpr(new NameExpr("_retPar"), "getPointer"));
+            MethodCallExpr directCall = directStub.buildCall(callArgs);
+            lambdaBody.addStatement(new ExpressionStmt(directCall));
             lambdaBody.addStatement(new ReturnStmt(new NameExpr("_retPar")));
+        } else if (returnType.getTypeKind() == TypeKind.VOID) {
+            MethodCallExpr directCall = directStub.buildCall(callArgs);
+            lambdaBody.addStatement(new ExpressionStmt(directCall));
+        } else {
+            MethodCallExpr directCall = directStub.buildCall(callArgs);
+            lambdaBody.addStatement(new ReturnStmt(returnType.getMappedType().fromC(directCall)));
         }
 
-        LambdaExpr lambda = new LambdaExpr()
-                .setEnclosingParameters(true)
-                .setBody(lambdaBody);
+        lambda.setBody(lambdaBody);
 
-        for (NamedType namedType : signature.getArguments()) {
-            namedType.getDefinition().getMappedType().importType(cu);
-            lambda.addAndGetParameter(new UnknownType(), namedType.getName());
-        }
-
-        ObjectCreationExpr closureObjectCreationExpr = new ObjectCreationExpr()
+        ObjectCreationExpr closureObjectCreation = new ObjectCreationExpr()
                 .setType("CClosureObject<>")
                 .addArgument(lambda)
-                .addArgument("fnPtr")
-                .addArgument("encoder");
+                .addArgument("fnPtr");
 
-        ReturnStmt returnStmt = new ReturnStmt(closureObjectCreationExpr);
-        stmt.addStatement(new ExpressionStmt(encoderDeclaration));
-        stmt.addStatement(returnStmt);
+        methodBody.addStatement(new ReturnStmt(closureObjectCreation));
     }
 
     @Override

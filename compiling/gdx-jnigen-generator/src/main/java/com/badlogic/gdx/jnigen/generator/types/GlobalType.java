@@ -19,7 +19,7 @@ import java.util.List;
 public class GlobalType implements MappedType {
 
     private final HashMap<String, ClosureType> closures = new HashMap<>();
-    private final List<FunctionType> functions = new ArrayList<>();
+    private final List<NativeFunction> functions = new ArrayList<>();
 
     private final String globalName;
 
@@ -40,11 +40,11 @@ public class GlobalType implements MappedType {
         closures.put(closureType.getName(), closureType);
     }
 
-    public void addFunction(FunctionType functionType) {
-        functions.add(functionType);
+    public void addFunction(NativeFunction function) {
+        functions.add(function);
     }
 
-    public List<FunctionType> getFunctions() {
+    public List<NativeFunction> getFunctions() {
         return functions;
     }
 
@@ -69,8 +69,8 @@ public class GlobalType implements MappedType {
         patchNativeMethods.put(initMethod, "illegalArgumentExceptionClass = (jclass)env->NewGlobalRef(illegalArgumentException);\n"
                 + "cxxExceptionClass = (jclass)env->NewGlobalRef(cxxException);");
 
-        for (FunctionType functionType : functions) {
-            functionType.write(cuPublic, global, patchNativeMethods);
+        for (NativeFunction function : functions) {
+            function.write(cuPublic, global, patchNativeMethods);
         }
 
         for (ClosureType closureType : closures.values()) {

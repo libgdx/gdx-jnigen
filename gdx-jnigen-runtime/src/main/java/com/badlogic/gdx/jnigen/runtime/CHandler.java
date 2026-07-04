@@ -169,8 +169,6 @@ public class CHandler {
 
     public static native boolean reExportSymbolsGlobally(String libPath);
 
-    public static native void dispatchCCall(long fnPtr, long cif, long parameter);
-
     public static native long convertNativeTypeToFFIType(long nativeType);
 
     private static native long nativeCreateCif(long returnType, long parameters, int size);

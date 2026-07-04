@@ -90,7 +90,9 @@ public class Generator {
             if (Manager.getInstance().hasCTypeMapping(alternativeName)) // function -> closure -> struct -> same closure
                 return Manager.getInstance().resolveCTypeMapping(alternativeName);
 
-            ClosureType closureType = new ClosureType(functionSignature, parentMappedType);
+            DirectStubFunctionType directStub = new DirectStubFunctionType(functionSignature, parentMappedType, Manager.getInstance().getGlobalType());
+            ClosureType closureType = new ClosureType(functionSignature, parentMappedType, directStub);
+            Manager.getInstance().getGlobalType().addFunction(directStub);
             TypeDefinition typeDefinition = TypeDefinition.get(TypeKind.CLOSURE, name);
             typeDefinition.setOverrideMappedType(closureType);
             typeDefinition.setAnonymous(parent != null);

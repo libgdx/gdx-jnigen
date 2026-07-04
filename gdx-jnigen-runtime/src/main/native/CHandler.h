@@ -161,14 +161,6 @@ JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_convertNat
 
 /*
  * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
- * Method:    dispatchCCall
- * Signature: (JJJ)V
- */
-JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_dispatchCCall
-  (JNIEnv *, jclass, jlong, jlong, jlong);
-
-/*
- * Class:     com_badlogic_gdx_jnigen_runtime_CHandler
  * Method:    wrapPointer
  * Signature: (JI)Ljava/nio/ByteBuffer;
  */
