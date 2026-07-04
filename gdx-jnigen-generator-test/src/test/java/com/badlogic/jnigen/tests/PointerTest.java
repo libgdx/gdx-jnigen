@@ -207,4 +207,19 @@ public class PointerTest extends BaseTest {
         assertEquals(s, uBytePointer.getString(StandardCharsets.ISO_8859_1));
         assertThrows(IndexOutOfBoundsException.class, () -> uBytePointer.setString(s, StandardCharsets.UTF_8));
     }
+
+    @Test
+    public void getStringWithLength() {
+        BytePointer bytePointer = BytePointer.fromString("hello", true);
+        assertEquals("hel", bytePointer.getString(3));
+        assertEquals("hello", bytePointer.getString(5, StandardCharsets.ISO_8859_1));
+
+        SBytePointer sBytePointer = SBytePointer.fromString("hello", true);
+        assertEquals("hel", sBytePointer.getString(3));
+        assertEquals("hello", sBytePointer.getString(5, StandardCharsets.ISO_8859_1));
+
+        UBytePointer uBytePointer = UBytePointer.fromString("hello", true);
+        assertEquals("hel", uBytePointer.getString(3));
+        assertEquals("hello", uBytePointer.getString(5, StandardCharsets.ISO_8859_1));
+    }
 }

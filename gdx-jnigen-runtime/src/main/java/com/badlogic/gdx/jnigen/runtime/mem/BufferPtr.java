@@ -404,6 +404,21 @@ public final class BufferPtr {
         return new String(bytes, charset);
     }
 
+    public String getString(int length)
+    {
+        return getString(length, StandardCharsets.UTF_8);
+    }
+
+    public String getString(int length, Charset charset)
+    {
+        assertBounds(length);
+        byte[] bytes = new byte[length];
+        for (int i = 0; i < length; i++) {
+            bytes[i] = buffer.get(offset + i);
+        }
+        return new String(bytes, charset);
+    }
+
     public void setString(String string)
     {
         setString(string, StandardCharsets.UTF_8);

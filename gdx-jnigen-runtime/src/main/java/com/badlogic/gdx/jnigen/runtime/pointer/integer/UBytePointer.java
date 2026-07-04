@@ -107,4 +107,12 @@ public class UBytePointer extends VoidPointer {
     public String getString(Charset charset) {
         return getBufPtr().getString(charset);
     }
+
+    public String getString(int length) {
+        return getBufPtr().getString(length);
+    }
+
+    public String getString(int length, Charset charset) {
+        return getBufPtr().getString(length, charset);
+    }
 }

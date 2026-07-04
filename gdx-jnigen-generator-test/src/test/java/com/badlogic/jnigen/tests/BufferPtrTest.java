@@ -6,6 +6,7 @@ import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -122,6 +123,35 @@ public class BufferPtrTest extends BaseTest {
     @Test
     public void testGetStringNullPointer() {
         assertThrows(NullPointerException.class, BufferPtrManager.get(0)::getString);
+    }
+
+    @Test
+    public void testGetStringExactLength() {
+        long addr = CHandler.calloc(1, 4);
+        BufferPtr ptr = BufferPtrManager.get(addr, 4);
+        ptr.setBytes(new byte[]{'a', 'b', 0, 'c'});
+        assertEquals("ab\0c", ptr.getString(4));
+        assertEquals("ab", ptr.getString(2));
+        assertEquals("", ptr.getString(0));
+        CHandler.free(addr);
+    }
+
+    @Test
+    public void testGetStringExactLengthCharset() {
+        long addr = CHandler.calloc(1, 2);
+        BufferPtr ptr = BufferPtrManager.get(addr, 2);
+        ptr.setBytes(new byte[]{'h', (byte)0xE9});
+        assertEquals("h\u00e9", ptr.getString(2, StandardCharsets.ISO_8859_1));
+        CHandler.free(addr);
+    }
+
+    @Test
+    public void testGetStringExactLengthOutOfBounds() {
+        long addr = CHandler.calloc(1, 2);
+        BufferPtr ptr = BufferPtrManager.get(addr, 2);
+        assertThrows(IndexOutOfBoundsException.class, () -> ptr.getString(3));
+        assertThrows(IndexOutOfBoundsException.class, () -> ptr.getString(-1));
+        CHandler.free(addr);
     }
 
     @Test
