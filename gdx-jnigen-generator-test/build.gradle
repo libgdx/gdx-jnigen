@@ -1,6 +1,3 @@
-import com.badlogic.gdx.jnigen.commons.HostDetection
-import com.badlogic.gdx.jnigen.commons.Os
-
 plugins {
     id "com.badlogicgames.jnigen.jnigen-gradle"
     id 'net.jsign' version '6.0'
@@ -18,15 +15,9 @@ repositories {
 }
 
 dependencies {
-    if (HostDetection.os === Os.Windows) {
-        implementation "com.badlogicgames.jnigen:jnigen-runtime:3.0.1-SNAPSHOT"
-        testImplementation "com.badlogicgames.jnigen:jnigen-runtime-platform:3.0.1-SNAPSHOT:natives-desktop"
-        jmhImplementation "com.badlogicgames.jnigen:jnigen-runtime-platform:3.0.1-SNAPSHOT:natives-desktop"
-    } else {
-        implementation project(path: ":jnigen-runtime")
-        testImplementation project(path: ":jnigen-runtime", configuration: "archives")
-        jmhImplementation project(path: ":jnigen-runtime", configuration: "archives")
-    }
+    implementation project(path: ":jnigen-runtime")
+    testImplementation project(path: ":jnigen-runtime", configuration: "archives")
+    jmhImplementation project(path: ":jnigen-runtime", configuration: "archives")
 
     testImplementation fileTree(dir: file("build/jnigen/libs"), include: '*natives-desktop.jar')
     testImplementation platform('org.junit:junit-bom:5.9.1')
@@ -41,7 +32,9 @@ dependencies {
 
 
 test {
-    dependsOn "jnigenSequence", "jnigenPackageAllDesktop"
+    if (!project.hasProperty("SKIP_NATIVE_BUILD"))
+        dependsOn "jnigenSequence"
+    dependsOn "jnigenPackageAllDesktop"
     useJUnitPlatform()
     outputs.upToDateWhen {false}
 }

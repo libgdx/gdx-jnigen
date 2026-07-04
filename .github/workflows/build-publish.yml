@@ -6,126 +6,65 @@ on:
   release:
     types: [ published ]
 
+permissions:
+  contents: read
+
 jobs:
-  natives-ios:
-    runs-on: macos-14
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          submodules: 'recursive'
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-
-      - name: Build macOS natives
-        run: |
-          # See https://github.com/actions/virtual-environments/issues/2557
-          sudo mv /Library/Developer/CommandLineTools/SDKs/* /tmp
-          sudo mv /Applications/Xcode.app /Applications/Xcode.app.bak
-          sudo mv /Applications/Xcode_15.4.0.app /Applications/Xcode.app
-          sudo xcode-select -switch /Applications/Xcode.app
-          /usr/bin/xcodebuild -version
-          ./gradlew build_ios
-          ./gradlew jniGen jnigenBuildAllIOS
-
-      - name: Pack artifacts
-        run: |
-          find .  -name "*.a" -o -name "*.dll" -o -name "*.dylib" -o -name "*.so" -o -name "*.xcframework"  | grep "libs" > native-files-list
-          zip -r natives-ios -@ < native-files-list
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: natives-ios.zip
-          path: natives-ios.zip
-
-  natives-macos:
-    runs-on: macos-14
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          submodules: 'recursive'
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-
-      - name: Build macOS natives
-        run: |
-          # See https://github.com/actions/virtual-environments/issues/2557
-          sudo mv /Library/Developer/CommandLineTools/SDKs/* /tmp
-          sudo mv /Applications/Xcode.app /Applications/Xcode.app.bak
-          sudo mv /Applications/Xcode_15.4.0.app /Applications/Xcode.app
-          sudo xcode-select -switch /Applications/Xcode.app
-          /usr/bin/xcodebuild -version
-          ./gradlew build_macos
-          ./gradlew jniGen jnigenBuildAllMacOsX
-
-      - name: Run test on macos
-        run: |
-          ./gradlew test 
-
-      - name: Pack artifacts
-        run: |
-          find .  -name "*.a" -o -name "*.dll" -o -name "*.dylib" -o -name "*.so" | grep "libs" > native-files-list
-          zip natives-macos -@ < native-files-list
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: natives-macos.zip
-          path: natives-macos.zip
-
-  natives-linux:
+  build-linux:
+    name: Build Linux, Windows and Android natives, test on Linux
     runs-on: ubuntu-22.04
     steps:
+      - name: Install cross-compilation toolchains
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            gcc g++ \
+            gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libc6-dev-arm64-cross \
+            gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf libc6-dev-armhf-cross \
+            gcc-riscv64-linux-gnu g++-riscv64-linux-gnu libc6-dev-riscv64-cross \
+            mingw-w64 lib32z1
+
+      - name: Download Android NDK
+        run: |
+          mkdir -p $HOME/android-ndk
+          cd $HOME/android-ndk
+          wget https://dl.google.com/android/repository/android-ndk-r27d-linux.zip -O android-ndk.zip
+          echo "601246087a682d1944e1e16dd85bc6e49560fe8b6d61255be2829178c8ed15d9  android-ndk.zip" | sha256sum --check
+          unzip -q android-ndk.zip
+          echo "NDK_HOME=$HOME/android-ndk/android-ndk-r27d" >> $GITHUB_ENV
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: 'recursive'
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v4
 
-      - name: Install cross-compilation toolchains
-        run: |
-          sudo apt update
-          sudo apt install -y --force-yes gcc g++
-          sudo apt install -y --force-yes gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libc6-dev-arm64-cross
-          sudo apt install -y --force-yes gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf libc6-dev-armhf-cross
-          sudo apt install -y --force-yes gcc-riscv64-linux-gnu g++-riscv64-linux-gnu libc6-dev-riscv64-cross
-
-      - name: Build Linux natives
+      - name: Build libffi
         run: |
           ./gradlew build_linux
-          ./gradlew jnigen jnigenBuildAllLinux 
+          ./gradlew build_windows
+          ./gradlew build_android
 
-      - name: Run test on linux
-        run: |
-          ./gradlew test 
+      - name: Initialize jnigen
+        run: ./gradlew jnigen
+
+      - name: Build natives
+        run: ./gradlew jnigenBuildAllLinux jnigenBuildAllWindows jnigenBuildAllAndroid
+
+      - name: Run tests
+        run: ./gradlew test
 
       - name: Pack artifacts
         run: |
-          find .  -name "*.a" -o -name "*.dll" -o -name "*.dylib" -o -name "*.so" | grep "libs" > native-files-list
+          find . -name "*.a" -o -name "*.dll" -o -name "*.dylib" -o -name "*.so" | grep "libs" > native-files-list
           zip natives-linux -@ < native-files-list
 
       - name: Upload artifacts
@@ -134,87 +73,62 @@ jobs:
           name: natives-linux.zip
           path: natives-linux.zip
 
-  natives-windows:
-    runs-on: ubuntu-22.04
+  build-mac:
+    name: Build macOS and iOS natives, test on macOS
+    runs-on: macos-14
     steps:
+      - name: Setup Xcode SDK
+        run: |
+          # See https://github.com/actions/virtual-environments/issues/2557
+          sudo mv /Library/Developer/CommandLineTools/SDKs/* /tmp
+          sudo mv /Applications/Xcode.app /Applications/Xcode.app.bak
+          sudo mv /Applications/Xcode_15.4.0.app /Applications/Xcode.app
+          sudo xcode-select -switch /Applications/Xcode.app
+          /usr/bin/xcodebuild -version
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: 'recursive'
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v4
 
-      - name: Install cross-compilation toolchains
+      - name: Build libffi
         run: |
-          sudo apt update
-          sudo apt install -y --force-yes mingw-w64 lib32z1
+          ./gradlew build_macos
+          ./gradlew build_ios
 
-      - name: Build Windows natives
-        run: |
-          ./gradlew build_windows
-          ./gradlew jnigen jnigenBuildAllWindows
+      - name: Initialize jnigen
+        run: ./gradlew jnigen
+
+      - name: Build natives
+        run: ./gradlew jnigenBuildAllMacOsX jnigenBuildAllIOS
+
+      - name: Run tests
+        run: ./gradlew test
 
       - name: Pack artifacts
         run: |
-          find .  -name "*.a" -o -name "*.dll" -o -name "*.dylib" -o -name "*.so" | grep "libs" > native-files-list
-          zip natives-windows -@ < native-files-list
+          find . -name "*.a" -o -name "*.dll" -o -name "*.dylib" -o -name "*.so" -o -name "*.xcframework" | grep "libs" > native-files-list
+          zip -r natives-mac -@ < native-files-list
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: natives-windows.zip
-          path: natives-windows.zip
-
-  natives-android:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          submodules: 'recursive'
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-
-      - name: Download NDK
-        run: |
-          wget https://dl.google.com/android/repository/android-ndk-r27d-linux.zip -O android-ndk.zip
-          echo "601246087a682d1944e1e16dd85bc6e49560fe8b6d61255be2829178c8ed15d9  android-ndk.zip" | sha256sum --check
-          unzip android-ndk.zip
-          echo "NDK_HOME=$(pwd)/android-ndk-r27d" >> $GITHUB_ENV
-
-      - name: Build Android natives
-        run: |
-          ./gradlew build_android
-          ./gradlew jnigen jnigenBuildAllAndroid 
-
-      - name: Pack artifacts
-        run: |
-          find .  -name "*.a" -o -name "*.dll" -o -name "*.dylib" -o -name "*.so" | grep "libs" > native-files-list
-          zip natives-android -@ < native-files-list
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: natives-android.zip
-          path: natives-android.zip
+          name: natives-mac.zip
+          path: natives-mac.zip
 
   test-windows:
+    name: Test on Windows
     runs-on: windows-latest
-    needs: [natives-windows]
+    needs: [build-linux]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -222,73 +136,58 @@ jobs:
           submodules: 'recursive'
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v4
 
-      - name: Download natives-windows artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: natives-windows.zip
-
-#      - name: Run windows tests
-#        run: |
-#          ./gradlew test
-
-  publish:
-    runs-on: ubuntu-latest
-    needs: [natives-macos, natives-linux, natives-windows, natives-ios, natives-android, test-windows]
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          submodules: 'recursive'
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-
-      - name: Download natives-ios artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: natives-ios.zip
-
-      - name: Download natives-macos artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: natives-macos.zip
-
-      - name: Download natives-linux artifact
+      - name: Download Artifacts from linux
         uses: actions/download-artifact@v4
         with:
           name: natives-linux.zip
 
-      - name: Download natives-windows artifact
+      - name: Unzip artifacts
+        run: tar -xf natives-linux.zip
+
+      # SKIP_NATIVE_BUILD skips the host native build; the tests run against the cross-built natives from build-linux
+      - name: Run tests
+        run: ./gradlew test -PSKIP_NATIVE_BUILD
+
+  package:
+    runs-on: ubuntu-22.04
+    needs: [build-linux, build-mac, test-windows]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: 'recursive'
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Download Artifacts from linux
         uses: actions/download-artifact@v4
         with:
-          name: natives-windows.zip
+          name: natives-linux.zip
 
-      - name: Download natives-android artifact
+      - name: Download Artifacts from mac
         uses: actions/download-artifact@v4
         with:
-          name: natives-android.zip
+          name: natives-mac.zip
 
-      - name: Unpack natives
+      - name: Unzip artifacts
         run: |
-          unzip -o natives-ios.zip
-          unzip -o natives-macos.zip
           unzip -o natives-linux.zip
-          unzip -o natives-windows.zip
-          unzip -o natives-android.zip
+          unzip -o natives-mac.zip
 
       - name: Package All
         run: ./gradlew jnigenPackageAll
