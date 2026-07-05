@@ -103,11 +103,15 @@ public abstract class Pointing {
      * Do not call this method, unless you explicitly know what you are doing.
      */
     public BufferPtr getBufPtr() {
+        if (freed || bufPtr.isNull())
+            throwInvalid();
+        return bufPtr;
+    }
+
+    private void throwInvalid() {
         if (freed)
             throw new IllegalStateException("Pointer is freed: " + bufPtr.getPointer());
-        if (isNull())
-            throw new NullPointerException("Pointer is null");
-        return bufPtr;
+        throw new NullPointerException("Pointer is null");
     }
 
     /**

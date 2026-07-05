@@ -45,12 +45,27 @@ public final class BufferPtr {
     }
 
     public void assertBounds(int expectedCapacity) {
+        // Combined trick: ((expectedCapacity | (cap - expectedCapacity)) < 0) is true iff
+        // expectedCapacity < 0 or expectedCapacity > cap. cap <= 0 also routes to the slow helper,
+        // which distinguishes "use-after-free / null pointer" from "unknown size, OK".
+        int cap = capacity;
+        if (cap <= 0 || (expectedCapacity | (cap - expectedCapacity)) < 0)
+            slowAssertBounds(expectedCapacity);
+    }
+
+    private void slowAssertBounds(int expectedCapacity) {
+        if (buffer == null || pointer == 0)
+            throwInvalid(expectedCapacity);
+        if (capacity > 0 && (expectedCapacity < 0 || expectedCapacity > capacity))
+            throwInvalid(expectedCapacity);
+    }
+
+    private void throwInvalid(int expectedCapacity) {
         if (buffer == null)
             throw new IllegalStateException("Buffer invalid (use-after-free?)");
-        if (isNull())
+        if (pointer == 0)
             throw new NullPointerException("Buffer is null");
-        if (hasCapacity() && (expectedCapacity < 0 || expectedCapacity > capacity))
-            throw new IndexOutOfBoundsException("Index: " + expectedCapacity + ", Size: " + capacity);
+        throw new IndexOutOfBoundsException("Index: " + expectedCapacity + ", Size: " + capacity);
     }
 
     public boolean getBoolean() {
