@@ -3,52 +3,57 @@ package com.badlogic.gdx.jnigen.runtime.closure;
 import com.badlogic.gdx.jnigen.runtime.pointer.*;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
- * A Manager that can be used for pooling Pointing objects, specifically for use with Closures. This Pool is also fixed-size.
+ * A fixed-size manager for pooling {@link Pointing} objects across closure upcalls, so a callback
+ * that is invoked repeatedly does not allocate a fresh wrapper per invocation.
  *
- * <p>When attached to a {@link JavaClosureObject} via {@link ClosureObject#setPoolManager(PointingPoolManager)},
- * the decoder derives one lightweight clone of this manager per invoking thread. The clones share this manager's
- * underlying {@link PointingPool}s (which are already thread-safe), but each clone owns its own per-invocation frame.
- * This keeps the {@link #poll(Class)} hot path on plain field access and makes concurrent callbacks from different
- * C threads safe without requiring callers to coordinate.
+ * <p>The instance you configure is a <em>template</em>. When attached to a {@link JavaClosureObject}
+ * via {@link ClosureObject#setPoolManager(PointingPoolManager)}, the decoder lazily derives one
+ * {@link #newClone() clone} per invoking thread. Each clone owns its own per-invocation frame
+ * <em>and</em> its own private {@link PointingPool}s, so {@link #poll(Class)} and {@link #flush()}
+ * run entirely on plain field access — no locks, no atomics — and concurrent callbacks from
+ * different C threads never share pool state.
  *
  * <p>Usage contract:
  * <ul>
- *     <li>All {@link #addPool(PointingPool)} / {@link #addPool(PointerDereferenceSupplier, int)} calls must complete
- *         before the manager is handed to a closure via {@link ClosureObject#setPoolManager(PointingPoolManager)}.
- *         Do not mutate the pool configuration after a callback has fired — the shared {@code pools} map is not
- *         guarded by a lock.</li>
- *     <li>{@link ClosureObject#setPoolManager(PointingPoolManager)} should be called at most once per closure.
- *         Re-setting does not invalidate clones already materialised on other threads.</li>
- *     <li>Nested invocations on the same thread are not supported: the inner call's {@link #flush()} wipes the
- *         outer call's frame.</li>
- *     <li>Every thread that ever invokes a pooled closure retains one {@code Pointing[size]} array for the life
- *         of that thread's {@code ThreadLocalMap} entry.</li>
+ *     <li>Register all pools via {@link #addPool(PointingPool)} / {@link #addPool(PointerDereferenceSupplier, int)}
+ *         before handing the manager to a closure. The template's pool set is read when each thread's
+ *         clone is first materialised; adding pools afterwards is unsupported.</li>
+ *     <li>{@link ClosureObject#setPoolManager(PointingPoolManager)} should be called at most once per closure.</li>
+ *     <li>Nested invocations on the same thread are not supported: a thread reuses its single clone,
+ *         so the inner call's {@link #flush()} wipes the outer call's frame.</li>
+ *     <li>Every thread that invokes a pooled closure retains one clone (a {@code Pointing[size]} frame
+ *         plus its private pools) for the life of that thread's {@code ThreadLocalMap} entry — i.e.
+ *         until the thread dies. A bounded thread population therefore bounds the retained memory.</li>
  * </ul>
- *
- * <p>To use this class, register {@link PointingPool}s for the relevant classes before attaching.
  */
 public class PointingPoolManager {
 
     private final HashMap<Class<?>, PointingPool<?>> pools;
     private final int frameSize;
     private final Pointing[] frame;
+    private final PointingPool<?>[] framePools;
     private int count;
 
     public PointingPoolManager (int size) {
         this.pools = new HashMap<>();
         this.frameSize = size;
         this.frame = new Pointing[size];
+        this.framePools = new PointingPool<?>[size];
     }
 
     private PointingPoolManager (int size, HashMap<Class<?>, PointingPool<?>> pools) {
-        this.pools = pools;
         this.frameSize = size;
         this.frame = new Pointing[size];
+        this.framePools = new PointingPool<?>[size];
+        this.pools = new HashMap<>(pools.size());
+        for (Map.Entry<Class<?>, PointingPool<?>> entry : pools.entrySet())
+            this.pools.put(entry.getKey(), entry.getValue().newEmpty());
     }
 
-    public PointingPoolManager newThreadLocalClone () {
+    public PointingPoolManager newClone() {
         return new PointingPoolManager(frameSize, pools);
     }
 
@@ -60,7 +65,9 @@ public class PointingPoolManager {
         if (pool == null)
             throw new IllegalArgumentException("No PointingPool found for " + clazz);
         T obj = pool.pollOrCreate();
-        frame[count++] = obj;
+        framePools[count] = pool;
+        frame[count] = obj;
+        count++;
         return obj;
     }
 
@@ -80,7 +87,7 @@ public class PointingPoolManager {
     }
 
     public <T extends Pointing> void addPool(PointerDereferenceSupplier<T> supplier, int capacity) {
-        PointingPool<T> pool = new PointingPool<>(capacity, supplier);
+        PointingPool<T> pool = new PointingPool<T>(capacity, supplier);
         addPool(pool);
     }
 
@@ -96,9 +103,10 @@ public class PointingPoolManager {
             Pointing obj = frame[i];
             if (obj instanceof StackElement)
                 obj.free();
-            PointingPool pool = pools.get(obj.getClass());
+            PointingPool pool = framePools[i];
             pool.offer(obj);
             frame[i] = null;
+            framePools[i] = null;
         }
         count = 0;
     }

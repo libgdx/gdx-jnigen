@@ -79,7 +79,8 @@ void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
     tls_attach_jni_env(gJVM, &env);
     closure_info* info = (closure_info*) user;
     ffi_type* rtype = cif->rtype;
-    char backingBuffer[info->argumentSize > rtype->size ? info->argumentSize : rtype->size];
+    size_t bufferSize = info->argumentSize > rtype->size ? info->argumentSize : rtype->size;
+    char backingBuffer[bufferSize];
     if (cif->nargs != 0) {
         size_t offset = 0;
         for (size_t i = 0; i < cif->nargs; i++) {
@@ -96,7 +97,7 @@ void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
         }
     }
 
-    env->CallStaticVoidMethod(globalClass, dispatchCallbackMethod, info->javaInfo, backingBuffer);
+    env->CallStaticVoidMethod(globalClass, dispatchCallbackMethod, info->javaInfo, backingBuffer, (jint)bufferSize);
 
     jthrowable exc = env->ExceptionOccurred();
     if(exc != NULL) {

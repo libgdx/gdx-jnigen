@@ -36,7 +36,13 @@ public class BufferPtrManager {
     private static final boolean NO_POOLING = System.getProperty("com.badlogic.jnigen.allocator.no_pooling", "false").equals("true");
     private static final int POOL_SIZE = Integer.parseInt(System.getProperty("com.badlogic.jnigen.allocator.pool_size", "256"));
 
-    private static final BufferPtrPool BUFFER_PTR_POOL = new BufferPtrPool(POOL_SIZE);
+
+    private static final ThreadLocal<BufferPtrPool> BUFFER_PTR_POOL = new ThreadLocal<BufferPtrPool>() {
+        @Override
+        protected BufferPtrPool initialValue() {
+            return new BufferPtrPool(POOL_SIZE);
+        }
+    };
 
     private static ByteBuffer getBuffer(long basePtr) {
         if (basePtr == 0)
@@ -73,19 +79,26 @@ public class BufferPtrManager {
     }
 
     public static BufferPtr get(long pointer, int capacity) {
-        if (pointer == 0)
-            return new BufferPtr(NULL_BUFFER, 0, 0, 0);
+        return get(BUFFER_PTR_POOL.get(), pointer, capacity);
+    }
+
+    public static BufferPtrPool getPool() {
+        return BUFFER_PTR_POOL.get();
+    }
+
+
+    public static BufferPtr get(BufferPtrPool pool, long pointer, int capacity) {
         if (capacity > PAGE_SIZE)
             throw new IllegalArgumentException("capacity > PAGE_SIZE (" + capacity + " > " + PAGE_SIZE + ")");
 
         int offset = (int)(pointer & PAGE_OFFSET_MASK);
         long basePtr = pointer & ADDRESS_MASK;
 
-        ByteBuffer buffer = getBuffer(basePtr);
+        ByteBuffer buffer = pointer == 0 ? NULL_BUFFER : getBuffer(basePtr);
         if (NO_POOLING)
             return new BufferPtr(buffer, pointer, offset, capacity);
 
-        BufferPtr bufferPtr = BUFFER_PTR_POOL.pollOrCreate();
+        BufferPtr bufferPtr = pool.pollOrCreate();
         bufferPtr.reset(buffer, pointer, offset, capacity);
         return bufferPtr;
     }
@@ -95,37 +108,34 @@ public class BufferPtrManager {
     }
 
     public static void setBufferPtrPointer(BufferPtr bufferPtr, long newPointer, int capacity) {
-        if (newPointer == 0) {
-            bufferPtr.reset(NULL_BUFFER, 0, 0, 0);
-            return;
-        }
         if (capacity > PAGE_SIZE)
             throw new IllegalArgumentException("capacity > PAGE_SIZE (" + capacity + " > " + PAGE_SIZE + ")");
         int offset = (int)(newPointer & PAGE_OFFSET_MASK);
         long basePtr = newPointer & ADDRESS_MASK;
 
-        ByteBuffer buffer = getBuffer(basePtr);
+        ByteBuffer buffer = newPointer == 0 ? NULL_BUFFER : getBuffer(basePtr);
 
         bufferPtr.reset(buffer, newPointer, offset, capacity);
     }
 
     public static void insertPool(BufferPtr bufferPtr) {
+        insertPool(BUFFER_PTR_POOL.get(), bufferPtr);
+    }
+
+    public static void insertPool(BufferPtrPool pool, BufferPtr bufferPtr) {
         if (NO_POOLING)
             return;
 
-        BUFFER_PTR_POOL.offer(bufferPtr);
+        bufferPtr.reset(null, 0, 0, 0);
+        pool.offer(bufferPtr);
     }
 
-    public static void insertPool(Collection<BufferPtr> bufferPtr) {
-        if (NO_POOLING)
-            return;
-
-        BUFFER_PTR_POOL.offerAll(bufferPtr);
-    }
 
     public static void reset() {
         Arrays.fill(BUFFER_CACHE, null);
-        BUFFER_PTR_POOL.clear();
+        BufferPtrPool pool = BUFFER_PTR_POOL.get();
+        if (pool != null)
+            pool.clear();
     }
 
     public static boolean isPoolingEnabled() {

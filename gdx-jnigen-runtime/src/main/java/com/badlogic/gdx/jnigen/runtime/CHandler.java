@@ -7,9 +7,9 @@ import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.runtime.closure.JavaClosureObject;
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureDecoder;
 import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
-import com.badlogic.gdx.jnigen.runtime.mem.AllocationManager;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrManager;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrPool;
 import com.badlogic.gdx.jnigen.runtime.pointer.PointerPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.gdx.jnigen.runtime.util.DowncallCClosureObjectSupplier;
@@ -25,7 +25,7 @@ public class CHandler {
     static {
         new SharedLibraryLoader().load("jnigen-runtime");
         try {
-            boolean res = init(CHandler.class.getDeclaredMethod("dispatchCallback", ClosureDecoder.class, long.class),
+            boolean res = init(CHandler.class.getDeclaredMethod("dispatchCallback", ClosureDecoder.class, long.class, int.class),
                     CHandler.class.getDeclaredMethod("getExceptionString", Throwable.class));
             if (!res)
                 throw new RuntimeException("JNI initialization failed, either CHandler#dispatchCallback or CHandler#getExceptionString are not JNI accessible.");
@@ -76,10 +76,11 @@ public class CHandler {
         }catch (CXXException ignored) {}
     }
 
-    public static <T extends Closure> void dispatchCallback(ClosureDecoder<T> toCallOn, long parameter) {
-        BufferPtr ptr = AllocationManager.wrap(parameter);
+    public static <T extends Closure> void dispatchCallback(ClosureDecoder<T> toCallOn, long parameter, int size) {
+        BufferPtrPool pool = BufferPtrManager.getPool();
+        BufferPtr ptr = BufferPtrManager.get(pool, parameter, size);
         toCallOn.invoke(ptr);
-        BufferPtrManager.insertPool(ptr);
+        BufferPtrManager.insertPool(pool, ptr);
     }
 
     public static CTypeInfo constructCTypeFromNativeType(long nativeType) {
