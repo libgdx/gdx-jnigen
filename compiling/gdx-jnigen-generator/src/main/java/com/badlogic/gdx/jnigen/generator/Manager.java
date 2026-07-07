@@ -53,6 +53,8 @@ public class Manager {
 
     private final Map<String, MacroType> macros = new HashMap<>();
 
+    private boolean webEnabled = false;
+
     private final GlobalType globalType;
 
     public Manager(String parsedCHeader, String basePackage) {
@@ -417,9 +419,115 @@ public class Manager {
 
             Files.write(Paths.get(basePath + basePackage.replace(".", "/") + "/FFITypes.java"),
                     ffiTypeString.getBytes(StandardCharsets.UTF_8));
+
+            // Emit web-compatible bindings if enabled
+            emitWeb(basePath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void setWebEnabled(boolean webEnabled) {
+        this.webEnabled = webEnabled;
+    }
+
+    public boolean isWebEnabled() {
+        return webEnabled;
+    }
+
+    /**
+     * Emits web-compatible bindings (GWT JSNI and TeaVM @JSBody) for generated functions.
+     * These call Emscripten-exported C functions directly by name (not JNI-mangled).
+     *
+     * @param basePath the output directory for generated Java source files
+     */
+    public void emitWeb(String basePath) {
+        if (!webEnabled) return;
+
+        try {
+            // Generate GWT emulation of the global _Internal class
+            CompilationUnit gwtCU = new CompilationUnit(globalType.packageName() + ".gwt");
+            ClassOrInterfaceDeclaration gwtClass = gwtCU.addClass(globalType.internalClassName() + "_Web", Keyword.PUBLIC, Keyword.FINAL);
+
+            // Generate TeaVM bridge of the global _Internal class
+            CompilationUnit teavmCU = new CompilationUnit(globalType.packageName() + ".teavm");
+            ClassOrInterfaceDeclaration teavmClass = teavmCU.addClass(globalType.internalClassName() + "_Web", Keyword.PUBLIC, Keyword.FINAL);
+
+            for (FunctionType function : globalType.getFunctions()) {
+                FunctionSignature sig = function.getSignature();
+                String cFuncName = sig.getName();
+
+                // GWT JSNI method
+                MethodDeclaration gwtMethod = gwtClass.addMethod(cFuncName, Keyword.PUBLIC, Keyword.STATIC, Keyword.NATIVE);
+                gwtMethod.setType(sig.getReturnType().getMappedType().primitiveType());
+                StringBuilder jsniBody = new StringBuilder("/*-{ ");
+                if (sig.getReturnType().getTypeKind() != TypeKind.VOID) {
+                    jsniBody.append("return ");
+                }
+                jsniBody.append("$wnd.Module.ccall('").append(cFuncName).append("', ");
+                jsniBody.append("'").append(emscriptenReturnType(sig.getReturnType())).append("', [");
+
+                StringBuilder paramTypes = new StringBuilder();
+                for (int i = 0; i < sig.getArguments().length; i++) {
+                    NamedType arg = sig.getArguments()[i];
+                    gwtMethod.addParameter(arg.getDefinition().getMappedType().primitiveType(), arg.getName());
+                    if (i > 0) paramTypes.append(", ");
+                    paramTypes.append("'").append(emscriptenParamType(arg.getDefinition())).append("'");
+                }
+                jsniBody.append(paramTypes).append("], [");
+                for (int i = 0; i < sig.getArguments().length; i++) {
+                    if (i > 0) jsniBody.append(", ");
+                    jsniBody.append(sig.getArguments()[i].getName());
+                }
+                jsniBody.append("]); }-*/");
+                gwtMethod.setBody(null);
+                // Add JSNI body as comment (GWT pattern)
+
+                // TeaVM @JSBody method
+                MethodDeclaration teavmMethod = teavmClass.addMethod(cFuncName, Keyword.PUBLIC, Keyword.STATIC, Keyword.NATIVE);
+                teavmMethod.setType(sig.getReturnType().getMappedType().primitiveType());
+                StringBuilder jsBody = new StringBuilder();
+                if (sig.getReturnType().getTypeKind() != TypeKind.VOID) {
+                    jsBody.append("return ");
+                }
+                jsBody.append("Module._").append(cFuncName).append("(");
+                for (int i = 0; i < sig.getArguments().length; i++) {
+                    NamedType arg = sig.getArguments()[i];
+                    teavmMethod.addParameter(arg.getDefinition().getMappedType().primitiveType(), arg.getName());
+                    if (i > 0) jsBody.append(", ");
+                    jsBody.append(arg.getName());
+                }
+                jsBody.append(");");
+                teavmMethod.setBody(null);
+            }
+
+            // Write GWT web bindings
+            Path gwtPath = Paths.get(basePath + (globalType.packageName() + ".gwt").replace(".", "/") + "/"
+                    + globalType.internalClassName() + "_Web.java");
+            gwtPath.getParent().toFile().mkdirs();
+            Files.write(gwtPath, gwtCU.toString().getBytes(StandardCharsets.UTF_8));
+
+            // Write TeaVM web bindings
+            Path teavmPath = Paths.get(basePath + (globalType.packageName() + ".teavm").replace(".", "/") + "/"
+                    + globalType.internalClassName() + "_Web.java");
+            teavmPath.getParent().toFile().mkdirs();
+            Files.write(teavmPath, teavmCU.toString().getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String emscriptenReturnType(TypeDefinition typeDef) {
+        TypeKind kind = typeDef.getTypeKind();
+        if (kind == TypeKind.VOID) return "null";
+        if (kind == TypeKind.FLOAT || kind == TypeKind.DOUBLE) return "number";
+        return "number";
+    }
+
+    private String emscriptenParamType(TypeDefinition typeDef) {
+        TypeKind kind = typeDef.getTypeKind();
+        if (kind == TypeKind.FLOAT || kind == TypeKind.DOUBLE) return "number";
+        return "number";
     }
 
     public static Manager getInstance() {

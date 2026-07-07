@@ -118,6 +118,8 @@ public class PlatformBuilder {
                 return new GNUToolchain();
             case Android:
                 return new AndroidToolchain();
+            case Emscripten:
+                return new EmscriptenToolchain();
             default:
                 throw new IllegalStateException("Unexpected value: " + buildTarget.os);
         }
@@ -157,7 +159,9 @@ public class PlatformBuilder {
                 "mac/jni_md.h",
 
                 "win32/jawt_md.h",
-                "win32/jni_md.h"
+                "win32/jni_md.h",
+
+                "web/jni_md.h"
         };
 
         for (String file : files) {

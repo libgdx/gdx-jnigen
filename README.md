@@ -7,7 +7,7 @@ with Java source code.
 
 This increases the locality of code that conceptually belongs together (the Java native class methods and the actual implementation) and makes refactoring a lot easier
 compared to the usual JNI workflow. Arrays and direct buffers are converted for you, further
-reducing boilerplate. Building the natives for Windows, Linux, macOS, and Android and iOS is handled for
+reducing boilerplate. Building the natives for Windows, Linux, macOS, Android, iOS, and Web (via Emscripten) is handled for
 you. jnigen also provides a mechanism for loading native libraries from a JAR at runtime, which
 avoids "java.library.path" troubles.
 
@@ -121,6 +121,15 @@ jnigen {
     //Add ios 64 bit x86 simulator target
     addIOS(x64, x86, SIMULATOR)
 
+    // Add Emscripten/WebAssembly target (requires Emscripten SDK)
+    addWeb()
+
+    // Add web target with customization
+    addWeb {
+        // Extra flags for emcc/em++ compilation
+        //cFlags += ["-s", "USE_SDL=2"]
+        //linkerFlags += ["-s", "TOTAL_MEMORY=67108864"]
+    }
 
     // Customize each BuildTarget that matches the condition
     each({ it.os != Android && it.architecture != ARM }) {
@@ -173,6 +182,174 @@ e.g. `./gradlew jnigenPackageAll` Package all targets into their jars
 e.g. `./gradlew jnigenPackageAllIOS` Package the iOS targets into their jar
 
 e.g. `./gradlew jnigenPackageAllAndroid`    Package the Android targets into their jars
+
+e.g. `./gradlew jnigenPackageAllWeb`    Package the Web targets into their jar
+
+
+## Emscripten / Web Setup
+
+jnigen supports compiling C/C++ to WebAssembly via the [Emscripten](https://emscripten.org/) toolchain. The compiled `.js` and `.wasm` files can then be used with GWT or TeaVM to run your native code in the browser.
+
+### Prerequisites
+
+1. **Install the Emscripten SDK:**
+
+   ```bash
+   git clone https://github.com/emscripten-core/emsdk.git
+   cd emsdk
+   ./emsdk install latest
+   ./emsdk activate latest
+   ```
+
+2. **Set up your environment** (must be done in each terminal session, or add to your shell profile):
+
+   ```bash
+   source /path/to/emsdk/emsdk_env.sh
+   ```
+
+   This adds `emcc` and `em++` to your `PATH` and sets the `EMSDK` environment variable. jnigen will also look for `EMSDK` to locate the compilers automatically.
+
+3. **Verify the installation:**
+
+   ```bash
+   emcc --version
+   ```
+
+### Gradle Configuration
+
+Add the web target to your `jnigen` block:
+
+```gradle
+jnigen {
+    sharedLibName = "mylib"
+
+    // ... other targets ...
+
+    addWeb()
+}
+```
+
+The `addWeb()` call configures a build target that uses `emcc`/`em++` with these defaults:
+- **Architecture:** WASM (32-bit)
+- **Output:** `mylib.js` + `mylib.wasm` (Emscripten modularized output)
+- **Linker flags:** `MODULARIZE=1`, `ALLOW_MEMORY_GROWTH=1`, `ALLOW_TABLE_GROWTH=1`, exported runtime methods for `ccall`, `cwrap`, `addFunction`, `removeFunction`
+
+You can customize the target like any other:
+
+```gradle
+addWeb {
+    cFlags += ["-s", "USE_SDL=2"]
+    cppFlags += ["-std=c++17"]
+    linkerFlags += ["-s", "TOTAL_MEMORY=67108864"]
+    headerDirs += ["src/main/native/web"]
+}
+```
+
+### Build Commands
+
+```bash
+# Generate JNI wrappers (run first)
+./gradlew jnigen
+
+# Build WebAssembly output
+./gradlew jnigenBuildAllEmscripten
+
+# Package into natives-web.jar
+./gradlew jnigenPackageAllWeb
+```
+
+### JNI Header Compatibility
+
+Emscripten builds do not use JNI headers. Instead, jnigen provides a compatibility header (`jnigen-web.h`) that maps JNI types to standard C types:
+
+| JNI Type  | Web Type    |
+|-----------|-------------|
+| `jint`    | `int32_t`   |
+| `jlong`   | `int64_t`   |
+| `jfloat`  | `float`     |
+| `jdouble` | `double`    |
+| `jbyte`   | `int8_t`    |
+| `JNIEnv*` | `void*`     |
+| `JNIEXPORT` | `EMSCRIPTEN_KEEPALIVE` |
+
+### GWT Integration
+
+Add the GWT emulation module to your project:
+
+```gradle
+dependencies {
+    implementation "com.badlogicgames.jnigen:jnigen-runtime-gwt:$jnigenVersion"
+}
+```
+
+In your GWT module descriptor (`.gwt.xml`):
+
+```xml
+<inherits name="com.badlogic.gdx.jnigen.gwt.JnigenGwt"/>
+```
+
+This provides super-source replacements for `CHandler` and `SharedLibraryLoader` that delegate to the Emscripten WASM module via JSNI.
+
+### TeaVM Integration
+
+Add the TeaVM emulation module to your project:
+
+```gradle
+dependencies {
+    implementation "com.badlogicgames.jnigen:jnigen-runtime-teavm:$jnigenVersion"
+}
+```
+
+The module registers a TeaVM plugin via `META-INF/services` that provides `@JSBody`-annotated bridge methods (`CHandlerWeb`, `WasmMemory`) for calling into the Emscripten Module from TeaVM-transpiled code.
+
+### Loading the WASM Module
+
+Each jnigen library gets a unique factory function name based on `sharedLibName`: `createModule_{sharedLibName}` (with non-alphanumeric characters replaced by `_`). This prevents clashes when multiple jnigen libraries are loaded on the same page.
+
+In your HTML host page, load the generated JS module before your GWT/TeaVM application starts:
+
+```html
+<script src="mylib.js"></script>
+<script>
+  // Factory function name is createModule_{sharedLibName}
+  createModule_mylib().then(function(Module) {
+    window.Module = Module;
+    // Now start your GWT/TeaVM application
+  });
+</script>
+```
+
+If you have multiple jnigen libraries, load them all and merge into a single `Module` or use separate references:
+
+```html
+<script src="mylib.js"></script>
+<script src="otherlib.js"></script>
+<script>
+  Promise.all([
+    createModule_mylib(),
+    createModule_otherlib()
+  ]).then(function(modules) {
+    window.Module_mylib = modules[0];
+    window.Module_otherlib = modules[1];
+    // Start your application
+  });
+</script>
+```
+
+### Generator Web Bindings
+
+If you are using `jnigen-generator` to auto-generate bindings from C headers, enable web output:
+
+```gradle
+jnigen {
+    generator {
+        // ... other generator config ...
+        webEnabled = true
+    }
+}
+```
+
+This generates additional web-specific binding classes alongside the standard JNI bindings, which call Emscripten-exported functions directly by their C names (not JNI-mangled).
 
 
 ### Publishing

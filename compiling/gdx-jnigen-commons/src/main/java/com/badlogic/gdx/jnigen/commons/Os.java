@@ -10,7 +10,8 @@ public enum Os {
     Linux(Platform.Desktop),
     MacOsX(Platform.Desktop),
     Android(Platform.Android),
-    IOS(Platform.IOS);
+    IOS(Platform.IOS),
+    Emscripten(Platform.Web);
 
     private final Platform platform;
 
@@ -27,6 +28,7 @@ public enum Os {
         if (this == Os.Linux) return "linux";
         if (this == Os.MacOsX) return "mac";
         if (this == Os.IOS) return "mac";
+        if (this == Os.Emscripten) return "web";
         return "";
     }
 
@@ -42,6 +44,7 @@ public enum Os {
         if (this == Os.Linux) return "so";
         if (this == Os.MacOsX) return "dylib";
         if (this == Os.Android) return "so";
+        if (this == Os.Emscripten) return "js";
         return "";
     }
 }

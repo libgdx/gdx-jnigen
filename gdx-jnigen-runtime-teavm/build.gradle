@@ -1,0 +1,14 @@
+sourceCompatibility = 11
+targetCompatibility = 11
+
+dependencies {
+    compileOnly "org.teavm:teavm-jso:0.13.1"
+    compileOnly "org.teavm:teavm-core:0.13.1"
+    compileOnly project(":jnigen-runtime")
+}
+
+eclipse {
+    project {
+        name = "gdx-jnigen-runtime-teavm"
+    }
+}

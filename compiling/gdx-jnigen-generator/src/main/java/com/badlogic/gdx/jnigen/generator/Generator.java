@@ -400,8 +400,22 @@ public class Generator {
     }
 
     public static void main(String[] args) {
-        String[] options = new String[args.length - 3];
-        System.arraycopy(args, 3, options, 0, options.length);
+        // Check for --web flag
+        boolean webEnabled = false;
+        int optionStart = 3;
+        java.util.List<String> filteredOptions = new java.util.ArrayList<>();
+        for (int i = 3; i < args.length; i++) {
+            if ("--web".equals(args[i])) {
+                webEnabled = true;
+            } else {
+                filteredOptions.add(args[i]);
+            }
+        }
+        String[] options = filteredOptions.toArray(new String[0]);
         execute(args[0], args[1], args[2], options);
+        if (webEnabled) {
+            Manager.getInstance().setWebEnabled(true);
+            Manager.getInstance().emitWeb(args[0].endsWith("/") ? args[0] : args[0] + "/");
+        }
     }
 }
