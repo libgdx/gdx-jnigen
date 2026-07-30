@@ -16,7 +16,6 @@
 
 package com.badlogic.gdx.jnigen.loader;
 
-import com.badlogic.gdx.jnigen.commons.Architecture;
 import com.badlogic.gdx.jnigen.commons.HostDetection;
 import com.badlogic.gdx.jnigen.commons.Os;
 
@@ -184,6 +183,22 @@ public class SharedLibraryLoader {
 		file = new File(".temp/" + dirName, fileName);
 		if (canWrite(file)) return file;
 
+		if(HostDetection.os == Os.Windows) {
+			// C:\Windows\Temp
+			String env = System.getenv("SystemRoot");
+			if (env != null) {
+				file = new File(env + "/Temp/.libgdx/" + dirName, fileName);
+				if (canWrite(file)) return file;
+			}
+
+			// C:\Temp
+			env = System.getenv("SystemDrive");
+			if (env != null) {
+				file = new File(env + "/Temp/.libgdx/" + dirName, fileName);
+				if (canWrite(file)) return file;
+			}
+		}
+
 		// We are running in the OS X sandbox.
 		if (System.getenv("APP_SANDBOX_CONTAINER_ID") != null) return idealFile;
 
@@ -290,6 +305,22 @@ public class SharedLibraryLoader {
 		// Relative directory.
 		file = new File(".temp/" + sourceCrc, fileName);
 		if (loadFile(sourcePath, sourceCrc, file) == null) return;
+
+		if(HostDetection.os == Os.Windows) {
+			// C:\Windows\Temp
+			String env = System.getenv("SystemRoot");
+			if (env != null) {
+				file = new File(env + "/Temp/.libgdx/" + sourceCrc, fileName);
+				if (loadFile(sourcePath, sourceCrc, file) == null) return;
+			}
+
+			// C:\Temp
+			env = System.getenv("SystemDrive");
+			if (env != null) {
+				file = new File(env + "/Temp/.libgdx/" + sourceCrc, fileName);
+				if (loadFile(sourcePath, sourceCrc, file) == null) return;
+			}
+		}
 
 		// Fallback to java.library.path location, eg for applets.
 		file = new File(System.getProperty("java.library.path"), sourcePath);
