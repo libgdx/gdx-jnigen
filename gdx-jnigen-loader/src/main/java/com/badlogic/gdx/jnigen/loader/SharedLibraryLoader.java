@@ -43,6 +43,11 @@ public class SharedLibraryLoader {
 	static private final HashSet<String> loadedLibraries = new HashSet<>();
 	static private final Random random = new Random();
 
+	/** Tracks the highest failed option index across getExtractedFile and loadFile.
+	 * Once an option fails, it is skipped on all subsequent calls to either method.
+	 * This avoids repeatedly trying known-bad extraction/load locations. */
+	static private int failedOptionId = 0;
+
 	private String nativesJar;
 
 	public SharedLibraryLoader () {
@@ -160,47 +165,66 @@ public class SharedLibraryLoader {
 	/** Returns a path to a file that can be written. Tries multiple locations and verifies writing succeeds.
 	 * @return null if a writable path could not be found. */
 	private File getExtractedFile (String dirName, String fileName) {
-		// Temp directory with username in path.
-		File idealFile = new File(
-			System.getProperty("java.io.tmpdir") + "/libgdx" + System.getProperty("user.name") + "/" + dirName, fileName);
-		if (canWrite(idealFile)) return idealFile;
-
-		// System provided temp directory.
-		try {
-			File file = File.createTempFile(dirName, null);
-			if (file.delete()) {
-				file = new File(file, fileName);
-				if (canWrite(file)) return file;
-			}
-		} catch (IOException ignored) {
+		// Option 1: Temp directory with username in path.
+		File idealFile = null;
+		if (failedOptionId < 1) {
+			idealFile = new File(
+				System.getProperty("java.io.tmpdir") + "/libgdx" + System.getProperty("user.name") + "/" + dirName, fileName);
+			if (canWrite(idealFile)) return idealFile;
+			failedOptionId = 1;
 		}
 
-		// User home.
-		File file = new File(System.getProperty("user.home") + "/.libgdx/" + dirName, fileName);
-		if (canWrite(file)) return file;
+		// Option 2: System provided temp directory.
+		if (failedOptionId < 2) {
+			try {
+				File file = File.createTempFile(dirName, null);
+				if (file.delete()) {
+					file = new File(file, fileName);
+					if (canWrite(file)) return file;
+				}
+			} catch (IOException ignored) {
+			}
+			failedOptionId = 2;
+		}
 
-		// Relative directory.
-		file = new File(".temp/" + dirName, fileName);
-		if (canWrite(file)) return file;
+		// Option 3: User home.
+		if (failedOptionId < 3) {
+			File file = new File(System.getProperty("user.home") + "/.libgdx/" + dirName, fileName);
+			if (canWrite(file)) return file;
+			failedOptionId = 3;
+		}
+
+		// Option 4: Relative directory.
+		if (failedOptionId < 4) {
+			File file = new File(".temp/" + dirName, fileName);
+			if (canWrite(file)) return file;
+			failedOptionId = 4;
+		}
 
 		if(HostDetection.os == Os.Windows) {
-			// C:\Windows\Temp
-			String env = System.getenv("SystemRoot");
-			if (env != null) {
-				file = new File(env + "/Temp/.libgdx/" + dirName, fileName);
-				if (canWrite(file)) return file;
+			// Option 5: C:\Windows\Temp
+			if (failedOptionId < 5) {
+				String env = System.getenv("SystemRoot");
+				if (env != null) {
+					File file = new File(env + "/Temp/.libgdx/" + dirName, fileName);
+					if (canWrite(file)) return file;
+				}
+				failedOptionId = 5;
 			}
 
-			// C:\Temp
-			env = System.getenv("SystemDrive");
-			if (env != null) {
-				file = new File(env + "/Temp/.libgdx/" + dirName, fileName);
-				if (canWrite(file)) return file;
+			// Option 6: C:\Temp
+			if (failedOptionId < 6) {
+				String env = System.getenv("SystemDrive");
+				if (env != null) {
+					File file = new File(env + "/Temp/.libgdx/" + dirName, fileName);
+					if (canWrite(file)) return file;
+				}
+				failedOptionId = 6;
 			}
 		}
 
 		// We are running in the OS X sandbox.
-		if (System.getenv("APP_SANDBOX_CONTAINER_ID") != null) return idealFile;
+		if (System.getenv("APP_SANDBOX_CONTAINER_ID") != null && idealFile != null) return idealFile;
 
 		return null;
 	}
@@ -284,46 +308,69 @@ public class SharedLibraryLoader {
 		String sourceCrc = crc(readFile(sourcePath));
 
 		String fileName = new File(sourcePath).getName();
+		Throwable ex = null;
 
-		// Temp directory with username in path.
-		File file = new File(System.getProperty("java.io.tmpdir") + "/libgdx" + System.getProperty("user.name") + "/" + sourceCrc,
-			fileName);
-		Throwable ex = loadFile(sourcePath, sourceCrc, file);
-		if (ex == null) return;
-
-		// System provided temp directory.
-		try {
-			file = File.createTempFile(sourceCrc, null);
-			if (file.delete() && loadFile(sourcePath, sourceCrc, file) == null) return;
-		} catch (Throwable ignored) {
+		// Option 1: Temp directory with username in path.
+		if (failedOptionId < 1) {
+			File file = new File(System.getProperty("java.io.tmpdir") + "/libgdx" + System.getProperty("user.name") + "/" + sourceCrc,
+				fileName);
+			ex = loadFile(sourcePath, sourceCrc, file);
+			if (ex == null) return;
+			failedOptionId = 1;
 		}
 
-		// User home.
-		file = new File(System.getProperty("user.home") + "/.libgdx/" + sourceCrc, fileName);
-		if (loadFile(sourcePath, sourceCrc, file) == null) return;
+		// Option 2: System provided temp directory.
+		if (failedOptionId < 2) {
+			try {
+				File file = File.createTempFile(sourceCrc, null);
+				if (file.delete() && loadFile(sourcePath, sourceCrc, file) == null) return;
+			} catch (Throwable ignored) {
+			}
+			failedOptionId = 2;
+		}
 
-		// Relative directory.
-		file = new File(".temp/" + sourceCrc, fileName);
-		if (loadFile(sourcePath, sourceCrc, file) == null) return;
+		// Option 3: User home.
+		if (failedOptionId < 3) {
+			File file = new File(System.getProperty("user.home") + "/.libgdx/" + sourceCrc, fileName);
+			ex = loadFile(sourcePath, sourceCrc, file);
+			if (ex == null) return;
+			failedOptionId = 3;
+		}
+
+		// Option 4: Relative directory.
+		if (failedOptionId < 4) {
+			File file = new File(".temp/" + sourceCrc, fileName);
+			ex = loadFile(sourcePath, sourceCrc, file);
+			if (ex == null) return;
+			failedOptionId = 4;
+		}
 
 		if(HostDetection.os == Os.Windows) {
-			// C:\Windows\Temp
-			String env = System.getenv("SystemRoot");
-			if (env != null) {
-				file = new File(env + "/Temp/.libgdx/" + sourceCrc, fileName);
-				if (loadFile(sourcePath, sourceCrc, file) == null) return;
+			// Option 5: C:\Windows\Temp
+			if (failedOptionId < 5) {
+				String env = System.getenv("SystemRoot");
+				if (env != null) {
+					File file = new File(env + "/Temp/.libgdx/" + sourceCrc, fileName);
+					ex = loadFile(sourcePath, sourceCrc, file);
+					if (ex == null) return;
+				}
+				failedOptionId = 5;
 			}
 
-			// C:\Temp
-			env = System.getenv("SystemDrive");
-			if (env != null) {
-				file = new File(env + "/Temp/.libgdx/" + sourceCrc, fileName);
-				if (loadFile(sourcePath, sourceCrc, file) == null) return;
+			// Option 6: C:\Temp
+			if (failedOptionId < 6) {
+				String env = System.getenv("SystemDrive");
+				if (env != null) {
+					File file = new File(env + "/Temp/.libgdx/" + sourceCrc, fileName);
+					ex = loadFile(sourcePath, sourceCrc, file);
+					if (ex == null) return;
+				}
+				failedOptionId = 6;
 			}
 		}
 
 		// Fallback to java.library.path location, eg for applets.
-		file = new File(System.getProperty("java.library.path"), sourcePath);
+		File file = new File(System.getProperty("java.library.path"), sourcePath);
 		if (file.exists()) {
 			loadFromAbsolutePath(file.getAbsolutePath());
 			return;
