@@ -1,6 +1,7 @@
 package com.badlogic.gdx.jnigen.build.toolchains;
 
 import com.badlogic.gdx.jnigen.build.ToolFinder;
+import com.badlogic.gdx.jnigen.build.StringUtils;
 import com.badlogic.gdx.jnigen.build.ToolchainExecutor;
 import com.badlogic.gdx.jnigen.commons.Architecture;
 import com.badlogic.gdx.jnigen.commons.HostDetection;
@@ -129,14 +130,14 @@ public class MSVCToolchain extends BaseToolchain {
             @Override
             public void onInfoMessage (String message) {
                 if (message.contains("=")) {
-                    if (message.startsWith("INCLUDE=")) {
+                    if (StringUtils.startsWithIgnoreCase(message, "INCLUDE=")) {
                         msvcIncludePath = message.split("=")[1];
                     }
-                    if (message.startsWith("LIB=")) {
+                    if (StringUtils.startsWithIgnoreCase(message, "LIB=")) {
                         msvcLibPath = message.split("=")[1];
                         System.out.println();
                     }
-                    if (message.startsWith("Path=")) {
+                    if (StringUtils.startsWithIgnoreCase(message, "Path=")) {
                         msvcPathPath = message.split("=")[1];
                     }
                     pathLines.add(message);
