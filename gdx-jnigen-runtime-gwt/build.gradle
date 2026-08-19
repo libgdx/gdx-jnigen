@@ -1,0 +1,13 @@
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compileOnly "com.google.gwt:gwt-user:2.10.0"
+    compileOnly project(":jnigen-runtime")
+}
+
+eclipse {
+    project {
+        name = "gdx-jnigen-runtime-gwt"
+    }
+}

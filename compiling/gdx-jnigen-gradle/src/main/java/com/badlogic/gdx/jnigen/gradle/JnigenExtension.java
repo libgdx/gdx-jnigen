@@ -30,14 +30,17 @@ public class JnigenExtension {
     public static final Architecture ARM = Architecture.ARM;
     public static final Architecture RISCV = Architecture.RISCV;
     public static final Architecture LOONGARCH = Architecture.LOONGARCH;
+    public static final Architecture WASM = Architecture.WASM;
 
     public static final CompilerABIType MSVC = CompilerABIType.MSVC;
+    public static final CompilerABIType EMSCRIPTEN = CompilerABIType.EMSCRIPTEN;
     public static final CompilerABIType GCC_CLANG = CompilerABIType.GCC_CLANG;
     public static final Os Windows = Os.Windows;
     public static final Os Linux = Os.Linux;
     public static final Os MacOsX = Os.MacOsX;
     public static final Os Android = Os.Android;
     public static final Os IOS = Os.IOS;
+    public static final Os Emscripten = Os.Emscripten;
 
     public static final AndroidABI ABI_ARMEABI_V7A = AndroidABI.ABI_ARMEABI_V7A;
     public static final AndroidABI ABI_x86f = AndroidABI.ABI_x86;
@@ -205,6 +208,14 @@ public class JnigenExtension {
         add(Os.Windows, bitness, architecture, compilerABIType, TargetType.DEVICE, null, container);
     }
 
+    public void addWeb () {
+        addWeb(null);
+    }
+
+    public void addWeb (Action<BuildTarget> container) {
+        add(Os.Emscripten, Architecture.Bitness._32, Architecture.WASM, CompilerABIType.EMSCRIPTEN, TargetType.DEVICE, null, container);
+    }
+
     public void addAndroid () {
         addAndroid(null, null);
     }
@@ -278,7 +289,13 @@ public class JnigenExtension {
             platformLevelTargetsSeen.get(platform).mustRunAfter(jnigenBuildTask);
         }
 
-        if (target.os == Android) {
+        if (target.os == Os.Emscripten) {
+            JnigenBuildTask jnigenBuildTask = project.getTasks().create("jnigenBuild" + os.name(), JnigenBuildTask.class, this);
+            jnigenBuildTask.setBuildTarget(target);
+            jnigenBuildTask.dependsOn(jnigenTask);
+
+            platformLevelTargetsSeen.get(platform).mustRunAfter(jnigenBuildTask);
+        } else if (target.os == Android) {
             JnigenBuildTask jnigenBuildTask = project.getTasks().create("jnigenBuild" + os.name() + "_" + target.getTargetAndroidABI().getAbiString(), JnigenBuildTask.class, this);
             jnigenBuildTask.setBuildTarget(target);
             jnigenBuildTask.dependsOn(jnigenTask);

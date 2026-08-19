@@ -8,6 +8,7 @@ public class JnigenBindingGeneratorExtension {
     private String basePackage;
     private String fileToParse;
     private String[] options;
+    private boolean webEnabled = false;
 
     public File getOutputPath() {
         return outputPath;
@@ -39,5 +40,13 @@ public class JnigenBindingGeneratorExtension {
 
     public void setOptions(String[] options) {
         this.options = options;
+    }
+
+    public boolean isWebEnabled() {
+        return webEnabled;
+    }
+
+    public void setWebEnabled(boolean webEnabled) {
+        this.webEnabled = webEnabled;
     }
 }

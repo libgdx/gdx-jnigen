@@ -1,0 +1,29 @@
+  build-web:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: 'recursive'
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+%steps%
+
+      - name: Pack artifacts
+        run: |
+          find .  -name "*.js" -o -name "*.wasm" | grep "libs" > native-files-list
+          zip natives-web -@ < native-files-list
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: natives-web.zip
+          path: natives-web.zip

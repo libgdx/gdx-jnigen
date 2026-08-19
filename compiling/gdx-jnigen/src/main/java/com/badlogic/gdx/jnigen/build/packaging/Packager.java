@@ -54,6 +54,8 @@ public class Packager {
                 return new AndroidPackaging();
             case IOS:
                 return new IOSPackaging();
+            case Web:
+                return new WebPackaging();
             default:
                 throw new RuntimeException("Packaging for platform " + platform + " is not supported");
         }

@@ -35,6 +35,30 @@ public class GHABuilder {
         List<BuildTarget> allTargets = new ArrayList<>();
         allTargets.addAll(ext.targets);
 
+        boolean needsWeb = needsWeb(ext);
+
+        // Process web targets before linux, since Emscripten canBuildOnHost(Linux) is true
+        // and would otherwise be consumed by the linux job
+        if (needsWeb) {
+            List<BuildTarget> webTargets = new ArrayList<>();
+            Iterator<BuildTarget> webIterator = allTargets.iterator();
+            while (webIterator.hasNext()) {
+                BuildTarget next = webIterator.next();
+                if (next.os == Os.Emscripten) {
+                    webTargets.add(next);
+                    webIterator.remove();
+                }
+            }
+            String webTemplateString = new FileDescriptor("com.badlogic.gdx.jnigen.gradle/web.yaml", FileDescriptor.FileType.Classpath).readString();
+            webTemplateString = injectJobs(webTemplateString, Os.Linux, webTargets);
+            jobs.add(webTemplateString);
+            jobsNeeded.add("build-web");
+
+            String downloadArtifactTemplate = new FileDescriptor("com.badlogic.gdx.jnigen.gradle/artifactdownload.yaml", FileDescriptor.FileType.Classpath).readString();
+            downloadArtifactTemplate = downloadArtifactTemplate.replace("%tasknameos%", "web");
+            artifactDownloads.add(downloadArtifactTemplate);
+        }
+
         if (needsLinux) {
             String linuxTemplateString = new FileDescriptor("com.badlogic.gdx.jnigen.gradle/linux.yaml", FileDescriptor.FileType.Classpath).readString();
             linuxTemplateString = injectJobs(linuxTemplateString, Os.Linux, allTargets);
@@ -140,6 +164,10 @@ public class GHABuilder {
 
     private boolean needsLinux (JnigenExtension ext) {
         return ext.targets.stream().anyMatch(it -> it.os == Os.Android || it.os == Os.Linux || (it.os == Os.Windows && it.compilerABIType == CompilerABIType.GCC_CLANG));
+    }
+
+    private boolean needsWeb (JnigenExtension ext) {
+        return ext.targets.stream().anyMatch(it -> it.os == Os.Emscripten);
     }
 
 }

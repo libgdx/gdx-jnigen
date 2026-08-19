@@ -414,6 +414,23 @@ public class BuildTarget {
             return ios;
         }
 
+        if (osTarget == Os.Emscripten) {
+            // Emscripten WebAssembly
+            BuildTarget emscripten = new BuildTarget(Os.Emscripten, Architecture.Bitness._32, new String[]{""}, new String[0], new String[]{""},
+                    new String[0], new String[0], "", new String[]{"-c", "-O2", "-Wall", "-fmessage-length=0"},
+                    new String[]{"-c", "-O2", "-Wall", "-fmessage-length=0"},
+                    new String[]{"-s", "MODULARIZE=1", "-s", "ALLOW_MEMORY_GROWTH=1",
+                            "-s", "ALLOW_TABLE_GROWTH=1",
+                            "-s", "FORCE_FILESYSTEM=1",
+                            "-s", "WASM_BIGINT=1",
+                            "-s", "EXPORTED_RUNTIME_METHODS=['ccall','cwrap','addFunction','removeFunction','lengthBytesUTF8','stringToUTF8','FS']"}, null);
+            emscripten.cCompiler = "emcc";
+            emscripten.cppCompiler = "em++";
+            emscripten.architecture = Architecture.WASM;
+            emscripten.compilerABIType = CompilerABIType.EMSCRIPTEN;
+            return emscripten;
+        }
+
         throw new RuntimeException("Unknown target type");
     }
 
@@ -454,6 +471,11 @@ public class BuildTarget {
     }
 
     public boolean canBuildOnHost (Os hostOS) {
+        // Emscripten is a cross-compiler that can build on any desktop host
+        if (os == Os.Emscripten) {
+            return hostOS == Os.Windows || hostOS == Os.Linux || hostOS == Os.MacOsX;
+        }
+
         switch (hostOS) {
             case Windows:
                 //Android, Windows, WindowsMSCV
@@ -477,6 +499,7 @@ public class BuildTarget {
 
             case Android:
             case IOS:
+            case Emscripten:
                 return false;
             default:
                 throw new IllegalStateException("Unexpected value: " + hostOS);

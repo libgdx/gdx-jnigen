@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+    <inherits name="com.google.gwt.core.Core"/>
+    <source path="emu"/>
+    <super-source path="emu"/>
+</module>

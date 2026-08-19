@@ -5,7 +5,8 @@ public enum PossibleTarget {
     WIN_64,
     UNIX_32_NOT_ANDROID_X86,
     UNIX_64,
-    ANDROID_X86;
+    ANDROID_X86,
+    WASM_32;
 
     public String condition() {
         switch (this) {
@@ -14,11 +15,13 @@ public enum PossibleTarget {
             case WIN_64:
                 return "defined(_WIN32) && ARCH_BITS == 64";
             case UNIX_32_NOT_ANDROID_X86:
-                return "!defined(_WIN32) && ARCH_BITS == 32 && !(defined(__i386__) && defined(__ANDROID__))";
+                return "!defined(_WIN32) && !defined(__EMSCRIPTEN__) && ARCH_BITS == 32 && !(defined(__i386__) && defined(__ANDROID__))";
             case UNIX_64:
-                return "!defined(_WIN32) && ARCH_BITS == 64";
+                return "!defined(_WIN32) && !defined(__EMSCRIPTEN__) && ARCH_BITS == 64";
             case ANDROID_X86:
                 return "defined(__i386__) && defined(__ANDROID__)";
+            case WASM_32:
+                return "defined(__EMSCRIPTEN__)";
             default:
                 throw new IllegalStateException("Unexpected value: " + this);
         }
@@ -36,13 +39,15 @@ public enum PossibleTarget {
                 return "(CHandler.IS_64_BIT && CHandler.IS_COMPILED_UNIX)";
             case ANDROID_X86:
                 return "CHandler.IS_COMPILED_ANDROID_X86";
+            case WASM_32:
+                return "(CHandler.IS_32_BIT && !CHandler.IS_COMPILED_WIN && !CHandler.IS_COMPILED_ANDROID_X86)";
             default:
                 throw new IllegalStateException("Unexpected value: " + this);
         }
     }
 
     public boolean is32Bit() {
-        return this == WIN_32 || this == UNIX_32_NOT_ANDROID_X86 || this == ANDROID_X86;
+        return this == WIN_32 || this == UNIX_32_NOT_ANDROID_X86 || this == ANDROID_X86 || this == WASM_32;
     }
 
     public boolean is64Bit() {
@@ -55,6 +60,10 @@ public enum PossibleTarget {
 
     public boolean isAndroidX86() {
         return this == ANDROID_X86;
+    }
+
+    public boolean isWasm() {
+        return this == WASM_32;
     }
 
     public static String unsupportedPlatformCondition() {

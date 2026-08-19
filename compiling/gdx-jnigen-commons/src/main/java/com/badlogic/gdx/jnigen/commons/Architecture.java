@@ -5,7 +5,8 @@ public enum Architecture {
 	x86("x86"),
 	ARM("Arm"),
 	RISCV("Riscv"),
-	LOONGARCH("LoongArch");
+	LOONGARCH("LoongArch"),
+	WASM("Wasm");
 
 	private final String displayName;
 
@@ -19,6 +20,7 @@ public enum Architecture {
 
 	public String toSuffix() {
 		if (this == x86) return "";
+		if (this == WASM) return "";
 		else return this.name().toLowerCase();
 	}
 
