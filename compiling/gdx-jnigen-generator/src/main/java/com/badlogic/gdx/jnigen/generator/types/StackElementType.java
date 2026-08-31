@@ -178,6 +178,16 @@ public class StackElementType implements MappedType, WritableClass {
         setMethod.createBody().addStatement(setExpr);
     }
 
+    private boolean isParentOf(MappedType t) {
+        MappedType parent = t.parent();
+        while (parent != null) {
+            if (parent == t)
+                return true;
+            parent = parent.parent();
+        }
+        return false;
+    }
+
     @Override
     public void write(CompilationUnit cuPublic, ClassOrInterfaceDeclaration toWriteToPublic, CompilationUnit cuPrivate, ClassOrInterfaceDeclaration toWriteToPrivate) {
         if (isOpaque()) {
@@ -243,7 +253,9 @@ public class StackElementType implements MappedType, WritableClass {
                 break;
             StackElementField field = fields.get(i);
             NamedType fieldType = field.getType();
-            fieldType.getDefinition().getMappedType().importType(cuPublic);
+            if (!isParentOf(fieldType.getDefinition().getMappedType())) {
+                fieldType.getDefinition().getMappedType().importType(cuPublic);
+            }
 
             if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY || fieldType.getDefinition().getTypeKind().isStackElement()) {
                 writeStackFields(field, toWriteToPublic);
