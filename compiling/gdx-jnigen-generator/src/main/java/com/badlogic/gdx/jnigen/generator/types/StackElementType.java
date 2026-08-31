@@ -551,6 +551,18 @@ public class StackElementType implements MappedType, WritableClass {
     }
 
     @Override
+    public String instantiationType() {
+        StringBuilder sb = new StringBuilder(javaTypeName);
+        MappedType t = this;
+        while (t.parent() != null) {
+            t = t.parent();
+            sb.insert(0, '.');
+            sb.insert(0, t.abstractType()); // parent is StackElementType -> abstractType returns javaTypeName
+        }
+        return sb.toString();
+    }
+
+    @Override
     public String primitiveType() {
         return long.class.getName();
     }
