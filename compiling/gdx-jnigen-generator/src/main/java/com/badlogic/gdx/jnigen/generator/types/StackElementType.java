@@ -181,7 +181,7 @@ public class StackElementType implements MappedType, WritableClass {
     private boolean isParentOf(MappedType t) {
         MappedType parent = t.parent();
         while (parent != null) {
-            if (parent == t)
+            if (parent == this)
                 return true;
             parent = parent.parent();
         }
