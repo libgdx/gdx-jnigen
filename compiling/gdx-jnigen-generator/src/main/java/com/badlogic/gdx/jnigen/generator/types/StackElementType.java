@@ -681,4 +681,9 @@ public class StackElementType implements MappedType, WritableClass {
     public int getSizeFromC(PossibleTarget target) {
         return target.is32Bit() ? 4 : 8;
     }
+
+    @Override
+    public MappedType parent() {
+        return this.parent;
+    }
 }

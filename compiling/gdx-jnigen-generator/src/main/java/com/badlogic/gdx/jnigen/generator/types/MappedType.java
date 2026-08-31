@@ -46,6 +46,10 @@ public interface MappedType {
         return classFile() + "_Internal";
     }
 
+    default MappedType parent() {
+        return null;
+    }
+
     Expression writeToBufferPtr(Expression bufferPtr, Expression offset, Expression valueToWrite);
     Expression readFromBufferPtr(Expression bufferPtr, Expression offset);
     int getSize(PossibleTarget target);
