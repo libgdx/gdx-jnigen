@@ -612,7 +612,7 @@ public class StackElementType implements MappedType, WritableClass {
     @Override
     public int getSize(PossibleTarget target) {
         int structSize = 0;
-        int structAlignment = getAlignment(target);
+        int alignment = getAlignment(target);
 
         if (!isStruct()) {
             int maxSize = 0;
@@ -622,6 +622,9 @@ public class StackElementType implements MappedType, WritableClass {
                 if (fieldSize > maxSize) {
                     maxSize = fieldSize;
                 }
+            }
+            if (alignment != 0 && maxSize % alignment != 0) {
+                maxSize += alignment - (maxSize % alignment);
             }
             return maxSize;
         }
@@ -637,8 +640,8 @@ public class StackElementType implements MappedType, WritableClass {
             structSize += fieldSize;
         }
 
-        if (structAlignment != 0 && structSize % structAlignment != 0) {
-            structSize += structAlignment - (structSize % structAlignment);
+        if (alignment != 0 && structSize % alignment != 0) {
+            structSize += alignment - (structSize % alignment);
         }
 
         return structSize;
