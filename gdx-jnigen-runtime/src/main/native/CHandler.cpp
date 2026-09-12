@@ -66,7 +66,7 @@ static inline void calculateAlignmentAndOffset(ffi_type* type, bool isStruct) {
         current_element = type->elements[index];
     }
 
-    if (isStruct && struct_alignment != 0 && struct_size % struct_alignment != 0) {
+    if (struct_alignment != 0 && struct_size % struct_alignment != 0) {
        struct_size += struct_alignment - (struct_size % struct_alignment);
     }
 
