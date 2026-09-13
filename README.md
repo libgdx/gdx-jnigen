@@ -187,3 +187,40 @@ Your artifacts will be published using `groupid:artifactid-platform:version:clas
 replace classifierXXX with the target name.
 
 e.g. natives-desktop, natives-ios, natives-android-arm64-v8a 
+
+## Customizing native library loading
+
+By default `SharedLibraryLoader` loads natives per platform: on iOS nothing is loaded (natives are loaded as frameworks),
+on Android the library is loaded by name with `System.loadLibrary`, and on the desktop the library is extracted from the natives jar and loaded from an absolute path.
+
+You can replace this behaviour on any platform by installing a `SharedLibraryLoadStrategy` before the first library is loaded. 
+The strategy receives the `SharedLibraryLoader` as a toolkit, exposing the loading primitives `loadSystemLibrary(name)` (load by name),
+`extractFile(sourcePath, dirName)` (reuse the already-extracted file or extract it from the jar with the full location fallback, returning the `File` without loading)
+and `loadFromAbsolutePath(path)` (load a file), so you can compose your own loading, including intercepting the actual load without reimplementing extraction.
+
+The default desktop behaviour is simply `loadFromAbsolutePath(extractFile(name, null).getAbsolutePath())`.
+
+Extend `DefaultSharedLibraryLoadStrategy` to customize a single platform and delegate the rest to `super`. For example, to load on Android through [ReLinker](https://github.com/KeepSafe/ReLinker):
+
+```java
+SharedLibraryLoader.setLoadStrategy(new DefaultSharedLibraryLoadStrategy() {
+    @Override
+    public void load(SharedLibraryLoader loader, String libraryName, String platformName) {
+        if (HostDetection.os == Os.Android)
+            ReLinker.loadLibrary(context, platformName);
+        else
+            super.load(loader, libraryName, platformName);
+    }
+});
+```
+
+Or load a library that is already on disk, bypassing jar extraction entirely:
+
+```java
+SharedLibraryLoader.setLoadStrategy(new SharedLibraryLoadStrategy() {
+    @Override
+    public void load(SharedLibraryLoader loader, String libraryName, String platformName) {
+        loader.loadFromAbsolutePath("/opt/natives/" + platformName);
+    }
+});
+```
