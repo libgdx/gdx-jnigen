@@ -29,77 +29,20 @@ public class PointerType implements MappedType {
         return pointingTo.getTypeKind().isStackElement();
     }
 
-    public boolean isDoublePointer() {
-        return pointingTo.getTypeKind() == TypeKind.DOUBLE;
-    }
-
-    public boolean isFloatPointer() {
-        return pointingTo.getTypeKind() == TypeKind.FLOAT;
-    }
-
-    public boolean isIntPointer() {
-        return pointingTo.getTypeKind().isPrimitive() && !isFloatPointer() && !isDoublePointer();
-    }
-
-    public boolean isVoidPointer() {
-        return pointingTo.getTypeKind() == TypeKind.VOID;
-    }
-
-    private String findJavaPointerForIntPointer() {
-        if (!isIntPointer())
-            throw new IllegalArgumentException("Trying to find int pointer for non-integer pointer type");
-        switch (pointingTo.getTypeKind()) {
-        case NATIVE_BYTE:
-            return "BytePointer";
-        case SIGNED_BYTE:
-            return "SBytePointer";
-        case BOOLEAN:
-        case PROMOTED_BYTE:
-            return "UBytePointer";
-        case SHORT:
-            return "SShortPointer";
-        case CHAR:
-            return "UShortPointer";
-        case INT:
-            return "SIntPointer";
-        case PROMOTED_INT:
-            return "UIntPointer";
-        case LONG:
-            return "SLongPointer";
-        case PROMOTED_LONG:
-            return "ULongPointer";
-        case WORD:
-            return "SWordPointer";
-        case PROMOTED_WORD:
-            return "UWordPointer";
-        case LONG_LONG:
-            return "SInt64Pointer";
-        case PROMOTED_LONG_LONG:
-            return "UInt64Pointer";
-        default:
-            throw new IllegalArgumentException("Type " + this + " is not a primitive type");
-        }
+    @Override
+    public void importType(CompilationUnit cu) {
+        pointingTo.getMappedType().importPointerType(cu);
     }
 
     @Override
-    public void importType(CompilationUnit cu) {
-        if (isStackElementPointer())
-            pointingTo.getMappedType().importType(cu);
-        else if (isFloatPointer())
-            cu.addImport(ClassNameConstants.FLOATPOINTER_CLASS);
-        else if (isDoublePointer())
-            cu.addImport(ClassNameConstants.DOUBLEPOINTER_CLASS);
-        else if (isIntPointer())
-            cu.addImport("com.badlogic.gdx.jnigen.runtime.pointer.integer." + abstractType());
-        else if (isVoidPointer())
-            cu.addImport(ClassNameConstants.VOIDPOINTER_CLASS);
-        else if (isEnumPointer())
-            pointingTo.getMappedType().importType(cu);
-        else if (isPointerPointer())
-            cu.addImport(ClassNameConstants.POINTERPOINTER_CLASS);
-        else
-            throw new IllegalArgumentException("Type " + pointingTo.getTypeKind() + " can't be pointerized");
-        pointingTo.getMappedType().importType(cu);
+    public String pointerType() {
+        return "PointerPointer<" + abstractType() + ">";
+    }
+
+    @Override
+    public void importPointerType(CompilationUnit cu) {
+        cu.addImport(ClassNameConstants.POINTERPOINTER_CLASS);
+        importType(cu);
     }
 
     @Override
@@ -114,22 +57,7 @@ public class PointerType implements MappedType {
 
     @Override
     public String abstractType() {
-        if (isIntPointer())
-            return findJavaPointerForIntPointer();
-        if (isFloatPointer())
-            return "FloatPointer";
-        if (isDoublePointer())
-            return "DoublePointer";
-        if (isVoidPointer())
-            return "VoidPointer";
-        if (isEnumPointer())
-            return pointingTo.getMappedType().abstractType() + "." + pointingTo.getMappedType().abstractType() + "Pointer";
-        if (isStackElementPointer())
-            return pointingTo.getMappedType().abstractType() + "." + pointingTo.getMappedType().abstractType() + "Pointer";
-        if (isPointerPointer())
-            return "PointerPointer<" + pointingTo.getMappedType().abstractType() + ">";
-
-        throw new IllegalArgumentException();
+        return pointingTo.getMappedType().pointerType();
     }
 
     @Override

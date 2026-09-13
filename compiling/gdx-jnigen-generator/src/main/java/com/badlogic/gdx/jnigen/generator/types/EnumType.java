@@ -200,6 +200,11 @@ public class EnumType implements MappedType {
     }
 
     @Override
+    public String pointerType() {
+        return abstractType() + "." + abstractType() + "Pointer";
+    }
+
+    @Override
     public String abstractType() {
         return javaName;
     }

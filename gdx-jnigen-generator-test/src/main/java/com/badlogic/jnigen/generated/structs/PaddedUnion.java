@@ -15,7 +15,7 @@ public final class PaddedUnion extends Union {
     private final static long __ffi_type;
 
     static {
-        __ffi_type = FFITypes.getCTypeInfo(33).getFfiType();
+        __ffi_type = FFITypes.getCTypeInfo(46).getFfiType();
         __size = CHandler.getSizeFromFFIType(__ffi_type);
     }
 

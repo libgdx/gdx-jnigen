@@ -11,7 +11,7 @@ import com.badlogic.gdx.jnigen.runtime.pointer.PointerPointer;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 import com.badlogic.jnigen.generated.enums.TestEnum;
 import com.badlogic.jnigen.generated.structs.TestUnion;
-import com.badlogic.jnigen.generated.structs.GlobalArg.allArgs;
+import com.badlogic.jnigen.generated.structs.GlobalArg;
 import com.badlogic.gdx.jnigen.runtime.pointer.Struct;
 
 public final class GlobalArg extends Union {
@@ -21,7 +21,7 @@ public final class GlobalArg extends Union {
     private final static long __ffi_type;
 
     static {
-        __ffi_type = FFITypes.getCTypeInfo(32).getFfiType();
+        __ffi_type = FFITypes.getCTypeInfo(34).getFfiType();
         __size = CHandler.getSizeFromFFIType(__ffi_type);
     }
 
@@ -206,23 +206,23 @@ public final class GlobalArg extends Union {
         toSetPtr.setPointer(getBufPtr().getNativePointer(0));
     }
 
-    public allArgs allArgs() {
-        return new allArgs(getPointer(), false);
+    public GlobalArg.allArgs allArgs() {
+        return new GlobalArg.allArgs(getPointer(), false);
     }
 
-    public void allArgs(allArgs toSetPtr) {
+    public void allArgs(GlobalArg.allArgs toSetPtr) {
         toSetPtr.setPointer(getPointer(), 32, this);
     }
 
-    public allArgs getAllArgs() {
-        return new allArgs(getBufPtr().duplicate(0, 32), true);
+    public GlobalArg.allArgs getAllArgs() {
+        return new GlobalArg.allArgs(getBufPtr().duplicate(0, 32), true);
     }
 
-    public void getAllArgs(allArgs toCopyTo) {
+    public void getAllArgs(GlobalArg.allArgs toCopyTo) {
         toCopyTo.getBufPtr().copyFrom(0, getBufPtr(), 0, 32);
     }
 
-    public void setAllArgs(allArgs toCopyFrom) {
+    public void setAllArgs(GlobalArg.allArgs toCopyFrom) {
         getBufPtr().copyFrom(0, toCopyFrom.getBufPtr(), 0, 32);
     }
 
@@ -274,7 +274,7 @@ public final class GlobalArg extends Union {
         private final static long __ffi_type;
 
         static {
-            __ffi_type = FFITypes.getCTypeInfo(39).getFfiType();
+            __ffi_type = FFITypes.getCTypeInfo(35).getFfiType();
             __size = CHandler.getSizeFromFFIType(__ffi_type);
         }
 

@@ -18,6 +18,14 @@ public interface MappedType {
 
     String abstractType();
 
+    default String pointerType() {
+        throw new IllegalArgumentException("Type " + abstractType() + " has no pointer class");
+    }
+
+    default void importPointerType(CompilationUnit cu) {
+        importType(cu);
+    }
+
     String primitiveType();
 
     Expression fromC(Expression cRetrieved);
@@ -44,6 +52,10 @@ public interface MappedType {
 
     default String internalClass() {
         return classFile() + "_Internal";
+    }
+
+    default void importInternalType(CompilationUnit cu) {
+        cu.addImport(internalClass());
     }
 
     Expression writeToBufferPtr(Expression bufferPtr, Expression offset, Expression valueToWrite);

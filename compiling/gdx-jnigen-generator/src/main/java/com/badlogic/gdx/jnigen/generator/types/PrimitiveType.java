@@ -1,5 +1,6 @@
 package com.badlogic.gdx.jnigen.generator.types;
 
+import com.badlogic.gdx.jnigen.generator.ClassNameConstants;
 import com.badlogic.gdx.jnigen.generator.Manager;
 import com.badlogic.gdx.jnigen.generator.PossibleTarget;
 import com.github.javaparser.ast.CompilationUnit;
@@ -51,6 +52,64 @@ public class PrimitiveType implements MappedType {
     @Override
     public String abstractType() {
         return getJavaRepresentation().getName();
+    }
+
+    @Override
+    public String pointerType() {
+        switch (definition.getTypeKind()) {
+        case VOID:
+            return "VoidPointer";
+        case FLOAT:
+            return "FloatPointer";
+        case DOUBLE:
+            return "DoublePointer";
+        case NATIVE_BYTE:
+            return "BytePointer";
+        case SIGNED_BYTE:
+            return "SBytePointer";
+        case BOOLEAN:
+        case PROMOTED_BYTE:
+            return "UBytePointer";
+        case SHORT:
+            return "SShortPointer";
+        case CHAR:
+            return "UShortPointer";
+        case INT:
+            return "SIntPointer";
+        case PROMOTED_INT:
+            return "UIntPointer";
+        case LONG:
+            return "SLongPointer";
+        case PROMOTED_LONG:
+            return "ULongPointer";
+        case WORD:
+            return "SWordPointer";
+        case PROMOTED_WORD:
+            return "UWordPointer";
+        case LONG_LONG:
+            return "SInt64Pointer";
+        case PROMOTED_LONG_LONG:
+            return "UInt64Pointer";
+        default:
+            throw new IllegalArgumentException(definition.getTypeName() + " has no pointer class");
+        }
+    }
+
+    @Override
+    public void importPointerType(CompilationUnit cu) {
+        switch (definition.getTypeKind()) {
+        case VOID:
+            cu.addImport(ClassNameConstants.VOIDPOINTER_CLASS);
+            break;
+        case FLOAT:
+            cu.addImport(ClassNameConstants.FLOATPOINTER_CLASS);
+            break;
+        case DOUBLE:
+            cu.addImport(ClassNameConstants.DOUBLEPOINTER_CLASS);
+            break;
+        default:
+            cu.addImport(ClassNameConstants.INTEGER_POINTER_PACKAGE + "." + pointerType());
+        }
     }
 
     @Override
