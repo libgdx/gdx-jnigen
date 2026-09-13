@@ -430,8 +430,11 @@ public class StackElementType implements MappedType, WritableClass {
             // A fixed-size array is emitted as one nested struct of `count` elements rather
             int count = fieldDefinition.getCount();
             int elementID = fieldDefinition.getNestedDefinition().getMappedType().typeID();
-            generateFFIMethodBody.append("\t\t").append(slot).append(" = (native_type*)malloc(sizeof(native_type));\n");
+            String member = "(*(" + definition.cTypeName() + "*)0)." + ffiFields.get(i).getName();
+            generateFFIMethodBody.append("\t\t").append(slot).append(" = (native_type*)calloc(1, sizeof(native_type));\n");
             generateFFIMethodBody.append("\t\t").append(slot).append("->type = STRUCT_TYPE;\n");
+            generateFFIMethodBody.append("\t\t").append(slot).append("->size = (int)sizeof(").append(member).append(");\n");
+            generateFFIMethodBody.append("\t\t").append(slot).append("->alignment = (int)alignof(decltype(").append(member).append("));\n");
             generateFFIMethodBody.append("\t\t").append(slot).append("->field_count = ").append(count).append(";\n");
             generateFFIMethodBody.append("\t\t").append(slot).append("->fields = (native_type**)malloc(sizeof(native_type*) * ").append(count).append(");\n");
             generateFFIMethodBody.append("\t\tfor (int __i = 0; __i < ").append(count).append("; __i++)\n");
@@ -454,7 +457,7 @@ public class StackElementType implements MappedType, WritableClass {
         body.append("\t\t\tnativeType->field_count = __blockCount;\n");
         body.append("\t\t\tnativeType->fields = (native_type**)malloc(sizeof(native_type*) * __blockCount);\n");
         body.append("\t\t\tfor (int __blockIndex = 0; __blockIndex < __blockCount; __blockIndex++) {\n");
-        body.append("\t\t\t\tnativeType->fields[__blockIndex] = (native_type*)malloc(sizeof(native_type));\n");
+        body.append("\t\t\t\tnativeType->fields[__blockIndex] = (native_type*)calloc(1, sizeof(native_type));\n");
         body.append("\t\t\t\tset_native_type(nativeType->fields[__blockIndex], INT_TYPE, __blockAlign, false);\n");
         body.append("\t\t\t}\n");
         body.append("\t\t\treturn nativeType;\n");

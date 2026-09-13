@@ -904,8 +904,10 @@ switch(id) {
 		nativeType->alignment = (int)alignof(AnonymousStructFieldArray);
 		nativeType->field_count = 2;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
-		nativeType->fields[0] = (native_type*)malloc(sizeof(native_type));
+		nativeType->fields[0] = (native_type*)calloc(1, sizeof(native_type));
 		nativeType->fields[0]->type = STRUCT_TYPE;
+		nativeType->fields[0]->size = (int)sizeof((*(AnonymousStructFieldArray*)0).inner);
+		nativeType->fields[0]->alignment = (int)alignof(decltype((*(AnonymousStructFieldArray*)0).inner));
 		nativeType->fields[0]->field_count = 2;
 		nativeType->fields[0]->fields = (native_type**)malloc(sizeof(native_type*) * 2);
 		for (int __i = 0; __i < 2; __i++)
@@ -963,7 +965,7 @@ switch(id) {
 			nativeType->field_count = __blockCount;
 			nativeType->fields = (native_type**)malloc(sizeof(native_type*) * __blockCount);
 			for (int __blockIndex = 0; __blockIndex < __blockCount; __blockIndex++) {
-				nativeType->fields[__blockIndex] = (native_type*)malloc(sizeof(native_type));
+				nativeType->fields[__blockIndex] = (native_type*)calloc(1, sizeof(native_type));
 				set_native_type(nativeType->fields[__blockIndex], INT_TYPE, __blockAlign, false);
 			}
 			return nativeType;
@@ -998,8 +1000,10 @@ switch(id) {
 		nativeType->field_count = 2;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
 		nativeType->fields[0] = getNativeType(6);
-		nativeType->fields[1] = (native_type*)malloc(sizeof(native_type));
+		nativeType->fields[1] = (native_type*)calloc(1, sizeof(native_type));
 		nativeType->fields[1]->type = STRUCT_TYPE;
+		nativeType->fields[1]->size = (int)sizeof((*(PaddedUnion*)0).fixedSizeInt);
+		nativeType->fields[1]->alignment = (int)alignof(decltype((*(PaddedUnion*)0).fixedSizeInt));
 		nativeType->fields[1]->field_count = 3;
 		nativeType->fields[1]->fields = (native_type**)malloc(sizeof(native_type*) * 3);
 		for (int __i = 0; __i < 3; __i++)
@@ -1012,8 +1016,10 @@ switch(id) {
 		nativeType->field_count = 3;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 3);
 		nativeType->fields[0] = getNativeType(-1);
-		nativeType->fields[1] = (native_type*)malloc(sizeof(native_type));
+		nativeType->fields[1] = (native_type*)calloc(1, sizeof(native_type));
 		nativeType->fields[1]->type = STRUCT_TYPE;
+		nativeType->fields[1]->size = (int)sizeof((*(SpecialStruct*)0).arrayField);
+		nativeType->fields[1]->alignment = (int)alignof(decltype((*(SpecialStruct*)0).arrayField));
 		nativeType->fields[1]->field_count = 5;
 		nativeType->fields[1]->fields = (native_type**)malloc(sizeof(native_type*) * 5);
 		for (int __i = 0; __i < 5; __i++)
@@ -1039,8 +1045,10 @@ switch(id) {
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 4);
 		nativeType->fields[0] = getNativeType(19);
 		nativeType->fields[1] = getNativeType(6);
-		nativeType->fields[2] = (native_type*)malloc(sizeof(native_type));
+		nativeType->fields[2] = (native_type*)calloc(1, sizeof(native_type));
 		nativeType->fields[2]->type = STRUCT_TYPE;
+		nativeType->fields[2]->size = (int)sizeof((*(TestUnion*)0).fixedSizeInt);
+		nativeType->fields[2]->alignment = (int)alignof(decltype((*(TestUnion*)0).fixedSizeInt));
 		nativeType->fields[2]->field_count = 3;
 		nativeType->fields[2]->fields = (native_type**)malloc(sizeof(native_type*) * 3);
 		for (int __i = 0; __i < 3; __i++)
@@ -1110,7 +1118,7 @@ switch(id) {
 			nativeType->field_count = __blockCount;
 			nativeType->fields = (native_type**)malloc(sizeof(native_type*) * __blockCount);
 			for (int __blockIndex = 0; __blockIndex < __blockCount; __blockIndex++) {
-				nativeType->fields[__blockIndex] = (native_type*)malloc(sizeof(native_type));
+				nativeType->fields[__blockIndex] = (native_type*)calloc(1, sizeof(native_type));
 				set_native_type(nativeType->fields[__blockIndex], INT_TYPE, __blockAlign, false);
 			}
 			return nativeType;
