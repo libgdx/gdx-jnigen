@@ -454,6 +454,8 @@ public class StackElementType implements MappedType, WritableClass {
         body.append("\t\t\tif (__blockAlign > 8) __blockAlign = 8;\n");
         body.append("\t\t\tint __blockCount = (int)(sizeof(").append(cName).append(") / __blockAlign);\n");
         body.append("\t\t\tnativeType->type = STRUCT_TYPE;\n");
+        body.append("\t\t\tnativeType->size = (int)sizeof(").append(cName).append(");\n");
+        body.append("\t\t\tnativeType->alignment = (int)__blockAlign;\n");
         body.append("\t\t\tnativeType->field_count = __blockCount;\n");
         body.append("\t\t\tnativeType->fields = (native_type**)malloc(sizeof(native_type*) * __blockCount);\n");
         body.append("\t\t\tfor (int __blockIndex = 0; __blockIndex < __blockCount; __blockIndex++) {\n");
