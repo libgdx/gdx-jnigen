@@ -82,6 +82,13 @@ typedef union TestUnion
     TestStruct structType;
 } TestUnion;
 
+// Largest member (12 bytes) is not a multiple of the union's alignment (8) so sizeof must be padded to 16 on every ABI.
+typedef union PaddedUnion {
+    double doubleType;
+    int fixedSizeInt[3];
+} PaddedUnion;
+size_t paddedUnionSize(void);
+
 /**
  * Anonymous struct jaja
  */
@@ -193,7 +200,7 @@ void freeForwardDeclStruct(struct forwardDeclStruct* handle);
 void commentedMethod(void);
 void randomFunc(char, unsigned char, signed char, char*, unsigned char*, signed char*);
 
-void ensureParsed(SpecialEnum, AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested, struct forwardDeclStruct*);
+void ensureParsed(SpecialEnum, AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested, struct forwardDeclStruct*, PaddedUnion);
 void weirdPointer(FILE *_file);
 
 // System-header struct as a typed pointer (sized-opaque): struct timespec has a real size but its

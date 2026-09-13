@@ -61,9 +61,9 @@ public class DirectStubFunctionType extends NativeFunction {
         for (int i = 0; i < arguments.length; i++) {
             if (i > 0)
                 fnSigArgs.append(", ");
-            fnSigArgs.append(arguments[i].getDefinition().getTypeName());
+            fnSigArgs.append(arguments[i].getDefinition().cTypeName());
         }
-        String castReturnType = returnType.getTypeKind() == TypeKind.VOID ? "void" : returnType.getTypeName();
+        String castReturnType = returnType.getTypeKind() == TypeKind.VOID ? "void" : returnType.cTypeName();
         return  "((" + castReturnType + "(*)(" + fnSigArgs + "))fnPtr)";
     }
 }

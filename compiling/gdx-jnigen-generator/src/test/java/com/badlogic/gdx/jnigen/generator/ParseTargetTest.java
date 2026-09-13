@@ -140,12 +140,11 @@ public class ParseTargetTest {
     }
 
     @Test
-    void buildTargetsWithoutHeadersAreRejectedByName() {
-        // jnigen can build these, but Zig has no glibc for rv32 and there is no mingw pass for Windows on ARM32.
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-                () -> ParseTarget.of(Os.Windows, Architecture.ARM, Bitness._32, null));
-        assertTrue(e.getMessage().contains("Windows Arm 32"), e.getMessage());
-        assertThrows(IllegalArgumentException.class, () -> ParseTarget.of(Os.Linux, Architecture.RISCV, Bitness._32, null));
+    void buildTargetsWithoutHeadersHaveNoParsePass() {
+        // jnigen can build these, but Zig has no glibc for rv32 and there is no mingw pass for Windows on ARM32,
+        // so they contribute no parse pass rather than failing the generation.
+        assertNull(ParseTarget.of(Os.Windows, Architecture.ARM, Bitness._32, null));
+        assertNull(ParseTarget.of(Os.Linux, Architecture.RISCV, Bitness._32, null));
     }
 
     @Test

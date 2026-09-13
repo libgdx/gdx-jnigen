@@ -15,6 +15,7 @@ import com.badlogic.jnigen.generated.structs.AnonymousClosure;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoFieldEnd;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoFieldConsecutive;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoFieldNested;
+import com.badlogic.jnigen.generated.structs.PaddedUnion;
 import com.badlogic.jnigen.generated.structs.FILE;
 import com.badlogic.jnigen.generated.structs.timespec;
 import com.badlogic.jnigen.generated.structs.TimeHolder;
@@ -56,6 +57,17 @@ static jclass cxxExceptionClass = NULL;
     private static native void init(Class<?> illegalArgumentException, Class<?> cxxException);/*
     	illegalArgumentExceptionClass = (jclass)env->NewGlobalRef(illegalArgumentException);
     	cxxExceptionClass = (jclass)env->NewGlobalRef(cxxException);
+    */
+
+    public static long paddedUnionSize() {
+        return paddedUnionSize_internal();
+    }
+
+    public static native long paddedUnionSize_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)paddedUnionSize();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
     */
 
     public static GlobalArg getGlobalArgState() {
@@ -152,13 +164,13 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static void ensureParsed(SpecialEnum arg0, AnonymousStructNoField arg1, AnonymousStructField arg2, AnonymousStructFieldArray arg3, AnonymousClosure arg4, AnonymousStructNoFieldEnd arg5, AnonymousStructNoFieldConsecutive arg6, AnonymousStructNoFieldNested arg7, forwardDeclStruct.forwardDeclStructPointer arg8) {
-        ensureParsed_internal(arg0.getIndex(), arg1.getPointer(), arg2.getPointer(), arg3.getPointer(), arg4.getPointer(), arg5.getPointer(), arg6.getPointer(), arg7.getPointer(), arg8.getPointer());
+    public static void ensureParsed(SpecialEnum arg0, AnonymousStructNoField arg1, AnonymousStructField arg2, AnonymousStructFieldArray arg3, AnonymousClosure arg4, AnonymousStructNoFieldEnd arg5, AnonymousStructNoFieldConsecutive arg6, AnonymousStructNoFieldNested arg7, forwardDeclStruct.forwardDeclStructPointer arg8, PaddedUnion arg9) {
+        ensureParsed_internal(arg0.getIndex(), arg1.getPointer(), arg2.getPointer(), arg3.getPointer(), arg4.getPointer(), arg5.getPointer(), arg6.getPointer(), arg7.getPointer(), arg8.getPointer(), arg9.getPointer());
     }
 
-    public static native void ensureParsed_internal(int arg0, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6, long arg7, long arg8);/*
+    public static native void ensureParsed_internal(int arg0, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6, long arg7, long arg8, long arg9);/*
     	HANDLE_JAVA_EXCEPTION_START()
-    	ensureParsed((SpecialEnum)arg0, *(AnonymousStructNoField*)arg1, *(AnonymousStructField*)arg2, *(AnonymousStructFieldArray*)arg3, *(struct AnonymousClosure*)arg4, *(AnonymousStructNoFieldEnd*)arg5, *(AnonymousStructNoFieldConsecutive*)arg6, *(AnonymousStructNoFieldNested*)arg7, (struct forwardDeclStruct *)arg8);
+    	ensureParsed((SpecialEnum)arg0, *(AnonymousStructNoField*)arg1, *(AnonymousStructField*)arg2, *(AnonymousStructFieldArray*)arg3, *(struct AnonymousClosure*)arg4, *(AnonymousStructNoFieldEnd*)arg5, *(AnonymousStructNoFieldConsecutive*)arg6, *(AnonymousStructNoFieldNested*)arg7, (struct forwardDeclStruct *)arg8, *(PaddedUnion*)arg9);
     	HANDLE_JAVA_EXCEPTION_END()
     */
 

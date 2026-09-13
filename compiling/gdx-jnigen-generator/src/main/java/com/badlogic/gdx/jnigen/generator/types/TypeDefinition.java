@@ -10,6 +10,8 @@ public class TypeDefinition {
     private boolean constMarked = false;
     private int count = 1;
     private boolean anonymous;
+    private DeclaringMember declaringMember;
+    private String typedefName;
     private MappedType mappedType;
     private final PossibleTarget target;
     private final long observedSize;
@@ -61,6 +63,26 @@ public class TypeDefinition {
 
     public String getTypeName() {
         return typeName;
+    }
+
+    public String cTypeName() {
+        if (typedefName != null)
+            return typedefName;
+        if (declaringMember != null)
+            return "__jnigen_strip<decltype((*(" + declaringMember.owner.cTypeName() + "*)0)." + declaringMember.name + ")>::type";
+        return typeName;
+    }
+
+    public DeclaringMember getDeclaringMember() {
+        return declaringMember;
+    }
+
+    public void setDeclaringMember(DeclaringMember declaringMember) {
+        this.declaringMember = declaringMember;
+    }
+
+    public void setTypedefName(String typedefName) {
+        this.typedefName = typedefName;
     }
 
     public int getCount() {

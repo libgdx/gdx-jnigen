@@ -35,6 +35,9 @@ public final class TestData_Internal {
         }
     }
 
+    public final static class PaddedUnion_Internal {
+    }
+
     public final static class TestStruct_Internal {
     }
 
@@ -329,7 +332,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackTestStructArg_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(34) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(35) };
 
         void methodWithCallbackTestStructArg_call(TestStruct arg0);
 
@@ -979,7 +982,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackTestStructReturn_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(34) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(35) };
 
         TestStruct methodWithCallbackTestStructReturn_call();
 

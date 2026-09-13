@@ -45,7 +45,7 @@ public class Generator {
         }
     }
 
-    public static TypeDefinition registerCXType(CXType type, String alternativeName, MappedType parent) {
+    public static TypeDefinition registerCXType(CXType type, String alternativeName, DeclaringMember declaringMember) {
         if (type.kind() == CXType_Attributed)
             type = clang_Type_getModifiedType(type);
 
@@ -79,7 +79,7 @@ public class Generator {
                 if (underlyingKind.isStackElement()) {
                     if (Manager.getInstance().hasCTypeMapping(name))
                         return Manager.getInstance().resolveCTypeMapping(name);
-                    return registerStackElementType(type, underlyingKind, name, alternativeName, null, true);
+                    return registerStackElementType(type, underlyingKind, name, null, true);
                 }
                 if (underlyingKind == TypeKind.ENUM) {
                     if (Manager.getInstance().hasCTypeMapping(name))
@@ -95,7 +95,10 @@ public class Generator {
             }
 
             // A typedef unsets a parent, because an anonymous declaration can't be typedefed I think
-            TypeDefinition lower = registerCXType(typeDef, clang_getTypedefName(type).getString(), null);
+            String typedefName = clang_getTypedefName(type).getString();
+            TypeDefinition lower = registerCXType(typeDef, typedefName, null);
+            if (lower.getTypeKind().isStackElement())
+                lower.setTypedefName(typedefName);
             if (lower.getTypeKind() == TypeKind.CLOSURE) {
                 // As the type system does not retain argument names, we need to reparse it here
                 patchClosureTypeWithCursor(lower, clang_getTypeDeclaration(type));
@@ -108,7 +111,7 @@ public class Generator {
         if (typeKind == TypeKind.CLOSURE) {
             if (alternativeName == null)
                 throw new IllegalArgumentException();
-            return registerClosureType(type, name, alternativeName, parent, null);
+            return registerClosureType(type, name, alternativeName, declaringMember, null);
         }
 
         if (Manager.getInstance().hasCTypeMapping(name))
@@ -122,7 +125,7 @@ public class Generator {
             if (pointee.kind() == 0)
                 typeDefinition.setOverrideMappedType(new PointerType(Manager.getInstance().defineType(TypeKind.VOID, "void", clang_Type_getSizeOf(pointee), clang_Type_getAlignOf(pointee))));
 
-            TypeDefinition nested = registerCXType(pointee, alternativeName, parent);
+            TypeDefinition nested = registerCXType(pointee, alternativeName, declaringMember);
             if (TypeKind.getTypeKind(pointee) == TypeKind.CLOSURE) {
                 typeDefinition = Manager.getInstance().defineType(TypeKind.CLOSURE, name, clang_Type_getSizeOf(type), clang_Type_getAlignOf(type));
                 typeDefinition.setOverrideMappedType(nested.getMappedType());
@@ -136,7 +139,7 @@ public class Generator {
 
         if (type.kind() == CXType_IncompleteArray) {
             TypeDefinition typeDefinition = Manager.getInstance().defineType(TypeKind.POINTER, name.replace("[]", "*"), clang_Type_getSizeOf(type), clang_Type_getAlignOf(type));
-            TypeDefinition nested = registerCXType(clang_getArrayElementType(type), alternativeName, parent);
+            TypeDefinition nested = registerCXType(clang_getArrayElementType(type), alternativeName, declaringMember);
             typeDefinition.setOverrideMappedType(new PointerType(nested));
             typeDefinition.setNestedDefinition(nested);
             return typeDefinition;
@@ -145,7 +148,7 @@ public class Generator {
         if (type.kind() == CXType_ConstantArray) {
             TypeDefinition typeDefinition = Manager.getInstance().defineType(TypeKind.FIXED_SIZE_ARRAY, name, clang_Type_getSizeOf(type), clang_Type_getAlignOf(type));
             typeDefinition.setCount((int)clang.clang_getArraySize(type));
-            TypeDefinition nested = registerCXType(clang_getArrayElementType(type), alternativeName, parent);
+            TypeDefinition nested = registerCXType(clang_getArrayElementType(type), alternativeName, declaringMember);
             typeDefinition.setOverrideMappedType(new PointerType(nested));
             typeDefinition.setNestedDefinition(nested);
             return typeDefinition;
@@ -153,7 +156,7 @@ public class Generator {
 
         if (typeKind.isStackElement()) {
             boolean isSystemHeaderType = clang_Location_isInSystemHeader(clang_getCursorLocation(clang_getTypeDeclaration(type))) != 0;
-            return registerStackElementType(type, typeKind, name, alternativeName, parent, isSystemHeaderType);
+            return registerStackElementType(type, typeKind, name, declaringMember, isSystemHeaderType);
         } else if (typeKind == TypeKind.ENUM) {
             return registerEnumType(type, name, alternativeName, false);
         }
@@ -161,11 +164,13 @@ public class Generator {
         throw new IllegalArgumentException("Should not reach");
     }
 
-    private static TypeDefinition registerStackElementType(CXType type, TypeKind typeKind, String name, String alternativeName, MappedType parent, boolean isSystemHeader) {
+    private static TypeDefinition registerStackElementType(CXType type, TypeKind typeKind, String name, DeclaringMember declaringMember, boolean isSystemHeader) {
         TypeDefinition typeDefinition = Manager.getInstance().defineType(typeKind, name, clang_Type_getSizeOf(type), clang_Type_getAlignOf(type));
         typeDefinition.setAnonymous(clang_Cursor_isAnonymous(clang.clang_getTypeDeclaration(type)) != 0);
+        if (typeDefinition.isAnonymous())
+            typeDefinition.setDeclaringMember(declaringMember);
         Manager.getInstance().registerCTypeMapping(name, typeDefinition);
-        StackElementParser parser = new StackElementParser(typeDefinition, type, alternativeName, parent);
+        StackElementParser parser = new StackElementParser(typeDefinition, type);
         StackElementType stackElementType = parser.getStackElementType();
         typeDefinition.setOverrideMappedType(stackElementType);
 
@@ -192,11 +197,11 @@ public class Generator {
         return typeDefinition;
     }
 
-    private static TypeDefinition registerClosureType(CXType functionProto, String name, String alternativeName, MappedType parent, CXCursor argNameCursor) {
+    private static TypeDefinition registerClosureType(CXType functionProto, String name, String alternativeName, DeclaringMember declaringMember, CXCursor argNameCursor) {
         if (Manager.getInstance().hasCTypeMapping(alternativeName))
             return Manager.getInstance().resolveCTypeMapping(alternativeName);
 
-        MappedType parentMappedType = parent == null ? Manager.getInstance().getGlobalType() : parent;
+        MappedType parentMappedType = declaringMember == null ? Manager.getInstance().getGlobalType() : declaringMember.owner.getMappedType();
         // TODO: 20.03.24 I have yet to find a way to reliably parse closure type arg names
         FunctionSignature functionSignature = parseFunctionSignature(alternativeName, functionProto, null);
 
@@ -206,10 +211,12 @@ public class Generator {
 
         DirectStubFunctionType directStub = new DirectStubFunctionType(functionSignature, parentMappedType, Manager.getInstance().getGlobalType());
         ClosureType closureType = new ClosureType(functionSignature, parentMappedType, directStub);
+        if (declaringMember != null)
+            Manager.getInstance().addNestedType(declaringMember.owner, closureType);
         Manager.getInstance().getGlobalType().addFunction(directStub);
         TypeDefinition typeDefinition = Manager.getInstance().defineType(TypeKind.CLOSURE, name, clang_Type_getSizeOf(functionProto), clang_Type_getAlignOf(functionProto));
         typeDefinition.setOverrideMappedType(closureType);
-        typeDefinition.setAnonymous(parent != null);
+        typeDefinition.setAnonymous(declaringMember != null);
         if (!typeDefinition.isAnonymous()) {
             Manager.getInstance().addClosure(closureType);
             Manager.getInstance().registerCTypeMapping(alternativeName, typeDefinition);

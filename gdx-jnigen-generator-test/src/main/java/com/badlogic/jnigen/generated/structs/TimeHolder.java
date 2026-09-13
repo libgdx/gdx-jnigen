@@ -14,7 +14,7 @@ public final class TimeHolder extends Struct {
     private final static long __ffi_type;
 
     static {
-        __ffi_type = FFITypes.getCTypeInfo(36).getFfiType();
+        __ffi_type = FFITypes.getCTypeInfo(37).getFfiType();
         __size = CHandler.getSizeFromFFIType(__ffi_type);
     }
 
