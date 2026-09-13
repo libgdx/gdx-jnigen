@@ -962,6 +962,8 @@ switch(id) {
 			if (__blockAlign > 8) __blockAlign = 8;
 			int __blockCount = (int)(sizeof(FILE) / __blockAlign);
 			nativeType->type = STRUCT_TYPE;
+			nativeType->size = (int)sizeof(FILE);
+			nativeType->alignment = (int)__blockAlign;
 			nativeType->field_count = __blockCount;
 			nativeType->fields = (native_type**)malloc(sizeof(native_type*) * __blockCount);
 			for (int __blockIndex = 0; __blockIndex < __blockCount; __blockIndex++) {
@@ -1115,6 +1117,8 @@ switch(id) {
 			if (__blockAlign > 8) __blockAlign = 8;
 			int __blockCount = (int)(sizeof(struct timespec) / __blockAlign);
 			nativeType->type = STRUCT_TYPE;
+			nativeType->size = (int)sizeof(struct timespec);
+			nativeType->alignment = (int)__blockAlign;
 			nativeType->field_count = __blockCount;
 			nativeType->fields = (native_type**)malloc(sizeof(native_type*) * __blockCount);
 			for (int __blockIndex = 0; __blockIndex < __blockCount; __blockIndex++) {

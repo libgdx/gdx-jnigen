@@ -237,9 +237,19 @@ ffi_type* getFFITypeForNativeType(JNIEnv* env, native_type* nativeType) {
             type->elements[nativeType->field_count] = NULL;
             calculateAlignmentAndOffset(type, nativeType->type == STRUCT_TYPE);
 
+            if (nativeType->size == 0 || nativeType->alignment == 0) {
+                char message[256];
+                snprintf(message, sizeof(message),
+                        "jnigen glue emitted a %s type without the compiler's sizeof/alignof (got %d / %d)",
+                        nativeType->type == STRUCT_TYPE ? "struct" : "union", nativeType->size, nativeType->alignment);
+                env->ThrowNew(illegalArgumentExceptionClass, message);
+                free(type->elements);
+                free(type);
+                return NULL;
+            }
+
             // The generated glue records sizeof/alignof as seen by the C compiler vs our own computation.
-            if (nativeType->size != 0
-                    && (type->size != (size_t)nativeType->size || type->alignment != (unsigned short)nativeType->alignment)) {
+            if (type->size != (size_t)nativeType->size || type->alignment != (unsigned short)nativeType->alignment) {
                 char message[256];
                 snprintf(message, sizeof(message),
                         "jnigen runtime computed size %zu / alignment %u for a %s, but the compiler reports sizeof %d / alignof %d",
