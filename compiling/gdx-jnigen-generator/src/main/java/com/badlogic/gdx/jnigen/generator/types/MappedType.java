@@ -26,6 +26,10 @@ public interface MappedType {
         importType(cu);
     }
 
+    default boolean hasPeerConstructor() {
+        return true;
+    }
+
     String primitiveType();
 
     Expression fromC(Expression cRetrieved);

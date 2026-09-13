@@ -432,6 +432,12 @@ methodWithCallbackCallThrowingCallback getCallThrowingCallbackCallback(void);
 methodWithCallback getNoopVoidCallback(void);
 methodWithCallbackIntArg getNoopIntArgCallback(void);
 
+// Pointer to a function pointer (methodWithCallbackIntArg*, i.e. void (**)(int)). The generator collapses
+// `void (*)(int)` into a single CLOSURE kind, so a pointer to it is one indirection deeper than a
+// ClosureObject and must map to PointerPointer<ClosureObject<...>>.
+void call_methodWithCallbackIntArgViaPointer(methodWithCallbackIntArg* fnPtrPtr);
+methodWithCallbackIntArg* getIntArgCallbackSlot(void);
+
 // Word-sized integers: size_t & co. are 4 bytes on 32-bit and 8 bytes on 64-bit targets, including
 // Windows x64 where long stays 4 bytes. They resolve to different builtin kinds in the 32-bit and
 // 64-bit parse passes (unsigned int vs unsigned long / unsigned long long), which the generator must

@@ -1862,6 +1862,32 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
+    public static void call_methodWithCallbackIntArgViaPointer(PointerPointer<ClosureObject<TestData.methodWithCallbackIntArg>> fnPtrPtr) {
+        call_methodWithCallbackIntArgViaPointer_internal(fnPtrPtr.getPointer());
+    }
+
+    public static native void call_methodWithCallbackIntArgViaPointer_internal(long fnPtrPtr);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	call_methodWithCallbackIntArgViaPointer((methodWithCallbackIntArg *)fnPtrPtr);
+    	HANDLE_JAVA_EXCEPTION_END()
+    */
+
+    public static PointerPointer<ClosureObject<TestData.methodWithCallbackIntArg>> getIntArgCallbackSlot() {
+        return new PointerPointer<>(getIntArgCallbackSlot_internal(), false, (long peer1, boolean owned1) -> CHandler.getClosureObject(peer1, TestData_Internal.methodWithCallbackIntArg_Internal::methodWithCallbackIntArg_downcall));
+    }
+
+    public static void getIntArgCallbackSlot(PointerPointer<ClosureObject<TestData.methodWithCallbackIntArg>> _retPar) {
+        _retPar.setPointer(getIntArgCallbackSlot_internal());
+        _retPar.setPointerSupplier((long peer1, boolean owned1) -> CHandler.getClosureObject(peer1, TestData_Internal.methodWithCallbackIntArg_Internal::methodWithCallbackIntArg_downcall));
+    }
+
+    public static native long getIntArgCallbackSlot_internal();/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	return (jlong)getIntArgCallbackSlot();
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
     public static long passConditionalWord(long v) {
         return passConditionalWord_internal(v);
     }

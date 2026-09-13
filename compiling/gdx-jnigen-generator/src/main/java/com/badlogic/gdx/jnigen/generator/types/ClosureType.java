@@ -264,6 +264,22 @@ public class ClosureType implements MappedType, WritableClass {
     }
 
     @Override
+    public String pointerType() {
+        return "PointerPointer<" + abstractType() + ">";
+    }
+
+    @Override
+    public void importPointerType(CompilationUnit cu) {
+        cu.addImport(ClassNameConstants.POINTERPOINTER_CLASS);
+        importType(cu);
+    }
+
+    @Override
+    public boolean hasPeerConstructor() {
+        return false;
+    }
+
+    @Override
     public String primitiveType() {
         return long.class.getName();
     }

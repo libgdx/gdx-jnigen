@@ -583,6 +583,8 @@ static void intArgCallback(int arg) {
     g_lastArg.intVal = arg;
 }
 
+static methodWithCallbackIntArg g_intArgCallbackSlot = intArgCallback;
+
 static void shortArgCallback(short arg) {
     g_lastArg.shortVal = arg;
 }
@@ -742,6 +744,14 @@ methodWithCallbackLongArg getLongArgCallback(void) {
 
 methodWithCallbackIntArg getIntArgCallback(void) {
     return intArgCallback;
+}
+
+void call_methodWithCallbackIntArgViaPointer(methodWithCallbackIntArg* fnPtrPtr) {
+    (*fnPtrPtr)(7);
+}
+
+methodWithCallbackIntArg* getIntArgCallbackSlot(void) {
+    return &g_intArgCallbackSlot;
 }
 
 methodWithCallbackShortArg getShortArgCallback(void) {
