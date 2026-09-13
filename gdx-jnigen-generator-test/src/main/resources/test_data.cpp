@@ -430,7 +430,7 @@ bool validateString(char* str) {
     return strcmp(str, "TEST STRING") == 0;
 }
 
-void ensureParsed(SpecialEnum, AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested, struct forwardDeclStruct*, PaddedUnion) {}
+void ensureParsed(SpecialEnum, AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, NestedNameCollision, NestedNameCollisionArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested, struct forwardDeclStruct*, PaddedUnion) {}
 void weirdPointer(FILE *_file) {}
 void constArrayParameter(const TestStruct structs[]) {}
 

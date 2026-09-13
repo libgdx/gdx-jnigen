@@ -24,7 +24,7 @@ public class DirectStubFunctionType extends NativeFunction {
         if (parent instanceof GlobalType)
             name = signature.getName() + "_direct";
         else
-            name = parent.abstractType() + "_" + signature.getName() + "_direct";
+            name = parent.abstractType().replace('.', '_') + "_" + signature.getName() + "_direct";
 
     }
 

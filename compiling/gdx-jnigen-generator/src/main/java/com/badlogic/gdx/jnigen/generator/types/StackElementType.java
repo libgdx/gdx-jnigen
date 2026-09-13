@@ -90,7 +90,16 @@ public class StackElementType implements MappedType, WritableClass {
     public ClassOrInterfaceDeclaration generateClassInternal() {
         NodeList<Modifier> modifiers = new NodeList<>(Modifier.publicModifier(), Modifier.finalModifier(), Modifier.staticModifier());
 
-        return new ClassOrInterfaceDeclaration(modifiers, false, internalClassName());
+        return new ClassOrInterfaceDeclaration(modifiers, false, getInternalName());
+    }
+
+    private String getInternalName() {
+        return javaTypeName + "_Internal";
+    }
+
+    @Override
+    public String pointerType() {
+        return abstractType() + "." + pointerName;
     }
 
     private void writeStackFields(StackElementField field, ClassOrInterfaceDeclaration toWriteToPublic) {
@@ -178,16 +187,6 @@ public class StackElementType implements MappedType, WritableClass {
         setMethod.createBody().addStatement(setExpr);
     }
 
-    private boolean isParentOf(MappedType t) {
-        MappedType parent = t.parent();
-        while (parent != null) {
-            if (parent == this)
-                return true;
-            parent = parent.parent();
-        }
-        return false;
-    }
-
     @Override
     public void write(CompilationUnit cuPublic, ClassOrInterfaceDeclaration toWriteToPublic, CompilationUnit cuPrivate, ClassOrInterfaceDeclaration toWriteToPrivate) {
         if (isOpaque()) {
@@ -253,9 +252,7 @@ public class StackElementType implements MappedType, WritableClass {
                 break;
             StackElementField field = fields.get(i);
             NamedType fieldType = field.getType();
-            if (!isParentOf(fieldType.getDefinition().getMappedType())) {
-                fieldType.getDefinition().getMappedType().importType(cuPublic);
-            }
+            fieldType.getDefinition().getMappedType().importType(cuPublic);
 
             if (fieldType.getDefinition().getTypeKind() == TypeKind.FIXED_SIZE_ARRAY || fieldType.getDefinition().getTypeKind().isStackElement()) {
                 writeStackFields(field, toWriteToPublic);
@@ -543,23 +540,13 @@ public class StackElementType implements MappedType, WritableClass {
 
     @Override
     public String abstractType() {
+        if (parent != null)
+            return parent.abstractType() + "." + javaTypeName;
         return javaTypeName;
     }
 
     public TypeDefinition getDefinition() {
         return definition;
-    }
-
-    @Override
-    public String instantiationType() {
-        StringBuilder sb = new StringBuilder(javaTypeName);
-        MappedType t = this;
-        while (t.parent() != null) {
-            t = t.parent();
-            sb.insert(0, '.');
-            sb.insert(0, t.abstractType()); // parent is StackElementType -> abstractType returns javaTypeName
-        }
-        return sb.toString();
     }
 
     @Override
@@ -569,7 +556,18 @@ public class StackElementType implements MappedType, WritableClass {
 
     @Override
     public void importType(CompilationUnit cu) {
-        cu.addImport(classFile());
+        if (parent != null)
+            parent.importType(cu);
+        else
+            cu.addImport(classFile());
+    }
+
+    @Override
+    public void importInternalType(CompilationUnit cu) {
+        if (parent != null)
+            parent.importInternalType(cu);
+        else
+            cu.addImport(internalClass());
     }
 
     @Override
@@ -632,10 +630,17 @@ public class StackElementType implements MappedType, WritableClass {
     }
 
     @Override
+    public String internalClassName() {
+        if (parent != null)
+            return parent.internalClassName() + "." + getInternalName();
+        return getInternalName();
+    }
+
+    @Override
     public String internalClass() {
         if (parent != null)
-            return parent.internalClass() + "." + internalClassName();
-        return Manager.getInstance().getGlobalType().internalClass() + "." + internalClassName();
+            return parent.internalClass() + "." + getInternalName();
+        return Manager.getInstance().getGlobalType().internalClass() + "." + getInternalName();
     }
 
     @Override
@@ -704,10 +709,5 @@ public class StackElementType implements MappedType, WritableClass {
     @Override
     public int getSizeFromC(PossibleTarget target) {
         return target.is32Bit() ? 4 : 8;
-    }
-
-    @Override
-    public MappedType parent() {
-        return this.parent;
     }
 }

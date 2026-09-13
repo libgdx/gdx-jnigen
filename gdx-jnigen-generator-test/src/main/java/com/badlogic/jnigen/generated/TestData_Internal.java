@@ -7,6 +7,7 @@ import com.badlogic.gdx.jnigen.runtime.closure.PointingPoolManager;
 import com.badlogic.jnigen.generated.structs.AnonymousClosure;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
 import com.badlogic.gdx.jnigen.runtime.closure.CClosureObject;
+import com.badlogic.jnigen.generated.structs.NestedNameCollision;
 import com.badlogic.jnigen.generated.TestData;
 import com.badlogic.jnigen.generated.enums.TestEnum;
 import com.badlogic.jnigen.generated.structs.TestStruct;
@@ -98,6 +99,86 @@ public final class TestData_Internal {
     }
 
     public final static class AnonymousStructNoField_Internal {
+    }
+
+    public final static class NestedNameCollision_Internal {
+
+        public final static class input_Internal {
+
+            public final static class axis_Internal {
+
+                public interface cb_Internal extends Closure {
+
+                    CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(8), FFITypes.getCTypeInfo(8) };
+
+                    int cb_call(int arg0);
+
+                    default CTypeInfo[] functionSignature() {
+                        return __ffi_cache;
+                    }
+
+                    default void invoke(BufferPtr buf) {
+                        buf.setInt(0, cb_call(buf.getInt(0)));
+                    }
+
+                    default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+                        buf.setInt(0, cb_call(buf.getInt(0)));
+                    }
+
+                    public static CClosureObject<NestedNameCollision.input.axis.cb> cb_downcall(long fnPtr) {
+                        return new CClosureObject<>((arg0) -> {
+                            return TestData.NestedNameCollision_input_axis_cb_direct(fnPtr, arg0);
+                        }, fnPtr);
+                    }
+                }
+            }
+        }
+
+        public final static class output_Internal {
+
+            public final static class axis_Internal {
+
+                public interface cb_Internal extends Closure {
+
+                    CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(8), FFITypes.getCTypeInfo(8) };
+
+                    int cb_call(int arg0);
+
+                    default CTypeInfo[] functionSignature() {
+                        return __ffi_cache;
+                    }
+
+                    default void invoke(BufferPtr buf) {
+                        buf.setInt(0, cb_call(buf.getInt(0)));
+                    }
+
+                    default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+                        buf.setInt(0, cb_call(buf.getInt(0)));
+                    }
+
+                    public static CClosureObject<NestedNameCollision.output.axis.cb> cb_downcall(long fnPtr) {
+                        return new CClosureObject<>((arg0) -> {
+                            return TestData.NestedNameCollision_output_axis_cb_direct(fnPtr, arg0);
+                        }, fnPtr);
+                    }
+                }
+            }
+        }
+    }
+
+    public final static class NestedNameCollisionArray_Internal {
+
+        public final static class input_Internal {
+
+            public final static class axis_Internal {
+            }
+        }
+
+        public final static class output_Internal {
+
+            public final static class axis_Internal {
+            }
+        }
     }
 
     public final static class WordStruct_Internal {
@@ -332,7 +413,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackTestStructArg_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(35) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(48) };
 
         void methodWithCallbackTestStructArg_call(TestStruct arg0);
 
@@ -982,7 +1063,7 @@ public final class TestData_Internal {
 
     public interface methodWithCallbackTestStructReturn_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(35) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(48) };
 
         TestStruct methodWithCallbackTestStructReturn_call();
 

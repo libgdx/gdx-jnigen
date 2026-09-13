@@ -149,6 +149,23 @@ typedef struct AnonymousStructFieldArray {
     int externalValue;
 } AnonymousStructFieldArray;
 
+/// Same-named anonymous structs under different parents (SDL_GamepadBinding shape)
+typedef struct NestedNameCollision {
+    union {
+        int button;
+        struct { int axis; int axis_min; int (*cb)(int); } axis;
+    } input;
+    union {
+        int button;
+        struct { int axis; int axis_min; int (*cb)(int); } axis;
+    } output;
+} NestedNameCollision;
+
+typedef struct NestedNameCollisionArray {
+    struct { struct { int v; } axis[2]; } input;
+    struct { struct { int v; } axis[2]; } output;
+} NestedNameCollisionArray;
+
 struct AnonymousClosure
 {
     /// Comment on internal callback
@@ -200,7 +217,7 @@ void freeForwardDeclStruct(struct forwardDeclStruct* handle);
 void commentedMethod(void);
 void randomFunc(char, unsigned char, signed char, char*, unsigned char*, signed char*);
 
-void ensureParsed(SpecialEnum, AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested, struct forwardDeclStruct*, PaddedUnion);
+void ensureParsed(SpecialEnum, AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, NestedNameCollision, NestedNameCollisionArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested, struct forwardDeclStruct*, PaddedUnion);
 void weirdPointer(FILE *_file);
 
 // System-header struct as a typed pointer (sized-opaque): struct timespec has a real size but its

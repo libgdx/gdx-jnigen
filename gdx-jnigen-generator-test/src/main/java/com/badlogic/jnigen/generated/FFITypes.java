@@ -73,10 +73,18 @@ public class FFITypes {
 		static_assert(alignof(AnonymousStructField) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField has unexpected alignment.");
 		static_assert(offsetof(AnonymousStructField, inner) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField has unexpected offset.");
 		static_assert(offsetof(AnonymousStructField, externalValue) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type, floatValue) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected offset.");
 		static_assert(sizeof(AnonymousStructFieldArray) == 20, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray has unexpected size.");
 		static_assert(alignof(AnonymousStructFieldArray) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray has unexpected alignment.");
 		static_assert(offsetof(AnonymousStructFieldArray, inner) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray has unexpected offset.");
 		static_assert(offsetof(AnonymousStructFieldArray, externalValue) == 16, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type, floatValue) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected offset.");
 		static_assert(sizeof(AnonymousStructNoField) == 12, "Type com.badlogic.jnigen.generated.structs.AnonymousStructNoField has unexpected size.");
 		static_assert(alignof(AnonymousStructNoField) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructNoField has unexpected alignment.");
 		static_assert(offsetof(AnonymousStructNoField, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructNoField has unexpected offset.");
@@ -117,6 +125,54 @@ public class FFITypes {
 		static_assert(offsetof(GlobalArg, enumPtr) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg has unexpected offset.");
 		static_assert(offsetof(GlobalArg, unionPtr) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg has unexpected offset.");
 		static_assert(offsetof(GlobalArg, allArgs) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type) == 32, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg1) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg2) == 8, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg3) == 12, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg4) == 14, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg5) == 16, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg6) == 18, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg7) == 20, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg8) == 24, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(sizeof(NestedNameCollision) == 24, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision has unexpected size.");
+		static_assert(alignof(NestedNameCollision) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision has unexpected alignment.");
+		static_assert(offsetof(NestedNameCollision, input) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision has unexpected offset.");
+		static_assert(offsetof(NestedNameCollision, output) == 12, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type) == 12, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type, button) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type) == 12, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type, axis_min) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type, cb) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type) == 12, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type, button) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type) == 12, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type, axis_min) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type, cb) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected offset.");
+		static_assert(sizeof(NestedNameCollisionArray) == 16, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray has unexpected size.");
+		static_assert(alignof(NestedNameCollisionArray) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray has unexpected alignment.");
+		static_assert(offsetof(NestedNameCollisionArray, input) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray has unexpected offset.");
+		static_assert(offsetof(NestedNameCollisionArray, output) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input.axis has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input.axis has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type*)0).axis)>::type, v) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input.axis has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output.axis has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output.axis has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type*)0).axis)>::type, v) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output.axis has unexpected offset.");
 		static_assert(sizeof(PaddedUnion) == 16, "Type com.badlogic.jnigen.generated.structs.PaddedUnion has unexpected size.");
 		static_assert(alignof(PaddedUnion) == 8, "Type com.badlogic.jnigen.generated.structs.PaddedUnion has unexpected alignment.");
 		static_assert(offsetof(PaddedUnion, doubleType) == 0, "Type com.badlogic.jnigen.generated.structs.PaddedUnion has unexpected offset.");
@@ -145,24 +201,6 @@ public class FFITypes {
 		static_assert(offsetof(WordStruct, delta) == 8, "Type com.badlogic.jnigen.generated.structs.WordStruct has unexpected offset.");
 		static_assert(offsetof(WordStruct, address) == 12, "Type com.badlogic.jnigen.generated.structs.WordStruct has unexpected offset.");
 		static_assert(offsetof(WordStruct, aliased) == 16, "Type com.badlogic.jnigen.generated.structs.WordStruct has unexpected offset.");
-		static_assert(sizeof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type) == 32, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected size.");
-		static_assert(alignof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected alignment.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg1) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg2) == 8, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg3) == 12, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg4) == 14, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg5) == 16, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg6) == 18, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg7) == 20, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg8) == 24, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(sizeof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected size.");
-		static_assert(alignof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected alignment.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type, floatValue) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected offset.");
-		static_assert(sizeof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected size.");
-		static_assert(alignof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected alignment.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type, floatValue) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected offset.");
 		#endif // defined(_WIN32) && ARCH_BITS == 32
 		
 
@@ -223,10 +261,18 @@ public class FFITypes {
 		static_assert(alignof(AnonymousStructField) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField has unexpected alignment.");
 		static_assert(offsetof(AnonymousStructField, inner) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField has unexpected offset.");
 		static_assert(offsetof(AnonymousStructField, externalValue) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type, floatValue) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected offset.");
 		static_assert(sizeof(AnonymousStructFieldArray) == 20, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray has unexpected size.");
 		static_assert(alignof(AnonymousStructFieldArray) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray has unexpected alignment.");
 		static_assert(offsetof(AnonymousStructFieldArray, inner) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray has unexpected offset.");
 		static_assert(offsetof(AnonymousStructFieldArray, externalValue) == 16, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type, floatValue) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected offset.");
 		static_assert(sizeof(AnonymousStructNoField) == 12, "Type com.badlogic.jnigen.generated.structs.AnonymousStructNoField has unexpected size.");
 		static_assert(alignof(AnonymousStructNoField) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructNoField has unexpected alignment.");
 		static_assert(offsetof(AnonymousStructNoField, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructNoField has unexpected offset.");
@@ -267,6 +313,54 @@ public class FFITypes {
 		static_assert(offsetof(GlobalArg, enumPtr) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg has unexpected offset.");
 		static_assert(offsetof(GlobalArg, unionPtr) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg has unexpected offset.");
 		static_assert(offsetof(GlobalArg, allArgs) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type) == 32, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg1) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg2) == 8, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg3) == 12, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg4) == 14, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg5) == 16, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg6) == 18, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg7) == 20, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg8) == 24, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(sizeof(NestedNameCollision) == 32, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision has unexpected size.");
+		static_assert(alignof(NestedNameCollision) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision has unexpected alignment.");
+		static_assert(offsetof(NestedNameCollision, input) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision has unexpected offset.");
+		static_assert(offsetof(NestedNameCollision, output) == 16, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type) == 16, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type, button) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type) == 16, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type, axis_min) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type, cb) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type) == 16, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type, button) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type) == 16, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type, axis_min) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type, cb) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected offset.");
+		static_assert(sizeof(NestedNameCollisionArray) == 16, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray has unexpected size.");
+		static_assert(alignof(NestedNameCollisionArray) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray has unexpected alignment.");
+		static_assert(offsetof(NestedNameCollisionArray, input) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray has unexpected offset.");
+		static_assert(offsetof(NestedNameCollisionArray, output) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input.axis has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input.axis has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type*)0).axis)>::type, v) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input.axis has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output.axis has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output.axis has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type*)0).axis)>::type, v) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output.axis has unexpected offset.");
 		static_assert(sizeof(PaddedUnion) == 16, "Type com.badlogic.jnigen.generated.structs.PaddedUnion has unexpected size.");
 		static_assert(alignof(PaddedUnion) == 8, "Type com.badlogic.jnigen.generated.structs.PaddedUnion has unexpected alignment.");
 		static_assert(offsetof(PaddedUnion, doubleType) == 0, "Type com.badlogic.jnigen.generated.structs.PaddedUnion has unexpected offset.");
@@ -295,24 +389,6 @@ public class FFITypes {
 		static_assert(offsetof(WordStruct, delta) == 16, "Type com.badlogic.jnigen.generated.structs.WordStruct has unexpected offset.");
 		static_assert(offsetof(WordStruct, address) == 24, "Type com.badlogic.jnigen.generated.structs.WordStruct has unexpected offset.");
 		static_assert(offsetof(WordStruct, aliased) == 32, "Type com.badlogic.jnigen.generated.structs.WordStruct has unexpected offset.");
-		static_assert(sizeof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type) == 32, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected size.");
-		static_assert(alignof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected alignment.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg1) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg2) == 8, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg3) == 12, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg4) == 14, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg5) == 16, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg6) == 18, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg7) == 20, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg8) == 24, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(sizeof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected size.");
-		static_assert(alignof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected alignment.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type, floatValue) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected offset.");
-		static_assert(sizeof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected size.");
-		static_assert(alignof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected alignment.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type, floatValue) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected offset.");
 		#endif // defined(_WIN32) && ARCH_BITS == 64
 		
 
@@ -373,10 +449,18 @@ public class FFITypes {
 		static_assert(alignof(AnonymousStructField) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField has unexpected alignment.");
 		static_assert(offsetof(AnonymousStructField, inner) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField has unexpected offset.");
 		static_assert(offsetof(AnonymousStructField, externalValue) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type, floatValue) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected offset.");
 		static_assert(sizeof(AnonymousStructFieldArray) == 20, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray has unexpected size.");
 		static_assert(alignof(AnonymousStructFieldArray) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray has unexpected alignment.");
 		static_assert(offsetof(AnonymousStructFieldArray, inner) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray has unexpected offset.");
 		static_assert(offsetof(AnonymousStructFieldArray, externalValue) == 16, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type, floatValue) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected offset.");
 		static_assert(sizeof(AnonymousStructNoField) == 12, "Type com.badlogic.jnigen.generated.structs.AnonymousStructNoField has unexpected size.");
 		static_assert(alignof(AnonymousStructNoField) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructNoField has unexpected alignment.");
 		static_assert(offsetof(AnonymousStructNoField, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructNoField has unexpected offset.");
@@ -417,6 +501,54 @@ public class FFITypes {
 		static_assert(offsetof(GlobalArg, enumPtr) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg has unexpected offset.");
 		static_assert(offsetof(GlobalArg, unionPtr) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg has unexpected offset.");
 		static_assert(offsetof(GlobalArg, allArgs) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type) == 32, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg1) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg2) == 8, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg3) == 12, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg4) == 14, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg5) == 16, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg6) == 18, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg7) == 20, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg8) == 24, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(sizeof(NestedNameCollision) == 24, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision has unexpected size.");
+		static_assert(alignof(NestedNameCollision) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision has unexpected alignment.");
+		static_assert(offsetof(NestedNameCollision, input) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision has unexpected offset.");
+		static_assert(offsetof(NestedNameCollision, output) == 12, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type) == 12, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type, button) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type) == 12, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type, axis_min) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type, cb) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type) == 12, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type, button) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type) == 12, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type, axis_min) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type, cb) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected offset.");
+		static_assert(sizeof(NestedNameCollisionArray) == 16, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray has unexpected size.");
+		static_assert(alignof(NestedNameCollisionArray) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray has unexpected alignment.");
+		static_assert(offsetof(NestedNameCollisionArray, input) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray has unexpected offset.");
+		static_assert(offsetof(NestedNameCollisionArray, output) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input.axis has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input.axis has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type*)0).axis)>::type, v) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input.axis has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output.axis has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output.axis has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type*)0).axis)>::type, v) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output.axis has unexpected offset.");
 		static_assert(sizeof(PaddedUnion) == 16, "Type com.badlogic.jnigen.generated.structs.PaddedUnion has unexpected size.");
 		static_assert(alignof(PaddedUnion) == 8, "Type com.badlogic.jnigen.generated.structs.PaddedUnion has unexpected alignment.");
 		static_assert(offsetof(PaddedUnion, doubleType) == 0, "Type com.badlogic.jnigen.generated.structs.PaddedUnion has unexpected offset.");
@@ -445,24 +577,6 @@ public class FFITypes {
 		static_assert(offsetof(WordStruct, delta) == 8, "Type com.badlogic.jnigen.generated.structs.WordStruct has unexpected offset.");
 		static_assert(offsetof(WordStruct, address) == 12, "Type com.badlogic.jnigen.generated.structs.WordStruct has unexpected offset.");
 		static_assert(offsetof(WordStruct, aliased) == 16, "Type com.badlogic.jnigen.generated.structs.WordStruct has unexpected offset.");
-		static_assert(sizeof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type) == 32, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected size.");
-		static_assert(alignof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected alignment.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg1) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg2) == 8, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg3) == 12, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg4) == 14, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg5) == 16, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg6) == 18, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg7) == 20, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg8) == 24, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(sizeof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected size.");
-		static_assert(alignof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected alignment.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type, floatValue) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected offset.");
-		static_assert(sizeof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected size.");
-		static_assert(alignof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected alignment.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type, floatValue) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected offset.");
 		#endif // !defined(_WIN32) && ARCH_BITS == 32 && !defined(__i386__)
 		
 
@@ -523,10 +637,18 @@ public class FFITypes {
 		static_assert(alignof(AnonymousStructField) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField has unexpected alignment.");
 		static_assert(offsetof(AnonymousStructField, inner) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField has unexpected offset.");
 		static_assert(offsetof(AnonymousStructField, externalValue) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type, floatValue) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected offset.");
 		static_assert(sizeof(AnonymousStructFieldArray) == 20, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray has unexpected size.");
 		static_assert(alignof(AnonymousStructFieldArray) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray has unexpected alignment.");
 		static_assert(offsetof(AnonymousStructFieldArray, inner) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray has unexpected offset.");
 		static_assert(offsetof(AnonymousStructFieldArray, externalValue) == 16, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type, floatValue) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected offset.");
 		static_assert(sizeof(AnonymousStructNoField) == 12, "Type com.badlogic.jnigen.generated.structs.AnonymousStructNoField has unexpected size.");
 		static_assert(alignof(AnonymousStructNoField) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructNoField has unexpected alignment.");
 		static_assert(offsetof(AnonymousStructNoField, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructNoField has unexpected offset.");
@@ -567,6 +689,54 @@ public class FFITypes {
 		static_assert(offsetof(GlobalArg, enumPtr) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg has unexpected offset.");
 		static_assert(offsetof(GlobalArg, unionPtr) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg has unexpected offset.");
 		static_assert(offsetof(GlobalArg, allArgs) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type) == 32, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg1) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg2) == 8, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg3) == 12, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg4) == 14, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg5) == 16, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg6) == 18, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg7) == 20, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg8) == 24, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(sizeof(NestedNameCollision) == 32, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision has unexpected size.");
+		static_assert(alignof(NestedNameCollision) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision has unexpected alignment.");
+		static_assert(offsetof(NestedNameCollision, input) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision has unexpected offset.");
+		static_assert(offsetof(NestedNameCollision, output) == 16, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type) == 16, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type, button) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type) == 16, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type, axis_min) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type, cb) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type) == 16, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type, button) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type) == 16, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type, axis_min) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type, cb) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected offset.");
+		static_assert(sizeof(NestedNameCollisionArray) == 16, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray has unexpected size.");
+		static_assert(alignof(NestedNameCollisionArray) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray has unexpected alignment.");
+		static_assert(offsetof(NestedNameCollisionArray, input) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray has unexpected offset.");
+		static_assert(offsetof(NestedNameCollisionArray, output) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input.axis has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input.axis has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type*)0).axis)>::type, v) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input.axis has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output.axis has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output.axis has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type*)0).axis)>::type, v) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output.axis has unexpected offset.");
 		static_assert(sizeof(PaddedUnion) == 16, "Type com.badlogic.jnigen.generated.structs.PaddedUnion has unexpected size.");
 		static_assert(alignof(PaddedUnion) == 8, "Type com.badlogic.jnigen.generated.structs.PaddedUnion has unexpected alignment.");
 		static_assert(offsetof(PaddedUnion, doubleType) == 0, "Type com.badlogic.jnigen.generated.structs.PaddedUnion has unexpected offset.");
@@ -595,24 +765,6 @@ public class FFITypes {
 		static_assert(offsetof(WordStruct, delta) == 16, "Type com.badlogic.jnigen.generated.structs.WordStruct has unexpected offset.");
 		static_assert(offsetof(WordStruct, address) == 24, "Type com.badlogic.jnigen.generated.structs.WordStruct has unexpected offset.");
 		static_assert(offsetof(WordStruct, aliased) == 32, "Type com.badlogic.jnigen.generated.structs.WordStruct has unexpected offset.");
-		static_assert(sizeof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type) == 32, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected size.");
-		static_assert(alignof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected alignment.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg1) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg2) == 8, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg3) == 12, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg4) == 14, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg5) == 16, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg6) == 18, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg7) == 20, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg8) == 24, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(sizeof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected size.");
-		static_assert(alignof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected alignment.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type, floatValue) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected offset.");
-		static_assert(sizeof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected size.");
-		static_assert(alignof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected alignment.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type, floatValue) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected offset.");
 		#endif // !defined(_WIN32) && ARCH_BITS == 64
 		
 
@@ -673,10 +825,18 @@ public class FFITypes {
 		static_assert(alignof(AnonymousStructField) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField has unexpected alignment.");
 		static_assert(offsetof(AnonymousStructField, inner) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField has unexpected offset.");
 		static_assert(offsetof(AnonymousStructField, externalValue) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type, floatValue) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected offset.");
 		static_assert(sizeof(AnonymousStructFieldArray) == 20, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray has unexpected size.");
 		static_assert(alignof(AnonymousStructFieldArray) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray has unexpected alignment.");
 		static_assert(offsetof(AnonymousStructFieldArray, inner) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray has unexpected offset.");
 		static_assert(offsetof(AnonymousStructFieldArray, externalValue) == 16, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type, floatValue) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected offset.");
 		static_assert(sizeof(AnonymousStructNoField) == 12, "Type com.badlogic.jnigen.generated.structs.AnonymousStructNoField has unexpected size.");
 		static_assert(alignof(AnonymousStructNoField) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructNoField has unexpected alignment.");
 		static_assert(offsetof(AnonymousStructNoField, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructNoField has unexpected offset.");
@@ -717,6 +877,54 @@ public class FFITypes {
 		static_assert(offsetof(GlobalArg, enumPtr) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg has unexpected offset.");
 		static_assert(offsetof(GlobalArg, unionPtr) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg has unexpected offset.");
 		static_assert(offsetof(GlobalArg, allArgs) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type) == 32, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg1) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg2) == 8, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg3) == 12, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg4) == 14, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg5) == 16, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg6) == 18, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg7) == 20, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg8) == 24, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
+		static_assert(sizeof(NestedNameCollision) == 24, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision has unexpected size.");
+		static_assert(alignof(NestedNameCollision) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision has unexpected alignment.");
+		static_assert(offsetof(NestedNameCollision, input) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision has unexpected offset.");
+		static_assert(offsetof(NestedNameCollision, output) == 12, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type) == 12, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type, button) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type) == 12, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type, axis_min) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type, cb) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.input.axis has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type) == 12, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type, button) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type) == 12, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type, axis_min) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected offset.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type, cb) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollision.output.axis has unexpected offset.");
+		static_assert(sizeof(NestedNameCollisionArray) == 16, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray has unexpected size.");
+		static_assert(alignof(NestedNameCollisionArray) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray has unexpected alignment.");
+		static_assert(offsetof(NestedNameCollisionArray, input) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray has unexpected offset.");
+		static_assert(offsetof(NestedNameCollisionArray, output) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input.axis has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input.axis has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type*)0).axis)>::type, v) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.input.axis has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type, axis) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output has unexpected offset.");
+		static_assert(sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output.axis has unexpected size.");
+		static_assert(alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type*)0).axis)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output.axis has unexpected alignment.");
+		static_assert(offsetof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type*)0).axis)>::type, v) == 0, "Type com.badlogic.jnigen.generated.structs.NestedNameCollisionArray.output.axis has unexpected offset.");
 		static_assert(sizeof(PaddedUnion) == 12, "Type com.badlogic.jnigen.generated.structs.PaddedUnion has unexpected size.");
 		static_assert(alignof(PaddedUnion) == 4, "Type com.badlogic.jnigen.generated.structs.PaddedUnion has unexpected alignment.");
 		static_assert(offsetof(PaddedUnion, doubleType) == 0, "Type com.badlogic.jnigen.generated.structs.PaddedUnion has unexpected offset.");
@@ -745,24 +953,6 @@ public class FFITypes {
 		static_assert(offsetof(WordStruct, delta) == 8, "Type com.badlogic.jnigen.generated.structs.WordStruct has unexpected offset.");
 		static_assert(offsetof(WordStruct, address) == 12, "Type com.badlogic.jnigen.generated.structs.WordStruct has unexpected offset.");
 		static_assert(offsetof(WordStruct, aliased) == 16, "Type com.badlogic.jnigen.generated.structs.WordStruct has unexpected offset.");
-		static_assert(sizeof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type) == 32, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected size.");
-		static_assert(alignof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected alignment.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg1) == 0, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg2) == 8, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg3) == 12, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg4) == 14, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg5) == 16, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg6) == 18, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg7) == 20, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type, arg8) == 24, "Type com.badlogic.jnigen.generated.structs.GlobalArg.allArgs has unexpected offset.");
-		static_assert(sizeof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected size.");
-		static_assert(alignof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected alignment.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type, floatValue) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructField.inner has unexpected offset.");
-		static_assert(sizeof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type) == 8, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected size.");
-		static_assert(alignof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected alignment.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type, intValue) == 0, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected offset.");
-		static_assert(offsetof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type, floatValue) == 4, "Type com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner has unexpected offset.");
 		#endif // !defined(_WIN32) && defined(__i386__)
 		
 
@@ -895,10 +1085,19 @@ switch(id) {
 		nativeType->alignment = (int)alignof(AnonymousStructField);
 		nativeType->field_count = 2;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
-		nativeType->fields[0] = getNativeType(41);
+		nativeType->fields[0] = getNativeType(26);
 		nativeType->fields[1] = getNativeType(8);
 		return nativeType;
 	case 26:
+		nativeType->type = STRUCT_TYPE;
+		nativeType->size = (int)sizeof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type);
+		nativeType->alignment = (int)alignof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type);
+		nativeType->field_count = 2;
+		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
+		nativeType->fields[0] = getNativeType(8);
+		nativeType->fields[1] = getNativeType(7);
+		return nativeType;
+	case 27:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->size = (int)sizeof(AnonymousStructFieldArray);
 		nativeType->alignment = (int)alignof(AnonymousStructFieldArray);
@@ -911,10 +1110,19 @@ switch(id) {
 		nativeType->fields[0]->field_count = 2;
 		nativeType->fields[0]->fields = (native_type**)malloc(sizeof(native_type*) * 2);
 		for (int __i = 0; __i < 2; __i++)
-			nativeType->fields[0]->fields[__i] = getNativeType(42);
+			nativeType->fields[0]->fields[__i] = getNativeType(28);
 		nativeType->fields[1] = getNativeType(8);
 		return nativeType;
-	case 27:
+	case 28:
+		nativeType->type = STRUCT_TYPE;
+		nativeType->size = (int)sizeof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type);
+		nativeType->alignment = (int)alignof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type);
+		nativeType->field_count = 2;
+		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
+		nativeType->fields[0] = getNativeType(8);
+		nativeType->fields[1] = getNativeType(7);
+		return nativeType;
+	case 29:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->size = (int)sizeof(AnonymousStructNoField);
 		nativeType->alignment = (int)alignof(AnonymousStructNoField);
@@ -924,7 +1132,7 @@ switch(id) {
 		nativeType->fields[1] = getNativeType(7);
 		nativeType->fields[2] = getNativeType(8);
 		return nativeType;
-	case 28:
+	case 30:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->size = (int)sizeof(AnonymousStructNoFieldConsecutive);
 		nativeType->alignment = (int)alignof(AnonymousStructNoFieldConsecutive);
@@ -936,7 +1144,7 @@ switch(id) {
 		nativeType->fields[3] = getNativeType(8);
 		nativeType->fields[4] = getNativeType(7);
 		return nativeType;
-	case 29:
+	case 31:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->size = (int)sizeof(AnonymousStructNoFieldEnd);
 		nativeType->alignment = (int)alignof(AnonymousStructNoFieldEnd);
@@ -946,7 +1154,7 @@ switch(id) {
 		nativeType->fields[1] = getNativeType(8);
 		nativeType->fields[2] = getNativeType(7);
 		return nativeType;
-	case 30:
+	case 32:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->size = (int)sizeof(AnonymousStructNoFieldNested);
 		nativeType->alignment = (int)alignof(AnonymousStructNoFieldNested);
@@ -956,7 +1164,7 @@ switch(id) {
 		nativeType->fields[1] = getNativeType(7);
 		nativeType->fields[2] = getNativeType(8);
 		return nativeType;
-	case 31:
+	case 33:
 		{
 			size_t __blockAlign = alignof(FILE);
 			if (__blockAlign > 8) __blockAlign = 8;
@@ -972,7 +1180,7 @@ switch(id) {
 			}
 			return nativeType;
 		}
-	case 32:
+	case 34:
 		nativeType->type = UNION_TYPE;
 		nativeType->size = (int)sizeof(GlobalArg);
 		nativeType->alignment = (int)alignof(GlobalArg);
@@ -988,14 +1196,131 @@ switch(id) {
 		nativeType->fields[7] = getNativeType(6);
 		nativeType->fields[8] = getNativeType(-1);
 		nativeType->fields[9] = getNativeType(-1);
-		nativeType->fields[10] = getNativeType(35);
+		nativeType->fields[10] = getNativeType(48);
 		nativeType->fields[11] = getNativeType(-1);
 		nativeType->fields[12] = getNativeType(23);
 		nativeType->fields[13] = getNativeType(-1);
 		nativeType->fields[14] = getNativeType(-1);
-		nativeType->fields[15] = getNativeType(39);
+		nativeType->fields[15] = getNativeType(35);
 		return nativeType;
-	case 33:
+	case 35:
+		nativeType->type = STRUCT_TYPE;
+		nativeType->size = (int)sizeof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type);
+		nativeType->alignment = (int)alignof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type);
+		nativeType->field_count = 8;
+		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 8);
+		nativeType->fields[0] = getNativeType(19);
+		nativeType->fields[1] = getNativeType(8);
+		nativeType->fields[2] = getNativeType(13);
+		nativeType->fields[3] = getNativeType(1);
+		nativeType->fields[4] = getNativeType(17);
+		nativeType->fields[5] = getNativeType(0);
+		nativeType->fields[6] = getNativeType(7);
+		nativeType->fields[7] = getNativeType(6);
+		return nativeType;
+	case 36:
+		nativeType->type = STRUCT_TYPE;
+		nativeType->size = (int)sizeof(NestedNameCollision);
+		nativeType->alignment = (int)alignof(NestedNameCollision);
+		nativeType->field_count = 2;
+		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
+		nativeType->fields[0] = getNativeType(37);
+		nativeType->fields[1] = getNativeType(39);
+		return nativeType;
+	case 37:
+		nativeType->type = UNION_TYPE;
+		nativeType->size = (int)sizeof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type);
+		nativeType->alignment = (int)alignof(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type);
+		nativeType->field_count = 2;
+		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
+		nativeType->fields[0] = getNativeType(8);
+		nativeType->fields[1] = getNativeType(38);
+		return nativeType;
+	case 38:
+		nativeType->type = STRUCT_TYPE;
+		nativeType->size = (int)sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type);
+		nativeType->alignment = (int)alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).input)>::type*)0).axis)>::type);
+		nativeType->field_count = 3;
+		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 3);
+		nativeType->fields[0] = getNativeType(8);
+		nativeType->fields[1] = getNativeType(8);
+		nativeType->fields[2] = getNativeType(-1);
+		return nativeType;
+	case 39:
+		nativeType->type = UNION_TYPE;
+		nativeType->size = (int)sizeof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type);
+		nativeType->alignment = (int)alignof(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type);
+		nativeType->field_count = 2;
+		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
+		nativeType->fields[0] = getNativeType(8);
+		nativeType->fields[1] = getNativeType(40);
+		return nativeType;
+	case 40:
+		nativeType->type = STRUCT_TYPE;
+		nativeType->size = (int)sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type);
+		nativeType->alignment = (int)alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollision*)0).output)>::type*)0).axis)>::type);
+		nativeType->field_count = 3;
+		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 3);
+		nativeType->fields[0] = getNativeType(8);
+		nativeType->fields[1] = getNativeType(8);
+		nativeType->fields[2] = getNativeType(-1);
+		return nativeType;
+	case 41:
+		nativeType->type = STRUCT_TYPE;
+		nativeType->size = (int)sizeof(NestedNameCollisionArray);
+		nativeType->alignment = (int)alignof(NestedNameCollisionArray);
+		nativeType->field_count = 2;
+		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
+		nativeType->fields[0] = getNativeType(42);
+		nativeType->fields[1] = getNativeType(44);
+		return nativeType;
+	case 42:
+		nativeType->type = STRUCT_TYPE;
+		nativeType->size = (int)sizeof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type);
+		nativeType->alignment = (int)alignof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type);
+		nativeType->field_count = 1;
+		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 1);
+		nativeType->fields[0] = (native_type*)calloc(1, sizeof(native_type));
+		nativeType->fields[0]->type = STRUCT_TYPE;
+		nativeType->fields[0]->size = (int)sizeof((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type*)0).axis);
+		nativeType->fields[0]->alignment = (int)alignof(decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type*)0).axis));
+		nativeType->fields[0]->field_count = 2;
+		nativeType->fields[0]->fields = (native_type**)malloc(sizeof(native_type*) * 2);
+		for (int __i = 0; __i < 2; __i++)
+			nativeType->fields[0]->fields[__i] = getNativeType(43);
+		return nativeType;
+	case 43:
+		nativeType->type = STRUCT_TYPE;
+		nativeType->size = (int)sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type*)0).axis)>::type);
+		nativeType->alignment = (int)alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).input)>::type*)0).axis)>::type);
+		nativeType->field_count = 1;
+		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 1);
+		nativeType->fields[0] = getNativeType(8);
+		return nativeType;
+	case 44:
+		nativeType->type = STRUCT_TYPE;
+		nativeType->size = (int)sizeof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type);
+		nativeType->alignment = (int)alignof(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type);
+		nativeType->field_count = 1;
+		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 1);
+		nativeType->fields[0] = (native_type*)calloc(1, sizeof(native_type));
+		nativeType->fields[0]->type = STRUCT_TYPE;
+		nativeType->fields[0]->size = (int)sizeof((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type*)0).axis);
+		nativeType->fields[0]->alignment = (int)alignof(decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type*)0).axis));
+		nativeType->fields[0]->field_count = 2;
+		nativeType->fields[0]->fields = (native_type**)malloc(sizeof(native_type*) * 2);
+		for (int __i = 0; __i < 2; __i++)
+			nativeType->fields[0]->fields[__i] = getNativeType(45);
+		return nativeType;
+	case 45:
+		nativeType->type = STRUCT_TYPE;
+		nativeType->size = (int)sizeof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type*)0).axis)>::type);
+		nativeType->alignment = (int)alignof(__jnigen_strip<decltype((*(__jnigen_strip<decltype((*(NestedNameCollisionArray*)0).output)>::type*)0).axis)>::type);
+		nativeType->field_count = 1;
+		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 1);
+		nativeType->fields[0] = getNativeType(8);
+		return nativeType;
+	case 46:
 		nativeType->type = UNION_TYPE;
 		nativeType->size = (int)sizeof(PaddedUnion);
 		nativeType->alignment = (int)alignof(PaddedUnion);
@@ -1011,7 +1336,7 @@ switch(id) {
 		for (int __i = 0; __i < 3; __i++)
 			nativeType->fields[1]->fields[__i] = getNativeType(8);
 		return nativeType;
-	case 34:
+	case 47:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->size = (int)sizeof(SpecialStruct);
 		nativeType->alignment = (int)alignof(SpecialStruct);
@@ -1028,7 +1353,7 @@ switch(id) {
 			nativeType->fields[1]->fields[__i] = getNativeType(8);
 		nativeType->fields[2] = getNativeType(-1);
 		return nativeType;
-	case 35:
+	case 48:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->size = (int)sizeof(TestStruct);
 		nativeType->alignment = (int)alignof(TestStruct);
@@ -1039,7 +1364,7 @@ switch(id) {
 		nativeType->fields[2] = getNativeType(17);
 		nativeType->fields[3] = getNativeType(20);
 		return nativeType;
-	case 36:
+	case 49:
 		nativeType->type = UNION_TYPE;
 		nativeType->size = (int)sizeof(TestUnion);
 		nativeType->alignment = (int)alignof(TestUnion);
@@ -1055,18 +1380,18 @@ switch(id) {
 		nativeType->fields[2]->fields = (native_type**)malloc(sizeof(native_type*) * 3);
 		for (int __i = 0; __i < 3; __i++)
 			nativeType->fields[2]->fields[__i] = getNativeType(8);
-		nativeType->fields[3] = getNativeType(35);
+		nativeType->fields[3] = getNativeType(48);
 		return nativeType;
-	case 37:
+	case 50:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->size = (int)sizeof(TimeHolder);
 		nativeType->alignment = (int)alignof(TimeHolder);
 		nativeType->field_count = 2;
 		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
-		nativeType->fields[0] = getNativeType(43);
+		nativeType->fields[0] = getNativeType(53);
 		nativeType->fields[1] = getNativeType(8);
 		return nativeType;
-	case 38:
+	case 51:
 		nativeType->type = STRUCT_TYPE;
 		nativeType->size = (int)sizeof(WordStruct);
 		nativeType->alignment = (int)alignof(WordStruct);
@@ -1078,40 +1403,7 @@ switch(id) {
 		nativeType->fields[3] = getNativeType(9);
 		nativeType->fields[4] = getNativeType(11);
 		return nativeType;
-	case 39:
-		nativeType->type = STRUCT_TYPE;
-		nativeType->size = (int)sizeof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type);
-		nativeType->alignment = (int)alignof(__jnigen_strip<decltype((*(GlobalArg*)0).allArgs)>::type);
-		nativeType->field_count = 8;
-		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 8);
-		nativeType->fields[0] = getNativeType(19);
-		nativeType->fields[1] = getNativeType(8);
-		nativeType->fields[2] = getNativeType(13);
-		nativeType->fields[3] = getNativeType(1);
-		nativeType->fields[4] = getNativeType(17);
-		nativeType->fields[5] = getNativeType(0);
-		nativeType->fields[6] = getNativeType(7);
-		nativeType->fields[7] = getNativeType(6);
-		return nativeType;
-	case 41:
-		nativeType->type = STRUCT_TYPE;
-		nativeType->size = (int)sizeof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type);
-		nativeType->alignment = (int)alignof(__jnigen_strip<decltype((*(AnonymousStructField*)0).inner)>::type);
-		nativeType->field_count = 2;
-		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
-		nativeType->fields[0] = getNativeType(8);
-		nativeType->fields[1] = getNativeType(7);
-		return nativeType;
-	case 42:
-		nativeType->type = STRUCT_TYPE;
-		nativeType->size = (int)sizeof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type);
-		nativeType->alignment = (int)alignof(__jnigen_strip<decltype((*(AnonymousStructFieldArray*)0).inner)>::type);
-		nativeType->field_count = 2;
-		nativeType->fields = (native_type**)malloc(sizeof(native_type*) * 2);
-		nativeType->fields[0] = getNativeType(8);
-		nativeType->fields[1] = getNativeType(7);
-		return nativeType;
-	case 43:
+	case 53:
 		{
 			size_t __blockAlign = alignof(struct timespec);
 			if (__blockAlign > 8) __blockAlign = 8;
@@ -1190,8 +1482,18 @@ switch(id) {
         registerCTypeInfo(37);
         registerCTypeInfo(38);
         registerCTypeInfo(39);
+        registerCTypeInfo(40);
         registerCTypeInfo(41);
         registerCTypeInfo(42);
         registerCTypeInfo(43);
+        registerCTypeInfo(44);
+        registerCTypeInfo(45);
+        registerCTypeInfo(46);
+        registerCTypeInfo(47);
+        registerCTypeInfo(48);
+        registerCTypeInfo(49);
+        registerCTypeInfo(50);
+        registerCTypeInfo(51);
+        registerCTypeInfo(53);
     }
 }

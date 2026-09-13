@@ -6,7 +6,7 @@ import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.jnigen.generated.FFITypes;
-import com.badlogic.jnigen.generated.structs.AnonymousStructField.inner;
+import com.badlogic.jnigen.generated.structs.AnonymousStructField;
 
 public final class AnonymousStructField extends Struct {
 
@@ -48,23 +48,23 @@ public final class AnonymousStructField extends Struct {
         ptr.setPointer(this);
     }
 
-    public inner inner() {
-        return new inner(getPointer(), false);
+    public AnonymousStructField.inner inner() {
+        return new AnonymousStructField.inner(getPointer(), false);
     }
 
-    public void inner(inner toSetPtr) {
+    public void inner(AnonymousStructField.inner toSetPtr) {
         toSetPtr.setPointer(getPointer(), 8, this);
     }
 
-    public inner getInner() {
-        return new inner(getBufPtr().duplicate(0, 8), true);
+    public AnonymousStructField.inner getInner() {
+        return new AnonymousStructField.inner(getBufPtr().duplicate(0, 8), true);
     }
 
-    public void getInner(inner toCopyTo) {
+    public void getInner(AnonymousStructField.inner toCopyTo) {
         toCopyTo.getBufPtr().copyFrom(0, getBufPtr(), 0, 8);
     }
 
-    public void setInner(inner toCopyFrom) {
+    public void setInner(AnonymousStructField.inner toCopyFrom) {
         getBufPtr().copyFrom(0, toCopyFrom.getBufPtr(), 0, 8);
     }
 
@@ -127,7 +127,7 @@ public final class AnonymousStructField extends Struct {
         private final static long __ffi_type;
 
         static {
-            __ffi_type = FFITypes.getCTypeInfo(41).getFfiType();
+            __ffi_type = FFITypes.getCTypeInfo(26).getFfiType();
             __size = CHandler.getSizeFromFFIType(__ffi_type);
         }
 

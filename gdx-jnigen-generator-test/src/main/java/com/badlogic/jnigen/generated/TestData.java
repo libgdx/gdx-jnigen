@@ -11,6 +11,8 @@ import com.badlogic.jnigen.generated.enums.SpecialEnum;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoField;
 import com.badlogic.jnigen.generated.structs.AnonymousStructField;
 import com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray;
+import com.badlogic.jnigen.generated.structs.NestedNameCollision;
+import com.badlogic.jnigen.generated.structs.NestedNameCollisionArray;
 import com.badlogic.jnigen.generated.structs.AnonymousClosure;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoFieldEnd;
 import com.badlogic.jnigen.generated.structs.AnonymousStructNoFieldConsecutive;
@@ -149,6 +151,22 @@ static jclass cxxExceptionClass = NULL;
     	HANDLE_JAVA_EXCEPTION_END()
     */
 
+    public static native int NestedNameCollision_input_axis_cb_direct(long fnPtr, int arg0);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	CHECK_AND_THROW_C_TYPE(env, int, arg0, 0, return 0);
+    	return (jint)((int(*)(int))fnPtr)((int)arg0);
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
+    public static native int NestedNameCollision_output_axis_cb_direct(long fnPtr, int arg0);/*
+    	HANDLE_JAVA_EXCEPTION_START()
+    	CHECK_AND_THROW_C_TYPE(env, int, arg0, 0, return 0);
+    	return (jint)((int(*)(int))fnPtr)((int)arg0);
+    	HANDLE_JAVA_EXCEPTION_END()
+    	return 0;
+    */
+
     public static native int AnonymousClosure_someClosure_direct(long fnPtr, long t, double p);/*
     	HANDLE_JAVA_EXCEPTION_START()
     	return (jint)((int(*)(int *, double))fnPtr)((int *)t, (double)p);
@@ -164,13 +182,13 @@ static jclass cxxExceptionClass = NULL;
     	return 0;
     */
 
-    public static void ensureParsed(SpecialEnum arg0, AnonymousStructNoField arg1, AnonymousStructField arg2, AnonymousStructFieldArray arg3, AnonymousClosure arg4, AnonymousStructNoFieldEnd arg5, AnonymousStructNoFieldConsecutive arg6, AnonymousStructNoFieldNested arg7, forwardDeclStruct.forwardDeclStructPointer arg8, PaddedUnion arg9) {
-        ensureParsed_internal(arg0.getIndex(), arg1.getPointer(), arg2.getPointer(), arg3.getPointer(), arg4.getPointer(), arg5.getPointer(), arg6.getPointer(), arg7.getPointer(), arg8.getPointer(), arg9.getPointer());
+    public static void ensureParsed(SpecialEnum arg0, AnonymousStructNoField arg1, AnonymousStructField arg2, AnonymousStructFieldArray arg3, NestedNameCollision arg4, NestedNameCollisionArray arg5, AnonymousClosure arg6, AnonymousStructNoFieldEnd arg7, AnonymousStructNoFieldConsecutive arg8, AnonymousStructNoFieldNested arg9, forwardDeclStruct.forwardDeclStructPointer arg10, PaddedUnion arg11) {
+        ensureParsed_internal(arg0.getIndex(), arg1.getPointer(), arg2.getPointer(), arg3.getPointer(), arg4.getPointer(), arg5.getPointer(), arg6.getPointer(), arg7.getPointer(), arg8.getPointer(), arg9.getPointer(), arg10.getPointer(), arg11.getPointer());
     }
 
-    public static native void ensureParsed_internal(int arg0, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6, long arg7, long arg8, long arg9);/*
+    public static native void ensureParsed_internal(int arg0, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6, long arg7, long arg8, long arg9, long arg10, long arg11);/*
     	HANDLE_JAVA_EXCEPTION_START()
-    	ensureParsed((SpecialEnum)arg0, *(AnonymousStructNoField*)arg1, *(AnonymousStructField*)arg2, *(AnonymousStructFieldArray*)arg3, *(struct AnonymousClosure*)arg4, *(AnonymousStructNoFieldEnd*)arg5, *(AnonymousStructNoFieldConsecutive*)arg6, *(AnonymousStructNoFieldNested*)arg7, (struct forwardDeclStruct *)arg8, *(PaddedUnion*)arg9);
+    	ensureParsed((SpecialEnum)arg0, *(AnonymousStructNoField*)arg1, *(AnonymousStructField*)arg2, *(AnonymousStructFieldArray*)arg3, *(NestedNameCollision*)arg4, *(NestedNameCollisionArray*)arg5, *(struct AnonymousClosure*)arg6, *(AnonymousStructNoFieldEnd*)arg7, *(AnonymousStructNoFieldConsecutive*)arg8, *(AnonymousStructNoFieldNested*)arg9, (struct forwardDeclStruct *)arg10, *(PaddedUnion*)arg11);
     	HANDLE_JAVA_EXCEPTION_END()
     */
 

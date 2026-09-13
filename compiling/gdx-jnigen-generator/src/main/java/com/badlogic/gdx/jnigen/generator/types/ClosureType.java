@@ -144,7 +144,7 @@ public class ClosureType implements MappedType, WritableClass {
 
         importType(cuPublic);
         cuPublic.addImport(ClassNameConstants.CLOSURE_CLASS);
-        cuPublic.addImport(parent.internalClass());
+        parent.importInternalType(cuPublic);
 
         cuPrivate.addImport(ClassNameConstants.CTYPEINFO_CLASS);
         cuPrivate.addImport(ClassNameConstants.CLOSURE_CLASS);
@@ -273,7 +273,7 @@ public class ClosureType implements MappedType, WritableClass {
         cu.addImport(ClassNameConstants.CLOSUREOBJECT_CLASS);
         cu.addImport(ClassNameConstants.CHANDLER_CLASS);
         parent.importType(cu);
-        cu.addImport(parent.internalClass());
+        parent.importInternalType(cu);
     }
 
     @Override
@@ -314,7 +314,7 @@ public class ClosureType implements MappedType, WritableClass {
 
     @Override
     public String internalClass() {
-        return parent.internalClass() + "." + internalClassName();
+        return parent.internalClass() + "." + getInternalName();
     }
 
     @Override

@@ -19,7 +19,7 @@ public final class SpecialStruct extends Struct {
     private final static long __ffi_type;
 
     static {
-        __ffi_type = FFITypes.getCTypeInfo(34).getFfiType();
+        __ffi_type = FFITypes.getCTypeInfo(47).getFfiType();
         __size = CHandler.getSizeFromFFIType(__ffi_type);
     }
 

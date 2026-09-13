@@ -6,7 +6,7 @@ import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.jnigen.generated.FFITypes;
-import com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray.inner;
+import com.badlogic.jnigen.generated.structs.AnonymousStructFieldArray;
 
 public final class AnonymousStructFieldArray extends Struct {
 
@@ -15,7 +15,7 @@ public final class AnonymousStructFieldArray extends Struct {
     private final static long __ffi_type;
 
     static {
-        __ffi_type = FFITypes.getCTypeInfo(26).getFfiType();
+        __ffi_type = FFITypes.getCTypeInfo(27).getFfiType();
         __size = CHandler.getSizeFromFFIType(__ffi_type);
     }
 
@@ -48,23 +48,23 @@ public final class AnonymousStructFieldArray extends Struct {
         ptr.setPointer(this);
     }
 
-    public inner.innerPointer inner() {
-        return new inner.innerPointer(getPointer(), false, 2);
+    public AnonymousStructFieldArray.inner.innerPointer inner() {
+        return new AnonymousStructFieldArray.inner.innerPointer(getPointer(), false, 2);
     }
 
-    public void inner(inner.innerPointer toSetPtr) {
+    public void inner(AnonymousStructFieldArray.inner.innerPointer toSetPtr) {
         toSetPtr.setPointer(getPointer(), 16, this);
     }
 
-    public inner.innerPointer getInner() {
-        return new inner.innerPointer(getBufPtr().duplicate(0, 16), false, 2);
+    public AnonymousStructFieldArray.inner.innerPointer getInner() {
+        return new AnonymousStructFieldArray.inner.innerPointer(getBufPtr().duplicate(0, 16), false, 2);
     }
 
-    public void getInner(inner.innerPointer toCopyTo) {
+    public void getInner(AnonymousStructFieldArray.inner.innerPointer toCopyTo) {
         toCopyTo.getBufPtr().copyFrom(0, getBufPtr(), 0, 16);
     }
 
-    public void setInner(inner.innerPointer toCopyFrom) {
+    public void setInner(AnonymousStructFieldArray.inner.innerPointer toCopyFrom) {
         getBufPtr().copyFrom(0, toCopyFrom.getBufPtr(), 0, 16);
     }
 
@@ -124,7 +124,7 @@ public final class AnonymousStructFieldArray extends Struct {
         private final static long __ffi_type;
 
         static {
-            __ffi_type = FFITypes.getCTypeInfo(42).getFfiType();
+            __ffi_type = FFITypes.getCTypeInfo(28).getFfiType();
             __size = CHandler.getSizeFromFFIType(__ffi_type);
         }
 
