@@ -18,7 +18,7 @@ public class PointerType implements MappedType {
     }
 
     public boolean isPointerPointer() {
-        return pointingTo.getTypeKind() == TypeKind.POINTER;
+        return pointingTo.getTypeKind() == TypeKind.POINTER || pointingTo.getTypeKind() == TypeKind.CLOSURE;
     }
 
     public boolean isEnumPointer() {
@@ -68,6 +68,11 @@ public class PointerType implements MappedType {
     }
 
     @Override
+    public boolean hasPeerConstructor() {
+        return !isPointerPointer();
+    }
+
+    @Override
     public String primitiveType() {
         return long.class.getName();
     }
@@ -76,8 +81,7 @@ public class PointerType implements MappedType {
     {
         if (!isPointerPointer())
             throw new IllegalArgumentException("Can't get supplier for non PointerPointer type");
-        PointerType childPointerType = (PointerType) pointingTo.getMappedType();
-        if (childPointerType.isPointerPointer()) {
+        if (!pointingTo.getMappedType().hasPeerConstructor()) {
             LambdaExpr expr = new LambdaExpr();
             expr.setEnclosingParameters(true);
             Parameter peerPar = expr.addAndGetParameter(long.class, "peer" + pointingTo.getDepth());
