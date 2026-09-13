@@ -56,7 +56,7 @@ public abstract class NativeFunction {
         StringBuilder callArgs = new StringBuilder();
         for (int i = 0; i < arguments.length; i++) {
             NamedType arg = arguments[i];
-            String argType = arg.getDefinition().getTypeName();
+            String argType = arg.getDefinition().cTypeName();
             if (i > 0)
                 callArgs.append(", ");
             if (arg.getDefinition().getTypeKind().isStackElement())
@@ -71,7 +71,7 @@ public abstract class NativeFunction {
         if (isVoid) {
             body.append(call).append(";");
         } else if (isStackReturn) {
-            body.append("*(").append(returnType.getTypeName()).append("*)_retPar = ").append(call).append(";");
+            body.append("*(").append(returnType.cTypeName()).append("*)_retPar = ").append(call).append(";");
         } else {
             body.append("return (j").append(returnType.getMappedType().primitiveType()).append(")").append(call).append(";");
         }
@@ -81,7 +81,7 @@ public abstract class NativeFunction {
             TypeKind kind = arg.getDefinition().getTypeKind();
             if (kind.isPrimitive() && kind != TypeKind.FLOAT && kind != TypeKind.DOUBLE) {
                 String ret = (isVoid || isStackReturn) ? "return" : "return 0";
-                body.insert(0, "CHECK_AND_THROW_C_TYPE(env, " + arg.getDefinition().getTypeName() + ", "
+                body.insert(0, "CHECK_AND_THROW_C_TYPE(env, " + arg.getDefinition().cTypeName() + ", "
                         + arg.getName() + ", " + i + ", " + ret + ");\n");
             }
         }

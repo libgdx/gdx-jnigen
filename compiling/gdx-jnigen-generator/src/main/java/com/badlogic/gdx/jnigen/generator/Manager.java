@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +47,7 @@ public class Manager {
 
     private final Map<String, StackElementType> stackElements = new HashMap<>();
     private final ArrayList<StackElementType> orderedStackElements = new ArrayList<>();
+    private final Map<TypeDefinition, List<WritableClass>> nestedTypes = new HashMap<>();
     private final Map<String, EnumType> enums = new HashMap<>();
     private final HashMap<String, TypeDefinition> knownCTypes = new HashMap<>();
 
@@ -73,6 +75,7 @@ public class Manager {
         this.basePackage = rollBackManager.basePackage;
         this.stackElements.putAll(rollBackManager.stackElements);
         this.orderedStackElements.addAll(rollBackManager.orderedStackElements);
+        rollBackManager.nestedTypes.forEach((owner, nested) -> this.nestedTypes.put(owner, new ArrayList<>(nested)));
         this.enums.putAll(rollBackManager.enums);
         this.knownCTypes.putAll(rollBackManager.knownCTypes);
         this.cTypeToJavaStringMapper.putAll(rollBackManager.cTypeToJavaStringMapper);
@@ -131,6 +134,14 @@ public class Manager {
         }
         orderedStackElements.add(stackElementType);
         orderedStackElements.sort(Comparator.comparing(StackElementType::abstractType));
+    }
+
+    public void addNestedType(TypeDefinition owner, WritableClass nested) {
+        nestedTypes.computeIfAbsent(owner, key -> new ArrayList<>()).add(nested);
+    }
+
+    public List<WritableClass> getNestedTypes(TypeDefinition owner) {
+        return nestedTypes.getOrDefault(owner, Collections.emptyList());
     }
 
     public int getStackElementID(StackElementType stackElementType) {
@@ -279,15 +290,17 @@ public class Manager {
             assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getMappedType().getSize(target) + ", \"Type " + name + " has unexpected size.\");");
             assertBuilder.add("static_assert(alignof(" + name + ") == " + typeKind.getMappedType().getAlignment(target) + ", \"Type " + name + " has unexpected alignment.\");");
         });
-        stackElements.forEach((name, stackElementType) -> {
+        for (StackElementType stackElementType : orderedStackElements) {
             if (stackElementType.isIncomplete())
-                return;
-            assertBuilder.add("static_assert(sizeof(" + name + ") == " + stackElementType.getSize(target) + ", \"Type " + name + " has unexpected size.\");");
-            assertBuilder.add("static_assert(alignof(" + name + ") == " + stackElementType.getAlignment(target) + ", \"Type " + name + " has unexpected alignment.\");");
+                continue;
+            String name = stackElementType.getDefinition().cTypeName();
+            String label = stackElementType.classFile();
+            assertBuilder.add("static_assert(sizeof(" + name + ") == " + stackElementType.getSize(target) + ", \"Type " + label + " has unexpected size.\");");
+            assertBuilder.add("static_assert(alignof(" + name + ") == " + stackElementType.getAlignment(target) + ", \"Type " + label + " has unexpected alignment.\");");
             for (int i = 0; i < stackElementType.getFields().size(); i++) {
-                assertBuilder.add("static_assert(offsetof(" + name + ", " + stackElementType.getFields().get(i).getName() + ") == " + stackElementType.getFieldOffset(i, target) + ", \"Type " + name + " has unexpected offset.\");");
+                assertBuilder.add("static_assert(offsetof(" + name + ", " + stackElementType.getFields().get(i).getName() + ") == " + stackElementType.getFieldOffset(i, target) + ", \"Type " + label + " has unexpected offset.\");");
             }
-        });
+        }
         assertBuilder.add("#endif // " + target.condition());
     }
 
@@ -408,7 +421,7 @@ public class Manager {
 
             StringBuilder ffiTypeNativeBody = new StringBuilder("JNI\n");
             ffiTypeNativeBody.append("static native_type* ").append(nativeGetFFIMethodName).append("(int id) {\n");
-            ffiTypeNativeBody.append("native_type* nativeType = (native_type*)malloc(sizeof(native_type));\n");
+            ffiTypeNativeBody.append("native_type* nativeType = (native_type*)calloc(1, sizeof(native_type));\n");
             ffiTypeNativeBody.append("switch(id) {\n");
             BlockStmt staticInit = ffiTypeClass.addStaticInitializer();
 

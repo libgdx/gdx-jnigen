@@ -14,31 +14,25 @@ public class StackElementParser {
 
     private final TypeDefinition typeDefinition;
     private final CXType toParse;
-    private final String alternativeName;
     private final StackElementType stackElementType;
-    private MappedType parent;
     private CXType anonymousType;
 
-    public StackElementParser(TypeDefinition typeDefinition, CXType toParse, String alternativeName, MappedType parent) {
+    public StackElementParser(TypeDefinition typeDefinition, CXType toParse) {
         this.typeDefinition = typeDefinition;
         this.toParse = toParse;
-        this.alternativeName = alternativeName;
-        this.parent = parent;
         this.stackElementType = constructMappedType();
     }
 
     private StackElementType constructMappedType() {
-        String name = clang_getTypeSpelling(toParse).getString();
-        String javaName;
-        if (!typeDefinition.isAnonymous()) {
-            parent = null;
-            javaName = JavaUtils.cNameToJavaTypeName(name);
-        } else {
-            javaName = alternativeName;
-        }
-
+        DeclaringMember declaringMember = typeDefinition.getDeclaringMember();
+        String javaName = declaringMember == null
+                ? JavaUtils.cNameToJavaTypeName(clang_getTypeSpelling(toParse).getString())
+                : declaringMember.name;
+        MappedType parent = declaringMember == null ? null : declaringMember.owner.getMappedType();
         StackElementType type = new StackElementType(typeDefinition, javaName, parent);
-        Manager.getInstance().addStackElement(type, parent == null);
+        Manager.getInstance().addStackElement(type, declaringMember == null);
+        if (declaringMember != null)
+            Manager.getInstance().addNestedType(declaringMember.owner, type);
 
         return type;
     }
@@ -89,7 +83,7 @@ public class StackElementParser {
                 anonymousType = null;
             }
 
-            TypeDefinition fieldDefinition = Generator.registerCXType(type, cursorSpelling, stackElementType);
+            TypeDefinition fieldDefinition = Generator.registerCXType(type, cursorSpelling, new DeclaringMember(typeDefinition, cursorSpelling));
             if (fieldDefinition.getTypeKind() == TypeKind.VOID)
                 stackElementType.markIncomplete();
 
@@ -100,12 +94,6 @@ public class StackElementParser {
             NamedType namedType = new NamedType(fieldDefinition, cursorSpelling);
             StackElementField field = new StackElementField(namedType, new CommentParser(current).parse());
             stackElementType.addField(field);
-
-            while (fieldDefinition.getNestedDefinition() != null)
-                fieldDefinition = fieldDefinition.getNestedDefinition();
-
-            if (fieldDefinition.isAnonymous())
-                stackElementType.addChild(fieldDefinition);
         } else if (current.kind() == CXCursor_StructDecl || current.kind() == CXCursor_UnionDecl) {
             if (anonymousType != null)
                 parseAnonymousType();

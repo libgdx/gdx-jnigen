@@ -7,32 +7,28 @@ import com.badlogic.gdx.jnigen.runtime.pointer.Pointing;
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.jnigen.generated.FFITypes;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
-import com.badlogic.jnigen.generated.structs.TestStruct;
 
-/**
- * Some other comment
- */
-public final class TestUnion extends Union {
+public final class PaddedUnion extends Union {
 
     private final static int __size;
 
     private final static long __ffi_type;
 
     static {
-        __ffi_type = FFITypes.getCTypeInfo(36).getFfiType();
+        __ffi_type = FFITypes.getCTypeInfo(33).getFfiType();
         __size = CHandler.getSizeFromFFIType(__ffi_type);
     }
 
-    public TestUnion(long pointer, boolean freeOnGC) {
+    public PaddedUnion(long pointer, boolean freeOnGC) {
         super(pointer, freeOnGC);
     }
 
-    public TestUnion(long pointer, boolean freeOnGC, Pointing parent) {
+    public PaddedUnion(long pointer, boolean freeOnGC, Pointing parent) {
         super(pointer, freeOnGC);
         setParent(parent);
     }
 
-    public TestUnion() {
+    public PaddedUnion() {
         super(__size);
     }
 
@@ -44,20 +40,12 @@ public final class TestUnion extends Union {
         return __ffi_type;
     }
 
-    public TestUnion.TestUnionPointer asPointer() {
-        return new TestUnion.TestUnionPointer(getPointer(), false, 1, this);
+    public PaddedUnion.PaddedUnionPointer asPointer() {
+        return new PaddedUnion.PaddedUnionPointer(getPointer(), false, 1, this);
     }
 
-    public void asPointer(TestUnion.TestUnionPointer ptr) {
+    public void asPointer(PaddedUnion.PaddedUnionPointer ptr) {
         ptr.setPointer(this);
-    }
-
-    public long uintType() {
-        return getBufPtr().getLong(0);
-    }
-
-    public void uintType(long uintType) {
-        getBufPtr().setLong(0, uintType);
     }
 
     public double doubleType() {
@@ -88,55 +76,35 @@ public final class TestUnion extends Union {
         getBufPtr().copyFrom(0, toCopyFrom.getBufPtr(), 0, 12);
     }
 
-    public TestStruct structType() {
-        return new TestStruct(getPointer(), false);
-    }
+    public static final class PaddedUnionPointer extends StackElementPointer<PaddedUnion> {
 
-    public void structType(TestStruct toSetPtr) {
-        toSetPtr.setPointer(getPointer(), 16, this);
-    }
-
-    public TestStruct getStructType() {
-        return new TestStruct(getBufPtr().duplicate(0, 16), true);
-    }
-
-    public void getStructType(TestStruct toCopyTo) {
-        toCopyTo.getBufPtr().copyFrom(0, getBufPtr(), 0, 16);
-    }
-
-    public void setStructType(TestStruct toCopyFrom) {
-        getBufPtr().copyFrom(0, toCopyFrom.getBufPtr(), 0, 16);
-    }
-
-    public static final class TestUnionPointer extends StackElementPointer<TestUnion> {
-
-        public TestUnionPointer(VoidPointer pointer) {
+        public PaddedUnionPointer(VoidPointer pointer) {
             super(pointer);
         }
 
-        public TestUnionPointer(long pointer, boolean freeOnGC) {
+        public PaddedUnionPointer(long pointer, boolean freeOnGC) {
             super(pointer, freeOnGC);
         }
 
-        public TestUnionPointer(long pointer, boolean freeOnGC, int capacity) {
+        public PaddedUnionPointer(long pointer, boolean freeOnGC, int capacity) {
             super(pointer, freeOnGC, capacity * __size);
         }
 
-        public TestUnionPointer(long pointer, boolean freeOnGC, Pointing parent) {
+        public PaddedUnionPointer(long pointer, boolean freeOnGC, Pointing parent) {
             super(pointer, freeOnGC);
             setParent(parent);
         }
 
-        public TestUnionPointer(long pointer, boolean freeOnGC, int capacity, Pointing parent) {
+        public PaddedUnionPointer(long pointer, boolean freeOnGC, int capacity, Pointing parent) {
             super(pointer, freeOnGC, capacity * __size);
             setParent(parent);
         }
 
-        public TestUnionPointer() {
+        public PaddedUnionPointer() {
             this(1, true);
         }
 
-        public TestUnionPointer(int count, boolean freeOnGC) {
+        public PaddedUnionPointer(int count, boolean freeOnGC) {
             super(__size, count, freeOnGC);
         }
 
@@ -144,8 +112,8 @@ public final class TestUnion extends Union {
             return __size;
         }
 
-        protected TestUnion createStackElement(long ptr, boolean freeOnGC) {
-            return new TestUnion(ptr, freeOnGC);
+        protected PaddedUnion createStackElement(long ptr, boolean freeOnGC) {
+            return new PaddedUnion(ptr, freeOnGC);
         }
     }
 }

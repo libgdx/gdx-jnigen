@@ -26,7 +26,6 @@ public class StackElementType implements MappedType, WritableClass {
 
     private final TypeDefinition definition;
     private final MappedType parent;
-    private final List<TypeDefinition> children = new ArrayList<>();
 
     private final List<StackElementField> fields = new ArrayList<>();
     private final String pointerName;
@@ -73,10 +72,6 @@ public class StackElementType implements MappedType, WritableClass {
 
     public void addField(StackElementField type) {
         fields.add(type);
-    }
-
-    public void addChild(TypeDefinition child) {
-        children.add(child);
     }
 
     public void setComment(String comment) {
@@ -345,12 +340,10 @@ public class StackElementType implements MappedType, WritableClass {
                 .addParameter(long.class, "ptr").addParameter(boolean.class, "freeOnGC").createBody()
                 .addStatement("return new " + javaTypeName + "(ptr, freeOnGC);");
 
-        // Children
-        children.forEach(child -> {
-            WritableClass childStackElement = (WritableClass)child.getMappedType();
-            ClassOrInterfaceDeclaration declaration = childStackElement.generateClass();
-            ClassOrInterfaceDeclaration internalDeclaration = childStackElement.generateClassInternal();
-            childStackElement.write(cuPublic, declaration, cuPrivate, internalDeclaration);
+        Manager.getInstance().getNestedTypes(definition).forEach(child -> {
+            ClassOrInterfaceDeclaration declaration = child.generateClass();
+            ClassOrInterfaceDeclaration internalDeclaration = child.generateClassInternal();
+            child.write(cuPublic, declaration, cuPrivate, internalDeclaration);
             toWriteToPublic.addMember(declaration);
             toWriteToPrivate.addMember(internalDeclaration);
         });
@@ -413,24 +406,37 @@ public class StackElementType implements MappedType, WritableClass {
         if (isSystemHeader())
             return getSystemHeaderFFITypeBody();
 
-        ArrayList<NamedType> unwrappedFields = getUnwrappedFields();
+        List<NamedType> ffiFields = getFields();
 
         StringBuilder generateFFIMethodBody = new StringBuilder();
-        if (isStruct())  {
-            generateFFIMethodBody.append("\t\tnativeType->type = STRUCT_TYPE;\n");
-        } else {
-            generateFFIMethodBody.append("\t\tnativeType->type = UNION_TYPE;\n");
-        }
-        generateFFIMethodBody.append("\t\tnativeType->field_count = ").append(unwrappedFields.size()).append(";\n");
-        generateFFIMethodBody.append("\t\tnativeType->fields = (native_type**)malloc(sizeof(native_type*) * ").append(unwrappedFields.size()).append(");\n");
+        generateFFIMethodBody.append("\t\tnativeType->type = ").append(isStruct() ? "STRUCT_TYPE" : "UNION_TYPE").append(";\n");
+        generateFFIMethodBody.append("\t\tnativeType->size = (int)sizeof(").append(definition.cTypeName()).append(");\n");
+        generateFFIMethodBody.append("\t\tnativeType->alignment = (int)alignof(").append(definition.cTypeName()).append(");\n");
+        generateFFIMethodBody.append("\t\tnativeType->field_count = ").append(ffiFields.size()).append(";\n");
+        generateFFIMethodBody.append("\t\tnativeType->fields = (native_type**)malloc(sizeof(native_type*) * ").append(ffiFields.size()).append(");\n");
 
-        for (int i = 0; i < unwrappedFields.size(); i++) {
-            NamedType field = unwrappedFields.get(i);
-            int fieldStructID = field.getDefinition().getMappedType().typeID();
-            generateFFIMethodBody.append("\t\tnativeType->fields[").append(i).append("] = ")
-                    .append(ffiResolveFunctionName).append("(")
-                    .append(fieldStructID)
-                    .append(");\n");
+        for (int i = 0; i < ffiFields.size(); i++) {
+            TypeDefinition fieldDefinition = ffiFields.get(i).getDefinition();
+            String slot = "nativeType->fields[" + i + "]";
+
+            if (fieldDefinition.getTypeKind() != TypeKind.FIXED_SIZE_ARRAY) {
+                generateFFIMethodBody.append("\t\t").append(slot).append(" = ")
+                        .append(ffiResolveFunctionName).append("(")
+                        .append(fieldDefinition.getMappedType().typeID())
+                        .append(");\n");
+                continue;
+            }
+
+            // A fixed-size array is emitted as one nested struct of `count` elements rather
+            int count = fieldDefinition.getCount();
+            int elementID = fieldDefinition.getNestedDefinition().getMappedType().typeID();
+            generateFFIMethodBody.append("\t\t").append(slot).append(" = (native_type*)malloc(sizeof(native_type));\n");
+            generateFFIMethodBody.append("\t\t").append(slot).append("->type = STRUCT_TYPE;\n");
+            generateFFIMethodBody.append("\t\t").append(slot).append("->field_count = ").append(count).append(";\n");
+            generateFFIMethodBody.append("\t\t").append(slot).append("->fields = (native_type**)malloc(sizeof(native_type*) * ").append(count).append(");\n");
+            generateFFIMethodBody.append("\t\tfor (int __i = 0; __i < ").append(count).append("; __i++)\n");
+            generateFFIMethodBody.append("\t\t\t").append(slot).append("->fields[__i] = ")
+                    .append(ffiResolveFunctionName).append("(").append(elementID).append(");\n");
         }
         generateFFIMethodBody.append("\t\treturn nativeType;\n");
 
@@ -438,7 +444,7 @@ public class StackElementType implements MappedType, WritableClass {
     }
 
     private String getSystemHeaderFFITypeBody() {
-        String cName = definition.getTypeName();
+        String cName = definition.cTypeName();
         StringBuilder body = new StringBuilder();
         body.append("\t\t{\n");
         body.append("\t\t\tsize_t __blockAlign = alignof(").append(cName).append(");\n");
@@ -521,6 +527,10 @@ public class StackElementType implements MappedType, WritableClass {
     @Override
     public String abstractType() {
         return javaTypeName;
+    }
+
+    public TypeDefinition getDefinition() {
+        return definition;
     }
 
     @Override

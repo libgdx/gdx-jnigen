@@ -32,6 +32,7 @@ static jmethodID dispatchCallbackMethod = NULL;
 static jmethodID getExceptionStringMethod = NULL;
 static jclass globalClass = NULL;
 static jclass cxxExceptionClass = NULL;
+static jclass illegalArgumentExceptionClass = NULL;
 static JavaVM* gJVM = NULL;
 static bool ignoreCXXExceptionMessage = false;
 
@@ -168,6 +169,7 @@ JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_init(JN
 }
 
 JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_testIllegalArgumentExceptionThrowable(JNIEnv* env, jclass clazz, jclass illegalArgumentException) {
+    illegalArgumentExceptionClass = (jclass)env->NewGlobalRef(illegalArgumentException);
     env->ThrowNew(illegalArgumentException, "Test");
 }
 
@@ -195,7 +197,7 @@ JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_reExpor
 #endif // __linux__
 }
 
-ffi_type* getFFITypeForNativeType(native_type* nativeType) {
+ffi_type* getFFITypeForNativeType(JNIEnv* env, native_type* nativeType) {
     switch (nativeType->type) {
         case VOID_TYPE:
             return &ffi_type_void;
@@ -218,25 +220,46 @@ ffi_type* getFFITypeForNativeType(native_type* nativeType) {
             }
             return NULL;
         case UNION_TYPE:
-        case STRUCT_TYPE:
+        case STRUCT_TYPE: {
             ffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));
             type->type = FFI_TYPE_STRUCT;
             type->elements = (ffi_type**)malloc(sizeof(ffi_type*) * (nativeType->field_count + 1));
 
             for (int i = 0; i < nativeType->field_count; i++) {
-                type->elements[i] = getFFITypeForNativeType(nativeType->fields[i]);
+                type->elements[i] = getFFITypeForNativeType(env, nativeType->fields[i]);
+                if (env->ExceptionCheck()) {
+                    free(type->elements);
+                    free(type);
+                    return NULL;
+                }
             }
 
             type->elements[nativeType->field_count] = NULL;
             calculateAlignmentAndOffset(type, nativeType->type == STRUCT_TYPE);
+
+            // The generated glue records sizeof/alignof as seen by the C compiler vs our own computation.
+            if (nativeType->size != 0
+                    && (type->size != (size_t)nativeType->size || type->alignment != (unsigned short)nativeType->alignment)) {
+                char message[256];
+                snprintf(message, sizeof(message),
+                        "jnigen runtime computed size %zu / alignment %u for a %s, but the compiler reports sizeof %d / alignof %d",
+                        (size_t)type->size, (unsigned)type->alignment,
+                        nativeType->type == STRUCT_TYPE ? "struct" : "union",
+                        nativeType->size, nativeType->alignment);
+                env->ThrowNew(illegalArgumentExceptionClass, message);
+                free(type->elements);
+                free(type);
+                return NULL;
+            }
             return type;
+        }
     }
     return NULL;
 }
 
 JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_convertNativeTypeToFFIType(JNIEnv* env, jclass clazz, jlong natTypeJ) {
     native_type* nativeType = (native_type*) natTypeJ;
-    ffi_type* ffiType = getFFITypeForNativeType(nativeType);
+    ffi_type* ffiType = getFFITypeForNativeType(env, nativeType);
     return (jlong) ffiType;
 }
 

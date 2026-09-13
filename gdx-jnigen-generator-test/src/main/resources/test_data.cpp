@@ -430,7 +430,7 @@ bool validateString(char* str) {
     return strcmp(str, "TEST STRING") == 0;
 }
 
-void ensureParsed(SpecialEnum, AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested, struct forwardDeclStruct*) {}
+void ensureParsed(SpecialEnum, AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested, struct forwardDeclStruct*, PaddedUnion) {}
 void weirdPointer(FILE *_file) {}
 void constArrayParameter(const TestStruct structs[]) {}
 
@@ -466,6 +466,10 @@ long tsSeconds(struct timespec* t) {
 
 size_t timeHolderSize(void) {
     return sizeof(TimeHolder);
+}
+
+size_t paddedUnionSize(void) {
+    return sizeof(PaddedUnion);
 }
 
 void fillTimeHolder(TimeHolder* holder, int marker) {

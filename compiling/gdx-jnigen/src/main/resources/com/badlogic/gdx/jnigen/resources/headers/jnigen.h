@@ -87,6 +87,7 @@ typedef struct _native_type {
     // If we are a struct/union
     int field_count;
     _native_type** fields;
+    int alignment;
 } native_type;
 
 static inline void set_native_type(native_type* nat_type, native_type_id id, size_t size, bool sign) {
@@ -140,6 +141,13 @@ void get_native_type(native_type* nat_type) {
 }
 
 #define GET_NATIVE_TYPE(type, nat_type) get_native_type<type>(nat_type)
+
+template<typename T> struct __jnigen_strip { typedef T type; };
+template<typename T> struct __jnigen_strip<const T> { typedef typename __jnigen_strip<T>::type type; };
+template<typename T> struct __jnigen_strip<volatile T> { typedef typename __jnigen_strip<T>::type type; };
+template<typename T> struct __jnigen_strip<T*> { typedef typename __jnigen_strip<T>::type type; };
+template<typename T> struct __jnigen_strip<T[]> { typedef typename __jnigen_strip<T>::type type; };
+template<typename T, size_t N> struct __jnigen_strip<T[N]> { typedef typename __jnigen_strip<T>::type type; };
 
 #else // C code
 
