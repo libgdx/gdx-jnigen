@@ -16,7 +16,6 @@
 
 package com.badlogic.gdx.jnigen.loader;
 
-import com.badlogic.gdx.jnigen.commons.Architecture;
 import com.badlogic.gdx.jnigen.commons.HostDetection;
 import com.badlogic.gdx.jnigen.commons.Os;
 
@@ -27,7 +26,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.UUID;
@@ -215,17 +213,10 @@ public class SharedLibraryLoader {
 	}
 
 	private boolean canExecute (File file) {
-		try {
-			Method canExecute = File.class.getMethod("canExecute");
-			if ((Boolean)canExecute.invoke(file)) return true;
-
-			Method setExecutable = File.class.getMethod("setExecutable", boolean.class, boolean.class);
-			setExecutable.invoke(file, true, false);
-
-			return (Boolean)canExecute.invoke(file);
-		} catch (Exception ignored) {
-		}
-		return false;
+		if (file.canExecute())
+			return true;
+		file.setExecutable(true, false);
+		return file.canExecute();
 	}
 
 	private File extractFile (String sourcePath, String sourceCrc, File extractedFile) throws IOException {
