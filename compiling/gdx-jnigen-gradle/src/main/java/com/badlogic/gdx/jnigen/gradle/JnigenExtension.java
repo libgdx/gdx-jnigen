@@ -123,7 +123,7 @@ public class JnigenExtension {
         generator = new JnigenBindingGeneratorExtension();
 		container.execute(generator);
 
-        project.getTasks().create("jnigenGenerateBindings", JnigenGenerateBindingsTask.class, generator);
+        project.getTasks().create("jnigenGenerateBindings", JnigenGenerateBindingsTask.class, generator, targets);
 	}
 
     public void nativeCodeGenerator (Action<NativeCodeGeneratorConfig> container) {

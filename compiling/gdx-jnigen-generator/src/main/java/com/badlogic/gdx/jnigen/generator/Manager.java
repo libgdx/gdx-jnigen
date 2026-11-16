@@ -19,11 +19,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Manager {
@@ -37,13 +39,15 @@ public class Manager {
 
     private final String parsedCHeader;
     private final String basePackage;
+    private final ParseTarget target;
 
-    public static void init(String parsedCHeader, String basePackage) {
-        instance = new Manager(parsedCHeader, basePackage);
+    public static void init(ParseTarget target, String parsedCHeader, String basePackage) {
+        instance = new Manager(target, parsedCHeader, basePackage);
     }
 
     private final Map<String, StackElementType> stackElements = new HashMap<>();
     private final ArrayList<StackElementType> orderedStackElements = new ArrayList<>();
+    private final Map<TypeDefinition, List<WritableClass>> nestedTypes = new HashMap<>();
     private final Map<String, EnumType> enums = new HashMap<>();
     private final HashMap<String, TypeDefinition> knownCTypes = new HashMap<>();
 
@@ -55,8 +59,9 @@ public class Manager {
 
     private final GlobalType globalType;
 
-    public Manager(String parsedCHeader, String basePackage) {
+    public Manager(ParseTarget target, String parsedCHeader, String basePackage) {
         this.rollBackManager = null;
+        this.target = target;
         this.parsedCHeader = parsedCHeader;
         this.basePackage = basePackage;
         String[] segments = parsedCHeader.split("/");
@@ -65,10 +70,12 @@ public class Manager {
 
     public Manager(Manager rollBackManager) {
         this.rollBackManager = rollBackManager;
+        this.target = rollBackManager.target;
         this.parsedCHeader = rollBackManager.parsedCHeader;
         this.basePackage = rollBackManager.basePackage;
         this.stackElements.putAll(rollBackManager.stackElements);
         this.orderedStackElements.addAll(rollBackManager.orderedStackElements);
+        rollBackManager.nestedTypes.forEach((owner, nested) -> this.nestedTypes.put(owner, new ArrayList<>(nested)));
         this.enums.putAll(rollBackManager.enums);
         this.knownCTypes.putAll(rollBackManager.knownCTypes);
         this.cTypeToJavaStringMapper.putAll(rollBackManager.cTypeToJavaStringMapper);
@@ -87,22 +94,35 @@ public class Manager {
         instance = instance.rollBackManager;
     }
 
-    public void mergeManager(Manager toMerge) {
-        toMerge.knownCTypes.forEach((name, typeDefinition) -> {
-            TypeDefinition own = knownCTypes.get(name);
-            if (own == null)
-                throw new IllegalStateException("Can't merge Manager cause " + name + " doesn't exist in both.");
-            if (own.getTypeKind() != typeDefinition.getTypeKind()) {
-                if (own.getTypeKind() == TypeKind.SIGNED_BYTE && typeDefinition.getTypeKind() == TypeKind.PROMOTED_BYTE)
-                    own.setTypeKind(TypeKind.NATIVE_BYTE);
-                else if (own.getTypeKind() == TypeKind.PROMOTED_LONG && typeDefinition.getTypeKind() == TypeKind.PROMOTED_LONG_LONG)
-                    own.setTypeKind(TypeKind.PROMOTED_LONG_LONG);
-                else if (own.getTypeKind() == TypeKind.LONG && typeDefinition.getTypeKind() == TypeKind.LONG_LONG)
-                    own.setTypeKind(TypeKind.LONG_LONG);
-                else
-                    throw new IllegalStateException("Can't merge " + typeDefinition.getTypeKind() + " into " + own.getTypeKind());
-            }
+    public void unifyWith(List<Manager> passes) {
+        passes.forEach(this::checkSameDeclarations);
+
+        knownCTypes.forEach((name, own) -> {
+            List<TypeDefinition> seenPerPass = new ArrayList<>();
+            for (Manager pass : passes)
+                seenPerPass.add(pass.knownCTypes.get(name));
+            own.setTypeKind(TypeKind.resolve(name, seenPerPass));
         });
+    }
+
+    public void checkSameDeclarations(Manager manager) {
+        DeclarationCheck.checkSame(this, manager);
+    }
+
+    public Set<String> getCTypeNames() {
+        return knownCTypes.keySet();
+    }
+
+    public List<StackElementType> getStackElements() {
+        return orderedStackElements;
+    }
+
+    public Map<String, EnumType> getEnums() {
+        return enums;
+    }
+
+    public Map<String, MacroType> getMacros() {
+        return macros;
     }
 
     public void addStackElement(StackElementType stackElementType, boolean registerGlobally) {
@@ -116,6 +136,14 @@ public class Manager {
         orderedStackElements.sort(Comparator.comparing(StackElementType::abstractType));
     }
 
+    public void addNestedType(TypeDefinition owner, WritableClass nested) {
+        nestedTypes.computeIfAbsent(owner, key -> new ArrayList<>()).add(nested);
+    }
+
+    public List<WritableClass> getNestedTypes(TypeDefinition owner) {
+        return nestedTypes.getOrDefault(owner, Collections.emptyList());
+    }
+
     public int getStackElementID(StackElementType stackElementType) {
         return orderedStackElements.indexOf(stackElementType) + knownCTypes.size();
     }
@@ -127,10 +155,23 @@ public class Manager {
         enums.put(name, enumType);
     }
 
-    public void recordCType(String name, TypeDefinition definition) {
-        if (hasCType(name))
-            throw new IllegalArgumentException("CType with name: " + name + " already exists");
-        knownCTypes.put(name, definition);
+    public TypeDefinition defineType(TypeKind typeKind, String typeName, long observedSize, long observedAlignment) {
+        if (!typeKind.isPrimitive())
+            return new TypeDefinition(typeKind, typeName, target.getPossibleTarget(), observedSize, observedAlignment);
+
+        TypeDefinition definition = knownCTypes.get(typeName);
+        if (definition == null) {
+            definition = new TypeDefinition(typeKind, typeName, target.getPossibleTarget(), observedSize, observedAlignment);
+            knownCTypes.put(typeName, definition);
+            return definition;
+        }
+        if (definition.getTypeKind() != typeKind)
+            throw new IllegalArgumentException("Type " + typeName + " has kind " + definition.getTypeKind() + ", but requested was " + typeKind);
+        if (definition.getObservedSize() != observedSize)
+            throw new IllegalArgumentException("Type " + typeName + " has size " + definition.getObservedSize() + ", but requested was " + observedSize);
+        if (definition.getObservedAlignment() != observedAlignment)
+            throw new IllegalArgumentException("Type " + typeName + " has alignment " + definition.getObservedAlignment() + ", but requested was " + observedAlignment);
+        return definition;
     }
 
     public boolean hasCType(String name) {
@@ -204,6 +245,10 @@ public class Manager {
         return globalType;
     }
 
+    public ParseTarget getTarget() {
+        return target;
+    }
+
     public String getParsedCHeader() {
         return parsedCHeader;
     }
@@ -245,15 +290,17 @@ public class Manager {
             assertBuilder.add("static_assert(sizeof(" + name + ") == " + typeKind.getMappedType().getSize(target) + ", \"Type " + name + " has unexpected size.\");");
             assertBuilder.add("static_assert(alignof(" + name + ") == " + typeKind.getMappedType().getAlignment(target) + ", \"Type " + name + " has unexpected alignment.\");");
         });
-        stackElements.forEach((name, stackElementType) -> {
+        for (StackElementType stackElementType : orderedStackElements) {
             if (stackElementType.isIncomplete())
-                return;
-            assertBuilder.add("static_assert(sizeof(" + name + ") == " + stackElementType.getSize(target) + ", \"Type " + name + " has unexpected size.\");");
-            assertBuilder.add("static_assert(alignof(" + name + ") == " + stackElementType.getAlignment(target) + ", \"Type " + name + " has unexpected alignment.\");");
+                continue;
+            String name = stackElementType.getDefinition().cTypeName();
+            String label = stackElementType.classFile();
+            assertBuilder.add("static_assert(sizeof(" + name + ") == " + stackElementType.getSize(target) + ", \"Type " + label + " has unexpected size.\");");
+            assertBuilder.add("static_assert(alignof(" + name + ") == " + stackElementType.getAlignment(target) + ", \"Type " + label + " has unexpected alignment.\");");
             for (int i = 0; i < stackElementType.getFields().size(); i++) {
-                assertBuilder.add("static_assert(offsetof(" + name + ", " + stackElementType.getFields().get(i).getName() + ") == " + stackElementType.getFieldOffset(i, target) + ", \"Type " + name + " has unexpected offset.\");");
+                assertBuilder.add("static_assert(offsetof(" + name + ", " + stackElementType.getFields().get(i).getName() + ") == " + stackElementType.getFieldOffset(i, target) + ", \"Type " + label + " has unexpected offset.\");");
             }
-        });
+        }
         assertBuilder.add("#endif // " + target.condition());
     }
 
@@ -361,9 +408,20 @@ public class Manager {
 
             MethodDeclaration getFFITypeMethod = ffiTypeClass.addMethod("getNativeType", Keyword.PRIVATE, Keyword.NATIVE, Keyword.STATIC);
             getFFITypeMethod.setBody(null).setType(long.class).addParameter(int.class, "id");
+
+            MethodDeclaration freeNativeTypeMethod = ffiTypeClass.addMethod("freeNativeType", Keyword.PRIVATE, Keyword.NATIVE, Keyword.STATIC);
+            freeNativeTypeMethod.setBody(null).setType(void.class).addParameter(long.class, "nativeType");
+
+            BlockStmt registerCTypeInfoBody = ffiTypeClass.addMethod("registerCTypeInfo", Keyword.PRIVATE, Keyword.STATIC)
+                    .addParameter(int.class, "id")
+                    .createBody();
+            registerCTypeInfoBody.addStatement("long nativeType = getNativeType(id);");
+            registerCTypeInfoBody.addStatement("ffiIdMap.put(id, CHandler.constructCTypeFromNativeType(nativeType));");
+            registerCTypeInfoBody.addStatement("freeNativeType(nativeType);");
+
             StringBuilder ffiTypeNativeBody = new StringBuilder("JNI\n");
             ffiTypeNativeBody.append("static native_type* ").append(nativeGetFFIMethodName).append("(int id) {\n");
-            ffiTypeNativeBody.append("native_type* nativeType = (native_type*)malloc(sizeof(native_type));\n");
+            ffiTypeNativeBody.append("native_type* nativeType = (native_type*)calloc(1, sizeof(native_type));\n");
             ffiTypeNativeBody.append("switch(id) {\n");
             BlockStmt staticInit = ffiTypeClass.addStaticInitializer();
 
@@ -371,16 +429,16 @@ public class Manager {
             ffiTypeNativeBody.append("\tcase ").append(VOID_FFI_ID).append(":\n")
                     .append("\t\t").append("nativeType->type = VOID_TYPE;").append("\n")
                     .append("\t\treturn nativeType;\n");
-            staticInit.addStatement("ffiIdMap.put(" + VOID_FFI_ID + ", CHandler.constructCTypeFromNativeType(getNativeType(" + VOID_FFI_ID + ")));");
+            staticInit.addStatement("registerCTypeInfo(" + VOID_FFI_ID + ");");
             ffiTypeNativeBody.append("\tcase ").append(POINTER_FFI_ID).append(":\n")
                     .append("\t\t").append("nativeType->type = POINTER_TYPE;").append("\n")
                     .append("\t\treturn nativeType;\n");
-            staticInit.addStatement("ffiIdMap.put(" + POINTER_FFI_ID + ", CHandler.constructCTypeFromNativeType(getNativeType(" + POINTER_FFI_ID + ")));");
+            staticInit.addStatement("registerCTypeInfo(" + POINTER_FFI_ID + ");");
 
             List<String> cTypes = knownCTypes.keySet().stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
             for (int i = 0; i < cTypes.size(); i++) {
                 String cType = cTypes.get(i);
-                staticInit.addStatement("ffiIdMap.put(" + i + ", CHandler.constructCTypeFromNativeType(getNativeType(" + i + ")));");
+                staticInit.addStatement("registerCTypeInfo(" + i + ");");
                 ffiTypeNativeBody.append("\tcase ").append(i).append(":\n");
                 ffiTypeNativeBody.append("\t\tGET_NATIVE_TYPE(").append(cType).append(", nativeType);\n");
                 ffiTypeNativeBody.append("\t\treturn nativeType;\n");
@@ -388,11 +446,13 @@ public class Manager {
             for (int i = 0; i < orderedStackElements.size(); i++) {
                 int id = i + knownCTypes.size();
                 StackElementType stackElementType = orderedStackElements.get(i);
-                staticInit.addStatement("ffiIdMap.put(" + id + ", CHandler.constructCTypeFromNativeType(getNativeType(" + id + ")));");
+                if (stackElementType.isOpaque())
+                    continue;
+                staticInit.addStatement("registerCTypeInfo(" + id + ");");
                 ffiTypeNativeBody.append("\tcase ").append(id).append(":\n");
                 ffiTypeNativeBody.append(stackElementType.getFFITypeBody(nativeGetFFIMethodName));
             }
-            ffiTypeNativeBody.append("\tdefault:\n\t\treturn NULL;\n");
+            ffiTypeNativeBody.append("\tdefault:\n\t\tfree(nativeType);\n\t\treturn NULL;\n");
             ffiTypeNativeBody.append("\t}\n}\n");
             getFFITypeNativeMethod.setContent(ffiTypeNativeBody.toString());
 
@@ -400,6 +460,7 @@ public class Manager {
 
             String ffiTypeString = ffiTypeCU.toString();
             ffiTypeString = patchMethodNative(getFFITypeMethod, jniMethodBody, ffiTypeString);
+            ffiTypeString = patchMethodNative(freeNativeTypeMethod, "free_native_type((native_type*)nativeType);\n", ffiTypeString);
 
             Files.write(Paths.get(basePath + basePackage.replace(".", "/") + "/FFITypes.java"),
                     ffiTypeString.getBytes(StandardCharsets.UTF_8));

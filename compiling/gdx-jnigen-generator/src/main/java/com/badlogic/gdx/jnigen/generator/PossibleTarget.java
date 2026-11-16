@@ -3,9 +3,9 @@ package com.badlogic.gdx.jnigen.generator;
 public enum PossibleTarget {
     WIN_32,
     WIN_64,
-    UNIX_32_NOT_ANDROID_X86,
+    UNIX_32_NOT_X86,
     UNIX_64,
-    ANDROID_X86;
+    UNIX_X86_32;
 
     public String condition() {
         switch (this) {
@@ -13,12 +13,12 @@ public enum PossibleTarget {
                 return "defined(_WIN32) && ARCH_BITS == 32";
             case WIN_64:
                 return "defined(_WIN32) && ARCH_BITS == 64";
-            case UNIX_32_NOT_ANDROID_X86:
-                return "!defined(_WIN32) && ARCH_BITS == 32 && !(defined(__i386__) && defined(__ANDROID__))";
+            case UNIX_32_NOT_X86:
+                return "!defined(_WIN32) && ARCH_BITS == 32 && !defined(__i386__)";
             case UNIX_64:
                 return "!defined(_WIN32) && ARCH_BITS == 64";
-            case ANDROID_X86:
-                return "defined(__i386__) && defined(__ANDROID__)";
+            case UNIX_X86_32:
+                return "!defined(_WIN32) && defined(__i386__)";
             default:
                 throw new IllegalStateException("Unexpected value: " + this);
         }
@@ -30,19 +30,19 @@ public enum PossibleTarget {
                 return "(CHandler.IS_32_BIT && CHandler.IS_COMPILED_WIN)";
             case WIN_64:
                 return "(CHandler.IS_64_BIT && CHandler.IS_COMPILED_WIN)";
-            case UNIX_32_NOT_ANDROID_X86:
-                return "(CHandler.IS_32_BIT && CHandler.IS_COMPILED_UNIX && !CHandler.IS_COMPILED_ANDROID_X86)";
+            case UNIX_32_NOT_X86:
+                return "(CHandler.IS_32_BIT && CHandler.IS_COMPILED_UNIX && !CHandler.IS_COMPILED_UNIX_X86_32)";
             case UNIX_64:
                 return "(CHandler.IS_64_BIT && CHandler.IS_COMPILED_UNIX)";
-            case ANDROID_X86:
-                return "CHandler.IS_COMPILED_ANDROID_X86";
+            case UNIX_X86_32:
+                return "CHandler.IS_COMPILED_UNIX_X86_32";
             default:
                 throw new IllegalStateException("Unexpected value: " + this);
         }
     }
 
     public boolean is32Bit() {
-        return this == WIN_32 || this == UNIX_32_NOT_ANDROID_X86 || this == ANDROID_X86;
+        return this == WIN_32 || this == UNIX_32_NOT_X86 || this == UNIX_X86_32;
     }
 
     public boolean is64Bit() {
@@ -53,8 +53,8 @@ public enum PossibleTarget {
         return this == WIN_32 || this == WIN_64;
     }
 
-    public boolean isAndroidX86() {
-        return this == ANDROID_X86;
+    public boolean isUnixX86_32() {
+        return this == UNIX_X86_32;
     }
 
     public static String unsupportedPlatformCondition() {

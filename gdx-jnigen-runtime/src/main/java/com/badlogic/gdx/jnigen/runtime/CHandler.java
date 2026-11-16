@@ -7,9 +7,9 @@ import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
 import com.badlogic.gdx.jnigen.runtime.closure.JavaClosureObject;
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureDecoder;
 import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
-import com.badlogic.gdx.jnigen.runtime.mem.AllocationManager;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
 import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrManager;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtrPool;
 import com.badlogic.gdx.jnigen.runtime.pointer.PointerPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.gdx.jnigen.runtime.util.DowncallCClosureObjectSupplier;
@@ -18,14 +18,14 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CHandler {
 
     static {
         new SharedLibraryLoader().load("jnigen-runtime");
         try {
-            boolean res = init(CHandler.class.getDeclaredMethod("dispatchCallback", ClosureDecoder.class, long.class),
+            boolean res = init(CHandler.class.getDeclaredMethod("dispatchCallback", ClosureDecoder.class, long.class, int.class),
                     CHandler.class.getDeclaredMethod("getExceptionString", Throwable.class));
             if (!res)
                 throw new RuntimeException("JNI initialization failed, either CHandler#dispatchCallback or CHandler#getExceptionString are not JNI accessible.");
@@ -37,7 +37,7 @@ public class CHandler {
         IS_64_BIT = !is32Bit();
         IS_COMPILED_UNIX = !isCompiledWin();
         IS_COMPILED_WIN = isCompiledWin();
-        IS_COMPILED_ANDROID_X86 = isCompiledAndroidX86();
+        IS_COMPILED_UNIX_X86_32 = isCompiledUnixI386();
         IS_CHAR_SIGNED = isCharSigned();
         LONG_SIZE = is32Bit() || isCompiledWin() ? 4 : 8;
         testNativeSetup();
@@ -52,13 +52,12 @@ public class CHandler {
     public static final boolean IS_64_BIT;
     public static final boolean IS_COMPILED_UNIX;
     public static final boolean IS_COMPILED_WIN;
-    public static final boolean IS_COMPILED_ANDROID_X86;
+    public static final boolean IS_COMPILED_UNIX_X86_32;
     public static final boolean IS_CHAR_SIGNED;
     public static final int LONG_SIZE;
 
-    private static final HashMap<CTypeInfo[], Long> classCifMap = new HashMap<>();
-
-    private static final HashMap<Long, ClosureObject<?>> fnPtrClosureMap = new HashMap<>();
+    private static final ConcurrentHashMap<CTypeInfo[], Long> classCifMap = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Long, ClosureObject<?>> fnPtrClosureMap = new ConcurrentHashMap<>();
 
     public static String getExceptionString(Throwable e) {
         StringWriter sw = new StringWriter();
@@ -77,10 +76,11 @@ public class CHandler {
         }catch (CXXException ignored) {}
     }
 
-    public static <T extends Closure> void dispatchCallback(ClosureDecoder<T> toCallOn, long parameter) {
-        BufferPtr ptr = AllocationManager.wrap(parameter);
+    public static <T extends Closure> void dispatchCallback(ClosureDecoder<T> toCallOn, long parameter, int size) {
+        BufferPtrPool pool = BufferPtrManager.getPool();
+        BufferPtr ptr = BufferPtrManager.get(pool, parameter, size);
         toCallOn.invoke(ptr);
-        BufferPtrManager.insertPool(ptr);
+        BufferPtrManager.insertPool(pool, ptr);
     }
 
     public static CTypeInfo constructCTypeFromNativeType(long nativeType) {
@@ -101,14 +101,17 @@ public class CHandler {
     }
 
     public static long getFFICifForSignature(CTypeInfo[] signature) {
-        synchronized (classCifMap) {
-            Long cif = classCifMap.get(signature);
-            if (cif == null) {
-                cif = CHandler.generateFFICifForSignature(signature);
-                classCifMap.put(signature, cif);
-            }
+        Long cif = classCifMap.get(signature);
+        if (cif != null)
             return cif;
+        long generated = CHandler.generateFFICifForSignature(signature);
+        Long existing = classCifMap.putIfAbsent(signature, generated);
+        if (existing != null)
+        {
+            // There is a memory leak here on race, but honestly, shouldn't matter
+            return existing;
         }
+        return generated;
     }
 
     public static <T extends Closure> ClosureObject<T> createClosureForObject(T object) {
@@ -120,41 +123,33 @@ public class CHandler {
         long closurePtr = ret.getValue().getPointer();
 
         ClosureObject<T> closureObject = new JavaClosureObject<>(object, fnPtr, closurePtr, closureDecoder);
-        synchronized (fnPtrClosureMap) {
-            fnPtrClosureMap.put(fnPtr, closureObject);
-        }
+        fnPtrClosureMap.put(fnPtr, closureObject);
         return closureObject;
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends Closure> ClosureObject<T> getClosureObject(long fnPtr, DowncallCClosureObjectSupplier<T> closureFallback) {
-        synchronized (fnPtrClosureMap) {
-            @SuppressWarnings("unchecked")
-            ClosureObject<T> closureObject = (ClosureObject<T>) fnPtrClosureMap.get(fnPtr);
-            if (closureObject == null) {
-                if (closureFallback == null)
-                    throw new RuntimeException("No Closure object found for " + fnPtr);
-                closureObject = closureFallback.get(fnPtr);
-                fnPtrClosureMap.put(fnPtr, closureObject);
-            }
+        ClosureObject<T> closureObject = (ClosureObject<T>) fnPtrClosureMap.get(fnPtr);
+        if (closureObject != null)
             return closureObject;
-        }
+        if (closureFallback == null)
+            throw new RuntimeException("No Closure object found for " + fnPtr);
+        closureObject = closureFallback.get(fnPtr);
+        ClosureObject<?> existing = fnPtrClosureMap.putIfAbsent(fnPtr, closureObject);
+        return existing != null ? (ClosureObject<T>) existing : closureObject;
     }
 
     public static void deregisterFunctionPointer(long fnPtr) {
-        synchronized (fnPtrClosureMap) {
-            fnPtrClosureMap.remove(fnPtr);
-        }
+        fnPtrClosureMap.remove(fnPtr);
     }
 
     public static void clearRegisteredFunctionPointer() {
-        synchronized (fnPtrClosureMap) {
-            fnPtrClosureMap.clear();
-        }
+        fnPtrClosureMap.clear();
     }
 
     private static native boolean is32Bit();
     private static native boolean isCompiledWin();
-    private static native boolean isCompiledAndroidX86();
+    private static native boolean isCompiledUnixI386();
     private static native boolean isCharSigned();
 
     private static native boolean init(Method dispatchCallbackReflectedMethod, Method getExceptionStringReflectedMethod);
@@ -168,8 +163,6 @@ public class CHandler {
     public static native void setDisableCXXExceptionMessage(boolean disable);
 
     public static native boolean reExportSymbolsGlobally(String libPath);
-
-    public static native void dispatchCCall(long fnPtr, long cif, long parameter);
 
     public static native long convertNativeTypeToFFIType(long nativeType);
 

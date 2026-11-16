@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.List;
 import java.util.Set;
 
 public class ToolFinder {
@@ -37,7 +38,7 @@ public class ToolFinder {
             return absoluteFile;
         }
 
-        Set<String> paths = env.getPaths();
+        List<String> paths = env.getPaths();
         for (String path : paths) {
             File file = new File(path, toolPathOrName);
             if (file.exists() && file.isFile()) {

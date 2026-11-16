@@ -2,6 +2,7 @@ package com.badlogic.jnigen.tests;
 
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
 import com.badlogic.jnigen.generated.TestData;
+import com.badlogic.jnigen.generated.structs.PaddedUnion;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 import com.badlogic.jnigen.generated.structs.TestUnion;
 import com.badlogic.jnigen.generated.structs.TestUnion.TestUnionPointer;
@@ -44,6 +45,13 @@ public class UnionTest extends BaseTest {
         }
 
         assertEquals(testUnion.fixedSizeInt().getPointer(), TestData.getUnionFixedSizeIntByPointer(testUnion.asPointer()).getPointer());
+    }
+
+    @Test
+    public void testUnionSizeIsPaddedToAlignment() {
+        PaddedUnion paddedUnion = new PaddedUnion();
+        assertEquals(TestData.paddedUnionSize(), paddedUnion.getSize());
+        assertEquals(16, paddedUnion.getSize());
     }
 
     @Test

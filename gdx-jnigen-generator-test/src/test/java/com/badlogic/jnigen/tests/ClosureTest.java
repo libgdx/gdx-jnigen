@@ -1,7 +1,9 @@
 package com.badlogic.jnigen.tests;
 
 import com.badlogic.gdx.jnigen.runtime.closure.ClosureObject;
+import com.badlogic.gdx.jnigen.runtime.closure.PointingPoolManager;
 import com.badlogic.gdx.jnigen.runtime.pointer.StackElementPointer;
+import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.jnigen.generated.structs.TestStruct;
 import com.badlogic.jnigen.generated.structs.TestStruct.TestStructPointer;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -240,6 +243,41 @@ public class ClosureTest extends BaseTest {
         call_callback_in_thread(closureObject);
         assertNotEquals(spawnedThreadName.get(), Thread.currentThread().getName());
         assertTrue(spawnedThreadName.get().startsWith("Thread-"));
+        closureObject.free();
+    }
+
+    @Test
+    public void pooledCallbackConcurrentFromMultipleThreads() {
+        final int threadCount = 8;
+        final int iterationsPerThread = 1000;
+
+        ConcurrentHashMap<Long, AtomicInteger> perThread = new ConcurrentHashMap<>();
+        AtomicLong total = new AtomicLong(0);
+        AtomicReference<Throwable> firstError = new AtomicReference<>();
+
+        ClosureObject<thread_callback> closureObject = ClosureObject.fromClosure((arg) -> {
+            try {
+                long tid = Thread.currentThread().getId();
+                perThread.computeIfAbsent(tid, k -> new AtomicInteger()).incrementAndGet();
+                total.incrementAndGet();
+            } catch (Throwable t) {
+                firstError.compareAndSet(null, t);
+            }
+            return arg;
+        });
+
+        PointingPoolManager manager = new PointingPoolManager(4);
+        manager.addPool(VoidPointer::new, 4);
+        closureObject.setPoolManager(manager);
+
+        call_callback_in_n_threads(closureObject, threadCount, iterationsPerThread);
+
+        assertNull(firstError.get(), "callback threw");
+        assertEquals((long) threadCount * iterationsPerThread, total.get());
+        assertEquals(threadCount, perThread.size());
+        for (AtomicInteger c : perThread.values())
+            assertEquals(iterationsPerThread, c.get());
+
         closureObject.free();
     }
 }

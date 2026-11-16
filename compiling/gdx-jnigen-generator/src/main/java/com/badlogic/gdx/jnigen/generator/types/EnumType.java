@@ -27,6 +27,8 @@ import com.github.javaparser.ast.stmt.SwitchStmt;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.stream.Collectors;
+import java.util.List;
 
 public class EnumType implements MappedType {
 
@@ -174,6 +176,10 @@ public class EnumType implements MappedType {
                 .addStatement(writeExpr);
     }
 
+    public List<EnumConstant> getConstants() {
+        return constants.values().stream().sorted(Comparator.comparingInt(EnumConstant::getId)).collect(Collectors.toList());
+    }
+
     public PrimitiveType getBackingPrimitiveType() {
         return (PrimitiveType)definition.getNestedDefinition().getMappedType();
     }
@@ -191,6 +197,11 @@ public class EnumType implements MappedType {
     @Override
     public String packageName() {
         return Manager.getInstance().getBasePackage() + ".enums";
+    }
+
+    @Override
+    public String pointerType() {
+        return abstractType() + "." + abstractType() + "Pointer";
     }
 
     @Override

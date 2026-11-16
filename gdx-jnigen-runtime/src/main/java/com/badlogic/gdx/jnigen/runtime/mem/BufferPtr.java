@@ -45,12 +45,27 @@ public final class BufferPtr {
     }
 
     public void assertBounds(int expectedCapacity) {
+        // Combined trick: ((expectedCapacity | (cap - expectedCapacity)) < 0) is true iff
+        // expectedCapacity < 0 or expectedCapacity > cap. cap <= 0 also routes to the slow helper,
+        // which distinguishes "use-after-free / null pointer" from "unknown size, OK".
+        int cap = capacity;
+        if (cap <= 0 || (expectedCapacity | (cap - expectedCapacity)) < 0)
+            slowAssertBounds(expectedCapacity);
+    }
+
+    private void slowAssertBounds(int expectedCapacity) {
+        if (buffer == null || pointer == 0)
+            throwInvalid(expectedCapacity);
+        if (capacity > 0 && (expectedCapacity < 0 || expectedCapacity > capacity))
+            throwInvalid(expectedCapacity);
+    }
+
+    private void throwInvalid(int expectedCapacity) {
         if (buffer == null)
             throw new IllegalStateException("Buffer invalid (use-after-free?)");
-        if (isNull())
+        if (pointer == 0)
             throw new NullPointerException("Buffer is null");
-        if (hasCapacity() && (expectedCapacity < 0 || expectedCapacity > capacity))
-            throw new IndexOutOfBoundsException("Index: " + expectedCapacity + ", Size: " + capacity);
+        throw new IndexOutOfBoundsException("Index: " + expectedCapacity + ", Size: " + capacity);
     }
 
     public boolean getBoolean() {
@@ -383,6 +398,74 @@ public final class BufferPtr {
         }
     }
 
+    public long getNativeWord() {
+        assertBounds(CHandler.POINTER_SIZE);
+        if (CHandler.POINTER_SIZE == 4)
+            return buffer.getInt(offset);
+        else
+            return buffer.getLong(offset);
+    }
+
+    public long getNativeWord(int index) {
+        assertBounds(index + CHandler.POINTER_SIZE);
+        if (CHandler.POINTER_SIZE == 4) {
+            return buffer.getInt(offset + index);
+        } else {
+            return buffer.getLong(offset + index);
+        }
+    }
+
+    public void setNativeWord(long value) {
+        assertBounds(CHandler.POINTER_SIZE);
+        if (CHandler.POINTER_SIZE == 4)
+            buffer.putInt(offset, (int)value);
+        else
+            buffer.putLong(offset, value);
+    }
+
+    public void setNativeWord(int index, long value) {
+        assertBounds(index + CHandler.POINTER_SIZE);
+        if (CHandler.POINTER_SIZE == 4) {
+            buffer.putInt(offset + index, (int)value);
+        } else {
+            buffer.putLong(offset + index, value);
+        }
+    }
+
+    public long getNativeUWord() {
+        assertBounds(CHandler.POINTER_SIZE);
+        if (CHandler.POINTER_SIZE == 4)
+            return buffer.getInt(offset) & 0xFFFFFFFFL;
+        else
+            return buffer.getLong(offset);
+    }
+
+    public long getNativeUWord(int index) {
+        assertBounds(index + CHandler.POINTER_SIZE);
+        if (CHandler.POINTER_SIZE == 4) {
+            return buffer.getInt(offset + index) & 0xFFFFFFFFL;
+        } else {
+            return buffer.getLong(offset + index);
+        }
+    }
+
+    public void setNativeUWord(long value) {
+        assertBounds(CHandler.POINTER_SIZE);
+        if (CHandler.POINTER_SIZE == 4)
+            buffer.putInt(offset, (int)value);
+        else
+            buffer.putLong(offset, value);
+    }
+
+    public void setNativeUWord(int index, long value) {
+        assertBounds(index + CHandler.POINTER_SIZE);
+        if (CHandler.POINTER_SIZE == 4) {
+            buffer.putInt(offset + index, (int)value);
+        } else {
+            buffer.putLong(offset + index, value);
+        }
+    }
+
     public String getString()
     {
         return getString(StandardCharsets.UTF_8);
@@ -390,9 +473,28 @@ public final class BufferPtr {
 
     public String getString(Charset charset)
     {
+        assertBounds(0);
+        int limit = hasCapacity() ? capacity : buffer.capacity() - offset;
         int length = 0;
-        while (buffer.get(offset + length) != 0)
+        while (length < limit && buffer.get(offset + length) != 0)
             length++;
+        if (length == limit)
+            throw new IndexOutOfBoundsException("No NUL terminator within bounds. Size: " + limit);
+        byte[] bytes = new byte[length];
+        for (int i = 0; i < length; i++) {
+            bytes[i] = buffer.get(offset + i);
+        }
+        return new String(bytes, charset);
+    }
+
+    public String getString(int length)
+    {
+        return getString(length, StandardCharsets.UTF_8);
+    }
+
+    public String getString(int length, Charset charset)
+    {
+        assertBounds(length);
         byte[] bytes = new byte[length];
         for (int i = 0; i < length; i++) {
             bytes[i] = buffer.get(offset + i);
@@ -409,10 +511,19 @@ public final class BufferPtr {
     {
         byte[] bytes = string.getBytes(charset);
         assertBounds(bytes.length + 1);
-        for (int i = 0; i < bytes.length; i++) {
-            buffer.put(offset + i, bytes[i]);
-        }
+        setBytes(0, bytes);
         buffer.put(offset + bytes.length, (byte) 0);
+    }
+
+    public void setBytes(byte[] bytes) {
+        setBytes(0, bytes);
+    }
+
+    public void setBytes(int index, byte[] bytes) {
+        assertBounds(index + bytes.length);
+        for (int i = 0; i < bytes.length; i++) {
+            buffer.put(offset + index + i, bytes[i]);
+        }
     }
 
     public void copyFrom(BufferPtr src, int size) {

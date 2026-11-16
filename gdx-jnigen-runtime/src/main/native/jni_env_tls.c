@@ -1,4 +1,5 @@
 #include "jni_env_tls.h"
+#include <stdio.h>
 #include <stdlib.h>
 #ifdef _WIN32
 #include <process.h>
@@ -16,6 +17,14 @@
 #define HANDLE_RESULT(res, msg) \
     if (res != JNI_OK) { \
         fprintf(stderr, msg ": %d", (int)res); \
+        fflush(stderr); \
+        exit(1); \
+    }
+
+// Win32 BOOL semantics are inverted compared to JNI/pthread return codes: nonzero means success
+#define HANDLE_WIN_BOOL(res, msg) \
+    if (!(res)) { \
+        fprintf(stderr, msg "\n"); \
         fflush(stderr); \
         exit(1); \
     }
@@ -47,15 +56,16 @@ void init_tls() {
 void cleanup_tls() {
     if (envTls != TLS_OUT_OF_INDEXES) {
         BOOL res = TlsFree(envTls);
-        HANDLE_RESULT(res, "Failed to deallocate TLS")
+        HANDLE_WIN_BOOL(res, "Failed to deallocate TLS")
+        envTls = TLS_OUT_OF_INDEXES;
     }
 }
 
 void set_tls(ThreadData* t_data) {
     if (envTls == TLS_OUT_OF_INDEXES)
         init_tls();
-    BOOL res = TlsSetValue(envTls, (LPVOID)t_data);;
-    HANDLE_RESULT(res, "Failed to set thread data")
+    BOOL res = TlsSetValue(envTls, (LPVOID)t_data);
+    HANDLE_WIN_BOOL(res, "Failed to set thread data")
 }
 
 #else

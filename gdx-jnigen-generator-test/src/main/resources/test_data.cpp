@@ -120,6 +120,14 @@ void call_methodWithCallbackTestStructArg(methodWithCallbackTestStructArg fnPtr)
    fnPtr(arg);
 }
 
+void call_methodWithCallbackTimespecPointerArg(methodWithCallbackTimespecPointerArg fnPtr) {
+    // Synchronous upcall: the stack local stays valid for the duration of the callback.
+    struct timespec ts;
+    ts.tv_sec = 42;
+    ts.tv_nsec = 7;
+    fnPtr(&ts);
+}
+
 void call_methodWithCallbackTestStructPointerArg(methodWithCallbackTestStructPointerArg fnPtr) {
     TestStruct str = {
         .field1 = 1,
@@ -422,9 +430,66 @@ bool validateString(char* str) {
     return strcmp(str, "TEST STRING") == 0;
 }
 
-void ensureParsed(SpecialEnum, AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested, struct forwardDeclStruct*) {}
+void ensureParsed(SpecialEnum, AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, NestedNameCollision, NestedNameCollisionArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested, struct forwardDeclStruct*, PaddedUnion) {}
 void weirdPointer(FILE *_file) {}
 void constArrayParameter(const TestStruct structs[]) {}
+
+// forwardDeclStruct is only forward-declared in test_data.h; its real definition lives here, so the
+// generator treats it as an unsized/opaque type (pointer-only) while the native glue uses the layout.
+struct forwardDeclStruct {
+    int value;
+};
+
+struct forwardDeclStruct* createForwardDeclStruct(int value) {
+    struct forwardDeclStruct* handle = (struct forwardDeclStruct*)malloc(sizeof(struct forwardDeclStruct));
+    handle->value = value;
+    return handle;
+}
+
+int readForwardDeclStructValue(struct forwardDeclStruct* handle) {
+    return handle->value;
+}
+
+void freeForwardDeclStruct(struct forwardDeclStruct* handle) {
+    free(handle);
+}
+
+struct timespec* fillTimespec(struct timespec* out) {
+    out->tv_sec = 42;
+    out->tv_nsec = 7;
+    return out;
+}
+
+long tsSeconds(struct timespec* t) {
+    return (long)t->tv_sec;
+}
+
+size_t timeHolderSize(void) {
+    return sizeof(TimeHolder);
+}
+
+size_t paddedUnionSize(void) {
+    return sizeof(PaddedUnion);
+}
+
+void fillTimeHolder(TimeHolder* holder, int marker) {
+    holder->ts.tv_sec = 1;
+    holder->ts.tv_nsec = 2;
+    holder->marker = marker;
+}
+
+int readTimeHolderMarker(TimeHolder* holder) {
+    return holder->marker;
+}
+
+void invokePublicCallback(public_callback cb, int value) {
+    if (cb)
+        cb(value);
+}
+
+public_color nextColor(public_color c) {
+    return (public_color)(((int)c % 3) + 1);
+}
 
 #ifdef _WIN32
 #include <windows.h>
@@ -440,6 +505,32 @@ void call_callback_in_thread(void* (*thread_callback)(void*)) {
     WaitForSingleObject(thread, INFINITE);
     CloseHandle(thread);
 }
+
+struct n_thread_ctx {
+    void* (*cb)(void*);
+    int iterations;
+};
+
+DWORD WINAPI thread_loop_wrapper(LPVOID param) {
+    n_thread_ctx* ctx = reinterpret_cast<n_thread_ctx*>(param);
+    for (int i = 0; i < ctx->iterations; i++) {
+        ctx->cb(nullptr);
+    }
+    return 0;
+}
+
+void call_callback_in_n_threads(void* (*thread_callback)(void*), int threadCount, int iterations) {
+    n_thread_ctx ctx = {thread_callback, iterations};
+    HANDLE* threads = (HANDLE*)malloc(sizeof(HANDLE) * threadCount);
+    for (int i = 0; i < threadCount; i++) {
+        threads[i] = CreateThread(NULL, 0, thread_loop_wrapper, &ctx, 0, NULL);
+    }
+    WaitForMultipleObjects(threadCount, threads, TRUE, INFINITE);
+    for (int i = 0; i < threadCount; i++) {
+        CloseHandle(threads[i]);
+    }
+    free(threads);
+}
 #else
 #include <pthread.h>
 
@@ -448,11 +539,41 @@ void call_callback_in_thread(void* (*thread_callback)(void*)) {
     pthread_create(&thread, NULL, thread_callback, NULL);
     pthread_join(thread, NULL);
 }
+
+struct n_thread_ctx {
+    void* (*cb)(void*);
+    int iterations;
+};
+
+static void* thread_loop_wrapper(void* param) {
+    n_thread_ctx* ctx = reinterpret_cast<n_thread_ctx*>(param);
+    for (int i = 0; i < ctx->iterations; i++) {
+        ctx->cb(nullptr);
+    }
+    return nullptr;
+}
+
+void call_callback_in_n_threads(void* (*thread_callback)(void*), int threadCount, int iterations) {
+    n_thread_ctx ctx = {thread_callback, iterations};
+    pthread_t* threads = (pthread_t*)malloc(sizeof(pthread_t) * threadCount);
+    for (int i = 0; i < threadCount; i++) {
+        pthread_create(&threads[i], NULL, thread_loop_wrapper, &ctx);
+    }
+    for (int i = 0; i < threadCount; i++) {
+        pthread_join(threads[i], NULL);
+    }
+    free(threads);
+}
 #endif
 
 static void voidCallback(void) {
     g_lastArg.longVal = 1;
 }
+
+// No shared state — used by perf benchmarks that want to isolate the JNI/runtime cost
+// from cache-line contention on g_lastArg.
+static void noopVoidCallback(void) { }
+static void noopIntArgCallback(int) { }
 
 static void longArgCallback(uint64_t arg) {
     g_lastArg.longVal = arg;
@@ -461,6 +582,8 @@ static void longArgCallback(uint64_t arg) {
 static void intArgCallback(int arg) {
     g_lastArg.intVal = arg;
 }
+
+static methodWithCallbackIntArg g_intArgCallbackSlot = intArgCallback;
 
 static void shortArgCallback(short arg) {
     g_lastArg.shortVal = arg;
@@ -623,6 +746,14 @@ methodWithCallbackIntArg getIntArgCallback(void) {
     return intArgCallback;
 }
 
+void call_methodWithCallbackIntArgViaPointer(methodWithCallbackIntArg* fnPtrPtr) {
+    (*fnPtrPtr)(7);
+}
+
+methodWithCallbackIntArg* getIntArgCallbackSlot(void) {
+    return &g_intArgCallbackSlot;
+}
+
 methodWithCallbackShortArg getShortArgCallback(void) {
     return shortArgCallback;
 }
@@ -741,4 +872,94 @@ methodWithCallbackTestUnionPointerArg getTestUnionPointerArgCallback(void) {
 
 methodWithCallbackCallThrowingCallback getCallThrowingCallbackCallback(void) {
     return testCallThrowingCallback;
+}
+
+methodWithCallback getNoopVoidCallback(void) {
+    return noopVoidCallback;
+}
+
+methodWithCallbackIntArg getNoopIntArgCallback(void) {
+    return noopIntArgCallback;
+}
+
+size_t passSizeT(size_t v) {
+    return v + 1;
+}
+
+size_t maxSizeT(void) {
+    return SIZE_MAX;
+}
+
+ssize_t negateSSizeT(ssize_t v) {
+    return -v;
+}
+
+intptr_t passIntPtrT(intptr_t v) {
+    return v;
+}
+
+uintptr_t passUIntPtrT(uintptr_t v) {
+    return v;
+}
+
+ptrdiff_t passPtrDiffT(ptrdiff_t v) {
+    return v;
+}
+
+my_size_t passMySizeT(my_size_t v) {
+    return v;
+}
+
+size_t sumSizeTArray(const size_t* values, size_t count) {
+    size_t sum = 0;
+    for (size_t i = 0; i < count; i++)
+        sum += values[i];
+    return sum;
+}
+
+void fillSizeTArray(size_t* out, size_t count) {
+    for (size_t i = 0; i < count; i++)
+        out[i] = i * 3;
+}
+
+ssize_t sumSSizeTArray(ssize_t* values, size_t count) {
+    ssize_t sum = 0;
+    for (size_t i = 0; i < count; i++)
+        sum += values[i];
+    return sum;
+}
+
+size_t wordStructSize(void) {
+    return sizeof(WordStruct);
+}
+
+void fillWordStruct(WordStruct* s) {
+    s->tag = 7;
+    s->count = 42;
+    s->delta = -5;
+    s->address = (intptr_t)s;
+    s->aliased = 99;
+}
+
+size_t readWordStructCount(WordStruct* s) {
+    return s->count;
+}
+
+ssize_t readWordStructDelta(WordStruct* s) {
+    return s->delta;
+}
+
+size_t call_methodWithCallbackSizeT(methodWithCallbackSizeT fnPtr, size_t in, ssize_t neg) {
+    return fnPtr(in, neg);
+}
+
+conditional_word_t passConditionalWord(conditional_word_t v) {
+    return v;
+}
+
+conditional_word_t sumConditionalWords(const conditional_word_t* values, size_t count) {
+    conditional_word_t sum = 0;
+    for (size_t i = 0; i < count; i++)
+        sum += values[i];
+    return sum;
 }

@@ -49,7 +49,7 @@ public class SLongPointer extends VoidPointer {
     }
 
     public void setLong(long value, int index) {
-        if (Utils.checkBoundsForNumber(value, BYTE_SIZE, true))
+        if (!Utils.checkBoundsForNumber(value, BYTE_SIZE, true))
             throw new IllegalArgumentException("SLong out of range: " + value);
         getBufPtr().setNativeLong(index * BYTE_SIZE, value);
     }

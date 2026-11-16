@@ -53,6 +53,16 @@ class JavaExceptionMarker : public std::runtime_error {
             DETACH_ENV()
         }
 
+        // The exception object owns its global ref, so every copy needs its own - otherwise DeleteGlobalRef runs twice
+        JavaExceptionMarker(const JavaExceptionMarker& other) : std::runtime_error(other) {
+            gJVM = other.gJVM;
+            ATTACH_ENV()
+            javaExc = (jthrowable)env->NewGlobalRef(other.javaExc);
+            DETACH_ENV()
+        }
+
+        JavaExceptionMarker& operator=(const JavaExceptionMarker& other) = delete;
+
         ~JavaExceptionMarker() throw() {
             ATTACH_ENV() // TODO: Figure out, whether this is an issue during full-crash
             env->DeleteGlobalRef(javaExc);
@@ -77,12 +87,24 @@ typedef struct _native_type {
     // If we are a struct/union
     int field_count;
     _native_type** fields;
+    int alignment;
 } native_type;
 
 static inline void set_native_type(native_type* nat_type, native_type_id id, size_t size, bool sign) {
     nat_type->type = id;
     nat_type->size = size;
     nat_type->sign = sign;
+}
+
+static inline void free_native_type(native_type* nat_type) {
+    if (nat_type == NULL)
+        return;
+    if (nat_type->type == STRUCT_TYPE || nat_type->type == UNION_TYPE) {
+        for (int i = 0; i < nat_type->field_count; i++)
+            free_native_type(nat_type->fields[i]);
+        free(nat_type->fields);
+    }
+    free(nat_type);
 }
 
 #define IS_SIGNED_TYPE(type)   (((type)-1) < 0)
@@ -119,6 +141,13 @@ void get_native_type(native_type* nat_type) {
 }
 
 #define GET_NATIVE_TYPE(type, nat_type) get_native_type<type>(nat_type)
+
+template<typename T> struct __jnigen_strip { typedef T type; };
+template<typename T> struct __jnigen_strip<const T> { typedef typename __jnigen_strip<T>::type type; };
+template<typename T> struct __jnigen_strip<volatile T> { typedef typename __jnigen_strip<T>::type type; };
+template<typename T> struct __jnigen_strip<T*> { typedef typename __jnigen_strip<T>::type type; };
+template<typename T> struct __jnigen_strip<T[]> { typedef typename __jnigen_strip<T>::type type; };
+template<typename T, size_t N> struct __jnigen_strip<T[N]> { typedef typename __jnigen_strip<T>::type type; };
 
 #else // C code
 

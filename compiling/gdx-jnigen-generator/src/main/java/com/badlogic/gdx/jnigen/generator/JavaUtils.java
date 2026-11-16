@@ -41,6 +41,18 @@ public class JavaUtils {
         return cName;
     }
 
+    public static String deduplicateArgumentName(String cName) {
+        switch (cName) {
+            case "env":
+                return "_env";
+            case "clazz":
+                return "_clazz";
+            case "object":
+                return "_object";
+        }
+        return cName;
+    }
+
     public static Expression getOffsetAsExpression(int index, OffsetCalculator calculator) {
         return getSizeAsExpression((target) -> calculator.getOffset(index, target));
     }

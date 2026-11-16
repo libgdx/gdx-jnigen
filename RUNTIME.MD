@@ -19,6 +19,8 @@ The generator can be configured through the gradle plugin.
 ```
 The generator can then be run through `./gradlew jnigenGenerateBindings`
 
+The generator parses the header once for every platform the natives are built for, so platform-dependent integer widths are observed on exactly those platforms. A project that builds no Windows natives therefore may bind `size_t` as `long` rather than as a word-wide integer, which is correct everywhere its natives can load.
+
 The generator will then emit the java code. The main class will be named after your header file and will contain all the main C entry points.   
 In the `enums` and `structs` sub-package will be Enums/Structs/Unions put.  
 In the `Constants` class will be potential useful constants. All other classes are implementation detail.

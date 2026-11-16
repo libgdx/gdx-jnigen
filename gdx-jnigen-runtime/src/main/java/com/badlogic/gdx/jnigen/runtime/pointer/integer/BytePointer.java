@@ -1,8 +1,12 @@
 package com.badlogic.gdx.jnigen.runtime.pointer.integer;
 
 import com.badlogic.gdx.jnigen.runtime.CHandler;
+import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
 import com.badlogic.gdx.jnigen.runtime.util.Utils;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * This class represents a `char` pointer.
@@ -67,10 +71,8 @@ public class BytePointer extends VoidPointer {
     }
 
     public void setByte(byte value, int index) {
-        if (IS_CHAR_SIGNED)
-            setByte((char) value, index);
-        else
-            setByte((char)(value & 0xFF), index);
+        // Every java byte is a valid C char bit pattern, whatever the platform's char signedness.
+        getBufPtr().setByte(index * BYTE_SIZE, value);
     }
 
     public void setByte(char value) {
@@ -78,14 +80,21 @@ public class BytePointer extends VoidPointer {
     }
 
     public void setByte(char value, int index) {
-        if (Utils.checkBoundsForNumber(value, BYTE_SIZE, IS_CHAR_SIGNED))
+        if (!Utils.checkBoundsForNumber(value, BYTE_SIZE, IS_CHAR_SIGNED))
             throw new IllegalArgumentException("Byte out of range: " + value);
         getBufPtr().setByte(index, (byte) value);
     }
 
     public static BytePointer fromString(String string, boolean freeOnGC) {
-        BytePointer pointer = new BytePointer(string.getBytes().length + 1, freeOnGC);
-        pointer.setString(string);
+        return fromString(string, StandardCharsets.UTF_8, freeOnGC);
+    }
+
+    public static BytePointer fromString(String string, Charset charset, boolean freeOnGC) {
+        byte[] bytes = string.getBytes(charset);
+        BytePointer pointer = new BytePointer(bytes.length + 1, freeOnGC);
+        BufferPtr bufPtr = pointer.getBufPtr();
+        bufPtr.setBytes(bytes);
+        bufPtr.setByte(bytes.length, (byte)0);
         return pointer;
     }
 
@@ -93,7 +102,23 @@ public class BytePointer extends VoidPointer {
         getBufPtr().setString(string);
     }
 
+    public void setString(String string, Charset charset) {
+        getBufPtr().setString(string, charset);
+    }
+
     public String getString() {
         return getBufPtr().getString();
+    }
+
+    public String getString(Charset charset) {
+        return getBufPtr().getString(charset);
+    }
+
+    public String getString(int length) {
+        return getBufPtr().getString(length);
+    }
+
+    public String getString(int length, Charset charset) {
+        return getBufPtr().getString(length, charset);
     }
 }

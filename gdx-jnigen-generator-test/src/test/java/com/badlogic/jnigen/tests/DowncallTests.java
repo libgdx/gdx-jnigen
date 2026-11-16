@@ -64,6 +64,37 @@ public class DowncallTests extends BaseTest {
     }
 
     @Test
+    public void testCPointerToFunctionPointerReturn() {
+        // methodWithCallbackIntArg* is a pointer to a function-pointer slot, one indirection deeper than a
+        // ClosureObject. Dereferencing the slot must yield a callable closure, not the slot address itself.
+        PointerPointer<ClosureObject<methodWithCallbackIntArg>> slot = getIntArgCallbackSlot();
+        ClosureObject<methodWithCallbackIntArg> callback = slot.getValue();
+        int testValue = 42;
+        callback.getClosure().methodWithCallbackIntArg_call(testValue);
+        assertEquals(testValue, getGlobalArgState().intVal());
+    }
+
+    @Test
+    public void testCPointerToFunctionPointerArg() {
+        PointerPointer<ClosureObject<methodWithCallbackIntArg>> slot = getIntArgCallbackSlot();
+        call_methodWithCallbackIntArgViaPointer(slot);
+        assertEquals(7, getGlobalArgState().intVal());
+
+        // Swap a java closure into the C slot and let C dereference and invoke it.
+        int[] received = new int[1];
+        ClosureObject<methodWithCallbackIntArg> javaCallback = ClosureObject.fromClosure(value -> received[0] = value);
+        ClosureObject<methodWithCallbackIntArg> original = slot.getValue();
+        try {
+            slot.setValue(javaCallback);
+            call_methodWithCallbackIntArgViaPointer(slot);
+            assertEquals(7, received[0]);
+        } finally {
+            slot.setValue(original);
+            javaCallback.free();
+        }
+    }
+
+    @Test
     public void testCShortArgCallback() {
         ClosureObject<methodWithCallbackShortArg> callback = getShortArgCallback();
         short testValue = 12345;

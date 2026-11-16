@@ -26,6 +26,10 @@ public class UShortPointer extends VoidPointer {
         super(count * BYTE_SIZE);
     }
 
+    public UShortPointer(long pointer, boolean freeOnGC) {
+        super(pointer, freeOnGC);
+    }
+
     public UShortPointer(long pointer, boolean freeOnGC, int capacity) {
         super(pointer, freeOnGC, capacity * BYTE_SIZE);
     }

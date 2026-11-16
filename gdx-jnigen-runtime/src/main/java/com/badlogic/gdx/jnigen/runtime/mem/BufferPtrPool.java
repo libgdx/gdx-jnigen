@@ -1,23 +1,47 @@
 package com.badlogic.gdx.jnigen.runtime.mem;
 
-import com.badlogic.gdx.jnigen.runtime.util.SynchronizedPool;
+/**
+ * A non-thread-safe array-stack pool for {@link BufferPtr}. Held in a {@code ThreadLocal} on
+ * {@link BufferPtrManager}, so each thread has its own private instance and no synchronisation is
+ * needed on the hot path.
+ */
+public class BufferPtrPool {
 
-public class BufferPtrPool extends SynchronizedPool<BufferPtr> {
+    private final BufferPtr[] pool;
+    private final int capacity;
+    private int size;
 
     public BufferPtrPool(int capacity) {
-        super(capacity);
+        this.capacity = capacity;
+        this.pool = new BufferPtr[capacity];
     }
 
-    @Override
+    public BufferPtr poll() {
+        if (size == 0)
+            return null;
+        BufferPtr obj = pool[--size];
+        pool[size] = null;
+        return obj;
+    }
+
     public BufferPtr pollOrCreate() {
-        BufferPtr obj = poll();
-        if(obj != null)
-            return obj;
-        return new BufferPtr();
+        if (size == 0)
+            return new BufferPtr();
+        BufferPtr obj = pool[--size];
+        pool[size] = null;
+        return obj;
     }
 
-    @Override
-    public void reset(BufferPtr obj) {
-        obj.reset(null, 0, 0, 0);
+    public boolean offer(BufferPtr obj) {
+        if (size >= capacity)
+            return false;
+        pool[size++] = obj;
+        return true;
+    }
+
+    public void clear() {
+        for (int i = 0; i < size; i++)
+            pool[i] = null;
+        size = 0;
     }
 }

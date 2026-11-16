@@ -13,13 +13,14 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.WildcardType;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
 public class GlobalType implements MappedType {
 
     private final HashMap<String, ClosureType> closures = new HashMap<>();
-    private final List<FunctionType> functions = new ArrayList<>();
+    private final List<NativeFunction> functions = new ArrayList<>();
 
     private final String globalName;
 
@@ -40,15 +41,20 @@ public class GlobalType implements MappedType {
         closures.put(closureType.getName(), closureType);
     }
 
-    public void addFunction(FunctionType functionType) {
-        functions.add(functionType);
+    public void addFunction(NativeFunction function) {
+        functions.add(function);
     }
 
-    public List<FunctionType> getFunctions() {
+    public List<NativeFunction> getFunctions() {
         return functions;
     }
 
+    public Collection<ClosureType> getClosures() {
+        return closures.values();
+    }
+
     public void write(CompilationUnit cuPublic, ClassOrInterfaceDeclaration global, CompilationUnit cuInternal, ClassOrInterfaceDeclaration globalInternal, HashMap<MethodDeclaration, String> patchNativeMethods) {
+        cuPublic.addImport(ClassNameConstants.CHANDLER_CLASS);
         cuPublic.addImport(ClassNameConstants.CXXEXCEPTION_CLASS);
         cuPublic.addImport(IllegalArgumentException.class);
         global.addStaticInitializer()
@@ -69,8 +75,8 @@ public class GlobalType implements MappedType {
         patchNativeMethods.put(initMethod, "illegalArgumentExceptionClass = (jclass)env->NewGlobalRef(illegalArgumentException);\n"
                 + "cxxExceptionClass = (jclass)env->NewGlobalRef(cxxException);");
 
-        for (FunctionType functionType : functions) {
-            functionType.write(cuPublic, global, patchNativeMethods);
+        for (NativeFunction function : functions) {
+            function.write(cuPublic, global, patchNativeMethods);
         }
 
         for (ClosureType closureType : closures.values()) {

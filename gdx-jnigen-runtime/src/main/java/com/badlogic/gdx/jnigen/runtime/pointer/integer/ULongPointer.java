@@ -50,7 +50,7 @@ public class ULongPointer extends VoidPointer {
     }
 
     public void setLong(long value, int index) {
-        if (Utils.checkBoundsForNumber(value, BYTE_SIZE, false))
+        if (!Utils.checkBoundsForNumber(value, BYTE_SIZE, false))
             throw new IllegalArgumentException("ULong out of range: " + value);
         getBufPtr().setNativeULong(index * BYTE_SIZE, value);
     }

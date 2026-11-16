@@ -10,7 +10,7 @@ public class RuntimeEnv {
 
     private static final Logger logger = LoggerFactory.getLogger(RuntimeEnv.class);
 
-    private Set<String> paths = new HashSet<>();
+    private List<String> paths = new ArrayList<>();
 
     public RuntimeEnv () {
         addToPathFromSystemEnv("Path");
@@ -19,7 +19,7 @@ public class RuntimeEnv {
         addToPathFromSystemEnv("NDK_HOME");
     }
 
-    public Set<String> getPaths () {
+    public List<String> getPaths () {
         return paths;
     }
 

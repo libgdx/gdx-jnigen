@@ -5,23 +5,29 @@ import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
 public final class ClosureDecoder<T extends Closure> {
 
     private final T toCallOn;
-    private PointingPoolManager poolManager;
+    private volatile ThreadLocal<PointingPoolManager> localManager;
 
     public ClosureDecoder(T toCallOn) {
         this.toCallOn = toCallOn;
     }
 
-    public void setPoolManager(PointingPoolManager poolManager) {
-        this.poolManager = poolManager;
+    public void setPoolManager(final PointingPoolManager poolManager) {
+        this.localManager = new ThreadLocal<PointingPoolManager>() {
+            @Override
+            protected PointingPoolManager initialValue() {
+                return poolManager.newClone();
+            }
+        };
     }
 
     public void invoke(BufferPtr buf) {
-        if (poolManager == null) {
+        ThreadLocal<PointingPoolManager> local = localManager;
+        if (local == null) {
             toCallOn.invoke(buf);
             return;
         }
-
-        toCallOn.invokePooled(buf, poolManager);
-        poolManager.flush();
+        PointingPoolManager mgr = local.get();
+        toCallOn.invokePooled(buf, mgr);
+        mgr.flush();
     }
 }

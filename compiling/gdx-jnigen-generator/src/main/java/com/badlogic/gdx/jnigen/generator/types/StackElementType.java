@@ -26,13 +26,14 @@ public class StackElementType implements MappedType, WritableClass {
 
     private final TypeDefinition definition;
     private final MappedType parent;
-    private final List<TypeDefinition> children = new ArrayList<>();
 
     private final List<StackElementField> fields = new ArrayList<>();
     private final String pointerName;
     private final String javaTypeName;
     private String comment;
     private boolean incomplete = false;
+    private boolean opaque = false;
+    private boolean systemHeader = false;
 
     public StackElementType(TypeDefinition definition, String javaTypeName, MappedType parent) {
         this.definition = definition;
@@ -45,8 +46,24 @@ public class StackElementType implements MappedType, WritableClass {
         incomplete = true;
     }
 
+    public void markOpaque() {
+        opaque = true;
+    }
+
+    public boolean isOpaque() {
+        return opaque;
+    }
+
+    public void markSystemHeader() {
+        systemHeader = true;
+    }
+
+    public boolean isSystemHeader() {
+        return systemHeader;
+    }
+
     public boolean isIncomplete() {
-        return incomplete || fields.isEmpty() || fields.stream()
+        return incomplete || opaque || fields.isEmpty() || fields.stream()
                 .map(stackElementField -> stackElementField.getType().getDefinition().getMappedType())
                 .filter(mappedType -> mappedType instanceof StackElementType)
                 .map(mappedType -> (StackElementType) mappedType)
@@ -55,10 +72,6 @@ public class StackElementType implements MappedType, WritableClass {
 
     public void addField(StackElementField type) {
         fields.add(type);
-    }
-
-    public void addChild(TypeDefinition child) {
-        children.add(child);
     }
 
     public void setComment(String comment) {
@@ -77,7 +90,16 @@ public class StackElementType implements MappedType, WritableClass {
     public ClassOrInterfaceDeclaration generateClassInternal() {
         NodeList<Modifier> modifiers = new NodeList<>(Modifier.publicModifier(), Modifier.finalModifier(), Modifier.staticModifier());
 
-        return new ClassOrInterfaceDeclaration(modifiers, false, internalClassName());
+        return new ClassOrInterfaceDeclaration(modifiers, false, getInternalName());
+    }
+
+    private String getInternalName() {
+        return javaTypeName + "_Internal";
+    }
+
+    @Override
+    public String pointerType() {
+        return abstractType() + "." + pointerName;
     }
 
     private void writeStackFields(StackElementField field, ClassOrInterfaceDeclaration toWriteToPublic) {
@@ -167,6 +189,11 @@ public class StackElementType implements MappedType, WritableClass {
 
     @Override
     public void write(CompilationUnit cuPublic, ClassOrInterfaceDeclaration toWriteToPublic, CompilationUnit cuPrivate, ClassOrInterfaceDeclaration toWriteToPrivate) {
+        if (isOpaque()) {
+            writeOpaque(cuPublic, toWriteToPublic);
+            return;
+        }
+
         String structPointerRef = javaTypeName + "." + pointerName;
 
         cuPublic.addImport(ClassNameConstants.CHANDLER_CLASS);
@@ -322,15 +349,46 @@ public class StackElementType implements MappedType, WritableClass {
                 .addParameter(long.class, "ptr").addParameter(boolean.class, "freeOnGC").createBody()
                 .addStatement("return new " + javaTypeName + "(ptr, freeOnGC);");
 
-        // Children
-        children.forEach(child -> {
-            WritableClass childStackElement = (WritableClass)child.getMappedType();
-            ClassOrInterfaceDeclaration declaration = childStackElement.generateClass();
-            ClassOrInterfaceDeclaration internalDeclaration = childStackElement.generateClassInternal();
-            childStackElement.write(cuPublic, declaration, cuPrivate, internalDeclaration);
+        Manager.getInstance().getNestedTypes(definition).forEach(child -> {
+            ClassOrInterfaceDeclaration declaration = child.generateClass();
+            ClassOrInterfaceDeclaration internalDeclaration = child.generateClassInternal();
+            child.write(cuPublic, declaration, cuPrivate, internalDeclaration);
             toWriteToPublic.addMember(declaration);
             toWriteToPrivate.addMember(internalDeclaration);
         });
+    }
+
+    private void writeOpaque(CompilationUnit cuPublic, ClassOrInterfaceDeclaration toWriteToPublic) {
+        cuPublic.addImport(ClassNameConstants.VOIDPOINTER_CLASS);
+        cuPublic.addImport(ClassNameConstants.POINTING_CLASS);
+
+        if (comment != null)
+            toWriteToPublic.setJavadocComment(comment);
+
+        // A forward-declared type has no size or layout: forbid allocation by hiding the constructor.
+        toWriteToPublic.addConstructor(Keyword.PRIVATE);
+
+        ClassOrInterfaceDeclaration pointerClass = new ClassOrInterfaceDeclaration(
+                new NodeList<>(Modifier.publicModifier(), Modifier.staticModifier(), Modifier.finalModifier()), false,
+                pointerName);
+        toWriteToPublic.addMember(pointerClass);
+        pointerClass.addExtendedType("VoidPointer");
+
+        pointerClass.addConstructor(Keyword.PUBLIC)
+                .addParameter("VoidPointer", "pointer")
+                .getBody().addStatement("super(pointer);");
+
+        ConstructorDeclaration pointerConstructor = pointerClass.addConstructor(Keyword.PUBLIC);
+        pointerConstructor.addParameter(long.class, "pointer");
+        pointerConstructor.addParameter(boolean.class, "freeOnGC");
+        pointerConstructor.getBody().addStatement("super(pointer, freeOnGC);");
+
+        ConstructorDeclaration pointerAndParentTakingConstructor = pointerClass.addConstructor(Keyword.PUBLIC);
+        pointerAndParentTakingConstructor.addParameter(long.class, "pointer");
+        pointerAndParentTakingConstructor.addParameter(boolean.class, "freeOnGC");
+        pointerAndParentTakingConstructor.addParameter("Pointing", "parent");
+        pointerAndParentTakingConstructor.getBody().addStatement("super(pointer, freeOnGC);")
+                .addStatement("setParent(parent);");
     }
 
     private ArrayList<NamedType> getUnwrappedFields() {
@@ -354,28 +412,68 @@ public class StackElementType implements MappedType, WritableClass {
     }
 
     public String getFFITypeBody(String ffiResolveFunctionName) {
-        ArrayList<NamedType> unwrappedFields = getUnwrappedFields();
+        if (isSystemHeader())
+            return getSystemHeaderFFITypeBody();
+
+        List<NamedType> ffiFields = getFields();
 
         StringBuilder generateFFIMethodBody = new StringBuilder();
-        if (isStruct())  {
-            generateFFIMethodBody.append("\t\tnativeType->type = STRUCT_TYPE;\n");
-        } else {
-            generateFFIMethodBody.append("\t\tnativeType->type = UNION_TYPE;\n");
-        }
-        generateFFIMethodBody.append("\t\tnativeType->field_count = ").append(unwrappedFields.size()).append(";\n");
-        generateFFIMethodBody.append("\t\tnativeType->fields = (native_type**)malloc(sizeof(native_type*) * ").append(unwrappedFields.size()).append(");\n");
+        generateFFIMethodBody.append("\t\tnativeType->type = ").append(isStruct() ? "STRUCT_TYPE" : "UNION_TYPE").append(";\n");
+        generateFFIMethodBody.append("\t\tnativeType->size = (int)sizeof(").append(definition.cTypeName()).append(");\n");
+        generateFFIMethodBody.append("\t\tnativeType->alignment = (int)alignof(").append(definition.cTypeName()).append(");\n");
+        generateFFIMethodBody.append("\t\tnativeType->field_count = ").append(ffiFields.size()).append(";\n");
+        generateFFIMethodBody.append("\t\tnativeType->fields = (native_type**)malloc(sizeof(native_type*) * ").append(ffiFields.size()).append(");\n");
 
-        for (int i = 0; i < unwrappedFields.size(); i++) {
-            NamedType field = unwrappedFields.get(i);
-            int fieldStructID = field.getDefinition().getMappedType().typeID();
-            generateFFIMethodBody.append("\t\tnativeType->fields[").append(i).append("] = ")
-                    .append(ffiResolveFunctionName).append("(")
-                    .append(fieldStructID)
-                    .append(");\n");
+        for (int i = 0; i < ffiFields.size(); i++) {
+            TypeDefinition fieldDefinition = ffiFields.get(i).getDefinition();
+            String slot = "nativeType->fields[" + i + "]";
+
+            if (fieldDefinition.getTypeKind() != TypeKind.FIXED_SIZE_ARRAY) {
+                generateFFIMethodBody.append("\t\t").append(slot).append(" = ")
+                        .append(ffiResolveFunctionName).append("(")
+                        .append(fieldDefinition.getMappedType().typeID())
+                        .append(");\n");
+                continue;
+            }
+
+            // A fixed-size array is emitted as one nested struct of `count` elements rather
+            int count = fieldDefinition.getCount();
+            int elementID = fieldDefinition.getNestedDefinition().getMappedType().typeID();
+            String member = "(*(" + definition.cTypeName() + "*)0)." + ffiFields.get(i).getName();
+            generateFFIMethodBody.append("\t\t").append(slot).append(" = (native_type*)calloc(1, sizeof(native_type));\n");
+            generateFFIMethodBody.append("\t\t").append(slot).append("->type = STRUCT_TYPE;\n");
+            generateFFIMethodBody.append("\t\t").append(slot).append("->size = (int)sizeof(").append(member).append(");\n");
+            generateFFIMethodBody.append("\t\t").append(slot).append("->alignment = (int)alignof(decltype(").append(member).append("));\n");
+            generateFFIMethodBody.append("\t\t").append(slot).append("->field_count = ").append(count).append(";\n");
+            generateFFIMethodBody.append("\t\t").append(slot).append("->fields = (native_type**)malloc(sizeof(native_type*) * ").append(count).append(");\n");
+            generateFFIMethodBody.append("\t\tfor (int __i = 0; __i < ").append(count).append("; __i++)\n");
+            generateFFIMethodBody.append("\t\t\t").append(slot).append("->fields[__i] = ")
+                    .append(ffiResolveFunctionName).append("(").append(elementID).append(");\n");
         }
         generateFFIMethodBody.append("\t\treturn nativeType;\n");
 
         return generateFFIMethodBody.toString();
+    }
+
+    private String getSystemHeaderFFITypeBody() {
+        String cName = definition.cTypeName();
+        StringBuilder body = new StringBuilder();
+        body.append("\t\t{\n");
+        body.append("\t\t\tsize_t __blockAlign = alignof(").append(cName).append(");\n");
+        body.append("\t\t\tif (__blockAlign > 8) __blockAlign = 8;\n");
+        body.append("\t\t\tint __blockCount = (int)(sizeof(").append(cName).append(") / __blockAlign);\n");
+        body.append("\t\t\tnativeType->type = STRUCT_TYPE;\n");
+        body.append("\t\t\tnativeType->size = (int)sizeof(").append(cName).append(");\n");
+        body.append("\t\t\tnativeType->alignment = (int)__blockAlign;\n");
+        body.append("\t\t\tnativeType->field_count = __blockCount;\n");
+        body.append("\t\t\tnativeType->fields = (native_type**)malloc(sizeof(native_type*) * __blockCount);\n");
+        body.append("\t\t\tfor (int __blockIndex = 0; __blockIndex < __blockCount; __blockIndex++) {\n");
+        body.append("\t\t\t\tnativeType->fields[__blockIndex] = (native_type*)calloc(1, sizeof(native_type));\n");
+        body.append("\t\t\t\tset_native_type(nativeType->fields[__blockIndex], INT_TYPE, __blockAlign, false);\n");
+        body.append("\t\t\t}\n");
+        body.append("\t\t\treturn nativeType;\n");
+        body.append("\t\t}\n");
+        return body.toString();
     }
 
     public int getUnwrappedIndex(int index) {
@@ -442,7 +540,13 @@ public class StackElementType implements MappedType, WritableClass {
 
     @Override
     public String abstractType() {
+        if (parent != null)
+            return parent.abstractType() + "." + javaTypeName;
         return javaTypeName;
+    }
+
+    public TypeDefinition getDefinition() {
+        return definition;
     }
 
     @Override
@@ -452,7 +556,18 @@ public class StackElementType implements MappedType, WritableClass {
 
     @Override
     public void importType(CompilationUnit cu) {
-        cu.addImport(classFile());
+        if (parent != null)
+            parent.importType(cu);
+        else
+            cu.addImport(classFile());
+    }
+
+    @Override
+    public void importInternalType(CompilationUnit cu) {
+        if (parent != null)
+            parent.importInternalType(cu);
+        else
+            cu.addImport(internalClass());
     }
 
     @Override
@@ -503,15 +618,29 @@ public class StackElementType implements MappedType, WritableClass {
     }
 
     @Override
-    public boolean isLibFFIConvertible() {
-        return isStruct();
+    public boolean isByValueClosureSafe() {
+        if (!isStruct() || isSystemHeader())
+            return false;
+        for (StackElementField field : fields) {
+            MappedType fieldType = field.getType().getDefinition().getMappedType();
+            if (!fieldType.isByValueClosureSafe())
+                return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String internalClassName() {
+        if (parent != null)
+            return parent.internalClassName() + "." + getInternalName();
+        return getInternalName();
     }
 
     @Override
     public String internalClass() {
         if (parent != null)
-            return parent.internalClass() + "." + internalClassName();
-        return Manager.getInstance().getGlobalType().internalClass() + "." + internalClassName();
+            return parent.internalClass() + "." + getInternalName();
+        return Manager.getInstance().getGlobalType().internalClass() + "." + getInternalName();
     }
 
     @Override
@@ -527,7 +656,7 @@ public class StackElementType implements MappedType, WritableClass {
     @Override
     public int getSize(PossibleTarget target) {
         int structSize = 0;
-        int structAlignment = getAlignment(target);
+        int alignment = getAlignment(target);
 
         if (!isStruct()) {
             int maxSize = 0;
@@ -537,6 +666,9 @@ public class StackElementType implements MappedType, WritableClass {
                 if (fieldSize > maxSize) {
                     maxSize = fieldSize;
                 }
+            }
+            if (alignment != 0 && maxSize % alignment != 0) {
+                maxSize += alignment - (maxSize % alignment);
             }
             return maxSize;
         }
@@ -552,8 +684,8 @@ public class StackElementType implements MappedType, WritableClass {
             structSize += fieldSize;
         }
 
-        if (structAlignment != 0 && structSize % structAlignment != 0) {
-            structSize += structAlignment - (structSize % structAlignment);
+        if (alignment != 0 && structSize % alignment != 0) {
+            structSize += alignment - (structSize % alignment);
         }
 
         return structSize;

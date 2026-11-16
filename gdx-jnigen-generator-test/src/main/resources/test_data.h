@@ -4,6 +4,15 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
+#include <stddef.h>
+#ifdef _MSC_VER
+#include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+#else
+#include <sys/types.h>
+#endif
+#include <test_system_types.h>
 
 #define RANDOM_MACRO 5
 #ifdef __cplusplus
@@ -73,6 +82,13 @@ typedef union TestUnion
     TestStruct structType;
 } TestUnion;
 
+// Largest member (12 bytes) is not a multiple of the union's alignment (8) so sizeof must be padded to 16 on every ABI.
+typedef union PaddedUnion {
+    double doubleType;
+    int fixedSizeInt[3];
+} PaddedUnion;
+size_t paddedUnionSize(void);
+
 /**
  * Anonymous struct jaja
  */
@@ -133,6 +149,23 @@ typedef struct AnonymousStructFieldArray {
     int externalValue;
 } AnonymousStructFieldArray;
 
+/// Same-named anonymous structs under different parents (SDL_GamepadBinding shape)
+typedef struct NestedNameCollision {
+    union {
+        int button;
+        struct { int axis; int axis_min; int (*cb)(int); } axis;
+    } input;
+    union {
+        int button;
+        struct { int axis; int axis_min; int (*cb)(int); } axis;
+    } output;
+} NestedNameCollision;
+
+typedef struct NestedNameCollisionArray {
+    struct { struct { int v; } axis[2]; } input;
+    struct { struct { int v; } axis[2]; } output;
+} NestedNameCollisionArray;
+
 struct AnonymousClosure
 {
     /// Comment on internal callback
@@ -174,12 +207,39 @@ GlobalArg getGlobalArgState(void);
 
 struct forwardDeclStruct;
 
+// Opaque handle round-trip: forwardDeclStruct is only forward-declared here; its definition lives in
+// test_data.cpp, so the generator sees an unsized/opaque type usable solely behind a pointer.
+struct forwardDeclStruct* createForwardDeclStruct(int value);
+int readForwardDeclStructValue(struct forwardDeclStruct* handle);
+void freeForwardDeclStruct(struct forwardDeclStruct* handle);
+
 /// This method does great stuff, trust me
 void commentedMethod(void);
 void randomFunc(char, unsigned char, signed char, char*, unsigned char*, signed char*);
 
-void ensureParsed(SpecialEnum, AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested, struct forwardDeclStruct*);
+void ensureParsed(SpecialEnum, AnonymousStructNoField, AnonymousStructField, AnonymousStructFieldArray, NestedNameCollision, NestedNameCollisionArray, struct AnonymousClosure, AnonymousStructNoFieldEnd, AnonymousStructNoFieldConsecutive, AnonymousStructNoFieldNested, struct forwardDeclStruct*, PaddedUnion);
 void weirdPointer(FILE *_file);
+
+// System-header struct as a typed pointer (sized-opaque): struct timespec has a real size but its
+// fields are not bound.
+struct timespec* fillTimespec(struct timespec* out);
+long tsSeconds(struct timespec* t);
+
+// System-header struct embedded by value: TimeHolder must be allocated at the correct total size even
+// though the timespec field is inaccessible from Java.
+typedef struct TimeHolder {
+    struct timespec ts;
+    int marker;
+} TimeHolder;
+size_t timeHolderSize(void);
+void fillTimeHolder(TimeHolder* holder, int marker);
+int readTimeHolderMarker(TimeHolder* holder);
+
+// Alias-stopping through system-header typedefs (see sysheaders/test_system_types.h): the generated
+// bindings must be named after the public aliases (public_callback / public_color), not the internal
+// __-prefixed names they nest through.
+void invokePublicCallback(public_callback cb, int value);
+public_color nextColor(public_color c);
 void constArrayParameter(const TestStruct structs[]);
 void** voidPointerPointer(void** test);
 TestEnum** enumPointerPointer(TestEnum** test);
@@ -228,6 +288,10 @@ typedef int (*methodWithCallbackIntPointerArg)(int*);
 typedef TestUnion* (*methodWithCallbackTestUnionPointerReturn)(void);
 typedef void (*methodWithCallbackTestUnionPointerArg)(TestUnion*);
 typedef void (*methodWithCallbackCallThrowingCallback)(methodWithThrowingCallback);
+// System-header struct crossing a closure BY POINTER is allowed: only the pointer value crosses, so
+// jnigen never hands libFFI a fabricated ABI classification for the opaque struct. The by-value form
+// is refused at generation time (ClosureType#rejectSystemHeaderByValue).
+typedef void (*methodWithCallbackTimespecPointerArg)(struct timespec*);
 
 // Function declarations
 void call_methodWithCallback(methodWithCallback fnPtr);
@@ -251,6 +315,7 @@ double call_methodWithCallbackDoubleReturn(methodWithCallbackDoubleReturn fnPtr)
 void call_methodWithThrowingCallback(methodWithThrowingCallback fnPtr);
 void call_methodWithIntPtrPtrArg(methodWithIntPtrPtrArg fnPtr);
 int** call_methodWithIntPtrPtrRet(methodWithIntPtrPtrRet fnPtr);
+void call_methodWithCallbackTimespecPointerArg(methodWithCallbackTimespecPointerArg fnPtr);
 
 // TestStruct stuff
 TestStruct* returnTestStructPointer(void);
@@ -328,6 +393,7 @@ char* returnString(void);
 bool validateString(char* str);
 
 void call_callback_in_thread(void* (*thread_callback)(void*));
+void call_callback_in_n_threads(void* (*thread_callback)(void*), int threadCount, int iterations);
 
 methodWithCallback getVoidCallback(void);
 methodWithCallbackLongArg getLongArgCallback(void);
@@ -362,6 +428,59 @@ methodWithCallbackIntPointerArg getIntPointerArgCallback(void);
 methodWithCallbackTestUnionPointerReturn getTestUnionPointerReturnCallback(void);
 methodWithCallbackTestUnionPointerArg getTestUnionPointerArgCallback(void);
 methodWithCallbackCallThrowingCallback getCallThrowingCallbackCallback(void);
+
+methodWithCallback getNoopVoidCallback(void);
+methodWithCallbackIntArg getNoopIntArgCallback(void);
+
+// Pointer to a function pointer (methodWithCallbackIntArg*, i.e. void (**)(int)). The generator collapses
+// `void (*)(int)` into a single CLOSURE kind, so a pointer to it is one indirection deeper than a
+// ClosureObject and must map to PointerPointer<ClosureObject<...>>.
+void call_methodWithCallbackIntArgViaPointer(methodWithCallbackIntArg* fnPtrPtr);
+methodWithCallbackIntArg* getIntArgCallbackSlot(void);
+
+// Word-sized integers: size_t & co. are 4 bytes on 32-bit and 8 bytes on 64-bit targets, including
+// Windows x64 where long stays 4 bytes. They resolve to different builtin kinds in the 32-bit and
+// 64-bit parse passes (unsigned int vs unsigned long / unsigned long long), which the generator must
+// merge into its word kinds.
+typedef size_t my_size_t;
+
+// A library-style conditional word typedef. Only a parse with a Windows target can tell that it is
+// 8 bytes on Win64 (where unsigned long would be 4), so this pins the multi-target generator.
+#if defined(_WIN64)
+typedef unsigned long long conditional_word_t;
+#elif defined(__LP64__) || defined(_LP64)
+typedef unsigned long conditional_word_t;
+#else
+typedef unsigned int conditional_word_t;
+#endif
+conditional_word_t passConditionalWord(conditional_word_t v);
+conditional_word_t sumConditionalWords(const conditional_word_t* values, size_t count);
+
+typedef struct WordStruct {
+    uint8_t tag; // pads the following word to offset 4 (32-bit) / 8 (64-bit)
+    size_t count;
+    ssize_t delta;
+    intptr_t address;
+    my_size_t aliased;
+} WordStruct;
+
+size_t passSizeT(size_t v);
+size_t maxSizeT(void);
+ssize_t negateSSizeT(ssize_t v);
+intptr_t passIntPtrT(intptr_t v);
+uintptr_t passUIntPtrT(uintptr_t v);
+ptrdiff_t passPtrDiffT(ptrdiff_t v);
+my_size_t passMySizeT(my_size_t v);
+size_t sumSizeTArray(const size_t* values, size_t count);
+void fillSizeTArray(size_t* out, size_t count);
+ssize_t sumSSizeTArray(ssize_t* values, size_t count);
+size_t wordStructSize(void);
+void fillWordStruct(WordStruct* s);
+size_t readWordStructCount(WordStruct* s);
+ssize_t readWordStructDelta(WordStruct* s);
+
+typedef size_t (*methodWithCallbackSizeT)(size_t in, ssize_t neg);
+size_t call_methodWithCallbackSizeT(methodWithCallbackSizeT fnPtr, size_t in, ssize_t neg);
 
 #ifdef __cplusplus
 }

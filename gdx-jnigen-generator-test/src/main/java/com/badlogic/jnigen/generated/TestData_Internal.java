@@ -6,8 +6,8 @@ import com.badlogic.gdx.jnigen.runtime.mem.BufferPtr;
 import com.badlogic.gdx.jnigen.runtime.closure.PointingPoolManager;
 import com.badlogic.jnigen.generated.structs.AnonymousClosure;
 import com.badlogic.gdx.jnigen.runtime.pointer.integer.SIntPointer;
-import com.badlogic.gdx.jnigen.runtime.closure.ClosureEncoder;
 import com.badlogic.gdx.jnigen.runtime.closure.CClosureObject;
+import com.badlogic.jnigen.generated.structs.NestedNameCollision;
 import com.badlogic.jnigen.generated.TestData;
 import com.badlogic.jnigen.generated.enums.TestEnum;
 import com.badlogic.jnigen.generated.structs.TestStruct;
@@ -17,6 +17,7 @@ import com.badlogic.jnigen.generated.TestData_Internal;
 import com.badlogic.jnigen.generated.structs.TestUnion;
 import com.badlogic.gdx.jnigen.runtime.pointer.PointerPointer;
 import com.badlogic.gdx.jnigen.runtime.pointer.VoidPointer;
+import com.badlogic.jnigen.generated.structs.timespec;
 
 public final class TestData_Internal {
 
@@ -35,6 +36,9 @@ public final class TestData_Internal {
         }
     }
 
+    public final static class PaddedUnion_Internal {
+    }
+
     public final static class TestStruct_Internal {
     }
 
@@ -42,7 +46,7 @@ public final class TestData_Internal {
 
         public interface someClosure_Internal extends Closure {
 
-            CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(-1), FFITypes.getCTypeInfo(3) };
+            CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(8), FFITypes.getCTypeInfo(-1), FFITypes.getCTypeInfo(6) };
 
             int someClosure_call(SIntPointer t, double p);
 
@@ -59,22 +63,15 @@ public final class TestData_Internal {
             }
 
             public static CClosureObject<AnonymousClosure.someClosure> someClosure_downcall(long fnPtr) {
-                ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
                 return new CClosureObject<>((t, p) -> {
-                    BufferPtr bufPtr = encoder.lockOrDuplicate();
-                    bufPtr.setNativePointer(0, t.getPointer());
-                    bufPtr.setDouble(CHandler.IS_64_BIT ? 8 : 4, p);
-                    encoder.invoke(bufPtr);
-                    int _retPar = bufPtr.getInt(CHandler.IS_64_BIT ? 16 : 12);
-                    encoder.finish(bufPtr);
-                    return _retPar;
-                }, fnPtr, encoder);
+                    return TestData.AnonymousClosure_someClosure_direct(fnPtr, t.getPointer(), p);
+                }, fnPtr);
             }
         }
 
         public interface anotherClosure_Internal extends Closure {
 
-            CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(4), FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(3) };
+            CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(7), FFITypes.getCTypeInfo(8), FFITypes.getCTypeInfo(6) };
 
             float anotherClosure_call(int t, double p);
 
@@ -91,16 +88,9 @@ public final class TestData_Internal {
             }
 
             public static CClosureObject<AnonymousClosure.anotherClosure> anotherClosure_downcall(long fnPtr) {
-                ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
                 return new CClosureObject<>((t, p) -> {
-                    BufferPtr bufPtr = encoder.lockOrDuplicate();
-                    bufPtr.setInt(0, t);
-                    bufPtr.setDouble(4, p);
-                    encoder.invoke(bufPtr);
-                    float _retPar = bufPtr.getFloat(12);
-                    encoder.finish(bufPtr);
-                    return _retPar;
-                }, fnPtr, encoder);
+                    return TestData.AnonymousClosure_anotherClosure_direct(fnPtr, t, p);
+                }, fnPtr);
             }
         }
     }
@@ -109,6 +99,89 @@ public final class TestData_Internal {
     }
 
     public final static class AnonymousStructNoField_Internal {
+    }
+
+    public final static class NestedNameCollision_Internal {
+
+        public final static class input_Internal {
+
+            public final static class axis_Internal {
+
+                public interface cb_Internal extends Closure {
+
+                    CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(8), FFITypes.getCTypeInfo(8) };
+
+                    int cb_call(int arg0);
+
+                    default CTypeInfo[] functionSignature() {
+                        return __ffi_cache;
+                    }
+
+                    default void invoke(BufferPtr buf) {
+                        buf.setInt(0, cb_call(buf.getInt(0)));
+                    }
+
+                    default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+                        buf.setInt(0, cb_call(buf.getInt(0)));
+                    }
+
+                    public static CClosureObject<NestedNameCollision.input.axis.cb> cb_downcall(long fnPtr) {
+                        return new CClosureObject<>((arg0) -> {
+                            return TestData.NestedNameCollision_input_axis_cb_direct(fnPtr, arg0);
+                        }, fnPtr);
+                    }
+                }
+            }
+        }
+
+        public final static class output_Internal {
+
+            public final static class axis_Internal {
+
+                public interface cb_Internal extends Closure {
+
+                    CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(8), FFITypes.getCTypeInfo(8) };
+
+                    int cb_call(int arg0);
+
+                    default CTypeInfo[] functionSignature() {
+                        return __ffi_cache;
+                    }
+
+                    default void invoke(BufferPtr buf) {
+                        buf.setInt(0, cb_call(buf.getInt(0)));
+                    }
+
+                    default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+                        buf.setInt(0, cb_call(buf.getInt(0)));
+                    }
+
+                    public static CClosureObject<NestedNameCollision.output.axis.cb> cb_downcall(long fnPtr) {
+                        return new CClosureObject<>((arg0) -> {
+                            return TestData.NestedNameCollision_output_axis_cb_direct(fnPtr, arg0);
+                        }, fnPtr);
+                    }
+                }
+            }
+        }
+    }
+
+    public final static class NestedNameCollisionArray_Internal {
+
+        public final static class input_Internal {
+
+            public final static class axis_Internal {
+            }
+        }
+
+        public final static class output_Internal {
+
+            public final static class axis_Internal {
+            }
+        }
+    }
+
+    public final static class WordStruct_Internal {
     }
 
     public final static class AnonymousStructNoFieldNested_Internal {
@@ -123,7 +196,16 @@ public final class TestData_Internal {
     public final static class AnonymousStructNoFieldConsecutive_Internal {
     }
 
+    public final static class TimeHolder_Internal {
+    }
+
+    public final static class timespec_Internal {
+    }
+
     public final static class TestUnion_Internal {
+    }
+
+    public final static class FILE_Internal {
     }
 
     public final static class SpecialStruct_Internal {
@@ -148,12 +230,9 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackBooleanArg> methodWithCallbackBooleanArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                bufPtr.setBoolean(0, arg0);
-                encoder.invoke(bufPtr);
-            }, fnPtr, encoder);
+                TestData.methodWithCallbackBooleanArg_direct(fnPtr, arg0);
+            }, fnPtr);
         }
     }
 
@@ -176,18 +255,15 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackTestEnumPointerArg> methodWithCallbackTestEnumPointerArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                bufPtr.setNativePointer(0, arg0.getPointer());
-                encoder.invoke(bufPtr);
-            }, fnPtr, encoder);
+                TestData.methodWithCallbackTestEnumPointerArg_direct(fnPtr, arg0.getPointer());
+            }, fnPtr);
         }
     }
 
     public interface methodWithCallbackDoubleReturn_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(3) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(6) };
 
         double methodWithCallbackDoubleReturn_call();
 
@@ -204,14 +280,9 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackDoubleReturn> methodWithCallbackDoubleReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                encoder.invoke(bufPtr);
-                double _retPar = bufPtr.getDouble(0);
-                encoder.finish(bufPtr);
-                return _retPar;
-            }, fnPtr, encoder);
+                return TestData.methodWithCallbackDoubleReturn_direct(fnPtr);
+            }, fnPtr);
         }
     }
 
@@ -234,17 +305,15 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithThrowingCallback> methodWithThrowingCallback_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                encoder.invoke(bufPtr);
-            }, fnPtr, encoder);
+                TestData.methodWithThrowingCallback_direct(fnPtr);
+            }, fnPtr);
         }
     }
 
     public interface methodWithCallbackIntArg_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(5) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(8) };
 
         void methodWithCallbackIntArg_call(int arg0);
 
@@ -261,12 +330,9 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackIntArg> methodWithCallbackIntArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                bufPtr.setInt(0, arg0);
-                encoder.invoke(bufPtr);
-            }, fnPtr, encoder);
+                TestData.methodWithCallbackIntArg_direct(fnPtr, arg0);
+            }, fnPtr);
         }
     }
 
@@ -289,20 +355,15 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackTestStructPointerReturn> methodWithCallbackTestStructPointerReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                encoder.invoke(bufPtr);
-                TestStruct.TestStructPointer _retPar = new TestStruct.TestStructPointer(bufPtr.getNativePointer(0), false);
-                encoder.finish(bufPtr);
-                return _retPar;
-            }, fnPtr, encoder);
+                return new TestStruct.TestStructPointer(TestData.methodWithCallbackTestStructPointerReturn_direct(fnPtr), false);
+            }, fnPtr);
         }
     }
 
     public interface methodWithCallbackShortReturn_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(7) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(13) };
 
         short methodWithCallbackShortReturn_call();
 
@@ -319,14 +380,9 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackShortReturn> methodWithCallbackShortReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                encoder.invoke(bufPtr);
-                short _retPar = bufPtr.getShort(0);
-                encoder.finish(bufPtr);
-                return _retPar;
-            }, fnPtr, encoder);
+                return TestData.methodWithCallbackShortReturn_direct(fnPtr);
+            }, fnPtr);
         }
     }
 
@@ -349,20 +405,15 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackTestEnumPointerReturn> methodWithCallbackTestEnumPointerReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                encoder.invoke(bufPtr);
-                TestEnum.TestEnumPointer _retPar = new TestEnum.TestEnumPointer(bufPtr.getNativePointer(0), false);
-                encoder.finish(bufPtr);
-                return _retPar;
-            }, fnPtr, encoder);
+                return new TestEnum.TestEnumPointer(TestData.methodWithCallbackTestEnumPointerReturn_direct(fnPtr), false);
+            }, fnPtr);
         }
     }
 
     public interface methodWithCallbackTestStructArg_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(24) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(48) };
 
         void methodWithCallbackTestStructArg_call(TestStruct arg0);
 
@@ -379,12 +430,9 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackTestStructArg> methodWithCallbackTestStructArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                bufPtr.setNativePointer(0, arg0.getPointer());
-                encoder.invoke(bufPtr);
-            }, fnPtr, encoder);
+                TestData.methodWithCallbackTestStructArg_direct(fnPtr, arg0.getPointer());
+            }, fnPtr);
         }
     }
 
@@ -407,20 +455,15 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackIntPointerReturn> methodWithCallbackIntPointerReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                encoder.invoke(bufPtr);
-                SIntPointer _retPar = new SIntPointer(bufPtr.getNativePointer(0), false);
-                encoder.finish(bufPtr);
-                return _retPar;
-            }, fnPtr, encoder);
+                return new SIntPointer(TestData.methodWithCallbackIntPointerReturn_direct(fnPtr), false);
+            }, fnPtr);
         }
     }
 
     public interface methodWithCallbackLongArg_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(11) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(19) };
 
         void methodWithCallbackLongArg_call(long test);
 
@@ -437,18 +480,15 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackLongArg> methodWithCallbackLongArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((test) -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                bufPtr.setLong(0, test);
-                encoder.invoke(bufPtr);
-            }, fnPtr, encoder);
+                TestData.methodWithCallbackLongArg_direct(fnPtr, test);
+            }, fnPtr);
         }
     }
 
     public interface methodWithCallbackFloatArg_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(4) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(7) };
 
         void methodWithCallbackFloatArg_call(float arg0);
 
@@ -465,18 +505,15 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackFloatArg> methodWithCallbackFloatArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                bufPtr.setFloat(0, arg0);
-                encoder.invoke(bufPtr);
-            }, fnPtr, encoder);
+                TestData.methodWithCallbackFloatArg_direct(fnPtr, arg0);
+            }, fnPtr);
         }
     }
 
     public interface methodWithCallbackDoubleArg_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(3) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(6) };
 
         void methodWithCallbackDoubleArg_call(double arg0);
 
@@ -493,18 +530,15 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackDoubleArg> methodWithCallbackDoubleArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                bufPtr.setDouble(0, arg0);
-                encoder.invoke(bufPtr);
-            }, fnPtr, encoder);
+                TestData.methodWithCallbackDoubleArg_direct(fnPtr, arg0);
+            }, fnPtr);
         }
     }
 
     public interface methodWithCallbackIntPointerArg_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(-1) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(8), FFITypes.getCTypeInfo(-1) };
 
         int methodWithCallbackIntPointerArg_call(SIntPointer arg0);
 
@@ -521,21 +555,40 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackIntPointerArg> methodWithCallbackIntPointerArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                bufPtr.setNativePointer(0, arg0.getPointer());
-                encoder.invoke(bufPtr);
-                int _retPar = bufPtr.getInt(CHandler.IS_64_BIT ? 8 : 4);
-                encoder.finish(bufPtr);
-                return _retPar;
-            }, fnPtr, encoder);
+                return TestData.methodWithCallbackIntPointerArg_direct(fnPtr, arg0.getPointer());
+            }, fnPtr);
+        }
+    }
+
+    public interface public_callback_Internal extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(8) };
+
+        void public_callback_call(int value);
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(BufferPtr buf) {
+            public_callback_call(buf.getInt(0));
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            public_callback_call(buf.getInt(0));
+        }
+
+        public static CClosureObject<TestData.public_callback> public_callback_downcall(long fnPtr) {
+            return new CClosureObject<>((value) -> {
+                TestData.public_callback_direct(fnPtr, value);
+            }, fnPtr);
         }
     }
 
     public interface methodWithCallbackTestEnumArg_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(14) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(23) };
 
         void methodWithCallbackTestEnumArg_call(TestEnum arg0);
 
@@ -552,12 +605,9 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackTestEnumArg> methodWithCallbackTestEnumArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                bufPtr.setUInt(0, arg0.getIndex());
-                encoder.invoke(bufPtr);
-            }, fnPtr, encoder);
+                TestData.methodWithCallbackTestEnumArg_direct(fnPtr, arg0.getIndex());
+            }, fnPtr);
         }
     }
 
@@ -580,12 +630,9 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackCallThrowingCallback> methodWithCallbackCallThrowingCallback_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                bufPtr.setNativePointer(0, arg0.getPointer());
-                encoder.invoke(bufPtr);
-            }, fnPtr, encoder);
+                TestData.methodWithCallbackCallThrowingCallback_direct(fnPtr, arg0.getPointer());
+            }, fnPtr);
         }
     }
 
@@ -608,12 +655,9 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackTestStructPointerArg> methodWithCallbackTestStructPointerArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                bufPtr.setNativePointer(0, arg0.getPointer());
-                encoder.invoke(bufPtr);
-            }, fnPtr, encoder);
+                TestData.methodWithCallbackTestStructPointerArg_direct(fnPtr, arg0.getPointer());
+            }, fnPtr);
         }
     }
 
@@ -636,14 +680,9 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackTestUnionPointerReturn> methodWithCallbackTestUnionPointerReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                encoder.invoke(bufPtr);
-                TestUnion.TestUnionPointer _retPar = new TestUnion.TestUnionPointer(bufPtr.getNativePointer(0), false);
-                encoder.finish(bufPtr);
-                return _retPar;
-            }, fnPtr, encoder);
+                return new TestUnion.TestUnionPointer(TestData.methodWithCallbackTestUnionPointerReturn_direct(fnPtr), false);
+            }, fnPtr);
         }
     }
 
@@ -666,20 +705,15 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackByteReturn> methodWithCallbackByteReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                encoder.invoke(bufPtr);
-                byte _retPar = bufPtr.getByte(0);
-                encoder.finish(bufPtr);
-                return _retPar;
-            }, fnPtr, encoder);
+                return TestData.methodWithCallbackByteReturn_direct(fnPtr);
+            }, fnPtr);
         }
     }
 
     public interface methodWithCallbackCharReturn_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(9) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(17) };
 
         char methodWithCallbackCharReturn_call();
 
@@ -696,20 +730,15 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackCharReturn> methodWithCallbackCharReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                encoder.invoke(bufPtr);
-                char _retPar = bufPtr.getChar(0);
-                encoder.finish(bufPtr);
-                return _retPar;
-            }, fnPtr, encoder);
+                return TestData.methodWithCallbackCharReturn_direct(fnPtr);
+            }, fnPtr);
         }
     }
 
     public interface methodWithCallbackTestEnumReturn_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(14) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(23) };
 
         TestEnum methodWithCallbackTestEnumReturn_call();
 
@@ -726,20 +755,15 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackTestEnumReturn> methodWithCallbackTestEnumReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                encoder.invoke(bufPtr);
-                TestEnum _retPar = TestEnum.getByIndex((int) bufPtr.getUInt(0));
-                encoder.finish(bufPtr);
-                return _retPar;
-            }, fnPtr, encoder);
+                return TestEnum.getByIndex((int) TestData.methodWithCallbackTestEnumReturn_direct(fnPtr));
+            }, fnPtr);
         }
     }
 
     public interface methodWithCallbackAllArgs_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(11), FFITypes.getCTypeInfo(5), FFITypes.getCTypeInfo(7), FFITypes.getCTypeInfo(1), FFITypes.getCTypeInfo(9), FFITypes.getCTypeInfo(0), FFITypes.getCTypeInfo(4), FFITypes.getCTypeInfo(3) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(19), FFITypes.getCTypeInfo(8), FFITypes.getCTypeInfo(13), FFITypes.getCTypeInfo(1), FFITypes.getCTypeInfo(17), FFITypes.getCTypeInfo(0), FFITypes.getCTypeInfo(7), FFITypes.getCTypeInfo(6) };
 
         void methodWithCallbackAllArgs_call(long arg0, int arg1, short arg2, byte arg3, char arg4, boolean arg5, float arg6, double arg7);
 
@@ -756,19 +780,9 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackAllArgs> methodWithCallbackAllArgs_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                bufPtr.setLong(0, arg0);
-                bufPtr.setInt(8, arg1);
-                bufPtr.setShort(12, arg2);
-                bufPtr.setByte(14, arg3);
-                bufPtr.setChar(15, arg4);
-                bufPtr.setBoolean(17, arg5);
-                bufPtr.setFloat(18, arg6);
-                bufPtr.setDouble(22, arg7);
-                encoder.invoke(bufPtr);
-            }, fnPtr, encoder);
+                TestData.methodWithCallbackAllArgs_direct(fnPtr, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+            }, fnPtr);
         }
     }
 
@@ -791,11 +805,9 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallback> methodWithCallback_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                encoder.invoke(bufPtr);
-            }, fnPtr, encoder);
+                TestData.methodWithCallback_direct(fnPtr);
+            }, fnPtr);
         }
     }
 
@@ -818,14 +830,9 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithIntPtrPtrRet> methodWithIntPtrPtrRet_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                encoder.invoke(bufPtr);
-                PointerPointer<SIntPointer> _retPar = new PointerPointer<>(bufPtr.getNativePointer(0), false, SIntPointer::new);
-                encoder.finish(bufPtr);
-                return _retPar;
-            }, fnPtr, encoder);
+                return new PointerPointer<>(TestData.methodWithIntPtrPtrRet_direct(fnPtr), false, SIntPointer::new);
+            }, fnPtr);
         }
     }
 
@@ -848,18 +855,15 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackTestUnionPointerArg> methodWithCallbackTestUnionPointerArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                bufPtr.setNativePointer(0, arg0.getPointer());
-                encoder.invoke(bufPtr);
-            }, fnPtr, encoder);
+                TestData.methodWithCallbackTestUnionPointerArg_direct(fnPtr, arg0.getPointer());
+            }, fnPtr);
         }
     }
 
     public interface methodWithCallbackShortArg_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(7) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(13) };
 
         void methodWithCallbackShortArg_call(short arg0);
 
@@ -876,12 +880,9 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackShortArg> methodWithCallbackShortArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                bufPtr.setShort(0, arg0);
-                encoder.invoke(bufPtr);
-            }, fnPtr, encoder);
+                TestData.methodWithCallbackShortArg_direct(fnPtr, arg0);
+            }, fnPtr);
         }
     }
 
@@ -904,12 +905,9 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackByteArg> methodWithCallbackByteArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                bufPtr.setByte(0, arg0);
-                encoder.invoke(bufPtr);
-            }, fnPtr, encoder);
+                TestData.methodWithCallbackByteArg_direct(fnPtr, arg0);
+            }, fnPtr);
         }
     }
 
@@ -932,20 +930,15 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackBooleanReturn> methodWithCallbackBooleanReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                encoder.invoke(bufPtr);
-                boolean _retPar = bufPtr.getBoolean(0);
-                encoder.finish(bufPtr);
-                return _retPar;
-            }, fnPtr, encoder);
+                return TestData.methodWithCallbackBooleanReturn_direct(fnPtr);
+            }, fnPtr);
         }
     }
 
     public interface methodWithCallbackIntReturn_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(5) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(8) };
 
         int methodWithCallbackIntReturn_call();
 
@@ -962,20 +955,15 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackIntReturn> methodWithCallbackIntReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                encoder.invoke(bufPtr);
-                int _retPar = bufPtr.getInt(0);
-                encoder.finish(bufPtr);
-                return _retPar;
-            }, fnPtr, encoder);
+                return TestData.methodWithCallbackIntReturn_direct(fnPtr);
+            }, fnPtr);
         }
     }
 
     public interface methodWithCallbackLongReturn_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(11) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(19) };
 
         long methodWithCallbackLongReturn_call();
 
@@ -992,20 +980,15 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackLongReturn> methodWithCallbackLongReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                encoder.invoke(bufPtr);
-                long _retPar = bufPtr.getLong(0);
-                encoder.finish(bufPtr);
-                return _retPar;
-            }, fnPtr, encoder);
+                return TestData.methodWithCallbackLongReturn_direct(fnPtr);
+            }, fnPtr);
         }
     }
 
     public interface methodWithCallbackCharArg_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(9) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(17) };
 
         void methodWithCallbackCharArg_call(char arg0);
 
@@ -1022,12 +1005,9 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackCharArg> methodWithCallbackCharArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                bufPtr.setChar(0, arg0);
-                encoder.invoke(bufPtr);
-            }, fnPtr, encoder);
+                TestData.methodWithCallbackCharArg_direct(fnPtr, arg0);
+            }, fnPtr);
         }
     }
 
@@ -1050,12 +1030,9 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithIntPtrPtrArg> methodWithIntPtrPtrArg_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                bufPtr.setNativePointer(0, arg0.getPointer());
-                encoder.invoke(bufPtr);
-            }, fnPtr, encoder);
+                TestData.methodWithIntPtrPtrArg_direct(fnPtr, arg0.getPointer());
+            }, fnPtr);
         }
     }
 
@@ -1078,21 +1055,15 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.thread_callback> thread_callback_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>((arg0) -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                bufPtr.setNativePointer(0, arg0.getPointer());
-                encoder.invoke(bufPtr);
-                VoidPointer _retPar = new VoidPointer(bufPtr.getNativePointer(CHandler.IS_64_BIT ? 8 : 4), false);
-                encoder.finish(bufPtr);
-                return _retPar;
-            }, fnPtr, encoder);
+                return new VoidPointer(TestData.thread_callback_direct(fnPtr, arg0.getPointer()), false);
+            }, fnPtr);
         }
     }
 
     public interface methodWithCallbackTestStructReturn_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(24) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(48) };
 
         TestStruct methodWithCallbackTestStructReturn_call();
 
@@ -1109,21 +1080,42 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackTestStructReturn> methodWithCallbackTestStructReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
                 TestStruct _retPar = new TestStruct();
-                bufPtr.setNativePointer(0, _retPar.getPointer());
-                encoder.invoke(bufPtr);
-                encoder.finish(bufPtr);
+                TestData.methodWithCallbackTestStructReturn_direct(fnPtr, _retPar.getPointer());
                 return _retPar;
-            }, fnPtr, encoder);
+            }, fnPtr);
+        }
+    }
+
+    public interface methodWithCallbackSizeT_Internal extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(15), FFITypes.getCTypeInfo(15), FFITypes.getCTypeInfo(16) };
+
+        long methodWithCallbackSizeT_call(long in, long neg);
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(BufferPtr buf) {
+            buf.setNativeUWord(0, methodWithCallbackSizeT_call(buf.getNativeUWord(0), buf.getNativeWord(CHandler.IS_64_BIT ? 8 : 4)));
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            buf.setNativeUWord(0, methodWithCallbackSizeT_call(buf.getNativeUWord(0), buf.getNativeWord(CHandler.IS_64_BIT ? 8 : 4)));
+        }
+
+        public static CClosureObject<TestData.methodWithCallbackSizeT> methodWithCallbackSizeT_downcall(long fnPtr) {
+            return new CClosureObject<>((in, neg) -> {
+                return TestData.methodWithCallbackSizeT_direct(fnPtr, in, neg);
+            }, fnPtr);
         }
     }
 
     public interface methodWithCallbackFloatReturn_Internal extends Closure {
 
-        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(4) };
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(7) };
 
         float methodWithCallbackFloatReturn_call();
 
@@ -1140,14 +1132,34 @@ public final class TestData_Internal {
         }
 
         public static CClosureObject<TestData.methodWithCallbackFloatReturn> methodWithCallbackFloatReturn_downcall(long fnPtr) {
-            ClosureEncoder encoder = new ClosureEncoder(fnPtr, __ffi_cache);
             return new CClosureObject<>(() -> {
-                BufferPtr bufPtr = encoder.lockOrDuplicate();
-                encoder.invoke(bufPtr);
-                float _retPar = bufPtr.getFloat(0);
-                encoder.finish(bufPtr);
-                return _retPar;
-            }, fnPtr, encoder);
+                return TestData.methodWithCallbackFloatReturn_direct(fnPtr);
+            }, fnPtr);
+        }
+    }
+
+    public interface methodWithCallbackTimespecPointerArg_Internal extends Closure {
+
+        CTypeInfo[] __ffi_cache = new CTypeInfo[] { FFITypes.getCTypeInfo(-2), FFITypes.getCTypeInfo(-1) };
+
+        void methodWithCallbackTimespecPointerArg_call(timespec.timespecPointer arg0);
+
+        default CTypeInfo[] functionSignature() {
+            return __ffi_cache;
+        }
+
+        default void invoke(BufferPtr buf) {
+            methodWithCallbackTimespecPointerArg_call(new timespec.timespecPointer(buf.getNativePointer(0), false));
+        }
+
+        default void invokePooled(BufferPtr buf, PointingPoolManager manager) {
+            methodWithCallbackTimespecPointerArg_call(manager.getPointing(timespec.timespecPointer.class, buf.getNativePointer(0)));
+        }
+
+        public static CClosureObject<TestData.methodWithCallbackTimespecPointerArg> methodWithCallbackTimespecPointerArg_downcall(long fnPtr) {
+            return new CClosureObject<>((arg0) -> {
+                TestData.methodWithCallbackTimespecPointerArg_direct(fnPtr, arg0.getPointer());
+            }, fnPtr);
         }
     }
 }

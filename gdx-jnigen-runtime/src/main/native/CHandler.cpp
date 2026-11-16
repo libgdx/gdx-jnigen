@@ -32,6 +32,7 @@ static jmethodID dispatchCallbackMethod = NULL;
 static jmethodID getExceptionStringMethod = NULL;
 static jclass globalClass = NULL;
 static jclass cxxExceptionClass = NULL;
+static jclass illegalArgumentExceptionClass = NULL;
 static JavaVM* gJVM = NULL;
 static bool ignoreCXXExceptionMessage = false;
 
@@ -66,7 +67,7 @@ static inline void calculateAlignmentAndOffset(ffi_type* type, bool isStruct) {
         current_element = type->elements[index];
     }
 
-    if (isStruct && struct_alignment != 0 && struct_size % struct_alignment != 0) {
+    if (struct_alignment != 0 && struct_size % struct_alignment != 0) {
        struct_size += struct_alignment - (struct_size % struct_alignment);
     }
 
@@ -79,7 +80,8 @@ void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
     tls_attach_jni_env(gJVM, &env);
     closure_info* info = (closure_info*) user;
     ffi_type* rtype = cif->rtype;
-    char backingBuffer[info->argumentSize > rtype->size ? info->argumentSize : rtype->size];
+    size_t bufferSize = info->argumentSize > rtype->size ? info->argumentSize : rtype->size;
+    char backingBuffer[bufferSize];
     if (cif->nargs != 0) {
         size_t offset = 0;
         for (size_t i = 0; i < cif->nargs; i++) {
@@ -96,18 +98,27 @@ void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
         }
     }
 
-    env->CallStaticVoidMethod(globalClass, dispatchCallbackMethod, info->javaInfo, backingBuffer);
+    env->CallStaticVoidMethod(globalClass, dispatchCallbackMethod, info->javaInfo, backingBuffer, (jint)bufferSize);
 
     jthrowable exc = env->ExceptionOccurred();
     if(exc != NULL) {
         env->ExceptionClear();
-        if (ignoreCXXExceptionMessage)
-            throw JavaExceptionMarker(gJVM, exc, "Java-Side exception");
-        jstring message = (jstring)env->CallStaticObjectMethod(globalClass, getExceptionStringMethod, exc);
-        const char* cStringMessage = env->GetStringUTFChars(message, NULL);
-        std::string cxxMessage(cStringMessage);
-        env->ReleaseStringUTFChars(message, cStringMessage);
-        throw JavaExceptionMarker(gJVM, exc, cxxMessage);
+        std::string cxxMessage("Java-Side exception");
+        if (!ignoreCXXExceptionMessage) {
+            jstring message = (jstring)env->CallStaticObjectMethod(globalClass, getExceptionStringMethod, exc);
+            if (env->ExceptionCheck())
+                env->ExceptionClear();
+            if (message != NULL) {
+                const char* cStringMessage = env->GetStringUTFChars(message, NULL);
+                cxxMessage.assign(cStringMessage);
+                env->ReleaseStringUTFChars(message, cStringMessage);
+                env->DeleteLocalRef(message);
+            }
+        }
+        // Local refs on threads attached by tls_attach_jni_env live until thread death, so they must be freed here
+        JavaExceptionMarker marker(gJVM, exc, cxxMessage);
+        env->DeleteLocalRef(exc);
+        throw marker;
     }
 
     if(rtype->type == FFI_TYPE_STRUCT) {
@@ -115,43 +126,6 @@ void callbackHandler(ffi_cif* cif, void* result, void** args, void* user) {
     } else {
         memcpy(result, &backingBuffer, rtype->size);
     }
-}
-
-JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_dispatchCCall(JNIEnv* env, jclass clazz, jlong fnPtr_j, jlong cif_j, jlong arg_buf) {
-    HANDLE_JAVA_EXCEPTION_START()
-
-    void** arguments = (void**)arg_buf;
-    void* fnPtr = (void*) fnPtr_j;
-    ffi_cif* cif = (ffi_cif*) cif_j;
-
-    void** decodedArguments = (void**)alloca(cif->nargs * (sizeof(void*)));
-    int offset = 0;
-    for (int i = 0; i < cif->nargs; ++i) {
-        ffi_type* arg = cif->arg_types[i];
-        if (arg->type == FFI_TYPE_STRUCT) {
-            decodedArguments[i] = arguments[i];
-        } else {
-            decodedArguments[i] = alloca(arg->size);
-            memcpy(decodedArguments[i], (char*)arguments + offset, arg->size);
-        }
-
-        offset += arg->size;
-    }
-
-    void* result = (void*)alloca(cif->rtype->size);
-    ffi_call(cif, (void (*)())fnPtr, result, decodedArguments);
-
-    ffi_type* rtype = cif->rtype;
-
-    if (rtype->type == FFI_TYPE_VOID)
-        return;
-    if(rtype->type == FFI_TYPE_STRUCT) {
-        memcpy(*(void**)(arguments + offset), result, rtype->size);
-    } else {
-        memcpy(arguments + offset, result, rtype->size);
-    }
-
-    HANDLE_JAVA_EXCEPTION_END()
 }
 
 JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_is32Bit(JNIEnv* env, jclass clazz) {
@@ -170,8 +144,8 @@ JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_isCharS
     return IS_SIGNED_TYPE(char);
 }
 
-JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_isCompiledAndroidX86(JNIEnv* env, jclass clazz) {
-    #if defined(__i386__) && defined(__ANDROID__)
+JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_isCompiledUnixI386(JNIEnv* env, jclass clazz) {
+    #if defined(__i386__) && !defined(_WIN32)
         return true;
     #else
         return false;
@@ -195,6 +169,7 @@ JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_init(JN
 }
 
 JNIEXPORT void JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_testIllegalArgumentExceptionThrowable(JNIEnv* env, jclass clazz, jclass illegalArgumentException) {
+    illegalArgumentExceptionClass = (jclass)env->NewGlobalRef(illegalArgumentException);
     env->ThrowNew(illegalArgumentException, "Test");
 }
 
@@ -222,7 +197,7 @@ JNIEXPORT jboolean JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_reExpor
 #endif // __linux__
 }
 
-ffi_type* getFFITypeForNativeType(native_type* nativeType) {
+ffi_type* getFFITypeForNativeType(JNIEnv* env, native_type* nativeType) {
     switch (nativeType->type) {
         case VOID_TYPE:
             return &ffi_type_void;
@@ -245,36 +220,56 @@ ffi_type* getFFITypeForNativeType(native_type* nativeType) {
             }
             return NULL;
         case UNION_TYPE:
-        case STRUCT_TYPE:
+        case STRUCT_TYPE: {
             ffi_type* type = (ffi_type*)malloc(sizeof(ffi_type));
             type->type = FFI_TYPE_STRUCT;
             type->elements = (ffi_type**)malloc(sizeof(ffi_type*) * (nativeType->field_count + 1));
 
             for (int i = 0; i < nativeType->field_count; i++) {
-                type->elements[i] = getFFITypeForNativeType(nativeType->fields[i]);
+                type->elements[i] = getFFITypeForNativeType(env, nativeType->fields[i]);
+                if (env->ExceptionCheck()) {
+                    free(type->elements);
+                    free(type);
+                    return NULL;
+                }
             }
 
             type->elements[nativeType->field_count] = NULL;
             calculateAlignmentAndOffset(type, nativeType->type == STRUCT_TYPE);
+
+            if (nativeType->size == 0 || nativeType->alignment == 0) {
+                char message[256];
+                snprintf(message, sizeof(message),
+                        "jnigen glue emitted a %s type without the compiler's sizeof/alignof (got %d / %d)",
+                        nativeType->type == STRUCT_TYPE ? "struct" : "union", nativeType->size, nativeType->alignment);
+                env->ThrowNew(illegalArgumentExceptionClass, message);
+                free(type->elements);
+                free(type);
+                return NULL;
+            }
+
+            // The generated glue records sizeof/alignof as seen by the C compiler vs our own computation.
+            if (type->size != (size_t)nativeType->size || type->alignment != (unsigned short)nativeType->alignment) {
+                char message[256];
+                snprintf(message, sizeof(message),
+                        "jnigen runtime computed size %zu / alignment %u for a %s, but the compiler reports sizeof %d / alignof %d",
+                        (size_t)type->size, (unsigned)type->alignment,
+                        nativeType->type == STRUCT_TYPE ? "struct" : "union",
+                        nativeType->size, nativeType->alignment);
+                env->ThrowNew(illegalArgumentExceptionClass, message);
+                free(type->elements);
+                free(type);
+                return NULL;
+            }
             return type;
+        }
     }
     return NULL;
 }
 
-void freeNativeTypeRecursive(native_type* nativeType) {
-    if (nativeType->type == UNION_TYPE || nativeType->type == STRUCT_TYPE) {
-        for (int i = 0; i < nativeType->field_count; i++) {
-            freeNativeTypeRecursive(nativeType->fields[i]);
-        }
-    }
-
-    free(nativeType);
-}
-
 JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_jnigen_runtime_CHandler_convertNativeTypeToFFIType(JNIEnv* env, jclass clazz, jlong natTypeJ) {
     native_type* nativeType = (native_type*) natTypeJ;
-    ffi_type* ffiType = getFFITypeForNativeType(nativeType);
-    freeNativeTypeRecursive(nativeType);
+    ffi_type* ffiType = getFFITypeForNativeType(env, nativeType);
     return (jlong) ffiType;
 }
 
